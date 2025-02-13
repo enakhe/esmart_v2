@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="ESMART.Presentation.Components.RoundedButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Root">
+    <Button Content="{Binding ButtonContent, ElementName=Root}" 
+            Background="{Binding ButtonBackground, ElementName=Root}"
+            Foreground="White"
+            Padding="8"
+            Width="{Binding ButtonWidth, ElementName=Root}"
+            Click="Button_Click">
+        <Button.Style>
+            <Style TargetType="Button">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" 
+                                    CornerRadius="{Binding ButtonCornerRadius, ElementName=Root}"
+                                    Padding="5">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Button.Style>
+    </Button>
+</UserControl>
