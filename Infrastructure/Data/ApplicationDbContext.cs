@@ -1,5 +1,6 @@
 ﻿using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Entities.Transaction;
 using ESMART.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -14,5 +15,6 @@ namespace ESMART.Infrastructure.Data
         }
 
         public DbSet<Guest> Guests { get; set; }
+        public DbSet <Transaction> Transactions { get; set; }
     }
 }

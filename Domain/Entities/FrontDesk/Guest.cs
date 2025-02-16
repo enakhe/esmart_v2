@@ -1,13 +1,19 @@
-﻿using System;
+﻿using ESMART.Domain.Entities.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ESMART.Domain.Entities
+namespace ESMART.Domain.Entities.FrontDesk
 {
     public class Guest
     {
+        public Guest()
+        {
+            Transactions = new HashSet<Entities.Transaction.Transaction>();
+        }
+
         public string? Id { get; set; } = Guid.NewGuid().ToString();
         public string? GuestId { get; set; }
         public string? Title { get; set; }
@@ -29,10 +35,11 @@ namespace ESMART.Domain.Entities
         public byte[]? IdentificationDocumentBack { get; set; }
         public byte[]? GuestImage { get; set; }
         public string? CreatedBy { get; set; }
-        public System.DateTime DateCreated { get; set; }
-        public System.DateTime DateModified { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateModified { get; set; }
         public bool IsTrashed { get; set; }
 
         public virtual ApplicationUser? ApplicationUser { get; set; }
+        public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }
     }
 }
