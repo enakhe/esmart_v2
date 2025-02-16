@@ -18,5 +18,6 @@ namespace ESMART.Application.Common.Interface
         Task<List<GuestViewModel>> SearchGuestAsync(string keyword);
         Task<List<GuestViewModel>> GetDeletedGuestAsync();
         Task<List<GuestBillViewModel>> GetGuestBillAsync(string guestId);
+        Task<List<GuestBillViewModel>> GetGuestBillByDateAsync(string guestId, DateTime startDate, DateTime endDate);
     }
 }

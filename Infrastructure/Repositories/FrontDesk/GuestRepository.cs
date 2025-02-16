@@ -1,4 +1,5 @@
 ﻿using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -175,21 +176,26 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 var guestBills = await _db.Transactions
-                    .Where(t => t.GuestId == guestId && t.Status == "Un Paid")
+                    .Where(t => t.GuestId == guestId && t.Status.ToString() == PaymentStatus.Pending.ToString())
                     .OrderBy(t => t.Date)
-                    .Select(guest => new GuestBillViewModel
+                    .Select(transaction => new GuestBillViewModel
                     {
-                        TransactionId = guest.TransactionId,
-                        Guest = guest.Guest.FullName,
-                        GuestPhoneNo = guest.Guest.PhoneNumber,
-                        ServiceId = guest.ServiceId,
-                        Date = guest.Date.ToString(),
-                        Status = guest.Status,
-                        Amount = guest.Amount.ToString(),
-                        TotalAmount = guest.Amount,
-                        Description = guest.Description,
-                        Type = guest.Type,
-                        BankAccount = guest.BankAccount,
+                        TransactionId = transaction.TransactionId,
+                        Guest = transaction.Guest.FullName,
+                        GuestPhoneNo = transaction.Guest.PhoneNumber,
+                        ServiceId = transaction.ServiceId,
+                        Date = transaction.Date.ToString(),
+                        Status = transaction.Status.ToString(),
+                        Amount = transaction.Amount.ToString(),
+                        TaxAmount = transaction.TaxAmount.ToString(),
+                        ServiceCharge = transaction.ServiceCharge.ToString(),
+                        Discount = transaction.Discount.ToString(),
+                        InvoiceNumber = transaction.InvoiceNumber,
+                        CreatedBy = transaction.ApplicationUser.FirstName,
+                        TotalAmount = transaction.TotalAmount,
+                        Description = transaction.Description,
+                        Type = transaction.Type.ToString(),
+                        BankAccount = transaction.BankAccount,
                     }).ToListAsync();
 
                 return guestBills;
@@ -200,6 +206,39 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
+        public async Task<List<GuestBillViewModel>> GetGuestBillByDateAsync(string guestId, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var guestBills = await _db.Transactions
+                    .Where(t => t.GuestId == guestId && t.Date >= startDate && t.Date <= endDate && t.Status.ToString() == PaymentStatus.Pending.ToString())
+                    .OrderBy(t => t.Date)
+                    .Select(transaction => new GuestBillViewModel
+                    {
+                        TransactionId = transaction.TransactionId,
+                        Guest = transaction.Guest.FullName,
+                        GuestPhoneNo = transaction.Guest.PhoneNumber,
+                        ServiceId = transaction.ServiceId,
+                        Date = transaction.Date.ToString(),
+                        Status = transaction.Status.ToString(),
+                        Amount = transaction.Amount.ToString(),
+                        TaxAmount = transaction.TaxAmount.ToString(),
+                        ServiceCharge = transaction.ServiceCharge.ToString(),
+                        Discount = transaction.Discount.ToString(),
+                        InvoiceNumber = transaction.InvoiceNumber,
+                        CreatedBy = transaction.ApplicationUser.FirstName,
+                        TotalAmount = transaction.TotalAmount,
+                        Description = transaction.Description,
+                        Type = transaction.Type.ToString(),
+                        BankAccount = transaction.BankAccount,
+                    }).ToListAsync();
+                return guestBills;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when getting guest bills by date. " + ex.Message);
+            }
+        }
 
     }
 }

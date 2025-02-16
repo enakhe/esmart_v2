@@ -1,4 +1,4 @@
-﻿using ESMART.Application.UseCases;
+﻿using ESMART.Application.UseCases.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ESMART.Application

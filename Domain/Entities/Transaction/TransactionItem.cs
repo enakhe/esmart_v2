@@ -8,7 +8,7 @@ namespace ESMART.Domain.Entities.Transaction
 {
     public class TransactionItem
     {
-        public string ItemId { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? Description { get; set; }
         public decimal? Amount { get; set; }
         public string? Category { get; set; }

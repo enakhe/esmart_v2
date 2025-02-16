@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ESMART.Presentation.Forms"
         mc:Ignorable="d"
-        Title="Criminal Record Management System | Dashboard" Height="800" Width="1300"
+        Title="ESMART HOTEL MANAGEMENT SOFTWARE" Height="800" Width="1300"
         WindowStartupLocation="CenterScreen" Background="#F5F5F5">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <!-- Sidebar -->
-        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Background="#333" Width="200">
+        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Background="#1a237e" Width="200">
             <TextBlock Text="DASHBOARD" Foreground="White" FontSize="18" FontWeight="Bold"
                        Margin="20,30,0,20"/>
             <Button Content="Home" Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0"

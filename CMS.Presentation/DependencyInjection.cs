@@ -1,5 +1,6 @@
 ﻿using ESMART.Application;
 using ESMART.Domain;
+using ESMART.Domain.Entities.Data;
 using ESMART.Infrastructure;
 using ESMART.Infrastructure.Data;
 using ESMART.Infrastructure.Identity;

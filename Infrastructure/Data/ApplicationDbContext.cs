@@ -16,5 +16,6 @@ namespace ESMART.Infrastructure.Data
 
         public DbSet<Guest> Guests { get; set; }
         public DbSet <Transaction> Transactions { get; set; }
+        public DbSet <TransactionItem> TransactionItems { get; set; }
     }
 }

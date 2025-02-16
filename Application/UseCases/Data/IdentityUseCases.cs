@@ -1,7 +1,7 @@
 ﻿using ESMART.Application.Common.Models;
 using ESMART.Domain.Interfaces;
 
-namespace ESMART.Application.UseCases
+namespace ESMART.Application.UseCases.Data
 {
     public class IdentityUseCases
     {

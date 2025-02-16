@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Models;
+using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
