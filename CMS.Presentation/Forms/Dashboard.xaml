@@ -23,6 +23,8 @@
                        Margin="20,30,0,20"/>
             <Button Content="Home" Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0"
                     HorizontalAlignment="Left" Padding="10" Width="180" Margin="10,5" FontSize="18" Click="HomeButton_Click" HorizontalContentAlignment="Left"/>
+            <Button Content="Guests" Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0"
+                    HorizontalAlignment="Left" Padding="10" Width="180" Margin="10,5" FontSize="18" HorizontalContentAlignment="Left" Click="GuestButton_Click" />
         </StackPanel>
 
         <!-- Header -->
