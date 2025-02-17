@@ -20,9 +20,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             switch (status)
             {
                 case "active":
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#86EFAC")); // Light Green
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4EAD16")); // Light Green
                 case "inactive":
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FECACA")); // Light Red
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#bd0101")); // Light Red
                 default:
                     return new SolidColorBrush(Colors.LightGray);
             }

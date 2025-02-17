@@ -1,6 +1,6 @@
-﻿using ESMART.Application.Common.Models;
+﻿using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.Data;
-using ESMART.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace ESMART.Infrastructure.Identity
@@ -27,7 +27,7 @@ namespace ESMART.Infrastructure.Identity
                 };
 
                 var result = await _userManager.CreateAsync(user, password);
-                return (result.ToApplicationResult());
+                return (result.ToApplicationResult(user));
             }
             catch (Exception ex)
             {
@@ -52,13 +52,15 @@ namespace ESMART.Infrastructure.Identity
                     IEnumerable<string> errors = new List<string> { "Invalid sign-in attempt. The email or password is incorrect" };
                     return Result.Failure(errors);
                 }
-                return Result.Success();
+
+                return Result.Success(user);
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occured when trying to log in. " + ex.Message);
             }
         }
+
 
         public async Task TrySeedAsync()
         {

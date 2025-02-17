@@ -9,7 +9,7 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Name="Login"
-        Icon="Assets/images/logo-main.png">
+        Icon="Assets/images/favicon.ico">
     <Grid>
         <StackPanel Grid.Column="0" Margin="30,20,30,20">
             <StackPanel>
@@ -31,7 +31,7 @@
                 <CheckBox Content="Show password" HorizontalAlignment="Right" />
             </StackPanel>
 
-            <Button Content="Login" Width="100" Margin="5" Padding="0,5,0,5" Background="Green" Foreground="White" Cursor="Hand" Click="Button_Click">
+            <Button Content="Login" Width="100" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="Button_Click">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="Template">

@@ -15,7 +15,10 @@
     <None Remove="appsettings.json" />
     <None Remove="Assets\audio\audio.wav" />
     <None Remove="Assets\haarcascades\haarcascade_frontalface_default.xml" />
+    <None Remove="Assets\images\favicon.ico" />
     <None Remove="Assets\images\logo-main.png" />
+    <None Remove="Forms\FrontDesk\Guest\logo.png" />
+    <None Remove="Forms\logo.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +29,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\haarcascades\haarcascade_frontalface_default.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\images\favicon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\images\logo-main.png">
@@ -57,6 +63,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\ESMART.Application.csproj" />
     <ProjectReference Include="..\Infrastructure\ESMART.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Forms\FrontDesk\Guest\logo.png" />
+    <Resource Include="Forms\logo.png" />
   </ItemGroup>
 
   <ItemGroup>

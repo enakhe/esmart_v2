@@ -1,6 +1,6 @@
 ﻿using ESMART.Application.Common.Models;
 
-namespace ESMART.Domain.Interfaces
+namespace ESMART.Application.Common.Interface
 {
     public interface IIdentityService
     {

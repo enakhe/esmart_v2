@@ -1,5 +1,6 @@
 ﻿using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Home;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
 namespace ESMART.Presentation.Forms
@@ -30,7 +31,11 @@ namespace ESMART.Presentation.Forms
 
         private void GuestButton_Click(Object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new GuestPage());
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+            GuestPage guestPage = serviceProvider.GetRequiredService<GuestPage>();
+            MainFrame.Navigate(guestPage);
         }
     }
 }

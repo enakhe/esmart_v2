@@ -1,6 +1,7 @@
 ﻿using ESMART.Application.Common.Utils;
 using ESMART.Application.UseCases.Data;
 using ESMART.Presentation.Forms;
+using ESMART.Presentation.Session;
 using System.Text;
 using System.Windows;
 
@@ -42,6 +43,7 @@ namespace ESMART.Presentation
                     }
                     else
                     {
+                        AuthSession.CurrentUser = result.Response;
                         Dashboard dashboard = new Dashboard();
                         dashboard.Show();
                         this.Close();

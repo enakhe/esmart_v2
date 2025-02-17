@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ESMART.Application.Common.Interface
+namespace ESMART.Application.Interface
 {
     public interface IGuestRepository
     {

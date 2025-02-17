@@ -1,5 +1,5 @@
-﻿using ESMART.Application.Common.Models;
-using ESMART.Domain.Interfaces;
+﻿using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Models;
 
 namespace ESMART.Application.UseCases.Data
 {

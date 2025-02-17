@@ -16,19 +16,21 @@ namespace ESMART.Domain.Entities.FrontDesk
 
         public string? Id { get; set; } = Guid.NewGuid().ToString();
         public string? GuestId { get; set; }
-        public string? Title { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? MiddleName { get; set; }
-        public string? FullName { get; set; }
+        public string? FullName => $"{FirstName} {LastName} {MiddleName}";
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
+        public string? Gender { get; set; }
+
         public string? Street { get; set; }
         public string? City { get; set; }
-        public string? Company { get; set; }
         public string? State { get; set; }
         public string? Country { get; set; }
-        public string? Gender { get; set; }
+
+        public string? Status { get; set; }
+
         public string? IdNumber { get; set; }
         public string? IdType { get; set; }
         public byte[]? IdentificationDocumentFront { get; set; }

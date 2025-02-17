@@ -1,4 +1,5 @@
-﻿using ESMART.Domain.Entities.FrontDesk;
+﻿using ESMART.Application.Interface;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ESMART.Infrastructure.Repositories.FrontDesk
 {
-    public class GuestRepository
+    public class GuestRepository : IGuestRepository
     {
         private readonly ApplicationDbContext _db;
         public GuestRepository(ApplicationDbContext db)
@@ -37,13 +38,15 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             {
                 var allGuest = await _db.Guests
                     .Where(g => g.IsTrashed == false)
-                    .OrderBy(g => g.FullName)
+                    .OrderBy(g => g.FirstName)
                     .Select(guest => new GuestViewModel
                     {
                         Id = guest.Id,
                         GuestId = guest.GuestId,
-                        FullName = guest.Title + " " + guest.FullName,
+                        FullName = $"{guest.FirstName} {guest.MiddleName} {guest.LastName}",
+                        GuestImage = guest.GuestImage,
                         Email = guest.Email,
+                        Status = guest.Status,
                         PhoneNumber = guest.PhoneNumber,
                         City = guest.City,
                         State = guest.State,
@@ -118,13 +121,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 }
 
                 var searchGuest = await _db.Guests
-                    .Where(c => (c.FullName.Contains(keyword) || c.Email.Contains(keyword) || c.PhoneNumber.Contains(keyword) || c.Street.Contains(keyword) || c.City.Contains(keyword) || c.State.Contains(keyword) || c.Country.Contains(keyword) || c.GuestId.Contains(keyword) || c.Company.Contains(keyword)) && c.IsTrashed == false)
+                    .Where(c => (c.FullName.Contains(keyword) || c.Email.Contains(keyword) || c.PhoneNumber.Contains(keyword) || c.Street.Contains(keyword) || c.City.Contains(keyword) || c.State.Contains(keyword) || c.Country.Contains(keyword) || c.GuestId.Contains(keyword)) && c.IsTrashed == false)
                     .OrderBy(g => g.FullName)
                     .Select(guest => new GuestViewModel
                     {
                         Id = guest.Id,
                         GuestId = guest.GuestId,
-                        FullName = guest.Title + " " + guest.FullName,
+                        FullName = guest.FullName,
                         Email = guest.Email,
                         PhoneNumber = guest.PhoneNumber,
                         City = guest.City,
@@ -153,7 +156,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     {
                         Id = guest.Id,
                         GuestId = guest.GuestId,
-                        FullName = guest.Title + " " + guest.FullName,
+                        FullName = guest.FullName,
                         Email = guest.Email,
                         PhoneNumber = guest.PhoneNumber,
                         City = guest.City,

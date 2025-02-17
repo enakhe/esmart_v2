@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ESMART.Presentation.Forms"
         mc:Ignorable="d"
         Title="ESMART HOTEL MANAGEMENT SOFTWARE" Height="800" Width="1300"
-        WindowStartupLocation="CenterScreen" Background="#F5F5F5">
+        WindowStartupLocation="CenterScreen" Background="#F5F5F5" Icon="/Forms/logo.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>

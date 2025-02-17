@@ -13,6 +13,9 @@
     <Compile Update="Forms\Dashboard.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Guest\AddGuestDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Guest\GuestPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -25,6 +28,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Forms\Dashboard.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Forms\FrontDesk\Guest\AddGuestDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Forms\FrontDesk\Guest\GuestPage.xaml">

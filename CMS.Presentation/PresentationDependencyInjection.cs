@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using ESMART.Presentation.Forms.FrontDesk.Guest;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ESMART.Presentation
 {
@@ -13,6 +14,8 @@ namespace ESMART.Presentation
 
         private static IServiceCollection AddPages(this IServiceCollection services)
         {
+            services.AddScoped<GuestPage>();
+            services.AddScoped<AddGuestDialog>();
             return services;
         }
     }
