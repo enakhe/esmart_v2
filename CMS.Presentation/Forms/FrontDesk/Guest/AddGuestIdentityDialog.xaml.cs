@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESMART.Application.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,21 +8,132 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using Microsoft.Win32;
 using System.Windows.Input;
+using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ESMART.Application.Common.Utils;
+using static System.Windows.Forms.AxHost;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using System.Diagnostics.Metrics;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Guest
 {
-    /// <summary>
-    /// Interaction logic for AddGuestIdentityDialog.xaml
-    /// </summary>
     public partial class AddGuestIdentityDialog : Window
     {
-        public AddGuestIdentityDialog()
+        private Domain.Entities.FrontDesk.Guest _guest;
+        private readonly IGuestRepository _guestRepository;
+        private string frontDocument;
+        private string backDocument;
+
+        public AddGuestIdentityDialog(Domain.Entities.FrontDesk.Guest guest, IGuestRepository guestRepository)
         {
+            _guest = guest;
+            _guestRepository = guestRepository;
             InitializeComponent();
+        }
+
+        private void UploadFront_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Title = "Select Image",
+                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp"
+                };
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    frontDocument = openFileDialog.FileName;
+                    frontImg.Source = new BitmapImage(new Uri(frontDocument));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private void UploadBack_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Title = "Select Image",
+                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp"
+                };
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    backDocument = openFileDialog.FileName;
+                    backImg.Source = new BitmapImage(new Uri(backDocument));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private async void SaveRecord_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                string idType = cbIdType.Text;
+                string idNumber = txtIdNumber.Text;
+
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(idNumber, idType);
+                if (!areFieldsEmpty)
+                {
+                    byte[] idDocumentFront = null;
+                    if (!string.IsNullOrEmpty(frontDocument))
+                    {
+                        idDocumentFront = File.ReadAllBytes(frontDocument);
+                    }
+
+                    byte[] idDocumentBack = null;
+                    if (!string.IsNullOrEmpty(backDocument))
+                    {
+                        idDocumentBack = File.ReadAllBytes(backDocument);
+                    }
+
+                    var guestIdentity = new Domain.Entities.FrontDesk.GuestIdentity
+                    {
+                        IdentificationDocumentBack = idDocumentBack,
+                        IdentificationDocumentFront = idDocumentFront,
+                        IdNumber = idNumber,
+                        IdType = idType,
+                        GuestId = _guest.Id
+                    };
+
+                    await _guestRepository.AddGuestIdentityAsync(guestIdentity);
+                    MessageBox.Show("Guest identity information added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    this.DialogResult = true;
+                }
+                else
+                {
+                    MessageBox.Show("Please enter all required fields",
+                                    "Invalid",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message,
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

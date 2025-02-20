@@ -1,4 +1,5 @@
-﻿using ESMART.Application.Interface;
+﻿using ESMART.Application.Common.Models;
+using ESMART.Application.Interface;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
@@ -19,16 +20,30 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             _db = db;
         }
 
-        public async Task AddGuestAsync(Guest guest)
+        public async Task<GuestResult> AddGuestAsync(Guest guest)
         {
             try
             {
-                await _db.Guests.AddAsync(guest);
+                var result = await _db.Guests.AddAsync(guest);
                 await _db.SaveChangesAsync();
+                return GuestResult.Success(guest);
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occurred when adding guest. " + ex.Message);
+            }
+        }
+
+        public async Task AddGuestIdentityAsync(GuestIdentity guestIdentity)
+        {
+            try
+            {
+                await _db.GuestIdentities.AddAsync(guestIdentity);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when adding guest identity information. " + ex.Message);
             }
         }
 

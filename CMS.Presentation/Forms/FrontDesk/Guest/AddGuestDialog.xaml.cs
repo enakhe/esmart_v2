@@ -64,13 +64,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 string email = txtEmail.Text;
                 string phoneNumber = txtPhoneNumber.Text;
                 string gender = cbGender.Text;
-                
+
                 string street = txtStreet.Text;
                 string city = txtCity.Text;
                 string state = txtState.Text;
                 string country = txtCountry.Text;
 
-                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, middleName, lastName, email, phoneNumber, gender, city, state, country);
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, middleName, lastName, phoneNumber, gender, city, state, country);
                 if (!areFieldsEmpty)
                 {
                     byte[] profileImageBytes = null;
@@ -97,9 +97,14 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         IsTrashed = false,
                         CreatedBy = AuthSession.CurrentUser.Id
                     };
-                    await _guestRepository.AddGuestAsync(guest);
-                    MessageBox.Show("Guest added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    this.DialogResult = true;
+                    var result = await _guestRepository.AddGuestAsync(guest);
+                    if(result.Succeeded)
+                    {
+                        MessageBox.Show("Guest added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        AddGuestIdentityDialog addGuestIdentityDialog = new AddGuestIdentityDialog(result.Response, _guestRepository);
+                        addGuestIdentityDialog.ShowDialog();
+                        this.DialogResult = true;
+                    }
                 }
                 else
                 {

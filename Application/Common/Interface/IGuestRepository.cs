@@ -1,4 +1,5 @@
-﻿using ESMART.Domain.Entities.FrontDesk;
+﻿using ESMART.Application.Common.Models;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.ViewModels.FrontDesk;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace ESMART.Application.Interface
 {
     public interface IGuestRepository
     {
-        Task AddGuestAsync(Guest guest);
+        Task<GuestResult> AddGuestAsync(Guest guest);
         Task<List<GuestViewModel>> GetAllGuestsAsync();
         Task<Guest?> GetGuestByIdAsync(string id);
         Task UpdateGuestAsync(Guest guest);
@@ -19,5 +20,6 @@ namespace ESMART.Application.Interface
         Task<List<GuestViewModel>> GetDeletedGuestAsync();
         Task<List<GuestBillViewModel>> GetGuestBillAsync(string guestId);
         Task<List<GuestBillViewModel>> GetGuestBillByDateAsync(string guestId, DateTime startDate, DateTime endDate);
+        Task AddGuestIdentityAsync(GuestIdentity guestIdentity);
     }
 }
