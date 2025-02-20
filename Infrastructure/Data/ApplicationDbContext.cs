@@ -9,13 +9,14 @@ namespace ESMART.Infrastructure.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) 
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            
+
         }
 
         public DbSet<Guest> Guests { get; set; }
         public DbSet <Transaction> Transactions { get; set; }
         public DbSet <TransactionItem> TransactionItems { get; set; }
+        public DbSet<GuestIdentity> GuestIdentities { get; set; }
     }
 }

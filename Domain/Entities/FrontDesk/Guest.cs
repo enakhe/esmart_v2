@@ -16,6 +16,7 @@ namespace ESMART.Domain.Entities.FrontDesk
 
         public string? Id { get; set; } = Guid.NewGuid().ToString();
         public string? GuestId { get; set; }
+        public byte[]? GuestImage { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? MiddleName { get; set; }
@@ -30,18 +31,15 @@ namespace ESMART.Domain.Entities.FrontDesk
         public string? Country { get; set; }
 
         public string? Status { get; set; }
-
-        public string? IdNumber { get; set; }
-        public string? IdType { get; set; }
-        public byte[]? IdentificationDocumentFront { get; set; }
-        public byte[]? IdentificationDocumentBack { get; set; }
-        public byte[]? GuestImage { get; set; }
         public string? CreatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
+
         public DateTime DateCreated { get; set; }
         public DateTime DateModified { get; set; }
         public bool IsTrashed { get; set; }
 
         public virtual ApplicationUser? ApplicationUser { get; set; }
         public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }
+        public GuestIdentity GuestIdentity { get; set; }
     }
 }

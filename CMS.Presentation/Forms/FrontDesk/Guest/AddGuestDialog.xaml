@@ -309,11 +309,12 @@
 
             <Grid Margin="1,30,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="9*" />
+                    <ColumnDefinition Width="14*"/>
+                    <ColumnDefinition Width="23*" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0">
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,229,0">
                     <Button Content="Save" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="Button_Click">
                         <Button.Style>
                             <Style TargetType="Button">
@@ -331,7 +332,7 @@
                     </Button>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="2">
                     <Button Content="Cancel" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand">
                         <Button.Style>
                             <Style TargetType="Button">

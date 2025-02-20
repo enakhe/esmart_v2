@@ -35,27 +35,23 @@
                 </Setter.Value>
             </Setter>
 
-            <!-- Optional: Hover & Pressed Triggers -->
             <Style.Triggers>
-                <!-- Hover effect -->
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#4ead16"/>
                 </Trigger>
-                <!-- Pressed effect -->
+
                 <Trigger Property="IsPressed" Value="True">
                     <Setter Property="Background" Value="#4ead16"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-        <!-- Style for DataGridColumnHeader -->
         <Style x:Key="DataGridColumnHeaderStyle" TargetType="DataGridColumnHeader">
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#1a237e"/>
             <Setter Property="Padding" Value="10,5"/>
         </Style>
 
-        <!-- Style for the DataGrid to remove row headers, grid lines, etc. -->
         <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
             <Setter Property="HeadersVisibility" Value="Column"/>
             <Setter Property="AutoGenerateColumns" Value="False"/>
@@ -80,126 +76,106 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="#F5F5F5">
-        <StackPanel>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition />
-                </Grid.RowDefinitions>
+    <StackPanel>
+        <Grid Background="#F5F5F5">
+            <StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="10,0,0,10">
-                    <Border Background="#1a237e" Width="200" Height="100" CornerRadius="5" Margin="10" Padding="10">
-                        <StackPanel>
-                            <TextBlock Text="Guests" Foreground="White" FontSize="14"/>
-                            <TextBlock Text="1500" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                        </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="10,0,0,10">
+                        <Border Background="#1a237e" Width="200" Height="100" CornerRadius="5" Margin="10" Padding="10">
+                            <StackPanel>
+                                <TextBlock Text="Guests" Foreground="White" FontSize="14"/>
+                                <TextBlock Text="1500" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="20,20,20,10" Grid.Row="1" HorizontalAlignment="Right">
+                        <Button Content="Add Guest" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="72" Click="AddGuest_Click" />
+                        <Button Content="Import" Style="{StaticResource ActionBarButtonStyle}" Width="60" />
+                        <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Width="52" />
+                    </StackPanel>
+
+                    <Border Background="White" CornerRadius="10" Padding="20" Grid.Row="2">
+                        <DataGrid x:Name="GuestDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" Loaded="GuestDataGrid_Loaded" VerticalContentAlignment="Center">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Name" Width="2*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <Ellipse Width="40" Height="40">
+                                                    <Ellipse.Fill>
+                                                        <ImageBrush ImageSource="{Binding GuestImage}" Stretch="UniformToFill"/>
+                                                    </Ellipse.Fill>
+                                                </Ellipse>
+                                                <TextBlock Text="{Binding FullName}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Phone" Width="120">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding PhoneNumber}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Phone" Width="300">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding Email}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Status" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="5" Padding="10,3" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}" Height="30" Width="70">
+                                                <TextBlock Text="{Binding Status}" Foreground="White"  VerticalAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Operation" Width="Auto">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Width="30" Height="30" Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" ToolTip="Edit Member" Background="#E0E7FF">
+                                                    <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                </Button>
+                                                <Button Width="30" Height="30" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" ToolTip="Delete Member" Background="Red" Foreground="White">
+                                                    <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </Border>
-                </StackPanel>
-
-                <!-- ACTION BAR -->
-                <StackPanel Orientation="Horizontal" Margin="20,20,20,10" Grid.Row="1" HorizontalAlignment="Right">
-                    <Button Content="Add Guest" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="72" Click="AddGuest_Click" />
-                    <Button Content="Import" Style="{StaticResource ActionBarButtonStyle}" Width="60" />
-                    <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Width="52" />
-                </StackPanel>
-
-                <!-- DATA GRID -->
-                <DataGrid x:Name="GuestDataGrid" Grid.Row="2" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" Loaded="GuestDataGrid_Loaded" VerticalContentAlignment="Center">
-
-                    <!-- Columns Definition -->
-                    <DataGrid.Columns>
-
-                        <!-- 1. Name + Avatar -->
-                        <DataGridTemplateColumn Header="Name" Width="2*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                        <!-- Avatar -->
-                                        <Ellipse Width="40" Height="40">
-                                            <Ellipse.Fill>
-                                                <ImageBrush ImageSource="{Binding GuestImage}" Stretch="UniformToFill"/>
-                                            </Ellipse.Fill>
-                                        </Ellipse>
-                                        <!-- Full Name -->
-                                        <TextBlock Text="{Binding FullName}" 
-                         VerticalAlignment="Center" 
-                         FontWeight="SemiBold" 
-                         Foreground="#111827"
-                         Margin="10,0,0,0"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn Header="Phone" Width="120">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                        <TextBlock Text="{Binding PhoneNumber}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn Header="Phone" Width="300">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                        <TextBlock Text="{Binding Email}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn Header="Status" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Border CornerRadius="5" Padding="10,3" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}" Height="30" Width="70">
-                                        <TextBlock Text="{Binding Status}" Foreground="White"  VerticalAlignment="Center"/>
-                                    </Border>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <!-- 5. Operation (Edit / Delete) -->
-                        <DataGridTemplateColumn Header="Operation" Width="Auto">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <!-- Edit Button -->
-                                        <Button Width="30" Height="30"
-                      Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                      CommandParameter="{Binding}"
-                      ToolTip="Edit Member"
-                      Background="#E0E7FF">
-                                            <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                        </Button>
-
-                                        <!-- Delete Button -->
-                                        <Button Width="30" Height="30"
-                      Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                      CommandParameter="{Binding}"
-                      ToolTip="Delete Member"
-                      Background="Red"
-                                                Foreground="White">
-                                            <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                        </Button>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-        </StackPanel>
-
-        <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
-                <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+                </Grid>
             </StackPanel>
+
+            <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
+                    <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+                </StackPanel>
+            </Grid>
         </Grid>
-    </Grid>
+    </StackPanel>
 </Page>
