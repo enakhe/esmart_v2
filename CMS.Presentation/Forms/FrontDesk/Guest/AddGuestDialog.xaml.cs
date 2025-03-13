@@ -73,7 +73,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, middleName, lastName, phoneNumber, gender, city, state, country);
                 if (!areFieldsEmpty)
                 {
-                    byte[] profileImageBytes = null;
+                    byte[]? profileImageBytes = null;
                     if (!string.IsNullOrEmpty(profilePictureImage))
                     {
                         profileImageBytes = File.ReadAllBytes(profilePictureImage);
@@ -111,9 +111,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     MessageBox.Show("Please enter all required fields",
                                     "Invalid",
                                     MessageBoxButton.OK,
-                                    MessageBoxImage.Information);
+                                    MessageBoxImage.Warning);
                 }
-        }
+            }
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message,
@@ -125,6 +125,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void ButtonCancle_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
         }
     }
 }

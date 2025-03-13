@@ -15,14 +15,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Collections.ObjectModel;
+using ESMART.Domain.Entities.FrontDesk;
+
 
 namespace ESMART.Presentation.Forms.FrontDesk.Guest
 {
     public partial class GuestPage : Page
     {
-        public ICommand EditCommand { get; }
-        public ICommand DeleteCommand { get; }
-        public ICommand LoginCommand { get; }
         private readonly IGuestRepository _guestRepository;
         public GuestPage(IGuestRepository guestRepository)
         {
@@ -64,6 +64,27 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private async void GuestDataGrid_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadGuests();
+        }
+
+        private void EditGuest_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedGuest = (Domain.ViewModels.FrontDesk.GuestViewModel)GuestDataGrid.SelectedItem;
+
+                if (selectedGuest.Id != null)
+                {
+                    UpdateGuestDialog updateGuestDialog = new UpdateGuestDialog(selectedGuest.Id, _guestRepository);
+                    if (updateGuestDialog.ShowDialog() == true)
+                    {
+                        _ = LoadGuests();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
         }
     }
 }

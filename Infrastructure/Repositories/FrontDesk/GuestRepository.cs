@@ -79,11 +79,15 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<Guest?> GetGuestByIdAsync(string id)
+        public async Task<GuestResult> GetGuestByIdAsync(string id)
         {
             try
             {
-                return await _db.Guests.FirstOrDefaultAsync(c => c.Id == id);
+                var guest = await _db.Guests.FirstOrDefaultAsync(c => c.Id == id);
+                if (guest != null)
+                    return GuestResult.Success(guest);
+                IEnumerable<string> errors = new List<string> { "IUnable to find a guest with the provided ID" };
+                return GuestResult.Failure(errors);
             }
             catch (Exception ex)
             {
@@ -91,12 +95,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task UpdateGuestAsync(Guest guest)
+        public async Task<GuestResult> UpdateGuestAsync(Guest guest)
         {
             try
             {
                 _db.Entry(guest).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
+                return GuestResult.Success(guest);
             }
             catch (Exception ex)
             {

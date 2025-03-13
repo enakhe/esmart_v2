@@ -9,7 +9,7 @@
         Name="AddGuestIdentity"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Height="530" Width="500" Icon="/Forms/FrontDesk/Guest/logo.png">
+        Height="550" Width="500" Icon="/Forms/FrontDesk/Guest/logo.png">
     <Grid>
         <StackPanel Grid.Column="0" Margin="20">
             <TextBlock Text="Identity Information" FontSize="25" FontWeight="Bold" Margin="0,10" />
