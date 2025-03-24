@@ -21,5 +21,7 @@ namespace ESMART.Application.Interface
         Task<List<GuestBillViewModel>> GetGuestBillAsync(string guestId);
         Task<List<GuestBillViewModel>> GetGuestBillByDateAsync(string guestId, DateTime startDate, DateTime endDate);
         Task AddGuestIdentityAsync(GuestIdentity guestIdentity);
+        Task<GuestIdenityResult> GetGuestIdentityByGuestIdAsync(string id);
+        Task<GuestIdenityResult> UpdateGuestIdentityAsync(GuestIdentity guestIdentity);
     }
 }

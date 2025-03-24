@@ -86,12 +86,28 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 var guest = await _db.Guests.FirstOrDefaultAsync(c => c.Id == id);
                 if (guest != null)
                     return GuestResult.Success(guest);
-                IEnumerable<string> errors = new List<string> { "IUnable to find a guest with the provided ID" };
+                IEnumerable<string> errors = new List<string> { "Unable to find a guest with the provided ID" };
                 return GuestResult.Failure(errors);
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occurred when retrieving guest by ID. " + ex.Message);
+            }
+        }
+
+        public async Task<GuestIdenityResult> GetGuestIdentityByGuestIdAsync(string id)
+        {
+            try
+            {
+                var guest = await _db.GuestIdentities.FirstOrDefaultAsync(c => c.GuestId == id);
+                if (guest != null)
+                    return GuestIdenityResult.Success(guest);
+                IEnumerable<string> errors = new List<string> { "Unable to find a guest identity with the provided ID" };
+                return GuestIdenityResult.Failure(errors);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving guest identity by ID. " + ex.Message);
             }
         }
 
@@ -102,6 +118,20 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 _db.Entry(guest).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
                 return GuestResult.Success(guest);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when updating guest. " + ex.Message);
+            }
+        }
+
+        public async Task<GuestIdenityResult> UpdateGuestIdentityAsync(GuestIdentity guestIdentity)
+        {
+            try
+            {
+                _db.Entry(guestIdentity).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
+                return GuestIdenityResult.Success(guestIdentity);
             }
             catch (Exception ex)
             {

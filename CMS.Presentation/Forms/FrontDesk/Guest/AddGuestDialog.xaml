@@ -18,7 +18,7 @@
                     <Image x:Name="imgProfileImg" Width="150" Height="150" Stretch="Fill"/>
                 </Border>
                 <StackPanel Grid.Column="0">
-                    <Button Content="Upload" Width="50" Height="20" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="UploadMugShot_Click">
+                    <Button Content="Upload" Width="50" Height="20" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="UploadImage_Click">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">

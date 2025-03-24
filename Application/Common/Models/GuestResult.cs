@@ -31,4 +31,28 @@ namespace ESMART.Application.Common.Models
             return new GuestResult(false, errors, null);
         }
     }
+
+    public class GuestIdenityResult
+    {
+        internal GuestIdenityResult(bool succeeded, IEnumerable<string> errors, GuestIdentity data)
+        {
+            Succeeded = succeeded;
+            Errors = errors.ToArray();
+            Response = data;
+        }
+
+        public bool Succeeded { get; init; }
+        public string[] Errors { get; init; }
+        public GuestIdentity Response { get; set; }
+
+        public static GuestIdenityResult Success(GuestIdentity data)
+        {
+            return new GuestIdenityResult(true, Array.Empty<string>(), data);
+        }
+
+        public static GuestIdenityResult Failure(IEnumerable<string> errors)
+        {
+            return new GuestIdenityResult(false, errors, null);
+        }
+    }
 }

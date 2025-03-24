@@ -31,7 +31,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             InitializeComponent();
         }
 
-        private void UploadMugShot_Click(object sender, RoutedEventArgs e)
+        private void UploadImage_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -104,6 +104,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         AddGuestIdentityDialog addGuestIdentityDialog = new AddGuestIdentityDialog(result.Response, _guestRepository);
                         addGuestIdentityDialog.ShowDialog();
                         this.DialogResult = true;
+                    }
+                    else
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var item in result.Errors)
+                        {
+                            sb.AppendLine(item);
+                        }
+
+                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 else

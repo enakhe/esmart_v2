@@ -25,6 +25,9 @@
     <Compile Update="Forms\FrontDesk\Guest\UpdateGuestDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Guest\UpdateGuestIdentityDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Home\IndexPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -46,6 +49,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Forms\FrontDesk\Guest\UpdateGuestDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Forms\FrontDesk\Guest\UpdateGuestIdentityDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Forms\Home\IndexPage.xaml">
