@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ESMART.Presentation.Forms.FrontDesk.Guest
+namespace ESMART.Presentation.Forms.RoomSetting
 {
     /// <summary>
-    /// Interaction logic for GuestDetailsPage.xaml
+    /// Interaction logic for AddBuildingDialog.xaml
     /// </summary>
-    public partial class GuestDetailsPage : Page
+    public partial class AddBuildingDialog : Window
     {
-        public GuestDetailsPage()
+        public AddBuildingDialog()
         {
             InitializeComponent();
         }

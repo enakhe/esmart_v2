@@ -27,6 +27,8 @@
                     HorizontalAlignment="Left" Padding="10" Width="180" Margin="10,5" FontSize="18" Click="HomeButton_Click" HorizontalContentAlignment="Left"/>
             <Button Content="Guests" Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0"
                     HorizontalAlignment="Left" Padding="10" Width="180" Margin="10,5" FontSize="18" HorizontalContentAlignment="Left" Click="GuestButton_Click" />
+            <Button Content="Room Settings" Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0"
+        HorizontalAlignment="Left" Padding="10" Width="180" Margin="10,5" FontSize="18" HorizontalContentAlignment="Left" Click="RoomSettingButton_Click" />
         </StackPanel>
 
         <!-- Header with Menu -->

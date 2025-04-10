@@ -194,7 +194,8 @@
                                                     Background="Red" 
                                                     Foreground="White"
                                                     Cursor="Hand"
-                                                    Tag="{Binding Id}">
+                                                    Tag="{Binding Id}"
+                                                        Click="DeleteGuest_Click">
                                                         <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                     </Button>
                                                 </StackPanel>

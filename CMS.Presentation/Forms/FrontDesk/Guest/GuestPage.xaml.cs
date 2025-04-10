@@ -91,6 +91,40 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
+        private async void DeleteGuest_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedGuest = (Domain.ViewModels.FrontDesk.GuestViewModel)GuestDataGrid.SelectedItem;
+                if (selectedGuest.Id != null)
+                {
+                    LoaderOverlay.Visibility = Visibility.Visible;
+                    try
+                    {
+                        MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this guest?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            await _guestRepository.DeleteGuestAsync(selectedGuest.Id);
+                            await LoadGuests();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    }
+                    finally
+                    {
+                        LoaderOverlay.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
         private void txtSearch_GotFocus(object sender, RoutedEventArgs e)
         {
             if (txtSearch.Text == "Search")

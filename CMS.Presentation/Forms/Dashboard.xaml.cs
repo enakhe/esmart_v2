@@ -1,5 +1,6 @@
 ﻿using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Home;
+using ESMART.Presentation.Forms.RoomSetting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
@@ -36,6 +37,11 @@ namespace ESMART.Presentation.Forms
             var serviceProvider = services.BuildServiceProvider();
             GuestPage guestPage = serviceProvider.GetRequiredService<GuestPage>();
             MainFrame.Navigate(guestPage);
+        }
+
+        private void RoomSettingButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new RoomSettingPage());
         }
     }
 }

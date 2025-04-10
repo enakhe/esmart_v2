@@ -83,7 +83,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         Status = "inactive",
                         GuestImage = profileImageBytes,
                         IsTrashed = false,
-                        CreatedBy = AuthSession.CurrentUser.Id
+                        CreatedBy = AuthSession.CurrentUser?.Id
                     };
                     var result = await _guestRepository.AddGuestAsync(guest);
                     if (result.Succeeded)

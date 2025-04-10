@@ -214,7 +214,7 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <Button Content="Delete" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand">
+                                <Button Content="Delete" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand" Click="DeleteGuest_Click">
                                     <Button.Style>
                                         <Style TargetType="Button">
                                             <Setter Property="Template">
@@ -244,8 +244,8 @@
                                     <Setter Property="Foreground" Value="White"/>
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="#1a237e"/>
-                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="Background" Value="Blue"/>
+                                            <Setter Property="Foreground" Value="Black"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -259,7 +259,7 @@
                                 </StackPanel>
                             </TabItem>
 
-                            <TabItem Header="Transaction History" Width="240" Background="#4ead16" Height="30" Foreground="White">
+                            <TabItem Header="Transaction History" Width="240" Height="30">
                                 <StackPanel Margin="10">
                                     <TextBlock Text="Street:" />
                                     <TextBox Width="200" />
@@ -268,7 +268,7 @@
                                 </StackPanel>
                             </TabItem>
 
-                            <TabItem Header="Account Statement" Width="216" Background="#4ead16" Height="30" Foreground="White">
+                            <TabItem Header="Account Statement" Width="216" Height="30">
                                 <TextBlock Text="Additional details go here..." Margin="10"/>
                             </TabItem>
                         </TabControl>

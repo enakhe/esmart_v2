@@ -1,5 +1,6 @@
 ﻿using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Transaction;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -10,9 +11,16 @@ namespace ESMART.Infrastructure.Data
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>(options)
     {
         public DbSet<Guest> Guests { get; set; }
+        public DbSet<GuestIdentity> GuestIdentities { get; set; }
+
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionItem> TransactionItems { get; set; }
-        public DbSet<GuestIdentity> GuestIdentities { get; set; }
+
+        public DbSet<RoomType> RoomTypes { get; set; }
+        public DbSet<Building> Buildings { get; set; }
+        public DbSet<Area> Areas { get; set; }
+        public DbSet<Floor> Floors { get; set; }
+        public DbSet<Room> Rooms { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

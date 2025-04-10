@@ -1,4 +1,5 @@
 ﻿using ESMART.Presentation.Forms.FrontDesk.Guest;
+using ESMART.Presentation.Forms.RoomSetting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ESMART.Presentation
@@ -16,6 +17,10 @@ namespace ESMART.Presentation
         {
             services.AddScoped<GuestPage>();
             services.AddScoped<AddGuestDialog>();
+
+            services.AddScoped<RoomSettingPage>();
+            services.AddScoped<AddBuildingDialog>();
+
             return services;
         }
     }
