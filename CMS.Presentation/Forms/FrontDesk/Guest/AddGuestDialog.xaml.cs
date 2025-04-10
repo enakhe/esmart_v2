@@ -1,23 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using Microsoft.Win32;
-using System.Windows.Media;
-using System.IO;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using ESMART.Application.Common;
-using ESMART.Application.Common.Utils;
-using ESMART.Domain.Entities.FrontDesk;
+﻿using ESMART.Application.Common.Utils;
 using ESMART.Application.Interface;
 using ESMART.Presentation.Session;
+using Microsoft.Win32;
+using System.IO;
+using System.Text;
+using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Guest
 {
@@ -98,7 +86,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         CreatedBy = AuthSession.CurrentUser.Id
                     };
                     var result = await _guestRepository.AddGuestAsync(guest);
-                    if(result.Succeeded)
+                    if (result.Succeeded)
                     {
                         MessageBox.Show("Guest added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         AddGuestIdentityDialog addGuestIdentityDialog = new AddGuestIdentityDialog(result.Response, _guestRepository);
@@ -124,7 +112,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                                     MessageBoxImage.Warning);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message,
                                 "Error",

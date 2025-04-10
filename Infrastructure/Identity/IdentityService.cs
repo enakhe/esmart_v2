@@ -8,9 +8,9 @@ namespace ESMART.Infrastructure.Identity
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -64,34 +64,31 @@ namespace ESMART.Infrastructure.Identity
 
         public async Task TrySeedAsync()
         {
-            var administratorRole = new IdentityRole(DefaultRoles.Administrator);
-            var adminRole = new IdentityRole(DefaultRoles.Admin);
-            var managerRole = new IdentityRole(DefaultRoles.Manager);
+            var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
+
+            if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+                await _userManager.CreateAsync(administrator, "Administrator1!");
+
+            var administratorRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.Administrator.ToString(),
+                ManagerId = administrator.Id,
+                Manager = administrator,
+                Description = "Administrator Role",
+
+            };
 
             if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
-            {
                 await _roleManager.CreateAsync(administratorRole);
-            }
 
-            if (_roleManager.Roles.All(r => r.Name != adminRole.Name))
-            {
-                await _roleManager.CreateAsync(adminRole);
-            }
-
-            if (_roleManager.Roles.All(r => r.Name != managerRole.Name))
-            {
-                await _roleManager.CreateAsync(managerRole);
-            }
-
-            var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
             var admin = new ApplicationUser { UserName = "admin@localhost", Email = "admin@localhost" };
 
             if (_userManager.Users.All(u => u.UserName != administrator.UserName))
             {
-                await _userManager.CreateAsync(administrator, "Administrator1!");
                 if (!string.IsNullOrWhiteSpace(administratorRole.Name))
                 {
-                    await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
+                    await _userManager.AddToRolesAsync(administrator, [administratorRole.Name]);
                 }
             }
         }

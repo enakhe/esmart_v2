@@ -5,10 +5,7 @@ using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Globalization;
 
 namespace ESMART.Infrastructure.Repositories.FrontDesk
 {
@@ -67,8 +64,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         State = guest.State,
                         Country = guest.Country,
                         CreatedBy = guest.ApplicationUser.FullName,
-                        DateCreated = guest.DateCreated,
-                        DateModified = guest.DateModified,
+                        DateCreated = guest.DateCreated.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
+                        DateModified = guest.DateModified.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
                     }).ToListAsync();
 
                 return allGuest;
@@ -84,10 +81,11 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 var guest = await _db.Guests.FirstOrDefaultAsync(c => c.Id == id);
+
                 if (guest != null)
                     return GuestResult.Success(guest);
-                IEnumerable<string> errors = new List<string> { "Unable to find a guest with the provided ID" };
-                return GuestResult.Failure(errors);
+
+                return GuestResult.Failure(["Unable to find a guest with the provided ID"]);
             }
             catch (Exception ex)
             {
@@ -183,8 +181,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         City = guest.City,
                         State = guest.State,
                         CreatedBy = guest.ApplicationUser.FullName,
-                        DateCreated = guest.DateCreated,
-                        DateModified = guest.DateModified,
+                        DateCreated = guest.DateCreated.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
+                        DateModified = guest.DateModified.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
                     }).ToListAsync();
 
                 return searchGuest;
@@ -212,8 +210,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         City = guest.City,
                         State = guest.State,
                         CreatedBy = guest.ApplicationUser.FullName,
-                        DateCreated = guest.DateCreated,
-                        DateModified = guest.DateModified,
+                        DateCreated = guest.DateCreated.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
+                        DateModified = guest.DateModified.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
                     }).ToListAsync();
 
                 return allGuest;

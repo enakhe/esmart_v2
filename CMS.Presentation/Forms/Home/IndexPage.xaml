@@ -1,10 +1,10 @@
 ﻿<Page x:Class="ESMART.Presentation.Forms.Home.IndexPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:ESMART.Presentation.Forms.Home"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Index">
 
@@ -27,7 +27,7 @@
             <Border Background="#e74c3c" Width="200" Height="100" CornerRadius="10" Margin="10"
             Padding="10">
                 <StackPanel>
-                    <TextBlock Text="Criminals" Foreground="White" FontSize="14"/>
+                    <TextBlock Text="Rooms" Foreground="White" FontSize="14"/>
                     <TextBlock Text="250,000" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
@@ -35,13 +35,13 @@
             <Border Background="#2ecc71" Width="200" Height="100" CornerRadius="10" Margin="10"
             Padding="10">
                 <StackPanel>
-                    <TextBlock Text="Caught Criminals" Foreground="White" FontSize="14"/>
+                    <TextBlock Text="Booked Rooms" Foreground="White" FontSize="14"/>
                     <TextBlock Text="480" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
         </StackPanel>
 
-        <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="20">
+        <Border Grid.Row="1" Background="#FAFAFA" CornerRadius="10" Padding="20">
             <TextBlock Text="Detailed Reports Graphs will appear here..." FontSize="16"/>
         </Border>
     </Grid>

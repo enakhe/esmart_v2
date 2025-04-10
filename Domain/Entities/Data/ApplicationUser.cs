@@ -1,6 +1,5 @@
 ﻿using ESMART.Domain.Entities.FrontDesk;
 using Microsoft.AspNetCore.Identity;
-using System.Transactions;
 
 namespace ESMART.Domain.Entities.Data
 {

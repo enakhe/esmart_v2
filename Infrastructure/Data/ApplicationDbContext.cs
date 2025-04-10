@@ -1,22 +1,52 @@
 ﻿using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Transaction;
-using ESMART.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ESMART.Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-
-        }
-
         public DbSet<Guest> Guests { get; set; }
-        public DbSet <Transaction> Transactions { get; set; }
-        public DbSet <TransactionItem> TransactionItems { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<TransactionItem> TransactionItems { get; set; }
         public DbSet<GuestIdentity> GuestIdentities { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            _ = builder.HasDefaultSchema("ESMART");
+            _ = builder.Entity<ApplicationUser>(entity =>
+            {
+                _ = entity.ToTable(name: "User");
+            });
+            _ = builder.Entity<ApplicationRole>(entity =>
+            {
+                _ = entity.ToTable(name: "Role");
+            });
+            _ = builder.Entity<ApplicationUserRole>(entity =>
+            {
+                _ = entity.ToTable(name: "UserRoles");
+            });
+            _ = builder.Entity<IdentityUserClaim<string>>(entity =>
+            {
+                _ = entity.ToTable("UserClaims");
+            });
+            _ = builder.Entity<IdentityUserLogin<string>>(entity =>
+            {
+                _ = entity.ToTable("UserLogins");
+            });
+            _ = builder.Entity<IdentityRoleClaim<string>>(entity =>
+            {
+                _ = entity.ToTable("RoleClaims");
+            });
+            _ = builder.Entity<IdentityUserToken<string>>(entity =>
+            {
+                _ = entity.ToTable("UserTokens");
+            });
+        }
     }
 }

@@ -12,18 +12,108 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250216172347_StatusForGuest")]
-    partial class StatusForGuest
+    [Migration("20250410141943_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("Identity")
                 .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationCategory", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationCategory", "Identity");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("Icon")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ManagerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("NoOfUser")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Tag")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ManagerId");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("Role", "Identity");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationRoleCategory", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationRoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CategoryId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationRoleId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("ApplicationRoleCategory", "Identity");
+                });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationUser", b =>
                 {
@@ -96,7 +186,47 @@ namespace ESMART.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("User", "Identity");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationUserRole", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationRoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DateAssigned")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("ApplicationRoleId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRoles", "Identity");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Guest", b =>
@@ -137,18 +267,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<byte[]>("GuestImage")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("IdNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IdType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("IdentificationDocumentBack")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("IdentificationDocumentFront")
-                        .HasColumnType("varbinary(max)");
-
                     b.Property<bool>("IsTrashed")
                         .HasColumnType("bit");
 
@@ -170,14 +288,43 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Street")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title")
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Guests");
+                    b.ToTable("Guests", "Identity");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.GuestIdentity", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("GuestId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("IdNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("IdentificationDocumentBack")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("IdentificationDocumentFront")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuestId")
+                        .IsUnique()
+                        .HasFilter("[GuestId] IS NOT NULL");
+
+                    b.ToTable("GuestIdentities", "Identity");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Transaction.Transaction", b =>
@@ -245,7 +392,7 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.HasIndex("GuestId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", "Identity");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Transaction.TransactionItem", b =>
@@ -269,34 +416,7 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.HasIndex("TransactionId");
 
-                    b.ToTable("TransactionItems");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("TransactionItems", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -321,7 +441,7 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -346,7 +466,7 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("UserClaims", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -368,22 +488,7 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("UserLogins", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -402,7 +507,58 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("UserTokens", "Identity");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationRole", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId");
+
+                    b.Navigation("Manager");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationRoleCategory", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationRole", "ApplicationRole")
+                        .WithMany("JoinEntitiesCategory")
+                        .HasForeignKey("ApplicationRoleId");
+
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationCategory", "Category")
+                        .WithMany("JoinEntities")
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("ApplicationRole");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationUserRole", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationRole", "ApplicationRole")
+                        .WithMany("JoinEntities")
+                        .HasForeignKey("ApplicationRoleId");
+
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationRole");
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Guest", b =>
@@ -412,6 +568,15 @@ namespace ESMART.Infrastructure.Migrations
                         .HasForeignKey("ApplicationUserId");
 
                     b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.GuestIdentity", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Guest", "Guest")
+                        .WithOne("GuestIdentity")
+                        .HasForeignKey("ESMART.Domain.Entities.FrontDesk.GuestIdentity", "GuestId");
+
+                    b.Navigation("Guest");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Transaction.Transaction", b =>
@@ -440,7 +605,7 @@ namespace ESMART.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -465,21 +630,6 @@ namespace ESMART.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", null)
@@ -487,6 +637,18 @@ namespace ESMART.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationCategory", b =>
+                {
+                    b.Navigation("JoinEntities");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationRole", b =>
+                {
+                    b.Navigation("JoinEntities");
+
+                    b.Navigation("JoinEntitiesCategory");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationUser", b =>
@@ -498,6 +660,9 @@ namespace ESMART.Infrastructure.Migrations
 
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Guest", b =>
                 {
+                    b.Navigation("GuestIdentity")
+                        .IsRequired();
+
                     b.Navigation("Transactions");
                 });
 

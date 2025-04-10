@@ -1,12 +1,11 @@
 ﻿using ESMART.Infrastructure.Data;
 using ESMART.Infrastructure.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
+using System;
 using System.IO;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Windows;
 
 namespace ESMART.Presentation
 {
@@ -34,6 +33,12 @@ namespace ESMART.Presentation
             var services = new ServiceCollection();
             DependencyInjection.ConfigureServices(services);
             var serviceProvider = services.BuildServiceProvider();
+
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                dbContext.Database.Migrate();
+            }
 
             var identityService = serviceProvider.GetRequiredService<IdentityService>();
             await identityService.TrySeedAsync();

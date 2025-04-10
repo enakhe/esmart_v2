@@ -6,12 +6,14 @@
         xmlns:local="clr-namespace:ESMART.Presentation.Forms"
         mc:Ignorable="d"
         Title="ESMART HOTEL MANAGEMENT SOFTWARE" Height="800" Width="1300"
-        WindowStartupLocation="CenterScreen" Background="#F5F5F5" Icon="/Forms/logo.png">
+        WindowStartupLocation="CenterScreen" Background="#F0F4F9" Icon="/Forms/logo.png">
     <Grid>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
@@ -27,10 +29,27 @@
                     HorizontalAlignment="Left" Padding="10" Width="180" Margin="10,5" FontSize="18" HorizontalContentAlignment="Left" Click="GuestButton_Click" />
         </StackPanel>
 
-        <!-- Header -->
+        <!-- Header with Menu -->
         <Grid Grid.Row="0" Grid.Column="1" Background="White">
-            <TextBlock Text="Welcome to Dashboard" FontSize="20" FontWeight="Bold"
-                       VerticalAlignment="Center" Margin="20"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Menu Bar -->
+            <Menu Grid.Row="0" Background="White" FontSize="14">
+                <MenuItem Header="File">
+                    <MenuItem Header="New"/>
+                    <MenuItem Header="Open"/>
+                    <Separator/>
+                    <MenuItem Header="Exit"/>
+                </MenuItem>
+                <MenuItem Header="Settings">
+                    <MenuItem Header="Preferences"/>
+                </MenuItem>
+                <MenuItem Header="Help">
+                    <MenuItem Header="About"/>
+                </MenuItem>
+            </Menu>
         </Grid>
 
         <!-- Main Content -->

@@ -1,9 +1,4 @@
 ﻿using ESMART.Domain.Entities.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESMART.Domain.Entities.FrontDesk
 {
@@ -34,9 +29,9 @@ namespace ESMART.Domain.Entities.FrontDesk
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
 
-        public DateTime DateCreated { get; set; }
-        public DateTime DateModified { get; set; }
-        public bool IsTrashed { get; set; }
+        public DateTime DateCreated { get; set; } = DateTime.Now;
+        public DateTime DateModified { get; set; } = DateTime.Now;
+        public bool IsTrashed { get; set; } = false;
 
         public virtual ApplicationUser? ApplicationUser { get; set; }
         public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }

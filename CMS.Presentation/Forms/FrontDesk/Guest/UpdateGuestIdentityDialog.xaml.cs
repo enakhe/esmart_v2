@@ -1,22 +1,11 @@
 ﻿using ESMART.Application.Common.Utils;
 using ESMART.Application.Interface;
-using ESMART.Domain.Entities.FrontDesk;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using Microsoft.Win32;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
+using System.IO;
+using System.Text;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Guest
 {
@@ -179,7 +168,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         var updateResult = await _guestRepository.UpdateGuestIdentityAsync(guestIdentity);
                         if (updateResult.Succeeded)
                         {
-                            MessageBox.Show("Guest updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            MessageBox.Show("Guest identity information updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                             this.DialogResult = true;
                         }
                         else

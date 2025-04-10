@@ -1,23 +1,9 @@
-﻿using ESMART.Application.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using ESMART.Application.Common.Utils;
+using ESMART.Application.Interface;
 using Microsoft.Win32;
-using System.Windows.Input;
 using System.IO;
-using System.Windows.Media;
+using System.Windows;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using ESMART.Application.Common.Utils;
-using static System.Windows.Forms.AxHost;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
-using System.Diagnostics.Metrics;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Guest
 {

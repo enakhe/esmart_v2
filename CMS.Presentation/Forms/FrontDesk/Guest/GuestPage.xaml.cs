@@ -1,22 +1,8 @@
-﻿using ESMART.Application.Common.Interface;
-using ESMART.Application.Interface;
+﻿using ESMART.Application.Interface;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using ESMART.Domain.Entities.FrontDesk;
+using System.Windows.Controls;
 
 
 namespace ESMART.Presentation.Forms.FrontDesk.Guest
@@ -37,6 +23,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             {
                 var guests = await _guestRepository.GetAllGuestsAsync();
                 GuestDataGrid.ItemsSource = guests;
+                txtGuestCount.Text = guests.Count.ToString();
             }
             catch (Exception ex)
             {
@@ -84,6 +71,41 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 {
                     MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+            }
+        }
+
+        private void ViewGuest_Click(Object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedGuest = (Domain.ViewModels.FrontDesk.GuestViewModel)GuestDataGrid.SelectedItem;
+                if (selectedGuest.Id != null)
+                {
+                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository);
+                    viewGuestDialog.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before viewing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private void txtSearch_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (txtSearch.Text == "Search")
+            {
+                txtSearch.Text = "";
+                txtSearch.Foreground = Brushes.Black;
+            }
+        }
+
+        private void txtSearch_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                txtSearch.Text = "Search";
+                txtSearch.Foreground = Brushes.Gray;
             }
         }
     }

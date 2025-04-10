@@ -3,7 +3,6 @@ using ESMART.Domain;
 using ESMART.Domain.Entities.Data;
 using ESMART.Infrastructure;
 using ESMART.Infrastructure.Data;
-using ESMART.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -25,10 +24,10 @@ namespace ESMART.Presentation
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer("Server=ENAKHE;Database=ESMART;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"));
 
-            services.AddIdentityCore<ApplicationUser>()
-            .AddRoles<IdentityRole>()
-            .AddSignInManager<SignInManager<ApplicationUser>>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
 
             services.AddTransient<IUserEmailStore<ApplicationUser>, UserStore<ApplicationUser, IdentityRole, ApplicationDbContext>>();
             services.AddTransient<IUserStore<ApplicationUser>, UserStore<ApplicationUser, IdentityRole, ApplicationDbContext>>();

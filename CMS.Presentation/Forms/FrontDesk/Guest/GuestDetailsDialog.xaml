@@ -1,0 +1,288 @@
+﻿<Window x:Class="ESMART.Presentation.Forms.FrontDesk.Guest.GuestDetailsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ESMART.Presentation.Forms.FrontDesk.Guest"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Background="#f0f4f9"
+        ResizeMode="NoResize"
+        Title="Guest Details" Height="650" Width="1200" Icon="/Forms/FrontDesk/Guest/logo.png" Activated="Window_Activated">
+
+    <Window.Resources>
+        <local:StatusToColorConverter x:Key="StatusToColorConverter" />
+        <Style x:Key="ActionBarButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Background" Value="#4ead16"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#4ead16"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="3"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#4ead16"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#4ead16"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Margin="0,0,0,10">
+                    <Border Background="White" Width="350" Height="580" CornerRadius="10" Margin="10" Padding="10">
+                        <StackPanel>
+                            <StackPanel>
+                                <StackPanel>
+                                    <Border CornerRadius="5" Padding="10,3" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}" Height="23" Width="65">
+                                        <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Left"/>
+                                    </Border>
+                                </StackPanel>
+                                <StackPanel>
+                                    <Ellipse Width="100" Height="100">
+                                        <Ellipse.Fill>
+                                            <ImageBrush ImageSource="{Binding GuestImage}" Stretch="UniformToFill"/>
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding FullName}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,5,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Separator Margin="0,10" Foreground="#e0e0e0" Background="#e0e0e0" />
+
+                            <StackPanel>
+                                <Grid Margin="0, 0, 0, 20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Email:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Email}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0, 0, 0, 20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Phone Number:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding PhoneNumber}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0, 0, 0, 20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Gender:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Gender}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0, 0, 0, 20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Street:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Street}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0, 0, 0, 20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="City:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding City}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0, 0, 0, 20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Country:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Country}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0, 0, 0, 20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Created By:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding CreatedBy}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0, 0, 0, 20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Date Created:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding DateCreated}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0, 0, 0, 20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Date Modified:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding DateModified}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Button Content="Delete" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Margin="0,0,0,10">
+                    <Border Background="White" Width="740" Height="580" CornerRadius="10" Margin="10" Padding="10">
+                        <TabControl Margin="10" BorderThickness="1">
+                            <TabControl.Resources>
+                                <Style TargetType="TabItem">
+                                    <Setter Property="Background" Value="#4ead16"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="#1a237e"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TabControl.Resources>
+                            <TabItem Header="User Activities" Width="240" Height="30">
+                                <StackPanel Margin="10">
+                                    <TextBlock Text="Name:" />
+                                    <TextBox Width="200" />
+                                    <TextBlock Text="Email:" Margin="0,10,0,0"/>
+                                    <TextBox Width="200" />
+                                </StackPanel>
+                            </TabItem>
+
+                            <TabItem Header="Transaction History" Width="240" Background="#4ead16" Height="30" Foreground="White">
+                                <StackPanel Margin="10">
+                                    <TextBlock Text="Street:" />
+                                    <TextBox Width="200" />
+                                    <TextBlock Text="City:" Margin="0,10,0,0"/>
+                                    <TextBox Width="200" />
+                                </StackPanel>
+                            </TabItem>
+
+                            <TabItem Header="Account Statement" Width="216" Background="#4ead16" Height="30" Foreground="White">
+                                <TextBlock Text="Additional details go here..." Margin="10"/>
+                            </TabItem>
+                        </TabControl>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+        
+
+        <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
+                <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

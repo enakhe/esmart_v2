@@ -1,11 +1,6 @@
 ﻿using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.ViewModels.FrontDesk;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESMART.Application.Interface
 {
