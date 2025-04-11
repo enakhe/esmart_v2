@@ -25,7 +25,7 @@
 
                 <StackPanel Grid.Row="1" Margin="0,0,0,20">
                     <TextBlock Text="Building Number:" FontWeight="Bold" />
-                    <TextBox x:Name="txtBuildingNumber" Padding="2,5,0,5" />
+                    <TextBox x:Name="txtBuildingNumber" PreviewTextInput="NumberOnly_PreviewTextInput" Padding="2,5,0,5" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Margin="0,0,0,20">
@@ -54,7 +54,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <Button Content="Save" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand">
+                            <Button Content="Save" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="AddBuilding_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">
@@ -74,5 +74,11 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
+        <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
+                <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

@@ -1,4 +1,4 @@
-﻿<Page x:Class="ESMART.Presentation.Forms.RoomSetting.RoomSettingPage"
+﻿<Page x:Name="RoomSettingPage1" x:Class="ESMART.Presentation.Forms.RoomSetting.RoomSettingPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -85,7 +85,7 @@
     Padding="10">
                 <StackPanel>
                     <TextBlock Text="Building" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="1500" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="0" Name="txtBuildingCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
 
@@ -154,13 +154,13 @@ Padding="10">
                      Foreground="Gray"
                      Text="Search"/>
                                         </StackPanel>
-                                        <DataGrid x:Name="BuildingDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center">
+                                        <DataGrid x:Name="BuildingDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" Loaded="BuildingDataGrid_Loaded">
                                             <DataGrid.Columns>
                                                 <DataGridTemplateColumn Header="Name" Width="200">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                                <TextBlock Text="{Binding FullName}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
@@ -261,5 +261,11 @@ Padding="10">
                 </TabControl>
             </Border>
         </StackPanel>
+        <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
+                <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

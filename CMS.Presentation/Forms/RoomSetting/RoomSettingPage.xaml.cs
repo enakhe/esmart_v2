@@ -1,4 +1,6 @@
-﻿using ESMART.Presentation.Forms.FrontDesk.Guest;
+﻿using ESMART.Application.Interface;
+using ESMART.Infrastructure.Repositories.FrontDesk;
+using ESMART.Presentation.Forms.FrontDesk.Guest;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -22,12 +24,33 @@ namespace ESMART.Presentation.Forms.RoomSetting
     /// </summary>
     public partial class RoomSettingPage : Page
     {
-        public RoomSettingPage()
+        private readonly IRoomRepository _roomRepository;
+        public RoomSettingPage(IRoomRepository roomRepository)
         {
+            _roomRepository = roomRepository;
             InitializeComponent();
         }
 
-        private void AddBuildingButton_Click(object sender, RoutedEventArgs e)
+        public async Task LoadBuilding()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var buildings = await _roomRepository.GetAllBuildings();
+                BuildingDataGrid.ItemsSource = buildings;
+                txtBuildingCount.Text = buildings.Count.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void AddBuildingButton_Click(object sender, RoutedEventArgs e)
         {
             var services = new ServiceCollection();
             DependencyInjection.ConfigureServices(services);
@@ -36,8 +59,13 @@ namespace ESMART.Presentation.Forms.RoomSetting
             AddBuildingDialog addBuilding = serviceProvider.GetRequiredService<AddBuildingDialog>();
             if (addBuilding.ShowDialog() == true)
             {
-
+               await LoadBuilding();
             }
+        }
+
+        private async void BuildingDataGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+            await LoadBuilding();
         }
     }
 }
