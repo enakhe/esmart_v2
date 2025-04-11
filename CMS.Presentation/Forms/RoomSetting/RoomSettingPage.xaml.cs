@@ -1,10 +1,14 @@
-﻿using ESMART.Application.Interface;
+﻿using ESMART.Application.Common.Models;
+using ESMART.Application.Interface;
 using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
+using ESMART.Presentation.Forms.RoomSetting.Building;
+using ESMART.Presentation.Forms.RoomSetting.Floor;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -38,7 +42,6 @@ namespace ESMART.Presentation.Forms.RoomSetting
             {
                 var buildings = await _roomRepository.GetAllBuildings();
                 BuildingDataGrid.ItemsSource = buildings;
-                txtBuildingCount.Text = buildings.Count.ToString();
             }
             catch (Exception ex)
             {
@@ -63,9 +66,138 @@ namespace ESMART.Presentation.Forms.RoomSetting
             }
         }
 
-        private async void BuildingDataGrid_Loaded(object sender, RoutedEventArgs e)
+        private async void EditBuildingButton_Click(object sender, RoutedEventArgs e)
         {
-            await LoadBuilding();
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedBuilding = (Domain.Entities.RoomSettings.Building)BuildingDataGrid.SelectedItem;
+
+                if (selectedBuilding.Id != null)
+                {
+                    var result = await _roomRepository.GetBuildingById(selectedBuilding.Id);
+
+                    if (!result.Succeeded)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var item in result.Errors)
+                        {
+                            sb.AppendLine(item);
+                        }
+                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    if (result.Response == null)
+                    {
+                        MessageBox.Show("Building not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    EditBuildingDialog updateBuildingDialog = new EditBuildingDialog(_roomRepository, result.Response);
+                    if (updateBuildingDialog.ShowDialog() == true)
+                    {
+                        _ = LoadBuilding();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private async void DeleteBuilding_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedBuilding = (Domain.Entities.RoomSettings.Building)BuildingDataGrid.SelectedItem;
+
+                    if (selectedBuilding.Id != null)
+                    {
+                        MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to delete this building?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (messageResult == MessageBoxResult.Yes)
+                        {
+                            LoaderOverlay.Visibility = Visibility.Visible;
+                            var result = await _roomRepository.DeleteBuilding(selectedBuilding.Id);
+
+                            if (!result.Succeeded)
+                            {
+                                var sb = new StringBuilder();
+                                foreach (var item in result.Errors)
+                                {
+                                    sb.AppendLine(item);
+                                }
+                                MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
+
+                            await LoadBuilding();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a guest before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        // Floor codes
+        public async Task LoadFloor()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var floors = await _roomRepository.GetAllFloors();
+                FloorDataGrid.ItemsSource = floors;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void AddFloorButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+            AddFloorDialog addFloor = serviceProvider.GetRequiredService<AddFloorDialog>();
+            if (addFloor.ShowDialog() == true)
+            {
+                await LoadFloor();
+            }
+        }
+
+        private async void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.Source is TabControl tabControl)
+            {
+                var selectedTab = tabControl.SelectedItem as TabItem;
+
+                if (selectedTab == tbBuilding)
+                {
+                    await LoadBuilding();
+                }
+                else if (selectedTab == tbFloor)
+                {
+                    await LoadFloor();
+                }
+            }
         }
     }
 }

@@ -87,7 +87,7 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="10,0,0,10">
-                        <Border Background="#1a237e" Width="200" Height="100" CornerRadius="5" Margin="10" Padding="10">
+                        <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                             <StackPanel>
                                 <TextBlock Text="Guests" Foreground="White" FontSize="14"/>
                                 <TextBlock Name="txtGuestCount" Text="0" Foreground="White" FontSize="24" FontWeight="Bold"/>

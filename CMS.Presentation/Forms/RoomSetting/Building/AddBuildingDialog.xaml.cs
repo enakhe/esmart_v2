@@ -50,7 +50,7 @@ namespace ESMART.Presentation.Forms.RoomSetting
                 var buildingName = txtBuildingName.Text;
                 var buildingNo = txtBuildingNumber.Text;
 
-                var building = new Building
+                var building = new Domain.Entities.RoomSettings.Building
                 {
                     Name = buildingName,
                     Number = buildingNo

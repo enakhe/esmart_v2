@@ -28,7 +28,7 @@
             </StackPanel>
 
             <StackPanel Margin="0,0,0,20">
-                <CheckBox Content="Show password" x:Name="chkPassword" HorizontalAlignment="Right" Checked="chkPassword_Checked" Unchecked="chkPassword_Unchecked" />
+                <CheckBox Content="Show password" x:Name="chkPassword" HorizontalAlignment="Right" />
             </StackPanel>
 
             <Button Content="Login" Width="100" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="Button_Click">

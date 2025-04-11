@@ -74,192 +74,282 @@
         </Style>
     </Page.Resources>
 
-    <Grid Grid.Row="1" Grid.Column="1" Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="0,0,0,10">
-            <Border Background="#3498db" Width="200" Height="100" CornerRadius="10" Margin="10"
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="0,0,0,10">
+                    <Border Background="#3498db" Width="200" Height="100" CornerRadius="10" Margin="10"
     Padding="10">
-                <StackPanel>
-                    <TextBlock Text="Building" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="0" Name="txtBuildingCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+                        <StackPanel>
+                            <TextBlock Text="Building" Foreground="White" FontSize="14"/>
+                            <TextBlock Text="0" Name="txtBuildingCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-            <Border Background="#e74c3c" Width="200" Height="100" CornerRadius="10" Margin="10"
+                    <Border Background="#e74c3c" Width="200" Height="100" CornerRadius="10" Margin="10"
     Padding="10">
-                <StackPanel>
-                    <TextBlock Text="Floors" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="250,000" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+                        <StackPanel>
+                            <TextBlock Text="Floors" Foreground="White" FontSize="14"/>
+                            <TextBlock Text="250,000" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-            <Border Background="#2ecc71" Width="200" Height="100" CornerRadius="10" Margin="10"
+                    <Border Background="#4ead16" Width="200" Height="100" CornerRadius="10" Margin="10"
     Padding="10">
-                <StackPanel>
-                    <TextBlock Text="Areas" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="480" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+                        <StackPanel>
+                            <TextBlock Text="Areas" Foreground="White" FontSize="14"/>
+                            <TextBlock Text="480" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-            <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10"
+                    <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10"
 Padding="10">
-                <StackPanel>
-                    <TextBlock Text="Rooms" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="480" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        <StackPanel>
+                            <TextBlock Text="Rooms" Foreground="White" FontSize="14"/>
+                            <TextBlock Text="480" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
-            </Border>
-        </StackPanel>
 
-        <StackPanel Background="#fafafa" Grid.Row="1">
-            <Border Background="White" CornerRadius="10" Padding="20">
-                <TabControl BorderThickness="1">
-                    <TabControl.Resources>
-                        <Style TargetType="TabItem">
-                            <Setter Property="Background" Value="#4ead16"/>
-                            <Setter Property="Foreground" Value="White"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="Blue"/>
-                                    <Setter Property="Foreground" Value="Black"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
+                <StackPanel Background="#fafafa" Grid.Row="1">
+                    <Border Background="White" CornerRadius="10" Padding="20">
+                        <TabControl BorderThickness="1" SelectionChanged="TabControl_SelectionChanged">
+                            <TabControl.Resources>
+                                <Style TargetType="TabItem">
+                                    <Setter Property="Background" Value="#4ead16"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="Blue"/>
+                                            <Setter Property="Foreground" Value="Black"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
 
-                    </TabControl.Resources>
-                    
-                    <TabItem Header="Building" Width="170" Height="30">
-                        <StackPanel Margin="10">
-                            <Grid Grid.Row="1" Grid.Column="1" Margin="20">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                            </TabControl.Resources>
 
-                                <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right">
-                                    <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddBuildingButton_Click" />
-                                </StackPanel>
+                            <TabItem Header="Building" Name="tbBuilding" Width="170" Height="30">
+                                <StackPanel Margin="10">
+                                    <Grid Grid.Row="1" Grid.Column="1" Margin="20">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
 
-                                <Border Background="White" CornerRadius="10" Grid.Row="1">
-                                    <StackPanel>
-                                        <StackPanel Margin="20, 10, 0, 0">
-                                            <TextBox Name="txtSearch"
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right">
+                                            <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddBuildingButton_Click" />
+                                        </StackPanel>
+
+                                        <Border Background="White" CornerRadius="10" Grid.Row="1">
+                                            <StackPanel>
+                                                <StackPanel Margin="20, 10, 0, 0">
+                                                    <TextBox Name="txtSearch"
                      HorizontalAlignment="Left"
                      Width="200"
                      Padding="2,2,0,2"
                      FontSize="18"
                      Foreground="Gray"
                      Text="Search"/>
-                                        </StackPanel>
-                                        <DataGrid x:Name="BuildingDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" Loaded="BuildingDataGrid_Loaded">
-                                            <DataGrid.Columns>
-                                                <DataGridTemplateColumn Header="Name" Width="200">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
+                                                </StackPanel>
+                                                <DataGrid x:Name="BuildingDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTemplateColumn Header="Name" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
 
-                                                <DataGridTemplateColumn Header="Number" Width="200">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                                <TextBlock Text="{Binding Number}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn Header="Number" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding Number}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
 
-                                                <DataGridTemplateColumn Header="Date Created" Width="200">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                                <TextBlock Text="{Binding DateCreated}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn Header="Date Created" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding DateCreated}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
 
-                                                <DataGridTemplateColumn Header="Date Modified" Width="200">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                                <TextBlock Text="{Binding DateModified}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn Header="Date Modified" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding DateModified}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
 
-                                                <DataGridTemplateColumn Header="Operation" Width="200">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <Button
+                                                        <DataGridTemplateColumn Header="Operation" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <Button
                                 Width="30"
                                 Height="30"
-                                ToolTip="Edit Guest"
+                                ToolTip="Edit Building"
                                 Background="#E0E7FF"
                                 Cursor="Hand"
-                                Tag="{Binding Id}">
-                                                                    <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                                </Button>
+                                Tag="{Binding Id}"
+                                Click="EditBuildingButton_Click">
+                                                                            <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                        </Button>
 
-                                                                <Button 
+                                                                        <Button 
                                 Width="30" 
                                 Height="30" 
-                                ToolTip="View Guest" 
-                                Background="#E0E7FF" 
-                                Cursor="Hand"
-                                Tag="{Binding Id}">
-                                                                    <TextBlock Text="👁" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                                </Button>
-
-                                                                <Button 
-                                Width="30" 
-                                Height="30" 
-                                ToolTip="Delete Guest" 
+                                ToolTip="Delete Building" 
                                 Background="Red" 
                                 Foreground="White"
                                 Cursor="Hand"
-                                Tag="{Binding Id}">
-                                                                    <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                                </Button>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
-                        </StackPanel>
-                    </TabItem>
+                                Tag="{Binding Id}"
+                                Click="DeleteBuilding_Click">
+                                                                            <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                        </Button>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </TabItem>
 
-                    <TabItem Header="Floor" Width="170" Height="30">
-                        <StackPanel Margin="10">
-                            <TextBlock Text="Street:" />
-                            <TextBox Width="200" />
-                            <TextBlock Text="City:" Margin="0,10,0,0"/>
-                            <TextBox Width="200" />
-                        </StackPanel>
-                    </TabItem>
+                            <TabItem Header="Floor" Name="tbFloor" Width="170" Height="30">
+                                <StackPanel Margin="10">
+                                    <Grid Grid.Row="1" Grid.Column="1" Margin="20">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
 
-                    <TabItem Header="Area" Width="176" Height="30">
-                        <TextBlock Text="Additional details go here..." Margin="10"/>
-                    </TabItem>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right">
+                                            <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddFloorButton_Click" />
+                                        </StackPanel>
 
-                    <TabItem Header="Room" Width="180" Height="30">
-                        <TextBlock Text="Additional details go here..." Margin="10"/>
-                    </TabItem>
-                </TabControl>
-            </Border>
+                                        <Border Background="White" CornerRadius="10" Grid.Row="1">
+                                            <StackPanel>
+                                                <StackPanel Margin="20, 10, 0, 0">
+                                                    <TextBox Name="txtSearchFloor"
+HorizontalAlignment="Left"
+Width="200"
+Padding="2,2,0,2"
+FontSize="18"
+Foreground="Gray"
+Text="Search"/>
+                                                </StackPanel>
+                                                <DataGrid x:Name="FloorDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTemplateColumn Header="Name" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+
+                                                        <DataGridTemplateColumn Header="Number" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding Number}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+
+                                                        <DataGridTemplateColumn Header="Date Created" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding DateCreated}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+
+                                                        <DataGridTemplateColumn Header="Date Modified" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding DateModified}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+
+                                                        <DataGridTemplateColumn Header="Operation" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <Button
+           Width="30"
+           Height="30"
+           ToolTip="Edit Building"
+           Background="#E0E7FF"
+           Cursor="Hand"
+           Tag="{Binding Id}"
+           Click="EditBuildingButton_Click">
+                                                                            <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                        </Button>
+
+                                                                        <Button 
+           Width="30" 
+           Height="30" 
+           ToolTip="Delete Building" 
+           Background="Red" 
+           Foreground="White"
+           Cursor="Hand"
+           Tag="{Binding Id}"
+           Click="DeleteBuilding_Click">
+                                                                            <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                        </Button>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </TabItem>
+
+                            <TabItem Header="Area" Width="176" Height="30">
+                                <TextBlock Text="Additional details go here..." Margin="10"/>
+                            </TabItem>
+
+                            <TabItem Header="Room" Width="180" Height="30">
+                                <TextBlock Text="Additional details go here..." Margin="10"/>
+                            </TabItem>
+                        </TabControl>
+                    </Border>
+                </StackPanel>
+            </Grid>
         </StackPanel>
         <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
