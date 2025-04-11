@@ -389,13 +389,14 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             try
             {
                 var floor = await _db.Floors.FirstOrDefaultAsync(r => r.Id == Id);
-                if (floor != null)
-                {
-                    floor.IsTrashed = true;
-                    await UpdateFloor(floor);
-                }
 
-                return FloorResult.Failure(["Unable to delete a floor with the provided ID"]);
+                if (floor == null)
+                    return FloorResult.Failure(["Unable to delete a building with the provided ID"]);
+
+                floor.IsTrashed = true;
+                var result = await UpdateFloor(floor);
+
+                return FloorResult.Success(result.Response);
             }
             catch (Exception ex)
             {

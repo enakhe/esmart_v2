@@ -312,7 +312,7 @@ Text="Search"/>
            Background="#E0E7FF"
            Cursor="Hand"
            Tag="{Binding Id}"
-           Click="EditBuildingButton_Click">
+           Click="EditFloorButton_Click">
                                                                             <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                         </Button>
 
@@ -324,7 +324,7 @@ Text="Search"/>
            Foreground="White"
            Cursor="Hand"
            Tag="{Binding Id}"
-           Click="DeleteBuilding_Click">
+           Click="DeleteFloor_Click">
                                                                             <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                         </Button>
                                                                     </StackPanel>
@@ -340,6 +340,10 @@ Text="Search"/>
                             </TabItem>
 
                             <TabItem Header="Area" Width="176" Height="30">
+                                <TextBlock Text="Additional details go here..." Margin="10"/>
+                            </TabItem>
+
+                            <TabItem Header="Room Type" Width="176" Height="30">
                                 <TextBlock Text="Additional details go here..." Margin="10"/>
                             </TabItem>
 

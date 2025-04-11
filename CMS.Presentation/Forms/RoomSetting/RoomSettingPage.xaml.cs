@@ -183,6 +183,85 @@ namespace ESMART.Presentation.Forms.RoomSetting
             }
         }
 
+        private async void EditFloorButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedFloor = (Domain.Entities.RoomSettings.Floor)FloorDataGrid.SelectedItem;
+                if (selectedFloor.Id != null)
+                {
+                    var result = await _roomRepository.GetFloorById(selectedFloor.Id);
+                    if (!result.Succeeded)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var item in result.Errors)
+                        {
+                            sb.AppendLine(item);
+                        }
+                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    if (result.Response == null)
+                    {
+                        MessageBox.Show("Floor not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    UpdateFloorDialog updateFloorDialog = new UpdateFloorDialog(_roomRepository, result.Response);
+                    if (updateFloorDialog.ShowDialog() == true)
+                    {
+                        _ = LoadFloor();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private async void DeleteFloor_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedFloor = (Domain.Entities.RoomSettings.Floor)FloorDataGrid.SelectedItem;
+                    if (selectedFloor.Id != null)
+                    {
+                        MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to delete this floor?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (messageResult == MessageBoxResult.Yes)
+                        {
+                            LoaderOverlay.Visibility = Visibility.Visible;
+                            var result = await _roomRepository.DeleteFloor(selectedFloor.Id);
+                            if (!result.Succeeded)
+                            {
+                                var sb = new StringBuilder();
+                                foreach (var item in result.Errors)
+                                {
+                                    sb.AppendLine(item);
+                                }
+                                MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
+                            await LoadFloor();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a guest before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.Source is TabControl tabControl)

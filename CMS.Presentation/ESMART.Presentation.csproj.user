@@ -43,6 +43,9 @@
     <Compile Update="Forms\RoomSetting\Floor\AddFloorDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\RoomSetting\Floor\UpdateFloorDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\RoomSetting\RoomSettingPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
