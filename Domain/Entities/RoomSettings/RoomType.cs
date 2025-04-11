@@ -12,6 +12,7 @@ namespace ESMART.Domain.Entities.RoomSettings
         {
             this.Rooms = new HashSet<Room>();
         }
+
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? Name { get; set; }
         public decimal? Rate { get; set; }

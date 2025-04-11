@@ -99,6 +99,7 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                     await UpdateRoomType(roomType);
                     return RoomTypeResult.Success(roomType);
                 }
+
                 return RoomTypeResult.Failure(["Unable to delete a room type with the provided ID"]);
             }
             catch (Exception ex)

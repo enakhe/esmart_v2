@@ -5,6 +5,7 @@ using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.RoomSetting.Area;
 using ESMART.Presentation.Forms.RoomSetting.Building;
 using ESMART.Presentation.Forms.RoomSetting.Floor;
+using ESMART.Presentation.Forms.RoomSetting.RoomType;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -376,6 +377,120 @@ namespace ESMART.Presentation.Forms.RoomSetting
             }
         }
 
+
+        // Roomtype codes
+        public async Task LoadRoomType()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var roomTypes = await _roomRepository.GetAllRoomTypes();
+                RoomTypeDataGrid.ItemsSource = roomTypes;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void AddRoomTypeButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+            AddRoomTypeDialog addRoomType = serviceProvider.GetRequiredService<AddRoomTypeDialog>();
+
+            if (addRoomType.ShowDialog() == true)
+            {
+                await LoadRoomType();
+            }
+        }
+
+        private async void EditRoomTypeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedRoomType = (Domain.Entities.RoomSettings.RoomType)RoomTypeDataGrid.SelectedItem;
+                if (selectedRoomType.Id != null)
+                {
+                    var result = await _roomRepository.GetRoomTypeById(selectedRoomType.Id);
+                    if (!result.Succeeded)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var item in result.Errors)
+                        {
+                            sb.AppendLine(item);
+                        }
+                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    if (result.Response == null)
+                    {
+                        MessageBox.Show("Room type not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    UpdateRoomTypeDialog updateRoomTypeDialog = new(_roomRepository, result.Response);
+                    if (updateRoomTypeDialog.ShowDialog() == true)
+                    {
+                        await LoadRoomType();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private async void DeleteRoomType_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedRoomType = (Domain.Entities.RoomSettings.RoomType)RoomTypeDataGrid.SelectedItem;
+                    if (selectedRoomType.Id != null)
+                    {
+                        MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to delete this room type?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (messageResult == MessageBoxResult.Yes)
+                        {
+                            LoaderOverlay.Visibility = Visibility.Visible;
+                            var result = await _roomRepository.DeleteRoomType(selectedRoomType.Id);
+                            if (!result.Succeeded)
+                            {
+                                var sb = new StringBuilder();
+                                foreach (var item in result.Errors)
+                                {
+                                    sb.AppendLine(item);
+                                }
+                                MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
+                            await LoadRoomType();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a guest before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.Source is TabControl tabControl)
@@ -393,6 +508,10 @@ namespace ESMART.Presentation.Forms.RoomSetting
                 else if (selectedTab == tbArea)
                 {
                     await LoadArea();
+                }
+                else if (selectedTab == tbRoomType)
+                {
+                    await LoadRoomType();
                 }
             }
         }

@@ -75,6 +75,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Area
 
                 _area.Name = areaName;
                 _area.Number = areaNo;
+                _area.DateModified = DateTime.Now;
 
                 await _roomRepository.UpdateArea(_area);
                 this.DialogResult = true;

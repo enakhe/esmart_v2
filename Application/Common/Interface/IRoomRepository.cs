@@ -32,6 +32,11 @@ namespace ESMART.Application.Interface
         Task<BuildingResult> UpdateBuilding(Building building);
         Task<BuildingResult> GetBuildingById(string Id);
         Task<BuildingResult> DeleteBuilding(string Id);
+        Task<RoomTypeResult> AddRoomTypeAsync(RoomType roomType);
+        Task<List<RoomType>> GetAllRoomTypes();
+        Task<RoomTypeResult> GetRoomTypeById(string Id);
+        Task<RoomTypeResult> UpdateRoomType(RoomType roomType);
+        Task<RoomTypeResult> DeleteRoomType(string id);
         int GetNoReserved();
         int GetNoBooking();
         int GetNoMaintenance();

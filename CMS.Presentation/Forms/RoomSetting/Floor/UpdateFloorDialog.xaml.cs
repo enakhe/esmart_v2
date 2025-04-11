@@ -123,6 +123,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Floor
                 floor.Name = floorName;
                 floor.Number = floorNo;
                 floor.BuildingId = buildingId.ToString();
+                floor.DateModified = DateTime.Now;
 
                 var updateResult = await _roomRepository.UpdateFloor(floor);
                 if (!updateResult.Succeeded)
