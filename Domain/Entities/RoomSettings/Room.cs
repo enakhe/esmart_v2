@@ -11,7 +11,7 @@ namespace ESMART.Domain.Entities.RoomSettings
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? Number { get; set; }
-        public RoomStatus? Status { get; set; }
+        public RoomStatus Status { get; set; }
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public bool IsTrashed { get; set; } = false;
@@ -23,6 +23,10 @@ namespace ESMART.Domain.Entities.RoomSettings
         public string? AreaId { get; set; }
 
         public virtual ApplicationUser? ApplicationUser { get; set; }
+        public virtual Building? Building { get; set; }
+        public virtual RoomType? RoomType { get; set; }
+        public virtual Area? Area { get; set; }
+        public virtual Floor? Floor { get; set; }
     }
 
     public enum RoomStatus

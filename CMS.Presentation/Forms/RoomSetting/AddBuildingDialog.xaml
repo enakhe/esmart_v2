@@ -7,7 +7,7 @@
         mc:Ignorable="d"
          WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Add Building" Height="300" Width="300" Icon="/Forms/RoomSetting/logo.png">
+        Title="Add Building" Height="300" Width="320" Icon="/Forms/RoomSetting/logo.png">
     <Grid>
         <StackPanel Grid.Column="0" Margin="20">
         <TextBlock Text="Building Information" FontSize="25" FontWeight="Bold" Margin="0,10" />
@@ -24,7 +24,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Margin="0,0,0,20">
-                    <TextBlock Text="Building Name:" FontWeight="Bold" />
+                    <TextBlock Text="Building Number:" FontWeight="Bold" />
                     <TextBox x:Name="txtBuildingNumber" Padding="2,5,0,5" />
                 </StackPanel>
 
