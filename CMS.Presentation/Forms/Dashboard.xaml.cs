@@ -12,7 +12,14 @@ namespace ESMART.Presentation.Forms
         public Dashboard()
         {
             InitializeComponent();
-            MainFrame.Navigate(new IndexPage());
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            IndexPage indexPage = serviceProvider.GetRequiredService<IndexPage>();
+
+            MainFrame.Navigate(indexPage);
         }
 
         public bool IsLoading
@@ -27,7 +34,13 @@ namespace ESMART.Presentation.Forms
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new IndexPage());
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            IndexPage indexPage = serviceProvider.GetRequiredService<IndexPage>();
+
+            MainFrame.Navigate(indexPage);
         }
 
         private void GuestButton_Click(Object sender, RoutedEventArgs e)

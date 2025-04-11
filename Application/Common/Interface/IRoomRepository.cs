@@ -9,6 +9,7 @@ namespace ESMART.Application.Interface
         Task<RoomResult> AddRoom(Room room);
         Task<List<RoomViewModel>> GetAllRooms();
         Task<RoomResult> GetRoomById(string Id);
+        Task<RoomResult> GetRoomByNumber(string number);
         Task<RoomResult> UpdateRoom(Room room);
         Task<RoomResult> DeleteRoom(string Id);
         Task<List<RoomViewModel>> SearchRoom(string keyword);

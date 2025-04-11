@@ -57,8 +57,8 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                                     Rate = r.RoomType.Rate.ToString(),
                                     Status = r.Status,
                                     CreatedBy = r.ApplicationUser.FullName,
-                                    DateCreated = r.DateCreated.ToString(),
-                                    DateModified = r.DateModified.ToString(),
+                                    DateCreated = r.DateCreated,
+                                    DateModified = r.DateModified,
                                 }).ToListAsync();
                 return allRooms;
             }
@@ -82,6 +82,23 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             catch (Exception ex)
             {
                 throw new Exception("An error occurred when retrieving a room with the provided ID. " + ex.Message);
+            }
+        }
+
+        public async Task<RoomResult> GetRoomByNumber(string number)
+        {
+            try
+            {
+                var room = await _db.Rooms.FirstOrDefaultAsync(r => r.Number == number);
+
+                if (room != null)
+                    return RoomResult.Success(room);
+
+                return RoomResult.Failure(["Unable to find a room with the provided number"]);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving a room with the provided number. " + ex.Message);
             }
         }
 
@@ -136,8 +153,8 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                                     Rate = r.RoomType.Rate.ToString(),
                                     Status = r.Status,
                                     CreatedBy = r.ApplicationUser.FullName,
-                                    DateCreated = r.DateCreated.ToString(),
-                                    DateModified = r.DateModified.ToString(),
+                                    DateCreated = r.DateCreated,
+                                    DateModified = r.DateModified,
                                 }).ToListAsync();
                 return allRooms;
             }
@@ -165,8 +182,8 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                                     Rate = r.RoomType.Rate.ToString(),
                                     Status = r.Status,
                                     CreatedBy = r.ApplicationUser.FullName,
-                                    DateCreated = r.DateCreated.ToString(),
-                                    DateModified = r.DateModified.ToString(),
+                                    DateCreated = r.DateCreated,
+                                    DateModified = r.DateModified,
                                 }).ToListAsync();
                 return allRooms;
             }
@@ -194,8 +211,8 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                                     Rate = r.RoomType.Rate.ToString(),
                                     Status = r.Status,
                                     CreatedBy = r.ApplicationUser.FullName,
-                                    DateCreated = r.DateCreated.ToString(),
-                                    DateModified = r.DateModified.ToString(),
+                                    DateCreated = r.DateCreated,
+                                    DateModified = r.DateModified,
                                 }).ToListAsync();
                 return allRooms;
             }
@@ -240,8 +257,8 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                                     Rate = r.RoomType.Rate.ToString(),
                                     Status = r.Status,
                                     CreatedBy = r.ApplicationUser.FullName,
-                                    DateCreated = r.DateCreated.ToString(),
-                                    DateModified = r.DateModified.ToString(),
+                                    DateCreated = r.DateCreated,
+                                    DateModified = r.DateModified,
                                 }).ToListAsync();
                 return allRooms;
             }

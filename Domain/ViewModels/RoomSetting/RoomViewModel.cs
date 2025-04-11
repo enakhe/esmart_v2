@@ -13,7 +13,7 @@ namespace ESMART.Domain.ViewModels.RoomSetting
         public string? Rate { get; set; }
         public RoomStatus Status { get; set; }
         public string? CreatedBy { get; set; }
-        public string? DateCreated { get; set; }
-        public string? DateModified { get; set; }
+        public DateTime? DateCreated { get; set; }
+        public DateTime? DateModified { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.RoomSetting.Area;
 using ESMART.Presentation.Forms.RoomSetting.Building;
 using ESMART.Presentation.Forms.RoomSetting.Floor;
+using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Forms.RoomSetting.RoomType;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -491,6 +492,120 @@ namespace ESMART.Presentation.Forms.RoomSetting
             }
         }
 
+
+        // Room codes
+        public async Task LoadRoom()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var rooms = await _roomRepository.GetAllRooms();
+                RoomDataGrid.ItemsSource = rooms;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void AddRoomButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+            AddRoomDialog addRoom = serviceProvider.GetRequiredService<AddRoomDialog>();
+            if (addRoom.ShowDialog() == true)
+            {
+                await LoadRoom();
+            }
+        }
+
+        private async void EditRoomButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedRoom = (Domain.Entities.RoomSettings.Room)RoomDataGrid.SelectedItem;
+                if (selectedRoom.Id != null)
+                {
+                    var result = await _roomRepository.GetRoomById(selectedRoom.Id);
+                    if (!result.Succeeded)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var item in result.Errors)
+                        {
+                            sb.AppendLine(item);
+                        }
+                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    if (result.Response == null)
+                    {
+                        MessageBox.Show("Room not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    UpdateRoomDialog updateRoomDialog = new(_roomRepository, result.Response);
+
+                    if (updateRoomDialog.ShowDialog() == true)
+                    {
+                        await LoadRoom();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private async void DeleteRoom_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedRoom = (Domain.Entities.RoomSettings.Room)RoomDataGrid.SelectedItem;
+                    if (selectedRoom.Id != null)
+                    {
+                        MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to delete this room?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (messageResult == MessageBoxResult.Yes)
+                        {
+                            LoaderOverlay.Visibility = Visibility.Visible;
+                            var result = await _roomRepository.DeleteRoom(selectedRoom.Id);
+                            if (!result.Succeeded)
+                            {
+                                var sb = new StringBuilder();
+                                foreach (var item in result.Errors)
+                                {
+                                    sb.AppendLine(item);
+                                }
+                                MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
+                            await LoadRoom();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a guest before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.Source is TabControl tabControl)
@@ -512,6 +627,10 @@ namespace ESMART.Presentation.Forms.RoomSetting
                 else if (selectedTab == tbRoomType)
                 {
                     await LoadRoomType();
+                }
+                else if (selectedTab == tbRoom)
+                {
+                    await LoadRoom();
                 }
             }
         }

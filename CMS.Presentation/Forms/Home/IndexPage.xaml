@@ -3,10 +3,14 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:ESMART.Presentation.Forms.Home"
+      xmlns:local="clr-namespace:ESMART.Presentation.Forms.RoomSetting.Room"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Index">
+      Title="Index" Loaded="Page_Loaded">
+
+    <Page.Resources>
+        <local:RoomStatusToColorDialog x:Key="RoomStatusToColorDialog"/>
+    </Page.Resources>
 
     <Grid Grid.Row="1" Grid.Column="1" Margin="20">
         <Grid.RowDefinitions>
@@ -42,7 +46,33 @@
         </StackPanel>
 
         <Border Grid.Row="1" Background="#FAFAFA" CornerRadius="10" Padding="20">
-            <TextBlock Text="Detailed Reports Graphs will appear here..." FontSize="16"/>
+            <StackPanel>
+                <TextBlock Text="Rooms" Foreground="Black" FontSize="20" FontWeight="Bold"/>
+                <Border Grid.Row="1" Background="#FAFAFA" CornerRadius="10" Padding="20">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Rooms}" Cursor="Hand">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Width="100" Height="100" Margin="5" CornerRadius="10"
+                Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}">
+                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Number}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding Status}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </StackPanel>
+            
+
         </Border>
     </Grid>
 </Page>

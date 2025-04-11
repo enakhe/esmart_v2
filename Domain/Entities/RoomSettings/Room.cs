@@ -14,6 +14,7 @@ namespace ESMART.Domain.Entities.RoomSettings
         public RoomStatus Status { get; set; }
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
+
         public bool IsTrashed { get; set; } = false;
         public DateTime DateCreated { get; set; } = DateTime.Now;
         public DateTime DateModified { get; set; } = DateTime.Now;
@@ -21,6 +22,7 @@ namespace ESMART.Domain.Entities.RoomSettings
         public string? BuildingId { get; set; }
         public string? RoomTypeId { get; set; }
         public string? AreaId { get; set; }
+        public string? FloorId { get; set; }
 
         public virtual ApplicationUser? ApplicationUser { get; set; }
         public virtual Building? Building { get; set; }

@@ -1,7 +1,9 @@
 ﻿using ESMART.Presentation.Forms.FrontDesk.Guest;
+using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.RoomSetting;
 using ESMART.Presentation.Forms.RoomSetting.Area;
 using ESMART.Presentation.Forms.RoomSetting.Floor;
+using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Forms.RoomSetting.RoomType;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +20,7 @@ namespace ESMART.Presentation
 
         private static IServiceCollection AddPages(this IServiceCollection services)
         {
+            services.AddScoped<IndexPage>();
             services.AddScoped<GuestPage>();
             services.AddScoped<AddGuestDialog>();
 
@@ -26,6 +29,7 @@ namespace ESMART.Presentation
             services.AddScoped<AddFloorDialog>();
             services.AddScoped<AddAreaDialog>();
             services.AddScoped<AddRoomTypeDialog>();
+            services.AddScoped<AddRoomDialog>();
 
             return services;
         }

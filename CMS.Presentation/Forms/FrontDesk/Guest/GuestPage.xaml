@@ -151,20 +151,20 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn Header="Status" Width="*">
+                                    <DataGridTemplateColumn Header="Status" Width="100">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Border CornerRadius="5" Padding="10,3" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}" Height="30" Width="70">
-                                                    <TextBlock Text="{Binding Status}" Foreground="White"  VerticalAlignment="Center"/>
+                                                <Border Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}">
+                                                    <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
                                                 </Border>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn Header="Operation" Width="100">
+                                    <DataGridTemplateColumn Header="Operation" Width="200">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                     <Button
                                                     Width="30"
                                                     Height="30"

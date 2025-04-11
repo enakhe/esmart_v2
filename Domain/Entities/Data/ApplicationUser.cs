@@ -1,4 +1,5 @@
 ﻿using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Entities.RoomSettings;
 using Microsoft.AspNetCore.Identity;
 
 namespace ESMART.Domain.Entities.Data
@@ -9,6 +10,7 @@ namespace ESMART.Domain.Entities.Data
         {
             Guests = new HashSet<Guest>();
             Transactions = new HashSet<Domain.Entities.Transaction.Transaction>();
+            Rooms = new HashSet<Room>();
         }
 
         public string? FirstName { get; set; }
@@ -17,6 +19,7 @@ namespace ESMART.Domain.Entities.Data
         public string? FullName => $"{FirstName} {LastName} {MiddleName}";
 
         public ICollection<Guest> Guests { get; set; }
+        public ICollection<Room> Rooms { get; set; }
         public ICollection<Domain.Entities.Transaction.Transaction> Transactions { get; set; }
     }
 }

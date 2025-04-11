@@ -11,6 +11,7 @@ namespace ESMART.Domain.Entities.RoomSettings
         public Building()
         {
             this.Floors = new HashSet<Floor>();
+            this.Rooms = new HashSet<Room>();
         }
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -21,5 +22,6 @@ namespace ESMART.Domain.Entities.RoomSettings
         public DateTime DateModified { get; set; } = DateTime.Now;
 
         public virtual ICollection<Floor> Floors { get; set; }
+        public virtual ICollection<Room> Rooms { get; set; }
     }
 }

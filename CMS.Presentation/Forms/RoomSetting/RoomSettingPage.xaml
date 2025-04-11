@@ -3,13 +3,14 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ESMART.Presentation.Forms.RoomSetting"
+      xmlns:local="clr-namespace:ESMART.Presentation.Forms.RoomSetting.Room"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Background="#f0f4f9"
       Title="Room Setting">
 
     <Page.Resources>
+        <local:RoomStatusToColorDialog x:Key="RoomStatusToColorDialog" />
         <Style x:Key="ActionBarButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="0,0,10,0"/>
             <Setter Property="Padding" Value="5"/>
@@ -130,7 +131,7 @@
                             </TabControl.Resources>
 
                             <TabItem Header="Building" Name="tbBuilding" Width="170" Height="30">
-                                <StackPanel Margin="10">
+                                <StackPanel Margin="10" CanHorizontallyScroll="True">
                                     <Grid Grid.Row="1" Grid.Column="1" Margin="20">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -541,8 +542,116 @@ Text="Search"/>
                                 </StackPanel>
                             </TabItem>
 
-                            <TabItem Header="Room" Width="180" Height="30">
-                                <TextBlock Text="Additional details go here..." Margin="10"/>
+                            <TabItem Header="Room" Name="tbRoom" Width="180" Height="30">
+                                <ScrollViewer 
+    VerticalScrollBarVisibility="Auto"
+    HorizontalScrollBarVisibility="Auto">
+
+                                <StackPanel Margin="10" CanHorizontallyScroll="True">
+                                    <Grid Grid.Row="1" Grid.Column="1" Margin="20">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right">
+                                            <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddRoomButton_Click" />
+                                        </StackPanel>
+
+                                        <Border Background="White" CornerRadius="10" Grid.Row="1">
+                                            <StackPanel>
+                                                <StackPanel Margin="20, 10, 0, 0">
+                                                    <TextBox Name="txtSearchRoom"
+HorizontalAlignment="Left"
+Width="200"
+Padding="2,2,0,2"
+FontSize="18"
+Foreground="Gray"
+Text="Search"/>
+                                                </StackPanel>
+                                                <ScrollViewer 
+                                                    VerticalScrollBarVisibility="Auto"
+                                                    HorizontalScrollBarVisibility="Auto">
+                                                    <DataGrid x:Name="RoomDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTemplateColumn Header="Number" Width="400">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding Number}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+
+                                                        <DataGridTemplateColumn Header="Status" Width="100">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <Border Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}">
+                                                                        <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+
+                                                        <DataGridTemplateColumn Header="Date Created" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding DateCreated, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+
+                                                        <DataGridTemplateColumn Header="Date Modified" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                        <TextBlock Text="{Binding DateModified, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+
+                                                        <DataGridTemplateColumn Header="Operation" Width="200">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                        <Button
+                    Width="30"
+                    Height="30"
+                    ToolTip="Edit Building"
+                    Background="#E0E7FF"
+                    Cursor="Hand"
+                    Tag="{Binding Id}"
+                    Click="EditRoomButton_Click">
+                                                                            <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                        </Button>
+
+                                                                        <Button 
+                    Width="30" 
+                    Height="30" 
+                    ToolTip="Delete Building" 
+                    Background="Red" 
+                    Foreground="White"
+                    Cursor="Hand"
+                    Tag="{Binding Id}"
+                    Click="EditRoomButton_Click">
+                                                                            <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                        </Button>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                                </ScrollViewer>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                                </ScrollViewer>
                             </TabItem>
                         </TabControl>
                     </Border>

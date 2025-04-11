@@ -61,6 +61,12 @@
     <Compile Update="Forms\RoomSetting\RoomType\UpdateRoomTypeDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\RoomSetting\Room\AddRoomDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\RoomSetting\Room\UpdateRoomDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Components\RoundedButton.xaml">
