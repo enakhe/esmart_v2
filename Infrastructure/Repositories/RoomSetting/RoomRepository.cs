@@ -313,13 +313,14 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             try
             {
                 var area = await _db.Areas.FirstOrDefaultAsync(r => r.Id == Id);
-                if (area != null)
-                {
-                    area.IsTrashed = true;
-                    await UpdateArea(area);
-                }
 
-                return AreaResult.Failure(["Unable to delete area with the provided ID"]);
+                if (area == null)
+                    return AreaResult.Failure(["Unable to delete a area with the provided ID"]);
+
+                area.IsTrashed = true;
+                var result = await UpdateArea(area);
+
+                return AreaResult.Success(result.Response);
             }
             catch (Exception ex)
             {

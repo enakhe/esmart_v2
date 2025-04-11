@@ -34,6 +34,12 @@
     <Compile Update="Forms\Home\IndexPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\RoomSetting\Area\AddAreaDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\RoomSetting\Area\UpdateAreaDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\RoomSetting\Building\AddBuildingDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

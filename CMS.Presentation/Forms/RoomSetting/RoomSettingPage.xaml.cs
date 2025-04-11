@@ -2,6 +2,7 @@
 using ESMART.Application.Interface;
 using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
+using ESMART.Presentation.Forms.RoomSetting.Area;
 using ESMART.Presentation.Forms.RoomSetting.Building;
 using ESMART.Presentation.Forms.RoomSetting.Floor;
 using Microsoft.Extensions.DependencyInjection;
@@ -262,6 +263,119 @@ namespace ESMART.Presentation.Forms.RoomSetting
             }
         }
 
+
+        // Area codes
+        public async Task LoadArea()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var areas = await _roomRepository.GetAllAreas();
+                AreaDataGrid.ItemsSource = areas;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void AddAreaButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+            AddAreaDialog addArea = serviceProvider.GetRequiredService<AddAreaDialog>();
+            if (addArea.ShowDialog() == true)
+            {
+                await LoadArea();
+            }
+        }
+
+        private async void EditAreaButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedArea = (Domain.Entities.RoomSettings.Area)AreaDataGrid.SelectedItem;
+                if (selectedArea.Id != null)
+                {
+                    var result = await _roomRepository.GetAreaById(selectedArea.Id);
+                    if (!result.Succeeded)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var item in result.Errors)
+                        {
+                            sb.AppendLine(item);
+                        }
+                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    if (result.Response == null)
+                    {
+                        MessageBox.Show("Area not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    UpdateAreaDialog updateAreaDialog = new(_roomRepository, result.Response);
+                    if (updateAreaDialog.ShowDialog() == true)
+                    {
+                        await LoadArea();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private async void DeleteArea_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedArea = (Domain.Entities.RoomSettings.Area)AreaDataGrid.SelectedItem;
+                    if (selectedArea.Id != null)
+                    {
+                        MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to delete this area?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (messageResult == MessageBoxResult.Yes)
+                        {
+                            LoaderOverlay.Visibility = Visibility.Visible;
+                            var result = await _roomRepository.DeleteArea(selectedArea.Id);
+                            if (!result.Succeeded)
+                            {
+                                var sb = new StringBuilder();
+                                foreach (var item in result.Errors)
+                                {
+                                    sb.AppendLine(item);
+                                }
+                                MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
+                            await LoadArea();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a guest before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.Source is TabControl tabControl)
@@ -275,6 +389,10 @@ namespace ESMART.Presentation.Forms.RoomSetting
                 else if (selectedTab == tbFloor)
                 {
                     await LoadFloor();
+                }
+                else if (selectedTab == tbArea)
+                {
+                    await LoadArea();
                 }
             }
         }

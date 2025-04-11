@@ -1,5 +1,6 @@
 ﻿using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.RoomSetting;
+using ESMART.Presentation.Forms.RoomSetting.Area;
 using ESMART.Presentation.Forms.RoomSetting.Floor;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +23,7 @@ namespace ESMART.Presentation
             services.AddScoped<RoomSettingPage>();
             services.AddScoped<AddBuildingDialog>();
             services.AddScoped<AddFloorDialog>();
+            services.AddScoped<AddAreaDialog>();
 
             return services;
         }
