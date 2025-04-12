@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace ESMART.Presentation.Forms.RoomSetting.Room
+namespace ESMART.Presentation.Forms.RoomSetting
 {
     public class RoomStatusToColorDialog : IValueConverter
     {
