@@ -1,10 +1,4 @@
-﻿using ESMART.Domain.Entities.FrontDesk;
-using ESMART.Domain.Entities.RoomSettings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ESMART.Domain.Entities.RoomSettings;
 
 namespace ESMART.Application.Common.Models
 {
@@ -13,7 +7,7 @@ namespace ESMART.Application.Common.Models
         internal RoomResult(bool succeeded, IEnumerable<string> errors, Room? data)
         {
             Succeeded = succeeded;
-            Errors = [..errors];
+            Errors = [.. errors];
             Response = data;
         }
 

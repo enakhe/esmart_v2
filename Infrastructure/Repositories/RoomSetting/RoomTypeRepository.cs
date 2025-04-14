@@ -1,12 +1,10 @@
 ﻿
 using ESMART.Application.Common.Models;
 using ESMART.Application.Interface;
-using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.RoomSetting;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ESMART.Infrastructure.Repositories.RoomSetting
 {
@@ -33,7 +31,7 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             }
         }
 
-        public async  Task<List<RoomTypeViewModel>> GetAllRoomTypes()
+        public async Task<List<RoomTypeViewModel>> GetAllRoomTypes()
         {
             try
             {

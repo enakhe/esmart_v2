@@ -21,8 +21,13 @@ namespace ESMART.Presentation
                 loggingBuilder.AddConsole();
             });
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer("Server=ENAKHE;Database=ESMART;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"));
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer("Server=ENAKHE;Database=ESMART;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"));
+
+            services.AddDbContextFactory<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer("Server=ENAKHE;Database=ESMART;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            });
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

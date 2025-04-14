@@ -14,9 +14,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             string status = value.ToString().ToLowerInvariant();
             switch (status)
             {
-                case "active":
+                case "Active":
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4EAD16")); // Light Green
-                case "inactive":
+                case "Inactive":
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000")); // Light Red
                 default:
                     return new SolidColorBrush(Colors.LightGray);

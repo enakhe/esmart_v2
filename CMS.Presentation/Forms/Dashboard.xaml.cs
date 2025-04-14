@@ -1,4 +1,5 @@
-﻿using ESMART.Presentation.Forms.FrontDesk.Guest;
+﻿using ESMART.Presentation.Forms.FrontDesk.Booking;
+using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.RoomSetting;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +53,17 @@ namespace ESMART.Presentation.Forms
             GuestPage guestPage = serviceProvider.GetRequiredService<GuestPage>();
 
             MainFrame.Navigate(guestPage);
+        }
+
+        private void BookingButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            BookingPage bookingPage = serviceProvider.GetRequiredService<BookingPage>();
+
+            MainFrame.Navigate(bookingPage);
         }
 
         private void RoomSettingButton_Click(object sender, RoutedEventArgs e)

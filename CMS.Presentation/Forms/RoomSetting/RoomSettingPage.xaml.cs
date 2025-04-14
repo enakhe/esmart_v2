@@ -1,28 +1,13 @@
-﻿using ESMART.Application.Common.Models;
-using ESMART.Application.Interface;
-using ESMART.Infrastructure.Repositories.FrontDesk;
-using ESMART.Presentation.Forms.FrontDesk.Guest;
+﻿using ESMART.Application.Interface;
 using ESMART.Presentation.Forms.RoomSetting.Area;
 using ESMART.Presentation.Forms.RoomSetting.Building;
 using ESMART.Presentation.Forms.RoomSetting.Floor;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Forms.RoomSetting.RoomType;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.RoomSetting
 {
@@ -65,7 +50,7 @@ namespace ESMART.Presentation.Forms.RoomSetting
             AddBuildingDialog addBuilding = serviceProvider.GetRequiredService<AddBuildingDialog>();
             if (addBuilding.ShowDialog() == true)
             {
-               await LoadBuilding();
+                await LoadBuilding();
             }
         }
 
@@ -576,7 +561,9 @@ namespace ESMART.Presentation.Forms.RoomSetting
                         if (messageResult == MessageBoxResult.Yes)
                         {
                             LoaderOverlay.Visibility = Visibility.Visible;
+
                             var result = await _roomRepository.DeleteRoom(selectedRoom.Id);
+
                             if (!result.Succeeded)
                             {
                                 var sb = new StringBuilder();
@@ -587,6 +574,7 @@ namespace ESMART.Presentation.Forms.RoomSetting
                                 MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                                 return;
                             }
+
                             await LoadRoom();
                         }
                     }
@@ -603,6 +591,26 @@ namespace ESMART.Presentation.Forms.RoomSetting
             finally
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task LoadMetrics()
+        {
+            try
+            {
+                var buildingCount = await _roomRepository.GetBuildingNumber();
+                var floorCount = await _roomRepository.GetFloorNumber();
+                var areaCount = await _roomRepository.GetAreaNumber();
+                var roomCount = await _roomRepository.GetRoomNumber();
+
+                txtBuildingCount.Text = buildingCount.ToString();
+                txtFloorCount.Text = floorCount.ToString();
+                txtAreaCount.Text = areaCount.ToString();
+                txtRoomCount.Text = roomCount.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -633,6 +641,11 @@ namespace ESMART.Presentation.Forms.RoomSetting
                     await LoadRoom();
                 }
             }
+        }
+
+        private async void RoomSettingPage1_Loaded(object sender, RoutedEventArgs e)
+        {
+            await LoadMetrics();
         }
     }
 }

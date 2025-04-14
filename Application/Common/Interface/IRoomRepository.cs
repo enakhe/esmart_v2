@@ -1,13 +1,12 @@
 ﻿using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.RoomSetting;
-using System.Collections.Generic;
 namespace ESMART.Application.Interface
 {
     public interface IRoomRepository
     {
         Task<RoomResult> AddRoom(Room room);
-        Task<List<RoomViewModel>> GetAllRooms();
+        Task<List<Room>> GetAllRooms();
         Task<RoomResult> GetRoomById(string Id);
         Task<RoomResult> GetRoomByNumber(string number);
         Task<RoomResult> UpdateRoom(Room room);
@@ -41,5 +40,9 @@ namespace ESMART.Application.Interface
         int GetNoReserved();
         int GetNoBooking();
         int GetNoMaintenance();
+        Task<int> GetBuildingNumber();
+        Task<int> GetFloorNumber();
+        Task<int> GetAreaNumber();
+        Task<int> GetRoomNumber();
     }
 }

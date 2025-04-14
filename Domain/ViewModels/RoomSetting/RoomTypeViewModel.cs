@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ESMART.Domain.ViewModels.RoomSetting
+﻿namespace ESMART.Domain.ViewModels.RoomSetting
 {
     public class RoomTypeViewModel
     {

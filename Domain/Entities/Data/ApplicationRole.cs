@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using ESMART.Domain.Entities.Data;
 using Microsoft.AspNetCore.Identity;
 
 namespace ESMART.Domain.Entities.Data

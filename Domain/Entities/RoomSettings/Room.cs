@@ -1,9 +1,4 @@
 ﻿using ESMART.Domain.Entities.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESMART.Domain.Entities.RoomSettings
 {
@@ -12,6 +7,7 @@ namespace ESMART.Domain.Entities.RoomSettings
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? Number { get; set; }
         public RoomStatus Status { get; set; }
+        public decimal? Rate { get; set; }
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
 

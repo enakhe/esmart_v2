@@ -20,6 +20,7 @@
     <None Remove="Forms\FrontDesk\Guest\logo.png" />
     <None Remove="Forms\logo.png" />
     <None Remove="Forms\RoomSetting\logo.png" />
+    <None Remove="Forms\RoomSetting\Room\editing.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,6 +73,7 @@
     <Resource Include="Forms\FrontDesk\Guest\logo.png" />
     <Resource Include="Forms\logo.png" />
     <Resource Include="Forms\RoomSetting\logo.png" />
+    <Resource Include="Forms\RoomSetting\Room\editing.png" />
   </ItemGroup>
 
   <ItemGroup>

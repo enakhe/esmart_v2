@@ -1,21 +1,12 @@
 ﻿using ESMART.Application.Common.Utils;
 using ESMART.Application.Interface;
 using ESMART.Presentation.Session;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.RoomSetting.Room
 {
@@ -179,6 +170,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                 var room = new Domain.Entities.RoomSettings.Room
                 {
                     Number = roomNumber,
+                    Rate = roomRate,
                     BuildingId = buildingId,
                     FloorId = floorId,
                     AreaId = areaId,
@@ -295,6 +287,11 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                 var roomType = result.Response;
                 txtRoomRate.Text = roomType.Rate.ToString();
             }
+        }
+
+        private void EditButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            txtRoomRate.IsEnabled = true;
         }
     }
 }

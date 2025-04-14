@@ -80,7 +80,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         City = city,
                         State = state,
                         Country = country,
-                        Status = "inactive",
+                        Status = "Inactive",
                         GuestImage = profileImageBytes,
                         IsTrashed = false,
                         CreatedBy = AuthSession.CurrentUser?.Id

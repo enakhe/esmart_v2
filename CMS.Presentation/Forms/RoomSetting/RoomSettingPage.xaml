@@ -7,7 +7,7 @@
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Background="#f0f4f9"
-      Title="Room Setting">
+      Title="Room Setting" Loaded="RoomSettingPage1_Loaded">
 
     <Page.Resources>
         <local:RoomStatusToColorDialog x:Key="RoomStatusToColorDialog" />
@@ -95,21 +95,21 @@
                 <Border Background="#e74c3c" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                     <StackPanel>
                         <TextBlock Text="Floors" Foreground="White" FontSize="14"/>
-                        <TextBlock Text="250,000" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        <TextBlock Text="0" x:Name="txtFloorCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
 
                 <Border Background="#4ead16" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                     <StackPanel>
                         <TextBlock Text="Areas" Foreground="White" FontSize="14"/>
-                        <TextBlock Text="480" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        <TextBlock Text="0" x:Name="txtAreaCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
 
                 <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                     <StackPanel>
                         <TextBlock Text="Rooms" Foreground="White" FontSize="14"/>
-                        <TextBlock Text="480" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        <TextBlock Text="0" x:Name="txtRoomCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -563,7 +563,7 @@
                                                                     <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
 
-                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Building"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomButton_Click">
+                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Building"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteRoom_Click">
                                                                     <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
                                                             </StackPanel>

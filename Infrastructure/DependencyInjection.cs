@@ -1,10 +1,8 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Interface;
-using ESMART.Domain.Entities.Data;
 using ESMART.Infrastructure.Identity;
 using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Infrastructure.Repositories.RoomSetting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ESMART.Infrastructure
