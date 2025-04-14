@@ -16,7 +16,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public DateTime CheckOut { get; set; }
         public string Duration => $"{(CheckOut - CheckIn).Days} {((CheckOut - CheckIn).Days > 1 ? "days" : "day")}";
         public decimal Amount { get; set; }
-        public PaymentStatus Status { get; set; } = "Pending";
+        public PaymentStatus Status { get; set; }
         public string? AccountNumber { get; set; }
         public decimal Discount { get; set; }
         public decimal VAT { get; set; }

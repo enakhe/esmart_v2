@@ -22,6 +22,8 @@ namespace ESMART.Infrastructure.Data
         public DbSet<Floor> Floors { get; set; }
         public DbSet<Room> Rooms { get; set; }
 
+        public DbSet<Booking> Bookings { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

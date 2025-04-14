@@ -13,6 +13,9 @@
     <Compile Update="Forms\Dashboard.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Booking\AddBookingDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Booking\BookingPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
