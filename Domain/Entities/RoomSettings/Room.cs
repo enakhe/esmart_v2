@@ -1,9 +1,14 @@
 ﻿using ESMART.Domain.Entities.Data;
+using ESMART.Domain.Entities.FrontDesk;
 
 namespace ESMART.Domain.Entities.RoomSettings
 {
     public class Room
     {
+        public Room()
+        {
+            this.Bookings = new HashSet<Booking>();
+        }
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? Number { get; set; }
         public RoomStatus Status { get; set; }
@@ -25,6 +30,8 @@ namespace ESMART.Domain.Entities.RoomSettings
         public virtual RoomType? RoomType { get; set; }
         public virtual Area? Area { get; set; }
         public virtual Floor? Floor { get; set; }
+
+        public ICollection<Booking> Bookings { get; set; }
     }
 
     public enum RoomStatus

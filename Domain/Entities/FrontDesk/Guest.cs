@@ -7,6 +7,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public Guest()
         {
             Transactions = new HashSet<Entities.Transaction.Transaction>();
+            this.Bookings = new HashSet<Booking>();
         }
 
         public string? Id { get; set; } = Guid.NewGuid().ToString();
@@ -34,7 +35,8 @@ namespace ESMART.Domain.Entities.FrontDesk
         public bool IsTrashed { get; set; } = false;
 
         public virtual ApplicationUser? ApplicationUser { get; set; }
-        public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }
         public GuestIdentity GuestIdentity { get; set; }
+        public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }
+        public ICollection<Booking> Bookings { get; set; }
     }
 }

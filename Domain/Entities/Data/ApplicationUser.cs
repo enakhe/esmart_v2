@@ -11,6 +11,7 @@ namespace ESMART.Domain.Entities.Data
             Guests = new HashSet<Guest>();
             Transactions = new HashSet<Domain.Entities.Transaction.Transaction>();
             Rooms = new HashSet<Room>();
+            Bookings = new HashSet<Booking>();
         }
 
         public string? FirstName { get; set; }
@@ -21,5 +22,6 @@ namespace ESMART.Domain.Entities.Data
         public ICollection<Guest> Guests { get; set; }
         public ICollection<Room> Rooms { get; set; }
         public ICollection<Domain.Entities.Transaction.Transaction> Transactions { get; set; }
+        public ICollection<Booking> Bookings { get; set; }
     }
 }

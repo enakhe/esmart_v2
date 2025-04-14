@@ -110,8 +110,8 @@
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                                <Button Content="Single Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
-                                <Button Content="Bulk Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
+                                <Button Content="Single Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="100" />
+                                <Button Content="Bulk Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="90" />
                             </StackPanel>
 
                         </Grid>
