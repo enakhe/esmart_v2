@@ -17,6 +17,7 @@
     <None Remove="Assets\haarcascades\haarcascade_frontalface_default.xml" />
     <None Remove="Assets\images\favicon.ico" />
     <None Remove="Assets\images\logo-main.png" />
+    <None Remove="Forms\FrontDesk\Booking\logo.png" />
     <None Remove="Forms\FrontDesk\Guest\logo.png" />
     <None Remove="Forms\logo.png" />
     <None Remove="Forms\RoomSetting\logo.png" />
@@ -70,6 +71,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Forms\FrontDesk\Booking\logo.png" />
     <Resource Include="Forms\FrontDesk\Guest\logo.png" />
     <Resource Include="Forms\logo.png" />
     <Resource Include="Forms\RoomSetting\logo.png" />

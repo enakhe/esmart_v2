@@ -1,5 +1,7 @@
 ﻿using ESMART.Application.Interface;
+using ESMART.Domain.Entities.FrontDesk;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -74,15 +76,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
-        private void ViewGuest_Click(Object sender, RoutedEventArgs e)
+        private async void ViewGuest_Click(Object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.Tag is string Id)
             {
-                var selectedGuest = (Domain.ViewModels.FrontDesk.GuestViewModel)GuestDataGrid.SelectedItem;
+                var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
                 if (selectedGuest.Id != null)
                 {
                     GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository);
-                    viewGuestDialog.ShowDialog();
+                    if (viewGuestDialog.ShowDialog() == true)
+                    {
+                        await LoadGuests();
+                    }
                 }
                 else
                 {

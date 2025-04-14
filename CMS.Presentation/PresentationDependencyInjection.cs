@@ -27,6 +27,7 @@ namespace ESMART.Presentation
             services.AddScoped<AddGuestDialog>();
 
             services.AddScoped<BookingPage>();
+            services.AddScoped<AddBookingDialog>();
 
             services.AddScoped<RoomSettingPage>();
             services.AddScoped<AddBuildingDialog>();

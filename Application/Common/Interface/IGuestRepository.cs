@@ -7,7 +7,7 @@ namespace ESMART.Application.Interface
     public interface IGuestRepository
     {
         Task<GuestResult> AddGuestAsync(Guest guest);
-        Task<List<GuestViewModel>> GetAllGuestsAsync();
+        Task<List<Guest>> GetAllGuestsAsync();
         Task<GuestResult> GetGuestByIdAsync(string id);
         Task<GuestResult> UpdateGuestAsync(Guest guest);
         Task DeleteGuestAsync(string id);

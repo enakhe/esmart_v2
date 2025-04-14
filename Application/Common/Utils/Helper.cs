@@ -13,5 +13,16 @@
             }
             return false;
         }
+
+        public static double GetDateInterval(DateTime startDate, DateTime endDate)
+        {
+            return (endDate.Date - startDate.Date).Days;
+        }
+
+        public static decimal GetPriceByRateAndTime(DateTime startDate, DateTime endDate, decimal rate)
+        {
+            decimal timeSpan = (decimal)GetDateInterval(startDate, endDate);
+            return timeSpan * rate;
+        }
     }
 }

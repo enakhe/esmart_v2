@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         public BookingPage()
         {
             InitializeComponent();
+        }
+
+        private void AddSingleBooking_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            AddBookingDialog addBookingDialog = serviceProvider.GetRequiredService<AddBookingDialog>();
+            addBookingDialog.ShowDialog();
         }
     }
 }

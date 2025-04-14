@@ -9,20 +9,17 @@ using System.Globalization;
 
 namespace ESMART.Infrastructure.Repositories.FrontDesk
 {
-    public class GuestRepository : IGuestRepository
+    public class GuestRepository(IDbContextFactory<ApplicationDbContext> contextFactory) : IGuestRepository
     {
-        private readonly ApplicationDbContext _db;
-        public GuestRepository(ApplicationDbContext db)
-        {
-            _db = db;
-        }
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
 
         public async Task<GuestResult> AddGuestAsync(Guest guest)
         {
             try
             {
-                var result = await _db.Guests.AddAsync(guest);
-                await _db.SaveChangesAsync();
+                using var context = _contextFactory.CreateDbContext();
+                var result = await context.Guests.AddAsync(guest);
+                await context.SaveChangesAsync();
                 return GuestResult.Success(guest);
             }
             catch (Exception ex)
@@ -35,8 +32,9 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                await _db.GuestIdentities.AddAsync(guestIdentity);
-                await _db.SaveChangesAsync();
+                using var context = _contextFactory.CreateDbContext();
+                await context.GuestIdentities.AddAsync(guestIdentity);
+                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -44,29 +42,16 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<List<GuestViewModel>> GetAllGuestsAsync()
+        public async Task<List<Guest>> GetAllGuestsAsync()
         {
             try
             {
-                var allGuest = await _db.Guests
+                using var context = _contextFactory.CreateDbContext();
+
+                var allGuest = await context.Guests
                     .Where(g => g.IsTrashed == false)
                     .OrderBy(g => g.FirstName)
-                    .Select(guest => new GuestViewModel
-                    {
-                        Id = guest.Id,
-                        GuestId = guest.GuestId,
-                        FullName = $"{guest.FirstName} {guest.MiddleName} {guest.LastName}",
-                        GuestImage = guest.GuestImage,
-                        Email = guest.Email,
-                        Status = guest.Status,
-                        PhoneNumber = guest.PhoneNumber,
-                        City = guest.City,
-                        State = guest.State,
-                        Country = guest.Country,
-                        CreatedBy = guest.ApplicationUser.FullName,
-                        DateCreated = guest.DateCreated.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
-                        DateModified = guest.DateModified.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
-                    }).ToListAsync();
+                    .ToListAsync();
 
                 return allGuest;
             }
@@ -80,7 +65,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                var guest = await _db.Guests.FirstOrDefaultAsync(c => c.Id == id);
+                using var context = _contextFactory.CreateDbContext();
+                var guest = await context.Guests.FirstOrDefaultAsync(c => c.Id == id);
 
                 if (guest != null)
                     return GuestResult.Success(guest);
@@ -97,7 +83,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                var guest = await _db.GuestIdentities.FirstOrDefaultAsync(c => c.GuestId == id);
+                using var context = _contextFactory.CreateDbContext();
+                var guest = await context.GuestIdentities.FirstOrDefaultAsync(c => c.GuestId == id);
                 if (guest != null)
                     return GuestIdenityResult.Success(guest);
                 IEnumerable<string> errors = new List<string> { "Unable to find a guest identity with the provided ID" };
@@ -113,8 +100,9 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                _db.Entry(guest).State = EntityState.Modified;
-                await _db.SaveChangesAsync();
+                using var context = _contextFactory.CreateDbContext();
+                context.Entry(guest).State = EntityState.Modified;
+                await context.SaveChangesAsync();
                 return GuestResult.Success(guest);
             }
             catch (Exception ex)
@@ -127,8 +115,9 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                _db.Entry(guestIdentity).State = EntityState.Modified;
-                await _db.SaveChangesAsync();
+                using var context = _contextFactory.CreateDbContext();
+                context.Entry(guestIdentity).State = EntityState.Modified;
+                await context.SaveChangesAsync();
                 return GuestIdenityResult.Success(guestIdentity);
             }
             catch (Exception ex)
@@ -141,12 +130,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                var guest = await _db.Guests.FirstOrDefaultAsync(c => c.Id == id);
+                using var context = _contextFactory.CreateDbContext();
+                var guest = await context.Guests.FirstOrDefaultAsync(c => c.Id == id);
                 if (guest != null)
                 {
                     guest.IsTrashed = true;
-                    _db.Entry(guest).State = EntityState.Modified;
-                    await _db.SaveChangesAsync();
+                    context.Entry(guest).State = EntityState.Modified;
+                    await context.SaveChangesAsync();
                 }
                 else
                 {
@@ -168,7 +158,9 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     throw new Exception("Keyword cannot be empty");
                 }
 
-                var searchGuest = await _db.Guests
+                using var context = _contextFactory.CreateDbContext();
+
+                var searchGuest = await context.Guests
                     .Where(c => (c.FullName.Contains(keyword) || c.Email.Contains(keyword) || c.PhoneNumber.Contains(keyword) || c.Street.Contains(keyword) || c.City.Contains(keyword) || c.State.Contains(keyword) || c.Country.Contains(keyword) || c.GuestId.Contains(keyword)) && c.IsTrashed == false)
                     .OrderBy(g => g.FullName)
                     .Select(guest => new GuestViewModel
@@ -197,7 +189,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                var allGuest = await _db.Guests
+                using var context = _contextFactory.CreateDbContext();
+                var allGuest = await context.Guests
                     .Where(g => g.IsTrashed == true)
                     .OrderBy(g => g.FullName)
                     .Select(guest => new GuestViewModel
@@ -226,7 +219,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                var guestBills = await _db.Transactions
+                using var context = _contextFactory.CreateDbContext();
+                var guestBills = await context.Transactions
                     .Where(t => t.GuestId == guestId && t.Status.ToString() == PaymentStatus.Pending.ToString())
                     .OrderBy(t => t.Date)
                     .Select(transaction => new GuestBillViewModel
@@ -261,7 +255,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                var guestBills = await _db.Transactions
+                using var context = _contextFactory.CreateDbContext();
+                var guestBills = await context.Transactions
                     .Where(t => t.GuestId == guestId && t.Date >= startDate && t.Date <= endDate && t.Status.ToString() == PaymentStatus.Pending.ToString())
                     .OrderBy(t => t.Date)
                     .Select(transaction => new GuestBillViewModel
