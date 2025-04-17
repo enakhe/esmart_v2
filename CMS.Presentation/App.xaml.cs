@@ -1,5 +1,6 @@
 ﻿using ESMART.Infrastructure.Data;
 using ESMART.Infrastructure.Identity;
+using ESMART.Infrastructure.Repositories.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +42,10 @@ namespace ESMART.Presentation
 
             var identityService = serviceProvider.GetRequiredService<IdentityService>();
             await identityService.TrySeedAsync();
+
+            var hotelSettingService = serviceProvider.GetRequiredService<HotelSettingsService>();
+            await hotelSettingService.SeedHotelSettingAsync();
+            await hotelSettingService.SeedHotelInformation();
 
             MainWindow mainWindow = serviceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();

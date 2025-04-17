@@ -1,10 +1,12 @@
-﻿using ESMART.Domain.Entities.Data;
+﻿using ESMART.Domain.Entities.Configuration;
+using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Transaction;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace ESMART.Infrastructure.Data
 {
@@ -23,6 +25,10 @@ namespace ESMART.Infrastructure.Data
         public DbSet<Room> Rooms { get; set; }
 
         public DbSet<Booking> Bookings { get; set; }
+
+        public DbSet<Hotel> Hotels { get; set; }
+        public DbSet<SettingsCategory> SettingsCategories { get; set; }
+        public DbSet<HotelSetting> HotelSettings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

@@ -1,4 +1,6 @@
-﻿using ESMART.Presentation.Forms.FrontDesk.Booking;
+﻿using Emgu.CV.CvEnum;
+using ESMART.Presentation.Forms;
+using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.RoomSetting;
@@ -6,6 +8,9 @@ using ESMART.Presentation.Forms.RoomSetting.Area;
 using ESMART.Presentation.Forms.RoomSetting.Floor;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Forms.RoomSetting.RoomType;
+using ESMART.Presentation.Forms.Setting;
+using ESMART.Presentation.Forms.Setting.FinancialSetting;
+using ESMART.Presentation.Forms.Setting.SystemSetup;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ESMART.Presentation
@@ -21,6 +26,7 @@ namespace ESMART.Presentation
 
         private static IServiceCollection AddPages(this IServiceCollection services)
         {
+            services.AddScoped<Dashboard>();
             services.AddScoped<IndexPage>();
 
             services.AddScoped<GuestPage>();
@@ -35,6 +41,10 @@ namespace ESMART.Presentation
             services.AddScoped<AddAreaDialog>();
             services.AddScoped<AddRoomTypeDialog>();
             services.AddScoped<AddRoomDialog>();
+
+            services.AddScoped<SettingDialog>();
+            services.AddScoped<HotelInformationPage>();
+            services.AddScoped<ESMART.Presentation.Forms.Setting.FinancialSetting.General>();
 
             return services;
         }

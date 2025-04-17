@@ -23,6 +23,93 @@ namespace ESMART.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ESMART.Domain.Entities.Configuration.Hotel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("LogoUrl")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hotels", "ESMART");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Configuration.HotelSetting", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CategoryId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DataType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("HotelSettings", "ESMART");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Configuration.SettingsCategory", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SettingsCategories", "ESMART");
+                });
+
             modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationCategory", b =>
                 {
                     b.Property<string>("Id")
@@ -735,6 +822,15 @@ namespace ESMART.Infrastructure.Migrations
                     b.ToTable("UserTokens", "ESMART");
                 });
 
+            modelBuilder.Entity("ESMART.Domain.Entities.Configuration.HotelSetting", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.Configuration.SettingsCategory", "Category")
+                        .WithMany("HotelSetting")
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationRole", b =>
                 {
                     b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "Manager")
@@ -925,6 +1021,11 @@ namespace ESMART.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Configuration.SettingsCategory", b =>
+                {
+                    b.Navigation("HotelSetting");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationCategory", b =>

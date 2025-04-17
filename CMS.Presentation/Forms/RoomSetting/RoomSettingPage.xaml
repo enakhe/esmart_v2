@@ -149,7 +149,7 @@
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                                        <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddRoomButton_Click" />
+                                        <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddBuildingButton_Click" />
                                     </StackPanel>
 
                                 </Grid>
@@ -238,7 +238,7 @@
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                                        <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddBuildingButton_Click" />
+                                        <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddFloorButton_Click" />
                                     </StackPanel>
 
                                 </Grid>

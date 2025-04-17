@@ -1,6 +1,7 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Interface;
 using ESMART.Infrastructure.Identity;
+using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Infrastructure.Repositories.RoomSetting;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,7 @@ namespace ESMART.Infrastructure
         private static IServiceCollection AddRepository(this IServiceCollection services)
         {
             services.AddScoped<IdentityService>();
+            services.AddScoped<HotelSettingsService>();
             return services;
         }
 
@@ -28,6 +30,7 @@ namespace ESMART.Infrastructure
             services.AddTransient<IGuestRepository, GuestRepository>();
             services.AddTransient<IRoomRepository, RoomRepository>();
             services.AddTransient<IRoomTypeRepository, RoomTypeRepository>();
+            services.AddTransient<IHotelSettingsService, HotelSettingsService>();
             return services;
         }
     }

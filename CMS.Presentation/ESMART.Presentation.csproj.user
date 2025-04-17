@@ -73,6 +73,15 @@
     <Compile Update="Forms\RoomSetting\Room\UpdateRoomDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Setting\FinancialSetting\GeneralPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Setting\SettingDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Setting\SystemSetup\HotelInformationPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Components\RoundedButton.xaml">

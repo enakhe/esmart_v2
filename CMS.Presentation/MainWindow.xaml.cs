@@ -1,7 +1,9 @@
 ﻿using ESMART.Application.Common.Utils;
 using ESMART.Application.UseCases.Data;
 using ESMART.Presentation.Forms;
+using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Session;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using System.Windows;
 
@@ -44,7 +46,11 @@ namespace ESMART.Presentation
                     else
                     {
                         AuthSession.CurrentUser = result.Response;
-                        Dashboard dashboard = new Dashboard();
+                        var services = new ServiceCollection();
+                        DependencyInjection.ConfigureServices(services);
+                        var serviceProvider = services.BuildServiceProvider();
+
+                        Dashboard dashboard = serviceProvider.GetRequiredService<Dashboard>();
                         dashboard.Show();
                         this.Close();
                     }

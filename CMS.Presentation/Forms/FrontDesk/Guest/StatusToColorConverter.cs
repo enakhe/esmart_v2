@@ -11,7 +11,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             if (value == null)
                 return new SolidColorBrush(Colors.Gray);
 
-            string status = value.ToString().ToLowerInvariant();
+            string status = value.ToString();
             switch (status)
             {
                 case "Active":

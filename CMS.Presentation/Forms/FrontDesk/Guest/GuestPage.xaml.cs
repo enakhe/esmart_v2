@@ -50,6 +50,32 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
+        private async void SearchGuest_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var searchText = txtSearch.Text.Trim();
+                if (string.IsNullOrEmpty(searchText) || searchText == "Search")
+                {
+                    await LoadGuests();
+                    return;
+                }
+                var guests = await _guestRepository.SearchGuestAsync(searchText);
+                GuestDataGrid.ItemsSource = guests;
+                txtGuestCount.Text = guests.Count.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void GuestDataGrid_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadGuests();

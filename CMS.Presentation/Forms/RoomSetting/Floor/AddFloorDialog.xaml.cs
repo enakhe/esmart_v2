@@ -22,15 +22,12 @@ namespace ESMART.Presentation.Forms.RoomSetting.Floor
             {
                 var buildings = await _roomRepository.GetAllBuildings();
 
-                if (buildings == null || buildings.Count == 0)
+                if (buildings != null)
                 {
-                    MessageBox.Show("No buildings found. Please add a building first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    this.Close();
+                    cmbBuilding.ItemsSource = buildings;
+                    cmbBuilding.DisplayMemberPath = "Name";
+                    cmbBuilding.SelectedValuePath = "Id";
                 }
-
-                cmbBuilding.ItemsSource = buildings;
-                cmbBuilding.DisplayMemberPath = "Name";
-                cmbBuilding.SelectedValuePath = "Id";
             }
             catch (Exception ex)
             {

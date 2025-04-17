@@ -1,21 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ESMART.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "Identity");
+                name: "ESMART");
 
             migrationBuilder.CreateTable(
                 name: "ApplicationCategory",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -27,8 +28,90 @@ namespace ESMART.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Areas",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Areas", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Buildings",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Buildings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Hotels",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LogoUrl = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hotels", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RoomTypes",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Rate = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoomTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SettingsCategories",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SettingsCategories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "User",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -56,8 +139,58 @@ namespace ESMART.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Floors",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BuildingId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Floors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Floors_Buildings_BuildingId",
+                        column: x => x.BuildingId,
+                        principalSchema: "ESMART",
+                        principalTable: "Buildings",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HotelSettings",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Key = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HotelSettings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HotelSettings_SettingsCategories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalSchema: "ESMART",
+                        principalTable: "SettingsCategories",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Guests",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -87,14 +220,14 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Guests_User_ApplicationUserId",
                         column: x => x.ApplicationUserId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "User",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Role",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -116,14 +249,14 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Role_User_ManagerId",
                         column: x => x.ManagerId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "User",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserClaims",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -138,7 +271,7 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserClaims_User_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -146,7 +279,7 @@ namespace ESMART.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserLogins",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -160,7 +293,7 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserLogins_User_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -168,7 +301,7 @@ namespace ESMART.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserTokens",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -182,15 +315,70 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserTokens_User_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
+                name: "Rooms",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Rate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BuildingId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    RoomTypeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    AreaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    FloorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rooms_Areas_AreaId",
+                        column: x => x.AreaId,
+                        principalSchema: "ESMART",
+                        principalTable: "Areas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Rooms_Buildings_BuildingId",
+                        column: x => x.BuildingId,
+                        principalSchema: "ESMART",
+                        principalTable: "Buildings",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Rooms_Floors_FloorId",
+                        column: x => x.FloorId,
+                        principalSchema: "ESMART",
+                        principalTable: "Floors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Rooms_RoomTypes_RoomTypeId",
+                        column: x => x.RoomTypeId,
+                        principalSchema: "ESMART",
+                        principalTable: "RoomTypes",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Rooms_User_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalSchema: "ESMART",
+                        principalTable: "User",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GuestIdentities",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -206,14 +394,14 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_GuestIdentities_Guests_GuestId",
                         column: x => x.GuestId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "Guests",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Transactions",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -242,20 +430,20 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Transactions_Guests_GuestId",
                         column: x => x.GuestId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "Guests",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Transactions_User_ApplicationUserId",
                         column: x => x.ApplicationUserId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "User",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "ApplicationRoleCategory",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -269,20 +457,20 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_ApplicationRoleCategory_ApplicationCategory_CategoryId",
                         column: x => x.CategoryId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "ApplicationCategory",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ApplicationRoleCategory_Role_ApplicationRoleId",
                         column: x => x.ApplicationRoleId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "Role",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "RoleClaims",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -297,7 +485,7 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_RoleClaims_Role_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -305,7 +493,7 @@ namespace ESMART.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserRoles",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -324,34 +512,80 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserRoles_Role_ApplicationRoleId",
                         column: x => x.ApplicationRoleId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "Role",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserRoles_Role_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserRoles_User_ApplicationUserId",
                         column: x => x.ApplicationUserId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "User",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserRoles_User_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bookings",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CheckIn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CheckOut = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    VAT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "int", nullable: false),
+                    GuestId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    RoomId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Guests_GuestId",
+                        column: x => x.GuestId,
+                        principalSchema: "ESMART",
+                        principalTable: "Guests",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Bookings_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalSchema: "ESMART",
+                        principalTable: "Rooms",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Bookings_User_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalSchema: "ESMART",
+                        principalTable: "User",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TransactionItems",
-                schema: "Identity",
+                schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -366,26 +600,50 @@ namespace ESMART.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_TransactionItems_Transactions_TransactionId",
                         column: x => x.TransactionId,
-                        principalSchema: "Identity",
+                        principalSchema: "ESMART",
                         principalTable: "Transactions",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApplicationRoleCategory_ApplicationRoleId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "ApplicationRoleCategory",
                 column: "ApplicationRoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApplicationRoleCategory_CategoryId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "ApplicationRoleCategory",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bookings_ApplicationUserId",
+                schema: "ESMART",
+                table: "Bookings",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_GuestId",
+                schema: "ESMART",
+                table: "Bookings",
+                column: "GuestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_RoomId",
+                schema: "ESMART",
+                table: "Bookings",
+                column: "RoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Floors_BuildingId",
+                schema: "ESMART",
+                table: "Floors",
+                column: "BuildingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GuestIdentities_GuestId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "GuestIdentities",
                 column: "GuestId",
                 unique: true,
@@ -393,19 +651,25 @@ namespace ESMART.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Guests_ApplicationUserId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "Guests",
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_HotelSettings_CategoryId",
+                schema: "ESMART",
+                table: "HotelSettings",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Role_ManagerId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "Role",
                 column: "ManagerId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "Role",
                 column: "NormalizedName",
                 unique: true,
@@ -413,37 +677,67 @@ namespace ESMART.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "RoleClaims",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Rooms_ApplicationUserId",
+                schema: "ESMART",
+                table: "Rooms",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rooms_AreaId",
+                schema: "ESMART",
+                table: "Rooms",
+                column: "AreaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rooms_BuildingId",
+                schema: "ESMART",
+                table: "Rooms",
+                column: "BuildingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rooms_FloorId",
+                schema: "ESMART",
+                table: "Rooms",
+                column: "FloorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rooms_RoomTypeId",
+                schema: "ESMART",
+                table: "Rooms",
+                column: "RoomTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TransactionItems_TransactionId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "TransactionItems",
                 column: "TransactionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_ApplicationUserId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "Transactions",
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_GuestId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "Transactions",
                 column: "GuestId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "User",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "User",
                 column: "NormalizedUserName",
                 unique: true,
@@ -451,31 +745,31 @@ namespace ESMART.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "UserClaims",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserLogins_UserId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "UserLogins",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_ApplicationRoleId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "UserRoles",
                 column: "ApplicationRoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_ApplicationUserId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "UserRoles",
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",
-                schema: "Identity",
+                schema: "ESMART",
                 table: "UserRoles",
                 column: "RoleId");
         }
@@ -485,55 +779,91 @@ namespace ESMART.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ApplicationRoleCategory",
-                schema: "Identity");
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "Bookings",
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "GuestIdentities",
-                schema: "Identity");
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "Hotels",
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "HotelSettings",
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims",
-                schema: "Identity");
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "TransactionItems",
-                schema: "Identity");
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "UserClaims",
-                schema: "Identity");
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "UserLogins",
-                schema: "Identity");
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "UserRoles",
-                schema: "Identity");
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "UserTokens",
-                schema: "Identity");
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "ApplicationCategory",
-                schema: "Identity");
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "Rooms",
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "SettingsCategories",
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "Transactions",
-                schema: "Identity");
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "Role",
-                schema: "Identity");
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "Areas",
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "Floors",
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "RoomTypes",
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "Guests",
-                schema: "Identity");
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "Buildings",
+                schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "User",
-                schema: "Identity");
+                schema: "ESMART");
         }
     }
 }

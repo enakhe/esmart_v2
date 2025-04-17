@@ -24,5 +24,18 @@
             decimal timeSpan = (decimal)GetDateInterval(startDate, endDate);
             return timeSpan * rate;
         }
+
+        public static decimal CalculateTotal(decimal basePrice, decimal discountPercent, decimal vatPercent, decimal serviceCharge)
+        {
+            decimal vatAmount = (vatPercent / 100) * basePrice;
+
+            decimal discount = (discountPercent / 100) * basePrice;
+
+            // Step 4: Total
+            decimal total = (basePrice + vatAmount + serviceCharge) - discount;
+
+            return Math.Round(total, 2);
+        }
+
     }
 }

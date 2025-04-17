@@ -31,15 +31,14 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
             {
                 var buildings = await _roomRepository.GetAllBuildings();
 
-                if (buildings == null || buildings.Count == 0)
+                if (buildings != null)
                 {
-                    MessageBox.Show("No buildings found. Please add a building first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    this.Close();
+                    cmbBuilding.ItemsSource = buildings;
+                    cmbBuilding.DisplayMemberPath = "Name";
+                    cmbBuilding.SelectedValuePath = "Id";
                 }
 
-                cmbBuilding.ItemsSource = buildings;
-                cmbBuilding.DisplayMemberPath = "Name";
-                cmbBuilding.SelectedValuePath = "Id";
+                
             }
             catch (Exception ex)
             {
@@ -61,15 +60,14 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                 if (!isNull)
                 {
                     var floors = await _roomRepository.GetFloorsByBuilding(cmbBuilding.SelectedValue.ToString());
-                    if (floors == null || floors.Count == 0)
+                    if (floors != null)
                     {
-                        MessageBox.Show("No floors found. Please add a floor first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        this.Close();
+                        cmbFloor.ItemsSource = floors;
+                        cmbFloor.DisplayMemberPath = "Number";
+                        cmbFloor.SelectedValuePath = "Id";
                     }
 
-                    cmbFloor.ItemsSource = floors;
-                    cmbFloor.DisplayMemberPath = "Number";
-                    cmbFloor.SelectedValuePath = "Id";
+                    
                 }
             }
             catch (Exception ex)
@@ -89,15 +87,14 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
             {
                 var areas = await _roomRepository.GetAllAreas();
 
-                if (areas == null || areas.Count == 0)
+                if (areas != null)
                 {
-                    MessageBox.Show("No areas found. Please add a building first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    this.Close();
+                    cmbArea.ItemsSource = areas;
+                    cmbArea.DisplayMemberPath = "Name";
+                    cmbArea.SelectedValuePath = "Id";
                 }
 
-                cmbArea.ItemsSource = areas;
-                cmbArea.DisplayMemberPath = "Name";
-                cmbArea.SelectedValuePath = "Id";
+                
             }
             catch (Exception ex)
             {
@@ -115,14 +112,13 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
             try
             {
                 var roomTypes = await _roomRepository.GetAllRoomTypes();
-                if (roomTypes == null || roomTypes.Count == 0)
+                if (roomTypes != null)
                 {
-                    MessageBox.Show("No room types found. Please add a room type first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    this.Close();
+                    cmbRoomType.ItemsSource = roomTypes;
+                    cmbRoomType.DisplayMemberPath = "Name";
+                    cmbRoomType.SelectedValuePath = "Id";
                 }
-                cmbRoomType.ItemsSource = roomTypes;
-                cmbRoomType.DisplayMemberPath = "Name";
-                cmbRoomType.SelectedValuePath = "Id";
+                
             }
             catch (Exception ex)
             {
@@ -183,6 +179,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                 await _roomRepository.AddRoom(room);
                 MessageBox.Show("Room added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.DialogResult = true;
+                this.Close();
             }
             catch (Exception ex)
             {
