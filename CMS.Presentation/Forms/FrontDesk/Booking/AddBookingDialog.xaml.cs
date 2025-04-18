@@ -2,6 +2,7 @@
 using ESMART.Application.Common.Utils;
 using ESMART.Application.Interface;
 using ESMART.Domain.Entities.RoomSettings;
+using ESMART.Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -121,6 +122,25 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
+        public void LoadPaymentMethod()
+        {
+            try
+            {
+                var method = Enum.GetValues<PaymentMethod>()
+                    .Cast<PaymentMethod>()
+                    .Select(e => new { Id = (int)e, Name = e.ToString() })
+                    .ToList();
+
+                cmbPaymentMethod.ItemsSource = method;
+                cmbPaymentMethod.DisplayMemberPath = "Name";
+                cmbPaymentMethod.SelectedValuePath = "Name";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void LoadDefaultSetting()
         {
             dtpCheckIn.SelectedDate = DateTime.Now;
@@ -139,7 +159,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         }
 
         // Prevent user from entering multiple decimal points
-        private void DecimalInput_TextChanged(object sender, TextChangedEventArgs e)
+        private async void DecimalInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (_suppressTextChanged) return;
 
@@ -152,6 +172,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 textBox.Text = string.Format(CultureInfo.InvariantCulture, "{0:N}", value);
                 textBox.CaretIndex = textBox.Text.Length;
                 _suppressTextChanged = false;
+            }
+
+            if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
+            {
+                var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
+
+                var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+
+                if (currencySetting != null)
+                    txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString();
+                else
+                    txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString();
             }
         }
 
@@ -185,6 +217,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             await LoadGuests();
             await LoadRooms();
             await LoadFinancialMetric();
+            LoadPaymentMethod();
             LoadDefaultSetting();
         }
 
