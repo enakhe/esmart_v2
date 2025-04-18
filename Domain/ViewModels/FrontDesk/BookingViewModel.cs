@@ -19,7 +19,7 @@ namespace ESMART.Domain.ViewModels.FrontDesk
         public string PaymentMethod { get; set; }
         public string Duration { get; set; }
         public string Status { get; set; }
-        public string TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; }
         public string CreatedBy { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateModified { get; set; }

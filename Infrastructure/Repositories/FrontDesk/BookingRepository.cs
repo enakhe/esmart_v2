@@ -2,6 +2,7 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Models;
+using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.FrontDesk;
@@ -50,7 +51,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                     PaymentMethod = b.PaymentMethod.ToString(),
                                     Duration = b.Duration.ToString(),
                                     Status = b.Status.ToString(),
-                                    TotalAmount = b.TotalAmount.ToString(),
+                                    TotalAmount = b.TotalAmount,
                                     CreatedBy = b.CreatedBy,
                                     DateCreated = b.DateCreated,
                                     DateModified = b.DateModified,
@@ -82,7 +83,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                     PaymentMethod = b.PaymentMethod.ToString(),
                                     Duration = b.Duration.ToString(),
                                     Status = b.Status.ToString(),
-                                    TotalAmount = b.TotalAmount.ToString(),
+                                    TotalAmount = b.TotalAmount,
                                     CreatedBy = b.CreatedBy,
                                     DateCreated = b.DateCreated,
                                     DateModified = b.DateModified,
@@ -121,7 +122,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         PaymentMethod = b.PaymentMethod.ToString(),
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
-                        TotalAmount = b.TotalAmount.ToString(),
+                        TotalAmount = b.TotalAmount,
                         CreatedBy = b.CreatedBy,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
@@ -161,7 +162,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         PaymentMethod = b.PaymentMethod.ToString(),
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
-                        TotalAmount = b.TotalAmount.ToString(),
+                        TotalAmount = b.TotalAmount,
                         CreatedBy = b.CreatedBy,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
@@ -200,7 +201,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         PaymentMethod = b.PaymentMethod.ToString(),
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
-                        TotalAmount = b.TotalAmount.ToString(),
+                        TotalAmount = b.TotalAmount,
                         CreatedBy = b.CreatedBy,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
@@ -240,7 +241,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         PaymentMethod = b.PaymentMethod.ToString(),
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
-                        TotalAmount = b.TotalAmount.ToString(),
+                        TotalAmount = b.TotalAmount,
                         CreatedBy = b.CreatedBy,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
@@ -280,7 +281,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         PaymentMethod = b.PaymentMethod.ToString(),
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
-                        TotalAmount = b.TotalAmount.ToString(),
+                        TotalAmount = b.TotalAmount,
                         CreatedBy = b.CreatedBy,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
@@ -379,7 +380,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         PaymentMethod = b.PaymentMethod.ToString(),
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
-                        TotalAmount = b.TotalAmount.ToString(),
+                        TotalAmount = b.TotalAmount,
                         CreatedBy = b.CreatedBy,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
@@ -420,7 +421,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         PaymentMethod = b.PaymentMethod.ToString(),
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
-                        TotalAmount = b.TotalAmount.ToString(),
+                        TotalAmount = b.TotalAmount,
                         CreatedBy = b.CreatedBy,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,

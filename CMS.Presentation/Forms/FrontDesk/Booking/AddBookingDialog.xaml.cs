@@ -3,6 +3,7 @@ using ESMART.Application.Common.Utils;
 using ESMART.Application.Interface;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Enum;
+using ESMART.Presentation.Session;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -29,13 +30,15 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IGuestRepository _guestRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IRoomRepository _roomRepository;
+        private readonly IBookingRepository _bookingRepository;
         private bool _suppressTextChanged = false;
 
-        public AddBookingDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService)
+        public AddBookingDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository)
         {
             _guestRepository = guestRepository;
             _roomRepository = roomRepository;
             _hotelSettingsService = hotelSettingsService;
+            _bookingRepository = bookingRepository;
             InitializeComponent();
         }
 
@@ -44,6 +47,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         {
             try
             {
+                LoaderOverlay.Visibility = Visibility.Visible;
+
                 var financialSettings = await _hotelSettingsService.GetSettingsByCategoryAsync("Financial Settings");
                 if (financialSettings != null)
                 {
@@ -145,6 +150,69 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         {
             dtpCheckIn.SelectedDate = DateTime.Now;
             dtpCheckOut.SelectedDate = DateTime.Now.AddDays(1);
+        }
+
+        private async void Save_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbGuest.SelectedItem == null || cmbRoom.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a guest and a room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var guest = ((Domain.Entities.FrontDesk.Guest)cmbGuest.SelectedItem).Id;
+            var room = ((Room)cmbRoom.SelectedItem).Id;
+            var checkIn = dtpCheckIn.SelectedDate!.Value;
+            var checkOut = dtpCheckOut.SelectedDate!.Value;
+            var paymentMethod = Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!);
+            var totalAmount = decimal.Parse(txtTotalAmount.Text.Replace("NGN", ""));
+            var discount = decimal.Parse(txtDiscount.Text);
+            var vat = decimal.Parse(txtVAT.Text);
+            var serviceCharge = decimal.Parse(txtServiceCharge.Text);
+            var accountNumber = cmbAccountNumber.SelectedValue;
+            var status = PaymentStatus.Pending;
+            var createdBy = AuthSession.CurrentUser?.Id;
+            var amount = decimal.Parse(txtRoomRate.Text);
+
+            var booking = new Domain.Entities.FrontDesk.Booking
+            {
+                CheckIn = checkIn,
+                CheckOut = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0),
+                Amount = amount,
+                Status = status,
+                AccountNumber = accountNumber.ToString(),
+                Discount = discount,
+                VAT = vat,
+                ServiceCharge = serviceCharge,
+                TotalAmount = totalAmount,
+                PaymentMethod = paymentMethod,
+
+                GuestId = guest,
+                RoomId = room,
+                CreatedBy = createdBy,
+                UpdatedBy = createdBy,
+
+                DateCreated = DateTime.Now,
+                DateModified = DateTime.Now,
+            };
+
+            var result = await _bookingRepository.AddBooking(booking);
+
+            if(!result.Succeeded)
+            {
+                var sb = new StringBuilder();
+                foreach (var item in result.Errors)
+                {
+                    sb.AppendLine(item);
+                }
+
+                MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                MessageBox.Show("Booking added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                this.DialogResult = true;
+            }
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

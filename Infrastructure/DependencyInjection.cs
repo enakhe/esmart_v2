@@ -21,6 +21,7 @@ namespace ESMART.Infrastructure
         {
             services.AddScoped<IdentityService>();
             services.AddScoped<HotelSettingsService>();
+            services.AddScoped<BookingRepository>();
             return services;
         }
 
@@ -31,6 +32,7 @@ namespace ESMART.Infrastructure
             services.AddTransient<IRoomRepository, RoomRepository>();
             services.AddTransient<IRoomTypeRepository, RoomTypeRepository>();
             services.AddTransient<IHotelSettingsService, HotelSettingsService>();
+            services.AddTransient<IBookingRepository, BookingRepository>();
             return services;
         }
     }

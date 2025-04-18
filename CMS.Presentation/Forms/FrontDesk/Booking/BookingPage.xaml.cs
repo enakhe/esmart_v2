@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using ESMART.Application.Common.Interface;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,19 +22,53 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
     /// </summary>
     public partial class BookingPage : Page
     {
-        public BookingPage()
+        private readonly IBookingRepository _bookingRepository;
+        public BookingPage(IBookingRepository bookingRepository)
         {
+            _bookingRepository = bookingRepository;
             InitializeComponent();
         }
 
-        private void AddSingleBooking_Click(object sender, RoutedEventArgs e)
+        private async Task LoadBooking()
+        {
+            try
+            {
+                LoaderOverlay.Visibility = Visibility.Visible;
+                var allBooking = await _bookingRepository.GetAllBookingsAsync();
+
+                if (allBooking != null)
+                {
+                    BookingDataGrid.ItemsSource = allBooking;
+                    txtBookingCount.Text = allBooking.Count.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void AddSingleBooking_Click(object sender, RoutedEventArgs e)
         {
             var services = new ServiceCollection();
             DependencyInjection.ConfigureServices(services);
             var serviceProvider = services.BuildServiceProvider();
 
             AddBookingDialog addBookingDialog = serviceProvider.GetRequiredService<AddBookingDialog>();
-            addBookingDialog.ShowDialog();
+            if (addBookingDialog.ShowDialog() == true)
+            {
+                await LoadBooking();
+            }
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            await LoadBooking();
         }
     }
 }

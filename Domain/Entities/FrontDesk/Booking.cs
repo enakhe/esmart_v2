@@ -22,6 +22,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public string AccountNumber { get; set; }
         public decimal Discount { get; set; }
         public decimal VAT { get; set; }
+        public decimal ServiceCharge { get; set; }
         public decimal TotalAmount { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
 
