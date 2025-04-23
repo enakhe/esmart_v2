@@ -45,6 +45,23 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             }
         }
 
+        public async Task<List<Room>> GetAvailableRooms()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var allRooms = await context.Rooms
+                                .Where(r => !r.IsTrashed && r.Status == RoomStatus.Vacant)
+                                .OrderBy(r => r.Number)
+                                .ToListAsync();
+                return allRooms;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving rooms. " + ex.Message);
+            }
+        }
+
         public async Task<RoomResult> GetRoomById(string Id)
         {
             try

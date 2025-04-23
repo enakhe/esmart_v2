@@ -4,6 +4,7 @@ using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,14 +12,16 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250418152147_BookingBookingId")]
+    partial class BookingBookingId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("ESMART")
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -740,38 +743,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.ToTable("TransactionItems", "ESMART");
                 });
 
-            modelBuilder.Entity("ESMART.Domain.Entities.Verification.VerificationCode", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("BookingId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("IssuedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("IssuedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("BookingId");
-
-                    b.ToTable("VerificationCodes", "ESMART");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -1028,21 +999,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("Transaction");
                 });
 
-            modelBuilder.Entity("ESMART.Domain.Entities.Verification.VerificationCode", b =>
-                {
-                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany("VerificationCodes")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Booking", "Booking")
-                        .WithMany("Codes")
-                        .HasForeignKey("BookingId");
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Booking");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("ESMART.Domain.Entities.Data.ApplicationRole", null)
@@ -1105,13 +1061,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("Rooms");
 
                     b.Navigation("Transactions");
-
-                    b.Navigation("VerificationCodes");
-                });
-
-            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Booking", b =>
-                {
-                    b.Navigation("Codes");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Guest", b =>

@@ -2,12 +2,16 @@
 using ESMART.Application.Common.Utils;
 using ESMART.Application.Interface;
 using ESMART.Domain.Entities.RoomSettings;
+using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
+using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
+using ESMART.Presentation.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -31,13 +35,15 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IRoomRepository _roomRepository;
         private readonly IBookingRepository _bookingRepository;
+        private readonly IVerificationCodeService _verificationCodeService;
         private bool _suppressTextChanged = false;
 
-        public AddBookingDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository)
+        public AddBookingDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService)
         {
             _guestRepository = guestRepository;
             _roomRepository = roomRepository;
             _hotelSettingsService = hotelSettingsService;
+            _verificationCodeService = verificationCodeService;
             _bookingRepository = bookingRepository;
             InitializeComponent();
         }
@@ -108,7 +114,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var rooms = await _roomRepository.GetAllRooms();
+                var rooms = await _roomRepository.GetAvailableRooms();
 
                 if (rooms != null)
                 {
@@ -154,64 +160,119 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbGuest.SelectedItem == null || cmbRoom.SelectedItem == null)
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
             {
-                MessageBox.Show("Please select a guest and a room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            var guest = ((Domain.Entities.FrontDesk.Guest)cmbGuest.SelectedItem).Id;
-            var room = ((Room)cmbRoom.SelectedItem).Id;
-            var checkIn = dtpCheckIn.SelectedDate!.Value;
-            var checkOut = dtpCheckOut.SelectedDate!.Value;
-            var paymentMethod = Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!);
-            var totalAmount = decimal.Parse(txtTotalAmount.Text.Replace("NGN", ""));
-            var discount = decimal.Parse(txtDiscount.Text);
-            var vat = decimal.Parse(txtVAT.Text);
-            var serviceCharge = decimal.Parse(txtServiceCharge.Text);
-            var accountNumber = cmbAccountNumber.SelectedValue;
-            var status = PaymentStatus.Pending;
-            var createdBy = AuthSession.CurrentUser?.Id;
-            var amount = decimal.Parse(txtRoomRate.Text);
-
-            var booking = new Domain.Entities.FrontDesk.Booking
-            {
-                CheckIn = checkIn,
-                CheckOut = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0),
-                Amount = amount,
-                Status = status,
-                AccountNumber = accountNumber.ToString(),
-                Discount = discount,
-                VAT = vat,
-                ServiceCharge = serviceCharge,
-                TotalAmount = totalAmount,
-                PaymentMethod = paymentMethod,
-
-                GuestId = guest,
-                RoomId = room,
-                CreatedBy = createdBy,
-                UpdatedBy = createdBy,
-
-                DateCreated = DateTime.Now,
-                DateModified = DateTime.Now,
-            };
-
-            var result = await _bookingRepository.AddBooking(booking);
-
-            if(!result.Succeeded)
-            {
-                var sb = new StringBuilder();
-                foreach (var item in result.Errors)
+                if (cmbGuest.SelectedItem == null || cmbRoom.SelectedItem == null)
                 {
-                    sb.AppendLine(item);
+                    MessageBox.Show("Please select a guest and a room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
 
-                MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                var guest = ((Domain.Entities.FrontDesk.Guest)cmbGuest.SelectedItem).Id;
+                var room = ((Room)cmbRoom.SelectedItem).Id;
+                var checkIn = dtpCheckIn.SelectedDate!.Value;
+                var checkOut = dtpCheckOut.SelectedDate!.Value;
+                var paymentMethod = Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!);
+                var totalAmount = decimal.Parse(txtTotalAmount.Text.Replace("NGN", ""));
+                var discount = decimal.Parse(txtDiscount.Text);
+                var vat = decimal.Parse(txtVAT.Text);
+                var serviceCharge = decimal.Parse(txtServiceCharge.Text);
+                var accountNumber = cmbAccountNumber.Text;
+                var status = PaymentStatus.Pending;
+                var createdBy = AuthSession.CurrentUser?.Id;
+                var amount = decimal.Parse(txtRoomRate.Text);
+
+                var booking = new Domain.Entities.FrontDesk.Booking
+                {
+                    BookingId = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                    CheckIn = checkIn,
+                    CheckOut = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0),
+                    Amount = amount,
+                    Status = status,
+                    AccountNumber = accountNumber.ToString(),
+                    Discount = discount,
+                    VAT = vat,
+                    ServiceCharge = serviceCharge,
+                    TotalAmount = totalAmount,
+                    PaymentMethod = paymentMethod,
+
+                    GuestId = guest,
+                    RoomId = room,
+                    CreatedBy = createdBy,
+                    UpdatedBy = createdBy,
+
+                    DateCreated = DateTime.Now,
+                    DateModified = DateTime.Now,
+                };
+
+                var result = await _bookingRepository.AddBooking(booking);
+
+                if (!result.Succeeded)
+                {
+                    var sb = new StringBuilder();
+                    foreach (var item in result.Errors)
+                    {
+                        sb.AppendLine(item);
+                    }
+
+                    MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    var bookedResult = await _roomRepository.GetRoomById(booking.RoomId);
+                    var bookedGuest = await _guestRepository.GetGuestByIdAsync(booking.GuestId!);
+                    var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                    if (!bookedResult.Succeeded)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var item in bookedResult.Errors)
+                        {
+                            sb.AppendLine(item);
+                        }
+
+                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    var bookedRoom = bookedResult.Response;
+                    if (bookedRoom != null)
+                    {
+                        bookedRoom.Status = RoomStatus.Booked;
+                        await _roomRepository.UpdateRoom(bookedRoom);
+                    }
+
+                    if (hotel != null)
+                    {
+                        var verificationCode = new VerificationCode()
+                        {
+                            Code = booking.BookingId,
+                            BookingId = booking.Id,
+                            IssuedBy = AuthSession.CurrentUser?.Id
+                        };
+
+                        await _verificationCodeService.AddCode(verificationCode);
+
+                        var response = await SenderHelper.SendOtp(hotel, booking, bookedGuest.Response, "Booking", verificationCode.Code);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, booking);
+                            verifyPaymentWindow.ShowDialog();
+                        }
+                    }
+
+                    MessageBox.Show("Booking added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    this.DialogResult = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Booking added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                this.DialogResult = true;
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
 

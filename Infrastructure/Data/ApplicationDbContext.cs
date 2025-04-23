@@ -3,6 +3,7 @@ using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Transaction;
+using ESMART.Domain.Entities.Verification;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,8 @@ namespace ESMART.Infrastructure.Data
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<SettingsCategory> SettingsCategories { get; set; }
         public DbSet<HotelSetting> HotelSettings { get; set; }
+
+        public DbSet<VerificationCode> VerificationCodes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
