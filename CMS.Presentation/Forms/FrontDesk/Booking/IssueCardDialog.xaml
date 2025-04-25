@@ -191,7 +191,7 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <Button Content="Issue" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand">
+                                <Button Content="Issue" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="IssueButton_Click">
                                     <Button.Style>
                                         <Style TargetType="Button">
                                             <Setter Property="Template">

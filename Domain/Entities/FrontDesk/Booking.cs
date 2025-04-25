@@ -22,7 +22,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public string BookingId { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
-        public string Duration => $"{(CheckOut - CheckIn).Days} {((CheckOut - CheckIn).Days > 1 ? "days" : "day")}";
+        public string Duration => $"{(CheckOut - CheckIn).Days + 1} {((CheckOut - CheckIn).Days > 1 ? "days" : "day")}";
         public decimal Amount { get; set; }
         public PaymentStatus Status { get; set; }
         public string AccountNumber { get; set; }

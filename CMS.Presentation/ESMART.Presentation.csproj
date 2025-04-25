@@ -7,8 +7,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <Company>EIT Intelligience</Company>
+    <PlatformTarget>x86</PlatformTarget>
     <PackageIcon>favicon.ico</PackageIcon>
     <Authors>Samuel Izuagbe</Authors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

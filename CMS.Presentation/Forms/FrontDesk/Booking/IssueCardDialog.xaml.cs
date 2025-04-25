@@ -1,6 +1,7 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Presentation.LockSDK;
+using ESMART_HMS.Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,6 +66,34 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 {
                     LockSDKMethods.CheckErr(st);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void IssueButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                char[] card_snr = new char[100];
+                string roomno = $"{_booking.Room?.Building?.Number}.{_booking.Room?.Floor?.Number}.{_booking.Room?.Number}";
+                string intime = _booking.CheckIn.ToString("yyyy-MM-dd HH:mm:ss");
+                String outtime = _booking.CheckOut.ToString("yyyy-MM-dd HH:mm:ss");
+
+                CARD_FLAGS iflags = CARD_FLAGS.CF_CHECK_TIMESTAMP;
+
+                if (LockSDKHeaders.PreparedIssue(card_snr) == false)
+                    return;
+                var st = LockSDKMethods.MakeGuestCard(card_snr, roomno, _booking.Room.Area.Number, "", intime, outtime, iflags);
+
+                if (st == 1)
+                    this.DialogResult = true;
+          
+                else
+                    LockSDKMethods.CheckErr(st);
+
             }
             catch (Exception ex)
             {

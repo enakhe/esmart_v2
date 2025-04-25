@@ -177,7 +177,7 @@ namespace ESMART.Presentation.Forms.Verification
 
                     await _verificationCodeService.AddCode(verificationCode);
 
-                    var response = await SenderHelper.SendOtp(hotel, _booking, _booking.Guest, "Booking", verificationCode.Code);
+                    var response = await SenderHelper.SendOtp(hotel, _booking, _booking.Guest, "Booking", verificationCode.Code, _booking.TotalAmount);
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("New Verification code has been sent", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

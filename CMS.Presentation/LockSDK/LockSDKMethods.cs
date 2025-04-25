@@ -95,7 +95,6 @@ namespace ESMART.Presentation.LockSDK
 
         public static int MakeMasterCard(char[] card_snr, string validTime, string endTime, CARD_FLAGS iFlags, int iReplaceNo)
         {
-
             int st = LockSDKHeaders.LS_MakeChiefCard(card_snr, validTime, endTime, iFlags, iReplaceNo);
             return st;
         }

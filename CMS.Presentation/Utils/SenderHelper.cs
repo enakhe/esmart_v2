@@ -11,16 +11,16 @@ namespace ESMART.Presentation.Utils
 {
     public static class SenderHelper
     {
-        public static async Task<HttpResponseMessage> SendOtp(Hotel hotel, Booking booking, Guest guest, string service, string otp)
+        public static async Task<HttpResponseMessage> SendOtp(Hotel hotel, Booking booking, Guest guest, string service, string otp, decimal amount)
         {
             var apiService = new ApiService(new HttpClient());
             var response = await apiService.PostAsync("http://localhost:8000/api/send-otp", new
             {
                 to = hotel.PhoneNumber,
-                otp = otp,
+                otp,
                 guest = guest.FullName,
                 service,
-                amount = booking.TotalAmount.ToString("N2"),
+                amount = amount.ToString("N2"),
                 account = booking.AccountNumber
             });
 

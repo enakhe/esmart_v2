@@ -302,7 +302,10 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var booking = await context.Bookings.Include(b => b.Guest).FirstOrDefaultAsync(b => b.Id == id);
+                var booking = await context.Bookings
+                    .Include(b => b.Guest)
+                    .Include(b => b.Room)
+                    .FirstOrDefaultAsync(b => b.Id == id);
 
                 if (booking != null)
                     return BookingResult.Success(booking);
