@@ -19,6 +19,9 @@
     <Compile Update="Forms\FrontDesk\Booking\BookingPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Booking\IssueCardDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Guest\AddGuestDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -74,6 +77,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Setting\FinancialSetting\GeneralPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Setting\OperationalSetting\OperationSettingPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Setting\SettingDialog.xaml.cs">

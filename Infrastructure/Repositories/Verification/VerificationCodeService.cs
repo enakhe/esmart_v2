@@ -42,6 +42,34 @@ namespace ESMART.Infrastructure.Repositories.Verification
             }
         }
 
+        public async Task<VerificationCode> GetCodeByBookingId(string id)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                VerificationCode? verificationCode = await context.VerificationCodes.FirstOrDefaultAsync(v => v.BookingId == id);
+                return verificationCode!;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving code. " + ex.Message);
+            }
+        }
+
+        public async Task<VerificationCode> GetCodeByCode(string code)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                VerificationCode? verificationCode = await context.VerificationCodes.FirstOrDefaultAsync(v => v.Code == code);
+                return verificationCode!;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving code. " + ex.Message);
+            }
+        }
+
         public async Task DeleteAsync(string id)
         {
             try

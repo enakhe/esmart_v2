@@ -87,6 +87,9 @@ namespace ESMART.Infrastructure.Repositories.Configuration
                 var category = await context.SettingsCategories
                     .FirstOrDefaultAsync(c => c.Name == "Financial Settings");
 
+                var operationCategory = await context.SettingsCategories
+                    .FirstOrDefaultAsync(c => c.Name == "Operation Settings");
+
                 if (category == null)
                 {
                     category = new SettingsCategory
@@ -98,21 +101,32 @@ namespace ESMART.Infrastructure.Repositories.Configuration
                     await context.SaveChangesAsync();
                 }
 
+                if (operationCategory == null)
+                {
+                    operationCategory = new SettingsCategory
+                    {
+                        Name = "Operation Settings"
+                    };
+
+                    await context.SettingsCategories.AddAsync(operationCategory);
+                    await context.SaveChangesAsync();
+                }
+
                 // Check for existing settings under this category
                 var existingSettings = await context.HotelSettings
-                    .Where(s => s.CategoryId == category.Id)
+                    .Where(s => s.CategoryId == category.Id || s.CategoryId == operationCategory.Id)
                     .Select(s => s.Key)
                     .ToListAsync();
 
                 var defaultSettings = new List<HotelSetting>();
 
-                void AddSettingIfNotExists(string key, string value, string dataType, string description)
+                void AddSettingIfNotExists(string key, string value, string dataType, string description, string categoryId)
                 {
                     if (!existingSettings.Contains(key))
                     {
                         defaultSettings.Add(new HotelSetting
                         {
-                            CategoryId = category.Id,
+                            CategoryId = categoryId,
                             Key = key,
                             Value = value,
                             DataType = dataType,
@@ -124,10 +138,11 @@ namespace ESMART.Infrastructure.Repositories.Configuration
                     }
                 }
 
-                AddSettingIfNotExists("VAT", "7.5", "decimal", "VAT Rate (%)");
-                AddSettingIfNotExists("Discount", "0.0", "decimal", "Decimal (%)");
-                AddSettingIfNotExists("ServiceCharge", "10", "decimal", "Service Charge Rate (%)");
-                AddSettingIfNotExists("CurrencySymbol", "NGN", "string", "Default Currency Symbol");
+                AddSettingIfNotExists("VAT", "7.5", "decimal", "VAT Rate (%)", category.Id);
+                AddSettingIfNotExists("Discount", "0.0", "decimal", "Decimal (%)", category.Id);
+                AddSettingIfNotExists("ServiceCharge", "10", "decimal", "Service Charge Rate (%)", category.Id);
+                AddSettingIfNotExists("CurrencySymbol", "NGN", "string", "Default Currency Symbol", category.Id);
+                AddSettingIfNotExists("LockType", "MIFI", "string", "Default Lock Type", operationCategory.Id);
 
                 if (defaultSettings.Any())
                 {

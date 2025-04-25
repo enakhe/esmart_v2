@@ -1,6 +1,12 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Entities.Verification;
+using ESMART.Domain.Enum;
+using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Infrastructure.Repositories.FrontDesk;
+using ESMART.Presentation.Session;
+using ESMART.Presentation.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,12 +30,16 @@ namespace ESMART.Presentation.Forms.Verification
     public partial class VerifyPaymentWindow : Window
     {
         private readonly IVerificationCodeService _verificationCodeService;
+        private readonly IHotelSettingsService _hotelSettingsService;
+        private readonly IBookingRepository _bookingRepository;
         private readonly Booking _booking;
         private DispatcherTimer _timer;
         private TimeSpan _timeRemaining;
-        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, Booking booking)
+        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, Booking booking)
         {
             _verificationCodeService = verificationCodeService;
+            _hotelSettingsService = hotelSettingsService;
+            _bookingRepository = bookingRepository;
             _booking = booking;
             InitializeComponent();
             StartCountdown(TimeSpan.FromMinutes(20));
@@ -90,15 +100,43 @@ namespace ESMART.Presentation.Forms.Verification
                 LoaderOverlay.Visibility = Visibility.Visible;
                 try
                 {
-                    var isValid = await _verificationCodeService.VerifyCodeAsync(_booking.Id, txtPrefix.Text + txtCode.Text);
-                    if( isValid )
+                    var enteredCode = txtPrefix.Text + txtCode.Text;
+
+                    var code = await _verificationCodeService.GetCodeByCode(enteredCode);
+
+                    if (code != null)
                     {
-                        MessageBox.Show("Successfully verified OTP, kindly issue a card for the guest", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        this.DialogResult = true;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Invalid OTP, kindly check the code or try again", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        if(code.ExpiresAt < DateTime.Now)
+                        {
+                            MessageBox.Show("Verification code has expired, kindly check the code or resend another one", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else
+                        {
+                            var isValid = await _verificationCodeService.VerifyCodeAsync(_booking.Id, enteredCode);
+
+                            if (isValid)
+                            {
+                                MessageBox.Show("Successfully verified OTP, kindly issue a card for the guest", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                                var paidBookingResult = await _bookingRepository.GetBookingById(_booking.Id);
+
+                                if (paidBookingResult != null)
+                                {
+                                    var paidBooking = paidBookingResult.Response;
+                                    if (paidBooking != null)
+                                    {
+                                        paidBooking.Status = PaymentStatus.Completed;
+                                        await _bookingRepository.UpdateBooking(paidBooking);
+                                    }
+                                }
+
+                                this.DialogResult = true;
+                            }
+                            else
+                            {
+                                MessageBox.Show("Invalid OTP, kindly check the code or try again", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -113,6 +151,47 @@ namespace ESMART.Presentation.Forms.Verification
             else
             {
                 MessageBox.Show("Please select enter in the code.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        public async void ResendButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var oldCode = await _verificationCodeService.GetCodeByBookingId(_booking.Id);
+                if(oldCode != null)
+                {
+                    await _verificationCodeService.DeleteAsync(oldCode.Id);
+                }
+
+                var hotel = await _hotelSettingsService.GetHotelInformation();
+                if (hotel != null)
+                {
+                    var verificationCode = new VerificationCode()
+                    {
+                        Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                        BookingId = _booking.Id,
+                        IssuedBy = AuthSession.CurrentUser?.Id
+                    };
+
+                    await _verificationCodeService.AddCode(verificationCode);
+
+                    var response = await SenderHelper.SendOtp(hotel, _booking, _booking.Guest, "Booking", verificationCode.Code);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("New Verification code has been sent", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
     }

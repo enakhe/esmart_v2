@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Add Booking" Height="605" Width="320" Icon="/Forms/FrontDesk/Booking/logo.png" Activated="Window_Activated">
+        Title="Add Booking" Height="605" Width="350" Icon="/Forms/FrontDesk/Booking/logo.png" Activated="Window_Activated">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="31*"/>

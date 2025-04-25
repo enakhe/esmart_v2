@@ -1,4 +1,12 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.Configuration;
+using ESMART.Domain.Entities.Verification;
+using ESMART.Domain.ViewModels.FrontDesk;
+using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Infrastructure.Repositories.Verification;
+using ESMART.Presentation.Forms.Verification;
+using ESMART.Presentation.Session;
+using ESMART.Presentation.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -23,9 +31,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
     public partial class BookingPage : Page
     {
         private readonly IBookingRepository _bookingRepository;
-        public BookingPage(IBookingRepository bookingRepository)
+        private readonly IVerificationCodeService _verificationCodeService;
+        private readonly IHotelSettingsService _hotelSettingsService;
+        public BookingPage(IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService)
         {
             _bookingRepository = bookingRepository;
+            _verificationCodeService = verificationCodeService;
+            _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
 
@@ -63,6 +75,127 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             if (addBookingDialog.ShowDialog() == true)
             {
                 await LoadBooking();
+            }
+        }
+
+        private async void IssueCard_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedBooking = (BookingViewModel)BookingDataGrid.SelectedItem;
+                    if (selectedBooking.Id != null)
+                    {
+                        var hotel = await _hotelSettingsService.GetHotelInformation();
+                        var result = await _bookingRepository.GetBookingById(selectedBooking.Id);
+                        if (result != null)
+                        {
+                            var booking = result.Response;
+                            if (booking != null)
+                            {
+                                if (booking.Status != Domain.Enum.PaymentStatus.Completed)
+                                {
+                                    var verificationCode = new VerificationCode()
+                                    {
+                                        Code = booking.BookingId,
+                                        BookingId = booking.Id,
+                                        IssuedBy = AuthSession.CurrentUser?.Id
+                                    };
+
+                                    await _verificationCodeService.AddCode(verificationCode);
+
+                                    if(hotel != null)
+                                    {
+                                        var response = await SenderHelper.SendOtp(hotel, booking, booking.Guest, "Booking", verificationCode.Code);
+
+                                        if (response.IsSuccessStatusCode)
+                                        {
+                                            MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                                            VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, booking);
+                                            if (verifyPaymentWindow.ShowDialog() == true)
+                                            {
+                                                IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                                if (issueCardDialog.ShowDialog() == true)
+                                                {
+                                                    await LoadBooking();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                    if (issueCardDialog.ShowDialog() == true)
+                                    {
+                                        await LoadBooking();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a booking before issuing card.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void DeleteBooking_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedBooking = (BookingViewModel)BookingDataGrid.SelectedItem;
+
+                    if (selectedBooking.Id != null)
+                    {
+                        MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to delete this booking?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (messageResult == MessageBoxResult.Yes)
+                        {
+                            LoaderOverlay.Visibility = Visibility.Visible;
+                            var result = await _bookingRepository.DeleteBooking(selectedBooking.Id);
+
+                            if (!result.Succeeded)
+                            {
+                                var sb = new StringBuilder();
+                                foreach (var item in result.Errors)
+                                {
+                                    sb.AppendLine(item);
+                                }
+                                MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
+
+                            await LoadBooking();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a booking before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
 

@@ -257,8 +257,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         var response = await SenderHelper.SendOtp(hotel, booking, bookedGuest.Response, "Booking", verificationCode.Code);
                         if (response.IsSuccessStatusCode)
                         {
-                            VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, booking);
-                            verifyPaymentWindow.ShowDialog();
+                            VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, booking);
+                            if (verifyPaymentWindow.ShowDialog() == true)
+                            {
+                                
+                            }
                         }
                     }
 

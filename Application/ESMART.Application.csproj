@@ -7,9 +7,140 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Common\DLL\cardRecord.ini" />
+    <None Remove="Common\DLL\d12.dll" />
+    <None Remove="Common\DLL\d12c.dll" />
+    <None Remove="Common\DLL\d12c.lib" />
+    <None Remove="Common\DLL\D12F.dll" />
+    <None Remove="Common\DLL\DataBase.ini" />
+    <None Remove="Common\DLL\DataReader.dll" />
+    <None Remove="Common\DLL\DBConfig.ini" />
+    <None Remove="Common\DLL\DT266SDK.dll" />
+    <None Remove="Common\DLL\EasyD12_500.dll" />
+    <None Remove="Common\DLL\EasyZUSBMulti.dll" />
+    <None Remove="Common\DLL\HOOKS_M1.dll" />
+    <None Remove="Common\DLL\HSDApp.dll" />
+    <None Remove="Common\DLL\Languages-cn.ini" />
+    <None Remove="Common\DLL\Languages.ini" />
+    <None Remove="Common\DLL\LockCard.dll" />
+    <None Remove="Common\DLL\LockInfo.dll" />
+    <None Remove="Common\DLL\LockSDK.dll" />
+    <None Remove="Common\DLL\LockSDK.lib" />
+    <None Remove="Common\DLL\MF0SIM.dll" />
+    <None Remove="Common\DLL\MFC42D.DLL" />
+    <None Remove="Common\DLL\MSVCRTD.DLL" />
+    <None Remove="Common\DLL\proRFL.dll" />
+    <None Remove="Common\DLL\proRFL.lib" />
+    <None Remove="Common\DLL\PubFuns.dll" />
+    <None Remove="Common\DLL\RC500USB.dll" />
+    <None Remove="Common\DLL\RF50S.dll" />
+    <None Remove="Common\DLL\RF57S.dll" />
+    <None Remove="Common\DLL\Rf_Rw.dll" />
+    <None Remove="Common\DLL\RoomData.ini" />
+    <None Remove="Common\DLL\V9RF.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Common\DLL\cardRecord.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\d12.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\d12c.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\d12c.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\DataBase.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\DataReader.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\DBConfig.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\DT266SDK.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\EasyD12_500.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\EasyZUSBMulti.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\HOOKS_M1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\HSDApp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\Languages-cn.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\Languages.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\LockCard.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\LockInfo.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\LockSDK.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\LockSDK.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\MF0SIM.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\MFC42D.DLL">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\MSVCRTD.DLL">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\proRFL.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\proRFL.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\PubFuns.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\RC500USB.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\RF50S.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\RF57S.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\Rf_Rw.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\RoomData.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\DLL\V9RF.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="Common\DLL\D12F.dll" />
   </ItemGroup>
 
   <ItemGroup>

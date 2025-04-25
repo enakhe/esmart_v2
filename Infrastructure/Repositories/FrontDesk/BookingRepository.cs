@@ -56,7 +56,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                     DateCreated = b.DateCreated,
                                     DateModified = b.DateModified,
                                 })
-                                .OrderBy(r => r.Room)
+                                .OrderByDescending(r => r.DateCreated)
                                 .ToListAsync();
                 return allBookings;
             }
@@ -297,17 +297,48 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<BookingResult> GetRoomById(string id)
+        public async Task<BookingResult> GetBookingById(string id)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var booking = await context.Bookings.FirstOrDefaultAsync(b => b.Id == id);
+                var booking = await context.Bookings.Include(b => b.Guest).FirstOrDefaultAsync(b => b.Id == id);
 
                 if (booking != null)
                     return BookingResult.Success(booking);
 
                 return BookingResult.Failure(["Unable to find a booking with the provided ID"]);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving a booking with the provided ID. " + ex.Message);
+            }
+        }
+
+        public async Task<BookingViewModel> GetBookingByIdViewModel(string id)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var booking = await context.Bookings.Where(b => b.Id == id)
+                    .Select(b => new BookingViewModel
+                    {
+                        Id = b.Id,
+                        Guest = b.Guest.FullName,
+                        GuestPhoneNo = b.Guest.PhoneNumber,
+                        Room = b.Room.Number,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        PaymentMethod = b.PaymentMethod.ToString(),
+                        Duration = b.Duration.ToString(),
+                        Status = b.Status.ToString(),
+                        TotalAmount = b.TotalAmount,
+                        CreatedBy = b.ApplicationUser.FullName,
+                        DateCreated = b.DateCreated,
+                        DateModified = b.DateModified,
+                    }).FirstOrDefaultAsync();
+
+                return booking;
             }
             catch (Exception ex)
             {

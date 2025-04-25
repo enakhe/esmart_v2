@@ -16,13 +16,11 @@ public class ApiService(HttpClient httpClient)
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(url, content);
-
-            response.EnsureSuccessStatusCode();
             return response;
         }
         catch (HttpRequestException ex)
         {
-            throw new Exception($"HTTP POST request failed: {ex.Message}");
+            throw new Exception($"An error ocurred when sending code. This might be caused by network related issues: {ex.Message}");
         }
     }
 }

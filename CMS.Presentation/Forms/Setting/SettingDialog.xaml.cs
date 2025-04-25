@@ -1,5 +1,6 @@
 ﻿using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.Setting.FinancialSetting;
+using ESMART.Presentation.Forms.Setting.OperationalSetting;
 using ESMART.Presentation.Forms.Setting.SystemSetup;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -56,6 +57,17 @@ namespace ESMART.Presentation.Forms.Setting
             General generalPage = serviceProvider.GetRequiredService<General>();
 
             MainFrame.Navigate(generalPage);
+        }
+
+        private void SystemSetup_OpearationSetting_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            OperationSettingPage operationSettingPage = serviceProvider.GetRequiredService<OperationSettingPage>();
+
+            MainFrame.Navigate(operationSettingPage);
         }
     }
 }

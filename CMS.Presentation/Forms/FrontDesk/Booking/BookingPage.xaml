@@ -204,7 +204,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Button Width="30" Height="30" ToolTip="Issue Card" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                        <Button Width="30" Height="30" ToolTip="Issue Card" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="IssueCard_Click">
                                                             <TextBlock Text="💳" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 
@@ -224,7 +224,7 @@
                                                             <TextBlock Text="🧾" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 
-                                                        <Button  Width="30"  Height="30"  ToolTip="Delete Booking"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}">
+                                                        <Button  Width="30"  Height="30"  ToolTip="Delete Booking"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteBooking_Click">
                                                             <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
                                                     </StackPanel>
