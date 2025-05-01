@@ -1,11 +1,6 @@
 ﻿using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Entities.FrontDesk;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESMART.Presentation.Utils
 {

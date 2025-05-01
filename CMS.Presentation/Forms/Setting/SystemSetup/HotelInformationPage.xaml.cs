@@ -1,21 +1,10 @@
 ﻿using ESMART.Application.Common.Interface;
-using System;
-using System.Collections.Generic;
+using ESMART.Application.Common.Utils;
+using Microsoft.Win32;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ESMART.Application.Common.Utils;
 
 namespace ESMART.Presentation.Forms.Setting.SystemSetup
 {

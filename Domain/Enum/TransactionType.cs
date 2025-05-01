@@ -11,10 +11,18 @@
     public enum PaymentMethod
     {
         Cash,
-        CreditCard,
         DebitCard,
         BankTransfer,
-        MobilePayment,
+        Other
+    }
+
+    public enum Category
+    {
+        Accomodation,
+        FoodAndBeverage,
+        Spa,
+        Laundry,
+        Transportation,
         Other
     }
 }

@@ -40,7 +40,6 @@ namespace ESMART.Domain.Entities.RoomSettings
         Booked,
         Reserved,
         Dirty,
-        Maintenance,
-        OutOfOrder
+        Maintenance
     }
 }

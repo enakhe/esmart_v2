@@ -2,11 +2,6 @@
 using ESMART.Domain.Entities.Verification;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESMART.Infrastructure.Repositories.Verification
 {
@@ -36,7 +31,7 @@ namespace ESMART.Infrastructure.Repositories.Verification
                 VerificationCode? verificationCode = await context.VerificationCodes.FirstOrDefaultAsync(v => v.Id == id);
                 return verificationCode!;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("An error occurred when retrieving code. " + ex.Message);
             }

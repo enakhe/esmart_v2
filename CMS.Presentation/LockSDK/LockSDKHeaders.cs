@@ -1,8 +1,7 @@
 ﻿using ESMART_HMS.Domain.Enum;
-using System;
-using System.Windows;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows;
 
 namespace ESMART.Presentation.LockSDK
 {

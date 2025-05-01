@@ -7,21 +7,12 @@ using ESMART.Domain.Enum;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
 {
@@ -106,7 +97,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private void LoadDefaultSetting()
         {
             dtpCheckIn.SelectedDate = _booking.CheckIn;
-            dtpCheckOut.SelectedDate = DateTime.Now.AddDays(1);
+            dtpCheckOut.SelectedDate = _booking.CheckOut;
+
             txtRoom.Text = _booking.Room.Number;
             txtRoomRate.Text = _booking.Room.Rate.ToString();
         }
@@ -133,7 +125,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 var updatedBy = AuthSession.CurrentUser?.Id;
                 var amount = decimal.Parse(txtRoomRate.Text);
 
-                _booking.CheckOut = checkOut;
+                _booking.CheckOut = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0);
                 _booking.Amount = amount;
                 _booking.Discount = discount;
                 _booking.PaymentMethod = paymentMethod;
@@ -200,6 +192,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             {
 
                             }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Booking extended successfully but could not verify payment", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            this.DialogResult = true;
                         }
                     }
 

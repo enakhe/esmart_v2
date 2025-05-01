@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ESMART.Domain.Entities.Configuration
+﻿namespace ESMART.Domain.Entities.Configuration
 {
     public class SettingsCategory
     {
-        public SettingsCategory() 
-        { 
+        public SettingsCategory()
+        {
             this.HotelSetting = new HashSet<HotelSetting>();
         }
 

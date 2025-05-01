@@ -7,7 +7,6 @@ using ESMART.Domain.Entities.Verification;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace ESMART.Infrastructure.Data
 {

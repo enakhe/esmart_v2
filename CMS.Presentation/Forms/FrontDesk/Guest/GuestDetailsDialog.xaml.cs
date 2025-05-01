@@ -1,4 +1,4 @@
-﻿using ESMART.Application.Interface;
+﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.ViewModels.FrontDesk;
 using System.Globalization;
 using System.Text;

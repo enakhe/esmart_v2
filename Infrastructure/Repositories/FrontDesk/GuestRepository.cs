@@ -1,5 +1,5 @@
-﻿using ESMART.Application.Common.Models;
-using ESMART.Application.Interface;
+﻿using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
@@ -215,76 +215,76 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<List<GuestBillViewModel>> GetGuestBillAsync(string guestId)
-        {
-            try
-            {
-                using var context = _contextFactory.CreateDbContext();
-                var guestBills = await context.Transactions
-                    .Where(t => t.GuestId == guestId && t.Status.ToString() == PaymentStatus.Pending.ToString())
-                    .OrderBy(t => t.Date)
-                    .Select(transaction => new GuestBillViewModel
-                    {
-                        TransactionId = transaction.TransactionId,
-                        Guest = transaction.Guest.FullName,
-                        GuestPhoneNo = transaction.Guest.PhoneNumber,
-                        ServiceId = transaction.ServiceId,
-                        Date = transaction.Date.ToString(),
-                        Status = transaction.Status.ToString(),
-                        Amount = transaction.Amount.ToString(),
-                        TaxAmount = transaction.TaxAmount.ToString(),
-                        ServiceCharge = transaction.ServiceCharge.ToString(),
-                        Discount = transaction.Discount.ToString(),
-                        InvoiceNumber = transaction.InvoiceNumber,
-                        CreatedBy = transaction.ApplicationUser.FirstName,
-                        TotalAmount = transaction.TotalAmount,
-                        Description = transaction.Description,
-                        Type = transaction.Type.ToString(),
-                        BankAccount = transaction.BankAccount,
-                    }).ToListAsync();
+        //public async Task<List<GuestBillViewModel>> GetGuestBillAsync(string guestId)
+        //{
+        //    try
+        //    {
+        //        using var context = _contextFactory.CreateDbContext();
+        //        var guestBills = await context.Transactions
+        //            .Where(t => t.GuestId == guestId && t.TransactionItems.Status.ToString() == PaymentStatus.Pending.ToString())
+        //            .OrderBy(t => t.Date)
+        //            .Select(transaction => new GuestBillViewModel
+        //            {
+        //                TransactionId = transaction.TransactionId,
+        //                Guest = transaction.Guest.FullName,
+        //                GuestPhoneNo = transaction.Guest.PhoneNumber,
+        //                ServiceId = transaction.ServiceId,
+        //                Date = transaction.Date.ToString(),
+        //                Status = transaction.Status.ToString(),
+        //                Amount = transaction.Amount.ToString(),
+        //                TaxAmount = transaction.TaxAmount.ToString(),
+        //                ServiceCharge = transaction.ServiceCharge.ToString(),
+        //                Discount = transaction.Discount.ToString(),
+        //                InvoiceNumber = transaction.InvoiceNumber,
+        //                CreatedBy = transaction.ApplicationUser.FirstName,
+        //                TotalAmount = transaction.TotalAmount,
+        //                Description = transaction.Description,
+        //                Type = transaction.Type.ToString(),
+        //                BankAccount = transaction.BankAccount,
+        //            }).ToListAsync();
 
-                return guestBills;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred when getting guest bills. " + ex.Message);
-            }
-        }
+        //        return guestBills;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("An error occurred when getting guest bills. " + ex.Message);
+        //    }
+        //}
 
-        public async Task<List<GuestBillViewModel>> GetGuestBillByDateAsync(string guestId, DateTime startDate, DateTime endDate)
-        {
-            try
-            {
-                using var context = _contextFactory.CreateDbContext();
-                var guestBills = await context.Transactions
-                    .Where(t => t.GuestId == guestId && t.Date >= startDate && t.Date <= endDate && t.Status.ToString() == PaymentStatus.Pending.ToString())
-                    .OrderBy(t => t.Date)
-                    .Select(transaction => new GuestBillViewModel
-                    {
-                        TransactionId = transaction.TransactionId,
-                        Guest = transaction.Guest.FullName,
-                        GuestPhoneNo = transaction.Guest.PhoneNumber,
-                        ServiceId = transaction.ServiceId,
-                        Date = transaction.Date.ToString(),
-                        Status = transaction.Status.ToString(),
-                        Amount = transaction.Amount.ToString(),
-                        TaxAmount = transaction.TaxAmount.ToString(),
-                        ServiceCharge = transaction.ServiceCharge.ToString(),
-                        Discount = transaction.Discount.ToString(),
-                        InvoiceNumber = transaction.InvoiceNumber,
-                        CreatedBy = transaction.ApplicationUser.FirstName,
-                        TotalAmount = transaction.TotalAmount,
-                        Description = transaction.Description,
-                        Type = transaction.Type.ToString(),
-                        BankAccount = transaction.BankAccount,
-                    }).ToListAsync();
-                return guestBills;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred when getting guest bills by date. " + ex.Message);
-            }
-        }
+        //public async Task<List<GuestBillViewModel>> GetGuestBillByDateAsync(string guestId, DateTime startDate, DateTime endDate)
+        //{
+        //    try
+        //    {
+        //        using var context = _contextFactory.CreateDbContext();
+        //        var guestBills = await context.Transactions
+        //            .Where(t => t.GuestId == guestId && t.Date >= startDate && t.Date <= endDate && t.Status.ToString() == PaymentStatus.Pending.ToString())
+        //            .OrderBy(t => t.Date)
+        //            .Select(transaction => new GuestBillViewModel
+        //            {
+        //                TransactionId = transaction.TransactionId,
+        //                Guest = transaction.Guest.FullName,
+        //                GuestPhoneNo = transaction.Guest.PhoneNumber,
+        //                ServiceId = transaction.ServiceId,
+        //                Date = transaction.Date.ToString(),
+        //                Status = transaction.Status.ToString(),
+        //                Amount = transaction.Amount.ToString(),
+        //                TaxAmount = transaction.TaxAmount.ToString(),
+        //                ServiceCharge = transaction.ServiceCharge.ToString(),
+        //                Discount = transaction.Discount.ToString(),
+        //                InvoiceNumber = transaction.InvoiceNumber,
+        //                CreatedBy = transaction.ApplicationUser.FirstName,
+        //                TotalAmount = transaction.TotalAmount,
+        //                Description = transaction.Description,
+        //                Type = transaction.Type.ToString(),
+        //                BankAccount = transaction.BankAccount,
+        //            }).ToListAsync();
+        //        return guestBills;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("An error occurred when getting guest bills by date. " + ex.Message);
+        //    }
+        //}
 
     }
 }

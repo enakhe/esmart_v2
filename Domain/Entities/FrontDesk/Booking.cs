@@ -4,25 +4,44 @@ using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESMART.Domain.Entities.FrontDesk
 {
     public class Booking
     {
-        public Booking() 
+        public Booking()
         {
             this.Codes = new HashSet<VerificationCode>();
+            this.Transactions = new HashSet<Entities.Transaction.Transaction>();
         }
+
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string BookingId { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
-        public string Duration => $"{(CheckOut - CheckIn).Days + 1} {((CheckOut - CheckIn).Days > 1 ? "days" : "day")}";
+        public string Duration
+        {
+            get
+            {
+                var duration = CheckOut - CheckIn;
+                if (duration.TotalDays >= 1)
+                {
+                    int days = (int)duration.TotalDays;
+                    return $"{days} {(days > 1 ? "days" : "day")}";
+                }
+                else if (duration.TotalHours >= 1)
+                {
+                    int hours = (int)duration.TotalHours;
+                    return $"{hours} {(hours > 1 ? "hours" : "hour")}";
+                }
+                else
+                {
+                    int minutes = (int)duration.TotalMinutes;
+                    return $"{minutes} {(minutes > 1 ? "minutes" : "minute")}";
+                }
+            }
+        }
+
         public decimal Amount { get; set; }
         public PaymentStatus Status { get; set; }
         public string AccountNumber { get; set; }
@@ -43,8 +62,9 @@ namespace ESMART.Domain.Entities.FrontDesk
 
         public virtual Guest Guest { get; set; }
         public virtual Room Room { get; set; }
-        public virtual ApplicationUser  ApplicationUser { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
 
         public ICollection<VerificationCode> Codes { get; set; }
+        public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }
     }
 }

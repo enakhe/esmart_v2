@@ -212,12 +212,12 @@
                                                             <TextBlock Text="⏱" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 
-                                                        <Button Width="30" Height="30" ToolTip="Transfer Guest" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                        <Button Width="30" Height="30" ToolTip="Transfer Guest" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="TransferGuest_Click">
                                                             <TextBlock Text="✈️" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 
-                                                        <Button Width="30" Height="30" ToolTip="Edit Booking" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
-                                                            <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <Button Width="30" Height="30" ToolTip="View Booking" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                            <TextBlock Text="👁" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 
                                                         <Button  Width="30"  Height="30"  ToolTip="Checkout"  Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">

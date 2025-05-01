@@ -1,20 +1,7 @@
 ﻿using ESMART.Application.Common.Interface;
-using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Presentation.LockSDK;
 using ESMART_HMS.Domain.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
 {
@@ -90,7 +77,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 if (st == 1)
                     this.DialogResult = true;
-          
+
                 else
                     LockSDKMethods.CheckErr(st);
 

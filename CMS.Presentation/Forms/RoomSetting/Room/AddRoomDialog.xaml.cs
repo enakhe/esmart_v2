@@ -38,7 +38,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                     cmbBuilding.SelectedValuePath = "Id";
                 }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -55,19 +55,17 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                bool isNull = Helper.AreAnyNullOrEmpty(cmbBuilding.SelectedValue.ToString());
+                bool isNull = Helper.AreAnyNullOrEmpty(cmbBuilding.SelectedItem.ToString()!);
 
                 if (!isNull)
                 {
-                    var floors = await _roomRepository.GetFloorsByBuilding(cmbBuilding.SelectedValue.ToString());
+                    var floors = await _roomRepository.GetFloorsByBuilding(cmbBuilding.SelectedValue.ToString()!);
                     if (floors != null)
                     {
                         cmbFloor.ItemsSource = floors;
                         cmbFloor.DisplayMemberPath = "Number";
                         cmbFloor.SelectedValuePath = "Id";
                     }
-
-                    
                 }
             }
             catch (Exception ex)
@@ -94,7 +92,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                     cmbArea.SelectedValuePath = "Id";
                 }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -118,7 +116,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                     cmbRoomType.DisplayMemberPath = "Name";
                     cmbRoomType.SelectedValuePath = "Id";
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -135,7 +133,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
             try
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
-                bool isNull = Helper.AreAnyNullOrEmpty(txtRoomNumber.Text, txtRoomRate.Text, cmbBuilding.SelectedValue.ToString(), cmbFloor.SelectedValue.ToString(), cmbArea.SelectedValue.ToString(), cmbRoomType.SelectedValue.ToString());
+                bool isNull = Helper.AreAnyNullOrEmpty(txtRoomNumber.Text, txtRoomRate.Text, cmbBuilding.SelectedValue.ToString()!, cmbFloor.SelectedValue.ToString()!, cmbArea.SelectedValue.ToString()!, cmbRoomType.SelectedValue.ToString()!);
 
                 if (isNull)
                 {
@@ -253,10 +251,10 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
 
         private async void cmbRoomType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            bool isNull = Helper.AreAnyNullOrEmpty(cmbRoomType.SelectedValue.ToString());
+            bool isNull = Helper.AreAnyNullOrEmpty(cmbRoomType.SelectedValue.ToString()!);
             if (!isNull)
             {
-                var result = await _roomRepository.GetRoomTypeById(cmbRoomType.SelectedValue.ToString());
+                var result = await _roomRepository.GetRoomTypeById(cmbRoomType.SelectedValue.ToString()!);
 
                 if (result == null)
                 {

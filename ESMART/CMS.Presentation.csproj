@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\CMS.Application.csproj" />
+    <ProjectReference Include="..\Application\ESMART.Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\ESMART.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -25,6 +25,9 @@
     <Compile Update="Forms\FrontDesk\Booking\IssueCardDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Booking\TransferGuestDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Guest\AddGuestDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

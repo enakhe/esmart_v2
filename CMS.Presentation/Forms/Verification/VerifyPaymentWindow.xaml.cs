@@ -3,23 +3,10 @@ using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
-using ESMART.Infrastructure.Repositories.Configuration;
-using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace ESMART.Presentation.Forms.Verification
@@ -78,7 +65,6 @@ namespace ESMART.Presentation.Forms.Verification
             {
                 _timer.Stop();
                 TimerText.Text = "00:00";
-                MessageBox.Show("Time's up!");
             }
             else
             {
@@ -95,7 +81,7 @@ namespace ESMART.Presentation.Forms.Verification
         public async void VerifyButton_Click(object sender, RoutedEventArgs e)
         {
             bool isNull = Helper.AreAnyNullOrEmpty(txtCode.Text);
-            if (!isNull) 
+            if (!isNull)
             {
                 LoaderOverlay.Visibility = Visibility.Visible;
                 try
@@ -106,9 +92,10 @@ namespace ESMART.Presentation.Forms.Verification
 
                     if (code != null)
                     {
-                        if(code.ExpiresAt < DateTime.Now)
+                        if (code.ExpiresAt < DateTime.Now)
                         {
                             MessageBox.Show("Verification code has expired, kindly check the code or resend another one", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            await _verificationCodeService.DeleteAsync(code.Id);
                         }
                         else
                         {
@@ -117,6 +104,8 @@ namespace ESMART.Presentation.Forms.Verification
                             if (isValid)
                             {
                                 MessageBox.Show("Successfully verified OTP, kindly issue a card for the guest", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                                await _verificationCodeService.DeleteAsync(code.Id);
 
                                 var paidBookingResult = await _bookingRepository.GetBookingById(_booking.Id);
 
@@ -160,7 +149,7 @@ namespace ESMART.Presentation.Forms.Verification
             try
             {
                 var oldCode = await _verificationCodeService.GetCodeByBookingId(_booking.Id);
-                if(oldCode != null)
+                if (oldCode != null)
                 {
                     await _verificationCodeService.DeleteAsync(oldCode.Id);
                 }

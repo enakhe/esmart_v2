@@ -1,8 +1,6 @@
 ﻿using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.ViewModels.FrontDesk;
-using System;
-using System.Collections.Generic;
 
 namespace ESMART.Application.Common.Interface
 {

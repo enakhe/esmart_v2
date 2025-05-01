@@ -1,7 +1,5 @@
-﻿using ESMART.Application.Interface;
-using ESMART.Domain.Entities.FrontDesk;
+﻿using ESMART.Application.Common.Interface;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;

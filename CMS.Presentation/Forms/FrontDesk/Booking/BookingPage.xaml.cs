@@ -1,28 +1,14 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Interface;
-using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.ViewModels.FrontDesk;
-using ESMART.Infrastructure.Repositories.Configuration;
-using ESMART.Infrastructure.Repositories.Verification;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
 {
@@ -111,7 +97,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                                     await _verificationCodeService.AddCode(verificationCode);
 
-                                    if(hotel != null)
+                                    if (hotel != null)
                                     {
                                         var response = await SenderHelper.SendOtp(hotel, booking, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
 
@@ -170,6 +156,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     {
                         var hotel = await _hotelSettingsService.GetHotelInformation();
                         var result = await _bookingRepository.GetBookingById(selectedBooking.Id);
+
                         if (result != null)
                         {
                             var booking = result.Response;
@@ -200,7 +187,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                                 ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, booking);
                                                 if (extendStayDialog.ShowDialog() == true)
                                                 {
-                                                    await LoadBooking();
+                                                    IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                                    if (issueCardDialog.ShowDialog() == true)
+                                                    {
+                                                        await LoadBooking();
+                                                    }
                                                 }
                                             }
                                         }
@@ -211,7 +202,95 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                     ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, booking);
                                     if (extendStayDialog.ShowDialog() == true)
                                     {
-                                        await LoadBooking();
+                                        IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                        if (issueCardDialog.ShowDialog() == true)
+                                        {
+                                            await LoadBooking();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a booking before issuing card.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void TransferGuest_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedBooking = (BookingViewModel)BookingDataGrid.SelectedItem;
+                    if (selectedBooking.Id != null)
+                    {
+                        var hotel = await _hotelSettingsService.GetHotelInformation();
+                        var result = await _bookingRepository.GetBookingById(selectedBooking.Id);
+
+                        if (result != null)
+                        {
+                            var booking = result.Response;
+                            if (booking != null)
+                            {
+                                if (booking.Status != Domain.Enum.PaymentStatus.Completed)
+                                {
+                                    var verificationCode = new VerificationCode()
+                                    {
+                                        Code = booking.BookingId,
+                                        BookingId = booking.Id,
+                                        IssuedBy = AuthSession.CurrentUser?.Id
+                                    };
+
+                                    await _verificationCodeService.AddCode(verificationCode);
+
+                                    if (hotel != null)
+                                    {
+                                        var response = await SenderHelper.SendOtp(hotel, booking, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
+
+                                        if (response.IsSuccessStatusCode)
+                                        {
+                                            MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                                            VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, booking);
+                                            if (verifyPaymentWindow.ShowDialog() == true)
+                                            {
+                                                TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, booking);
+                                                if (transferGuestDialog.ShowDialog() == true)
+                                                {
+                                                    IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                                    if (issueCardDialog.ShowDialog() == true)
+                                                    {
+                                                        await LoadBooking();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, booking);
+                                    if (transferGuestDialog.ShowDialog() == true)
+                                    {
+                                        IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                        if (issueCardDialog.ShowDialog() == true)
+                                        {
+                                            await LoadBooking();
+                                        }
                                     }
                                 }
                             }

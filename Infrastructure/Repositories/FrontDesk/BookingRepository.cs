@@ -2,15 +2,10 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Models;
-using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
-using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ESMART.Infrastructure.Repositories.FrontDesk
 {
@@ -478,7 +473,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 using var context = _contextFactory.CreateDbContext();
                 return context.Bookings.Where(b => b.GuestId == id).ToList().Count();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Error retriving total number of Guest Booking", ex);
             }

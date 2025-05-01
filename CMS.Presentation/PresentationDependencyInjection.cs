@@ -1,5 +1,4 @@
-﻿using Emgu.CV.CvEnum;
-using ESMART.Presentation.Forms;
+﻿using ESMART.Presentation.Forms;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Home;
@@ -9,7 +8,6 @@ using ESMART.Presentation.Forms.RoomSetting.Floor;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Forms.RoomSetting.RoomType;
 using ESMART.Presentation.Forms.Setting;
-using ESMART.Presentation.Forms.Setting.FinancialSetting;
 using ESMART.Presentation.Forms.Setting.OperationalSetting;
 using ESMART.Presentation.Forms.Setting.SystemSetup;
 using ESMART.Presentation.Forms.Verification;

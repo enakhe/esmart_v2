@@ -81,23 +81,18 @@
                             </StackPanel>
                         </Border>
 
+                        <Border Background="#FF7500" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
+                            <StackPanel>
+                                <TextBlock Text="Dirty" Foreground="White" FontSize="9"/>
+                            </StackPanel>
+                        </Border>
+                        
                         <Border Background="#FF0000" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
                             <StackPanel>
                                 <TextBlock Text="Maintenance" Foreground="White" FontSize="9"/>
                             </StackPanel>
                         </Border>
 
-                        <Border Background="#FF7500" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
-                            <StackPanel>
-                                <TextBlock Text="Dirty" Foreground="White" FontSize="9"/>
-                            </StackPanel>
-                        </Border>
-
-                        <Border Background="#000000" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
-                            <StackPanel>
-                                <TextBlock Text="Out Of Order" Foreground="White" FontSize="9"/>
-                            </StackPanel>
-                        </Border>
                     </StackPanel>
                 </Grid>
                 
