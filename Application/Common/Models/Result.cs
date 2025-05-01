@@ -1,4 +1,6 @@
-﻿using ESMART.Domain.Entities.Data;
+﻿#nullable disable
+
+using ESMART.Domain.Entities.Data;
 
 namespace ESMART.Application.Common.Models
 {
@@ -7,7 +9,7 @@ namespace ESMART.Application.Common.Models
         internal Result(bool succeeded, IEnumerable<string> errors, ApplicationUser data)
         {
             Succeeded = succeeded;
-            Errors = errors.ToArray();
+            Errors = [.. errors];
             Response = data;
         }
 
@@ -17,7 +19,7 @@ namespace ESMART.Application.Common.Models
 
         public static Result Success(ApplicationUser data)
         {
-            return new Result(true, Array.Empty<string>(), data);
+            return new Result(true, [], data);
         }
 
         public static Result Failure(IEnumerable<string> errors)

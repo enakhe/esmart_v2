@@ -1,4 +1,6 @@
-﻿namespace ESMART.Domain.Entities.Configuration
+﻿#nullable disable
+
+namespace ESMART.Domain.Entities.Configuration
 {
     public class CurrencyOption
     {

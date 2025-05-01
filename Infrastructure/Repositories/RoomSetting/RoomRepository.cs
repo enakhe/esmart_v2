@@ -1,7 +1,7 @@
 ﻿#nullable disable
 
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Models;
-using ESMART.Application.Interface;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.RoomSetting;
 using ESMART.Infrastructure.Data;

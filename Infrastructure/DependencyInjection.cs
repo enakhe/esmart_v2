@@ -1,5 +1,4 @@
 ﻿using ESMART.Application.Common.Interface;
-using ESMART.Application.Interface;
 using ESMART.Infrastructure.Identity;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Repositories.FrontDesk;

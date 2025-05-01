@@ -1,4 +1,6 @@
-﻿using ESMART.Domain.Entities.FrontDesk;
+﻿#nullable disable
+
+using ESMART.Domain.Entities.FrontDesk;
 
 namespace ESMART.Application.Common.Models
 {
@@ -7,7 +9,7 @@ namespace ESMART.Application.Common.Models
         internal GuestResult(bool succeeded, IEnumerable<string> errors, Guest data)
         {
             Succeeded = succeeded;
-            Errors = errors.ToArray();
+            Errors = [..errors];
             Response = data;
         }
 
@@ -17,7 +19,7 @@ namespace ESMART.Application.Common.Models
 
         public static GuestResult Success(Guest data)
         {
-            return new GuestResult(true, Array.Empty<string>(), data);
+            return new GuestResult(true, [], data);
         }
 
         public static GuestResult Failure(IEnumerable<string> errors)
@@ -31,7 +33,7 @@ namespace ESMART.Application.Common.Models
         internal GuestIdenityResult(bool succeeded, IEnumerable<string> errors, GuestIdentity data)
         {
             Succeeded = succeeded;
-            Errors = errors.ToArray();
+            Errors = [..errors];
             Response = data;
         }
 
@@ -41,7 +43,7 @@ namespace ESMART.Application.Common.Models
 
         public static GuestIdenityResult Success(GuestIdentity data)
         {
-            return new GuestIdenityResult(true, Array.Empty<string>(), data);
+            return new GuestIdenityResult(true, [], data);
         }
 
         public static GuestIdenityResult Failure(IEnumerable<string> errors)

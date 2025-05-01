@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace ESMART_HMS.Domain.Enum
+namespace ESMART.Domain.Enum
 {
     [Flags]
     public enum LOCK_SETTING
@@ -86,14 +86,14 @@ namespace ESMART_HMS.Domain.Enum
 
         CF_JUDGE_CHECKIN_TIME = 0x80,      // Enable check-in time judgement (guest card)   
 
-        CF_CHANGE_FLAGS = (0x01 << 16),   // Change lock flag
-        CF_CLEAR_ROOM_INFO = (0x02 << 16),   // Clear guest room information (lock configuration card)
-        CF_FORBID_CARDS = (0x04 << 16),   // Block room (lock configuration card)
-        CF_SET_ONE_AREA = (0x08 << 16),   // Clear guest room information (lock configuration card)
-        CF_CLR_ONE_AREA = (0x10 << 16),   // Block room (lock configuration card)
-        CF_SET_ALL_AREA = (0x20 << 16),   // Clear guest room information (lock configuration card)
-        CF_CLR_ALL_AREA = (0x40 << 16),   // Block room (lock configuration card)
-        CF_SET_CHANNEL_TIME = (0x80 << 16),   // Set channel door time
+        CF_CHANGE_FLAGS = 0x01 << 16,   // Change lock flag
+        CF_CLEAR_ROOM_INFO = 0x02 << 16,   // Clear guest room information (lock configuration card)
+        CF_FORBID_CARDS = 0x04 << 16,   // Block room (lock configuration card)
+        CF_SET_ONE_AREA = 0x08 << 16,   // Clear guest room information (lock configuration card)
+        CF_CLR_ONE_AREA = 0x10 << 16,   // Block room (lock configuration card)
+        CF_SET_ALL_AREA = 0x20 << 16,   // Clear guest room information (lock configuration card)
+        CF_CLR_ALL_AREA = 0x40 << 16,   // Block room (lock configuration card)
+        CF_SET_CHANNEL_TIME = 0x80 << 16,   // Set channel door time
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]

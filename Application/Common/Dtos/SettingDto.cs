@@ -1,4 +1,6 @@
-﻿namespace ESMART.Application.Common.Dtos
+﻿#nullable disable
+
+namespace ESMART.Application.Common.Dtos
 {
     public class SettingDto
     {

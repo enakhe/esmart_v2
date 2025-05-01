@@ -1,7 +1,7 @@
 ﻿using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.RoomSetting;
-namespace ESMART.Application.Interface
+namespace ESMART.Application.Common.Interface
 {
     public interface IRoomRepository
     {
