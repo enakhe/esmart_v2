@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250423131852_VerificationCodesMigration")]
-    partial class VerificationCodesMigration
+    [Migration("20250501212114_TransactionMigration")]
+    partial class TransactionMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -656,14 +656,11 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("BankAccount")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("BookingId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -677,9 +674,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("GuestId")
                         .HasColumnType("nvarchar(450)");
 
@@ -689,23 +683,11 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<bool>("IsTrashed")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("ServiceCharge")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ServiceId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TaxAmount")
+                    b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("TransactionId")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Type")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -713,6 +695,8 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("BookingId");
 
                     b.HasIndex("GuestId");
 
@@ -724,17 +708,38 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal?>("Amount")
+                    b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Category")
+                    b.Property<string>("BankAccount")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsTrashed")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("ServiceCharge")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("TransactionId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1013,11 +1018,17 @@ namespace ESMART.Infrastructure.Migrations
                         .WithMany("Transactions")
                         .HasForeignKey("ApplicationUserId");
 
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Booking", "Booking")
+                        .WithMany("Transactions")
+                        .HasForeignKey("BookingId");
+
                     b.HasOne("ESMART.Domain.Entities.FrontDesk.Guest", "Guest")
                         .WithMany("Transactions")
                         .HasForeignKey("GuestId");
 
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("Booking");
 
                     b.Navigation("Guest");
                 });
@@ -1115,14 +1126,15 @@ namespace ESMART.Infrastructure.Migrations
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Booking", b =>
                 {
                     b.Navigation("Codes");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Guest", b =>
                 {
                     b.Navigation("Bookings");
 
-                    b.Navigation("GuestIdentity")
-                        .IsRequired();
+                    b.Navigation("GuestIdentity");
 
                     b.Navigation("Transactions");
                 });

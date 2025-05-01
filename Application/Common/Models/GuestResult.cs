@@ -9,7 +9,7 @@ namespace ESMART.Application.Common.Models
         internal GuestResult(bool succeeded, IEnumerable<string> errors, Guest data)
         {
             Succeeded = succeeded;
-            Errors = [..errors];
+            Errors = [.. errors];
             Response = data;
         }
 
@@ -33,7 +33,7 @@ namespace ESMART.Application.Common.Models
         internal GuestIdenityResult(bool succeeded, IEnumerable<string> errors, GuestIdentity data)
         {
             Succeeded = succeeded;
-            Errors = [..errors];
+            Errors = [.. errors];
             Response = data;
         }
 

@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Enum;
 
 namespace ESMART.Domain.Entities.Transaction
@@ -17,8 +18,12 @@ namespace ESMART.Domain.Entities.Transaction
         public PaymentStatus Status { get; set; }
         public bool IsTrashed { get; set; }
         public string BankAccount { get; set; }
+        public DateTime DateAdded { get; set; }
+        public string IssuedBy { get; set; }
+
 
         public string TransactionId { get; set; }
         public virtual Transaction Transaction { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

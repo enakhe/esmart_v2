@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ESMART.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class TransactionMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -399,48 +400,6 @@ namespace ESMART.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Transactions",
-                schema: "ESMART",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GuestId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ServiceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: true),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ServiceCharge = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    InvoiceNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
-                    BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Transactions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Transactions_Guests_GuestId",
-                        column: x => x.GuestId,
-                        principalSchema: "ESMART",
-                        principalTable: "Guests",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Transactions_User_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalSchema: "ESMART",
-                        principalTable: "User",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ApplicationRoleCategory",
                 schema: "ESMART",
                 columns: table => new
@@ -542,6 +501,7 @@ namespace ESMART.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BookingId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CheckIn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CheckOut = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -549,6 +509,7 @@ namespace ESMART.Infrastructure.Migrations
                     AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     VAT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ServiceCharge = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentMethod = table.Column<int>(type: "int", nullable: false),
                     GuestId = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -557,6 +518,7 @@ namespace ESMART.Infrastructure.Migrations
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -583,14 +545,93 @@ namespace ESMART.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Transactions",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GuestId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    BookingId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    InvoiceNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalSchema: "ESMART",
+                        principalTable: "Bookings",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Transactions_Guests_GuestId",
+                        column: x => x.GuestId,
+                        principalSchema: "ESMART",
+                        principalTable: "Guests",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Transactions_User_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalSchema: "ESMART",
+                        principalTable: "User",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VerificationCodes",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BookingId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IssuedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VerificationCodes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VerificationCodes_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalSchema: "ESMART",
+                        principalTable: "Bookings",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_VerificationCodes_User_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalSchema: "ESMART",
+                        principalTable: "User",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TransactionItems",
                 schema: "ESMART",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ServiceCharge = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Category = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
+                    BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TransactionId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -723,6 +764,12 @@ namespace ESMART.Infrastructure.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Transactions_BookingId",
+                schema: "ESMART",
+                table: "Transactions",
+                column: "BookingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Transactions_GuestId",
                 schema: "ESMART",
                 table: "Transactions",
@@ -771,6 +818,18 @@ namespace ESMART.Infrastructure.Migrations
                 schema: "ESMART",
                 table: "UserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VerificationCodes_ApplicationUserId",
+                schema: "ESMART",
+                table: "VerificationCodes",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VerificationCodes_BookingId",
+                schema: "ESMART",
+                table: "VerificationCodes",
+                column: "BookingId");
         }
 
         /// <inheritdoc />
@@ -778,10 +837,6 @@ namespace ESMART.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ApplicationRoleCategory",
-                schema: "ESMART");
-
-            migrationBuilder.DropTable(
-                name: "Bookings",
                 schema: "ESMART");
 
             migrationBuilder.DropTable(
@@ -821,11 +876,11 @@ namespace ESMART.Infrastructure.Migrations
                 schema: "ESMART");
 
             migrationBuilder.DropTable(
-                name: "ApplicationCategory",
+                name: "VerificationCodes",
                 schema: "ESMART");
 
             migrationBuilder.DropTable(
-                name: "Rooms",
+                name: "ApplicationCategory",
                 schema: "ESMART");
 
             migrationBuilder.DropTable(
@@ -841,6 +896,18 @@ namespace ESMART.Infrastructure.Migrations
                 schema: "ESMART");
 
             migrationBuilder.DropTable(
+                name: "Bookings",
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "Guests",
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "Rooms",
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
                 name: "Areas",
                 schema: "ESMART");
 
@@ -853,15 +920,11 @@ namespace ESMART.Infrastructure.Migrations
                 schema: "ESMART");
 
             migrationBuilder.DropTable(
-                name: "Guests",
+                name: "User",
                 schema: "ESMART");
 
             migrationBuilder.DropTable(
                 name: "Buildings",
-                schema: "ESMART");
-
-            migrationBuilder.DropTable(
-                name: "User",
                 schema: "ESMART");
         }
     }

@@ -10,9 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESMART.Infrastructure", "Infrastructure\ESMART.Infrastructure.csproj", "{9A9EF9EC-71B8-4539-A6C2-E3D7B6F223CB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{CB071E36-3EAD-494A-B8B2-C889E969FCBB}"
-	ProjectSection(SolutionItems) = preProject
-		Program.cs = Program.cs
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{202C7FAA-837B-429D-992D-CFA5D4F9F9C8}"
 EndProject

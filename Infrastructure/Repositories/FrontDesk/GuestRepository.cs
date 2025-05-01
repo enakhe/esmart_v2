@@ -1,7 +1,6 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.FrontDesk;
-using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

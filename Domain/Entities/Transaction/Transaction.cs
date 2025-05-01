@@ -2,7 +2,6 @@
 
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
-using ESMART.Domain.Enum;
 
 namespace ESMART.Domain.Entities.Transaction
 {
@@ -18,7 +17,8 @@ namespace ESMART.Domain.Entities.Transaction
         public string GuestId { get; set; }
         public string BookingId { get; set; }
         public DateTime Date { get; set; }
-        public decimal TotalAmount { get; set; }
+        public decimal TotalRevenue { get; set; }
+        public decimal TotalReceivables { get; set; }
         public string InvoiceNumber { get; set; }
         public string Description { get; set; }
         public string CreatedBy { get; set; }
