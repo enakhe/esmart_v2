@@ -13,14 +13,13 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
 
-        public async Task<RoomResult> AddRoom(Room room)
+        public async Task AddRoom(Room room)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var result = await context.Rooms.AddAsync(room);
+                await context.Rooms.AddAsync(room);
                 await context.SaveChangesAsync();
-                return RoomResult.Success(room);
             }
             catch (Exception ex)
             {
@@ -62,17 +61,14 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             }
         }
 
-        public async Task<RoomResult> GetRoomById(string Id)
+        public async Task<Room> GetRoomById(string Id)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
                 var room = await context.Rooms.FirstOrDefaultAsync(r => r.Id == Id);
 
-                if (room != null)
-                    return RoomResult.Success(room);
-
-                return RoomResult.Failure(["Unable to find a room with the provided ID"]);
+                return room;
             }
             catch (Exception ex)
             {
@@ -80,32 +76,29 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             }
         }
 
-        public async Task<RoomResult> GetRoomByNumber(string number)
+        public async Task<Room> GetRoomByNumber(string number)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
                 var room = await context.Rooms.FirstOrDefaultAsync(r => r.Number == number);
 
-                if (room != null)
-                    return RoomResult.Success(room);
-
-                return RoomResult.Failure(["Unable to find a room with the provided number"]);
+                return room;
             }
+
             catch (Exception ex)
             {
                 throw new Exception("An error occurred when retrieving a room with the provided number. " + ex.Message);
             }
         }
 
-        public async Task<RoomResult> UpdateRoom(Room room)
+        public async Task UpdateRoom(Room room)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
                 context.Entry(room).State = EntityState.Modified;
                 await context.SaveChangesAsync();
-                return RoomResult.Success(room);
             }
             catch (Exception ex)
             {
@@ -113,20 +106,15 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             }
         }
 
-        public async Task<RoomResult> DeleteRoom(string Id)
+        public async Task DeleteRoom(string Id)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var area = await context.Rooms.FirstOrDefaultAsync(r => r.Id == Id);
+                var room = await context.Rooms.FirstOrDefaultAsync(r => r.Id == Id);
 
-                if (area == null)
-                    return RoomResult.Failure(["Unable to delete a room with the provided ID"]);
-
-                area.IsTrashed = true;
-                var result = await UpdateRoom(area);
-
-                return RoomResult.Success(result.Response);
+                room.IsTrashed = true;
+                await UpdateRoom(room);
             }
             catch (Exception ex)
             {
@@ -221,24 +209,6 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             catch (Exception ex)
             {
                 throw new Exception("An error occurred when retrieving rooms. " + ex.Message);
-            }
-        }
-
-        public async Task<RoomResult> FindByRoomNo(string roomNumber)
-        {
-            try
-            {
-                using var context = _contextFactory.CreateDbContext();
-                var room = await context.Rooms.FirstOrDefaultAsync(r => r.Number == roomNumber);
-
-                if (room != null)
-                    return RoomResult.Success(room);
-
-                return RoomResult.Failure(["Unable to find a room with the provided number"]);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred when retrieving a room with the provided number. " + ex.Message);
             }
         }
 

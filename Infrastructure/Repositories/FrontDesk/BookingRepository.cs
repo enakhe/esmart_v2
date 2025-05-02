@@ -13,14 +13,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
 
-        public async Task<BookingResult> AddBooking(Booking booking)
+        public async Task AddBooking(Booking booking)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var result = await context.Bookings.AddAsync(booking);
+                await context.Bookings.AddAsync(booking);
                 await context.SaveChangesAsync();
-                return BookingResult.Success(booking);
             }
             catch (Exception ex)
             {
@@ -47,7 +46,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                     Duration = b.Duration.ToString(),
                                     Status = b.Status.ToString(),
                                     TotalAmount = b.TotalAmount,
-                                    CreatedBy = b.CreatedBy,
+                                    CreatedBy = b.ApplicationUser.FullName,
                                     DateCreated = b.DateCreated,
                                     DateModified = b.DateModified,
                                 })
@@ -67,6 +66,10 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             {
                 using var context = _contextFactory.CreateDbContext();
                 var allBookings = await context.Bookings
+                                    .Include(b => b.ApplicationUser)
+                                    .Include(b => b.Guest)
+                                    .Include(b => b.Room)
+                                    .Include(b => b.Transactions)
                                 .Where(b => b.Id == id)
                                 .Select(b => new BookingViewModel
                                 {
@@ -79,7 +82,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                     Duration = b.Duration.ToString(),
                                     Status = b.Status.ToString(),
                                     TotalAmount = b.TotalAmount,
-                                    CreatedBy = b.CreatedBy,
+                                    CreatedBy = b.ApplicationUser.FullName,
                                     DateCreated = b.DateCreated,
                                     DateModified = b.DateModified,
                                 })
@@ -118,7 +121,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
                         TotalAmount = b.TotalAmount,
-                        CreatedBy = b.CreatedBy,
+                        CreatedBy = b.ApplicationUser.FullName,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
                     })
@@ -158,7 +161,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
                         TotalAmount = b.TotalAmount,
-                        CreatedBy = b.CreatedBy,
+                        CreatedBy = b.ApplicationUser.FullName,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
                     })
@@ -197,7 +200,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
                         TotalAmount = b.TotalAmount,
-                        CreatedBy = b.CreatedBy,
+                        CreatedBy = b.ApplicationUser.FullName,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
                     })
@@ -237,7 +240,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
                         TotalAmount = b.TotalAmount,
-                        CreatedBy = b.CreatedBy,
+                        CreatedBy = b.ApplicationUser.FullName,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
                     })
@@ -277,7 +280,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
                         TotalAmount = b.TotalAmount,
-                        CreatedBy = b.CreatedBy,
+                        CreatedBy = b.ApplicationUser.FullName,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
                     })
@@ -292,7 +295,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<BookingResult> GetBookingById(string id)
+        public async Task<Booking> GetBookingById(string id)
         {
             try
             {
@@ -302,10 +305,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Include(b => b.Room)
                     .FirstOrDefaultAsync(b => b.Id == id);
 
-                if (booking != null)
-                    return BookingResult.Success(booking);
-
-                return BookingResult.Failure(["Unable to find a booking with the provided ID"]);
+                return booking;
             }
             catch (Exception ex)
             {
@@ -344,14 +344,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<BookingResult> UpdateBooking(Booking booking)
+        public async Task UpdateBooking(Booking booking)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
                 context.Entry(booking).State = EntityState.Modified;
                 await context.SaveChangesAsync();
-                return BookingResult.Success(booking);
             }
             catch (Exception ex)
             {
@@ -359,27 +358,15 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<BookingResult> DeleteBooking(string id)
+        public async Task DeleteBooking(string id)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
                 var booking = await context.Bookings.FirstOrDefaultAsync(r => r.Id == id);
-
-                if (booking == null)
-                    return BookingResult.Failure(["Unable to delete a booking with the provided ID"]);
-
                 booking.IsTrashed = true;
 
-                var result = await UpdateBooking(booking);
-
-                if (!result.Succeeded)
-                    return BookingResult.Failure(result.Errors);
-
-                if (result.Response == null)
-                    return BookingResult.Failure(["Unable to delete a booking with the provided ID"]);
-
-                return BookingResult.Success(result.Response);
+                await UpdateBooking(booking);
             }
             catch (Exception ex)
             {
@@ -410,7 +397,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
                         TotalAmount = b.TotalAmount,
-                        CreatedBy = b.CreatedBy,
+                        CreatedBy = b.ApplicationUser.FullName,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
                     })
@@ -451,7 +438,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
                         TotalAmount = b.TotalAmount,
-                        CreatedBy = b.CreatedBy,
+                        CreatedBy = b.ApplicationUser.FullName,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
                     })

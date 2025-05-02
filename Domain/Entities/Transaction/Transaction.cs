@@ -26,9 +26,9 @@ namespace ESMART.Domain.Entities.Transaction
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
-        public required virtual Guest Guest { get; set; }
-        public required virtual ApplicationUser ApplicationUser { get; set; }
-        public required virtual Booking Booking { get; set; }
+        public virtual Guest Guest { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
+        public virtual Booking Booking { get; set; }
         public ICollection<TransactionItem> TransactionItems { get; set; }
     }
 }

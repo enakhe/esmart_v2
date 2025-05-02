@@ -3,6 +3,7 @@ using ESMART.Infrastructure.Identity;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Infrastructure.Repositories.RoomSetting;
+using ESMART.Infrastructure.Repositories.Transaction;
 using ESMART.Infrastructure.Repositories.Verification;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +24,10 @@ namespace ESMART.Infrastructure
             services.AddScoped<HotelSettingsService>();
             services.AddScoped<BookingRepository>();
             services.AddScoped<VerificationCodeService>();
+            services.AddScoped<GuestRepository>();
+            services.AddScoped<RoomRepository>();
+            services.AddScoped<RoomTypeRepository>();
+            services.AddScoped<TransactionRepository>();
             return services;
         }
 
@@ -35,6 +40,7 @@ namespace ESMART.Infrastructure
             services.AddTransient<IHotelSettingsService, HotelSettingsService>();
             services.AddTransient<IBookingRepository, BookingRepository>();
             services.AddTransient<IVerificationCodeService, VerificationCodeService>();
+            services.AddTransient<ITransactionRepository, TransactionRepository>();
             return services;
         }
     }

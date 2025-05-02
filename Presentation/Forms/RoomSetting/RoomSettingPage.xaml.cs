@@ -516,25 +516,9 @@ namespace ESMART.Presentation.Forms.RoomSetting
                 var selectedRoom = (Domain.Entities.RoomSettings.Room)RoomDataGrid.SelectedItem;
                 if (selectedRoom.Id != null)
                 {
-                    var result = await _roomRepository.GetRoomById(selectedRoom.Id);
-                    if (!result.Succeeded)
-                    {
-                        var sb = new StringBuilder();
-                        foreach (var item in result.Errors)
-                        {
-                            sb.AppendLine(item);
-                        }
-                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
+                    var room = await _roomRepository.GetRoomById(selectedRoom.Id);
 
-                    if (result.Response == null)
-                    {
-                        MessageBox.Show("Room not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-
-                    UpdateRoomDialog updateRoomDialog = new(_roomRepository, result.Response);
+                    UpdateRoomDialog updateRoomDialog = new(_roomRepository, room);
 
                     if (updateRoomDialog.ShowDialog() == true)
                     {
@@ -562,19 +546,7 @@ namespace ESMART.Presentation.Forms.RoomSetting
                         {
                             LoaderOverlay.Visibility = Visibility.Visible;
 
-                            var result = await _roomRepository.DeleteRoom(selectedRoom.Id);
-
-                            if (!result.Succeeded)
-                            {
-                                var sb = new StringBuilder();
-                                foreach (var item in result.Errors)
-                                {
-                                    sb.AppendLine(item);
-                                }
-                                MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                return;
-                            }
-
+                            await _roomRepository.DeleteRoom(selectedRoom.Id);
                             await LoadRoom();
                         }
                     }

@@ -55,7 +55,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                bool isNull = Helper.AreAnyNullOrEmpty(cmbBuilding.SelectedItem.ToString()!);
+                bool isNull = cmbBuilding.SelectedItem == null || Helper.AreAnyNullOrEmpty(cmbBuilding.SelectedItem.ToString()!);
 
                 if (!isNull)
                 {
@@ -149,7 +149,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
 
                 var foundRoom = await _roomRepository.GetRoomByNumber(txtRoomNumber.Text);
 
-                if (foundRoom.Response != null)
+                if (foundRoom != null)
                 {
                     MessageBox.Show("A room already exists with that number.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;

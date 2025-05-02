@@ -25,4 +25,12 @@
         Transportation,
         Other
     }
+
+    public enum TransactionStatus
+    {
+        Unpaid,
+        Paid,
+        Pending,
+        Refunded
+    }
 }

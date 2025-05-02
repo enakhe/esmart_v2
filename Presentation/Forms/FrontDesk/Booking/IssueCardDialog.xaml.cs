@@ -90,7 +90,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
+            this.DialogResult = true;
         }
 
         private async void Window_Activated(object sender, EventArgs e)

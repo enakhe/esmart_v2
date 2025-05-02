@@ -43,7 +43,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         }
 
         public decimal Amount { get; set; }
-        public PaymentStatus Status { get; set; }
+        public BookingStatus Status { get; set; }
         public string AccountNumber { get; set; }
         public decimal Discount { get; set; }
         public decimal VAT { get; set; }

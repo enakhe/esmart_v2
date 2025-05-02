@@ -5,17 +5,16 @@ namespace ESMART.Application.Common.Interface
 {
     public interface IRoomRepository
     {
-        Task<RoomResult> AddRoom(Room room);
+        Task AddRoom(Room room);
         Task<List<Room>> GetAllRooms();
         Task<List<Room>> GetAvailableRooms();
-        Task<RoomResult> GetRoomById(string Id);
-        Task<RoomResult> GetRoomByNumber(string number);
-        Task<RoomResult> UpdateRoom(Room room);
-        Task<RoomResult> DeleteRoom(string Id);
+        Task<Room> GetRoomById(string Id);
+        Task<Room> GetRoomByNumber(string number);
+        Task UpdateRoom(Room room);
+        Task DeleteRoom(string Id);
         Task<List<RoomViewModel>> SearchRoom(string keyword);
         Task<List<RoomViewModel>> FilterByStatus(string keyword);
         Task<List<RoomViewModel>> FilterByType(string keyword);
-        Task<RoomResult> FindByRoomNo(string roomNumber);
         Task<List<RoomViewModel>> GetRoomsByFilter(string roomTypeId, string status);
         Task<AreaResult> AddArea(Area area);
         Task<List<Area>> GetAllAreas();

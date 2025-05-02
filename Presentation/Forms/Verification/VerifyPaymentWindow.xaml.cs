@@ -1,4 +1,6 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Verification;
@@ -19,14 +21,18 @@ namespace ESMART.Presentation.Forms.Verification
         private readonly IVerificationCodeService _verificationCodeService;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IBookingRepository _bookingRepository;
+        private readonly ITransactionRepository _transactionRepository;
         private readonly Booking _booking;
+        private string _serviceId;
         private DispatcherTimer _timer;
         private TimeSpan _timeRemaining;
-        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, Booking booking)
+        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, ITransactionRepository transactionRepository, string serviceId, Booking booking)
         {
             _verificationCodeService = verificationCodeService;
             _hotelSettingsService = hotelSettingsService;
             _bookingRepository = bookingRepository;
+            _transactionRepository = transactionRepository;
+            _serviceId = serviceId;
             _booking = booking;
             InitializeComponent();
             StartCountdown(TimeSpan.FromMinutes(20));
@@ -107,16 +113,13 @@ namespace ESMART.Presentation.Forms.Verification
 
                                 await _verificationCodeService.DeleteAsync(code.Id);
 
-                                var paidBookingResult = await _bookingRepository.GetBookingById(_booking.Id);
+                                _booking.Status = BookingStatus.Completed;
+                                await _bookingRepository.UpdateBooking(_booking);
 
-                                if (paidBookingResult != null)
+                                var transaction = await _transactionRepository.GetTransactionItemsByServiceIdAsync(_serviceId, _booking.Id);
+                                if (transaction != null)
                                 {
-                                    var paidBooking = paidBookingResult.Response;
-                                    if (paidBooking != null)
-                                    {
-                                        paidBooking.Status = PaymentStatus.Completed;
-                                        await _bookingRepository.UpdateBooking(paidBooking);
-                                    }
+                                    transaction.Status = TransactionStatus.Paid;
                                 }
 
                                 this.DialogResult = true;

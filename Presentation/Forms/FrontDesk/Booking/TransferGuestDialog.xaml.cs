@@ -3,6 +3,7 @@ using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
+using ESMART.Infrastructure.Repositories.Transaction;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
@@ -24,16 +25,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IRoomRepository _roomRepository;
         private readonly IBookingRepository _bookingRepository;
         private readonly IVerificationCodeService _verificationCodeService;
+        private readonly ITransactionRepository _transactionRepository;
         private bool _suppressTextChanged = false;
         private Domain.Entities.FrontDesk.Booking _booking;
 
-        public TransferGuestDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, Domain.Entities.FrontDesk.Booking booking)
+        public TransferGuestDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, Domain.Entities.FrontDesk.Booking booking)
         {
             _guestRepository = guestRepository;
             _roomRepository = roomRepository;
             _hotelSettingsService = hotelSettingsService;
             _verificationCodeService = verificationCodeService;
             _bookingRepository = bookingRepository;
+            _transactionRepository = transactionRepository;
             _booking = booking;
             InitializeComponent();
         }
@@ -189,46 +192,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     _booking.TotalAmount += totalAmount;
                 }
 
-                var result = await _bookingRepository.UpdateBooking(_booking);
+                _booking.Room.Status = RoomStatus.Vacant;
+                await _roomRepository.UpdateRoom(_booking.Room);
 
-                if (result.Succeeded)
-                {
-                    _booking.Room.Status = RoomStatus.Booked;
-                    await _roomRepository.UpdateRoom(_booking.Room);
+                await _bookingRepository.UpdateBooking(_booking);
 
-                    if (differencePerDay != 0)
-                    {
-                        var bookedGuest = await _guestRepository.GetGuestByIdAsync(_booking.GuestId!);
-                        var hotel = await _hotelSettingsService.GetHotelInformation();
-
-                        if (hotel != null)
-                        {
-                            var verificationCode = new VerificationCode()
-                            {
-                                Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
-                                BookingId = _booking.Id,
-                                IssuedBy = AuthSession.CurrentUser?.Id
-                            };
-
-                            await _verificationCodeService.AddCode(verificationCode);
-
-                            var response = await SenderHelper.SendOtp(hotel, _booking, bookedGuest.Response, "Booking", verificationCode.Code, totalAmount);
-                            if (response.IsSuccessStatusCode)
-                            {
-                                VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _booking);
-                                if (verifyPaymentWindow.ShowDialog() == true)
-                                {
-
-                                }
-                            }
-                            else
-                            {
-                                MessageBox.Show("Guest transferred successfully but could not verify payment", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                                this.DialogResult = true;
-                            }
-                        }
-                    }
-                }
+                await HandlePostBookingAsync(_booking, differencePerDay, totalAmount);
 
                 MessageBox.Show("Guest transferred successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.DialogResult = true;
@@ -240,6 +209,81 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             finally
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task HandlePostBookingAsync(Domain.Entities.FrontDesk.Booking booking, decimal differencePerDay, decimal amount)
+        {
+            booking.Room.Status = RoomStatus.Booked;
+            await _roomRepository.UpdateRoom(booking.Room);
+
+            if (differencePerDay != 0)
+            {
+                var bookedRoom = await _roomRepository.GetRoomById(booking.RoomId);
+                var bookedGuest = await _guestRepository.GetGuestByIdAsync(booking.GuestId);
+                var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                var transaction = await _transactionRepository.GetByBookingIdAsync(booking.Id);
+
+                if (bookedRoom != null)
+                {
+                    bookedRoom.Status = RoomStatus.Booked;
+                    await _roomRepository.UpdateRoom(bookedRoom);
+                }
+
+                if (hotel != null)
+                {
+                    var verificationCode = new VerificationCode
+                    {
+                        Code = booking.BookingId,
+                        BookingId = booking.Id,
+                        IssuedBy = AuthSession.CurrentUser?.Id
+                    };
+
+                    await _verificationCodeService.AddCode(verificationCode);
+
+                    var response = await SenderHelper.SendOtp(hotel, booking, bookedGuest.Response, "Booking", verificationCode.Code, amount);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking);
+                        verifyPaymentWindow.ShowDialog();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Booking room transfered successfully but could not verify payment. Payment will be flagged as pending.",
+                            "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+
+                if (transaction != null)
+                {
+                    var transactionItem = new Domain.Entities.Transaction.TransactionItem
+                    {
+                        Amount = amount,
+                        TaxAmount = booking.VAT,
+                        ServiceId = booking.BookingId,
+                        ServiceCharge = booking.ServiceCharge,
+                        Discount = booking.Discount,
+                        Category = Category.Accomodation,
+                        Type = TransactionType.Adjustment,
+                        BankAccount = booking.AccountNumber,
+                        DateAdded = DateTime.Now,
+                        IssuedBy = AuthSession.CurrentUser?.Id,
+                        TransactionId = transaction.Id,
+                        Description = $"Booking room transfered for {booking.Guest.FullName} to {booking.Room.Number} from {booking.CheckIn} to {booking.CheckOut}"
+                    };
+
+                    if (booking.Status == BookingStatus.Completed)
+                    {
+                        transactionItem.Status = TransactionStatus.Paid;
+                    }
+                    else
+                    {
+                        transactionItem.Status = TransactionStatus.Unpaid;
+                    }
+
+                    await _transactionRepository.AddTransactionItemAsync(transactionItem);
+                }
             }
         }
 

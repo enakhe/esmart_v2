@@ -1,6 +1,6 @@
 ﻿namespace ESMART.Domain.Enum
 {
-    public enum PaymentStatus
+    public enum BookingStatus
     {
         Pending,
         Completed,

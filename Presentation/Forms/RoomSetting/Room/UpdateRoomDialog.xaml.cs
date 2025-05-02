@@ -1,4 +1,6 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Presentation.Session;
@@ -221,25 +223,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                 _room.DateModified = DateTime.Now;
                 _room.UpdatedBy = AuthSession.CurrentUser?.Id;
 
-                var result = await _roomRepository.UpdateRoom(_room);
-
-                if (result == null)
-                {
-                    MessageBox.Show("Room not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                if (!result.Succeeded)
-                {
-                    var sb = new StringBuilder();
-                    foreach (var item in result.Errors)
-                    {
-                        sb.AppendLine(item);
-                    }
-                    MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
+                await _roomRepository.UpdateRoom(_room);
                 this.DialogResult = true;
             }
             catch (Exception ex)

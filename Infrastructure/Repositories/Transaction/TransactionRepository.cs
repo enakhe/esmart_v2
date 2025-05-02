@@ -40,8 +40,8 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                                           Guest = t.Guest.FullName,
                                           GuestPhoneNo = t.Guest.PhoneNumber,
                                           Date = t.Date,
-                                          TotalRevenue = t.TransactionItems.Where(t => t.TransactionId == t.TransactionId && t.Status == PaymentStatus.Completed).Sum(t => t.Amount),
-                                          TotalReceivables = t.TransactionItems.Where(t => t.TransactionId == t.TransactionId && t.Status != PaymentStatus.Completed).Sum(t => t.Amount),
+                                          TotalRevenue = t.TransactionItems.Where(t => t.TransactionId == t.TransactionId && t.Status == TransactionStatus.Paid).Sum(t => t.Amount),
+                                          TotalReceivables = t.TransactionItems.Where(t => t.TransactionId == t.TransactionId && t.Status != TransactionStatus.Paid).Sum(t => t.Amount),
                                           InvoiceNumber = t.InvoiceNumber,
                                           Description = t.Description,
                                           IssuedBy = t.ApplicationUser.FullName,
@@ -130,8 +130,8 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                                               Guest = t.Guest.FullName,
                                               GuestPhoneNo = t.Guest.PhoneNumber,
                                               Date = t.Date,
-                                              TotalRevenue = t.TransactionItems.Where(t => t.TransactionId == t.TransactionId && t.Status == PaymentStatus.Completed).Sum(t => t.Amount),
-                                              TotalReceivables = t.TransactionItems.Where(t => t.TransactionId == t.TransactionId && t.Status != PaymentStatus.Completed).Sum(t => t.Amount),
+                                              TotalRevenue = t.TransactionItems.Where(t => t.TransactionId == t.TransactionId && t.Status == TransactionStatus.Paid).Sum(t => t.Amount),
+                                              TotalReceivables = t.TransactionItems.Where(t => t.TransactionId == t.TransactionId && t.Status != TransactionStatus.Paid).Sum(t => t.Amount),
                                               InvoiceNumber = t.InvoiceNumber,
                                               Description = t.Description,
                                               IssuedBy = t.ApplicationUser.FullName,
@@ -160,11 +160,11 @@ namespace ESMART.Infrastructure.Repositories.Transaction
 
                 if (transaction != null)
                 {
-                    if (transactionItem.Status == PaymentStatus.Completed)
+                    if (transactionItem.Status == TransactionStatus.Paid)
                     {
                         transaction.TotalRevenue += transactionItem.Amount;
                     }
-                    else
+                    else if (transactionItem.Status == TransactionStatus.Unpaid)
                     {
                         transaction.TotalReceivables += transactionItem.Amount;
                     }
@@ -177,6 +177,50 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             catch (Exception ex)
             {
                 throw new InvalidOperationException("An error occurred while adding the transaction item.", ex);
+            }
+        }
+
+        public async Task<List<TransactionItemViewModel>> GetAllTransactionItemsAsync()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItems = await context.TransactionItems
+                    .Where(ti => !ti.IsTrashed)
+                    .Select(ti => new TransactionItemViewModel
+                    {
+                        Amount = ti.Amount,
+                        TaxAmount = ti.TaxAmount,
+                        ServiceCharge = ti.ServiceCharge,
+                        Discount = ti.Discount,
+                        Category = ti.Category.ToString(),
+                        Type = ti.Type.ToString(),
+                        Status = ti.Status.ToString(),
+                        BankAccount = ti.BankAccount,
+                        DateAdded = ti.DateAdded,
+                        IssuedBy = ti.ApplicationUser.FullName,
+                    })
+                    .OrderByDescending(ti => ti.DateAdded)
+                    .ToListAsync();
+                return transactionItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
+            }
+        }
+
+        public async Task<TransactionItem> GetTransactionItemsByServiceIdAsync(string serviceId, string bookingId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItems = await context.TransactionItems.FirstOrDefaultAsync(ti => ti.ServiceId == serviceId && ti.Transaction.BookingId == bookingId && ti.Status == TransactionStatus.Unpaid);
+                return transactionItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
             }
         }
 
