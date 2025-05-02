@@ -64,7 +64,7 @@ namespace ESMART.Infrastructure.Identity
 
         public async Task TrySeedAsync()
         {
-            var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", FirstName = "Super", LastName = "Administrator" };
+            var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", FirstName = "Super", LastName = "Administrator", MiddleName = "" };
 
             if (_userManager.Users.All(u => u.UserName != administrator.UserName))
                 await _userManager.CreateAsync(administrator, "Administrator1!");

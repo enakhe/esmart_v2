@@ -251,7 +251,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
 
         private async void cmbRoomType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            bool isNull = Helper.AreAnyNullOrEmpty(cmbRoomType.SelectedValue.ToString()!);
+            bool isNull = cmbRoomType.SelectedItem == null || Helper.AreAnyNullOrEmpty(cmbRoomType.SelectedValue.ToString()!);
             if (!isNull)
             {
                 var result = await _roomRepository.GetRoomTypeById(cmbRoomType.SelectedValue.ToString()!);

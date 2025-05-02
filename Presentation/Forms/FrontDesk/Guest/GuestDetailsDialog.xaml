@@ -8,10 +8,11 @@
         WindowStartupLocation="CenterScreen"
         Background="#f0f4f9"
         ResizeMode="NoResize"
-        Title="Guest Details" Height="650" Width="1200" Icon="/Forms/FrontDesk/Guest/logo.png" Activated="Window_Activated">
+        Title="Guest Details" Height="650" Width="1400" Icon="/Forms/FrontDesk/Guest/logo.png" Activated="Window_Activated">
 
     <Window.Resources>
         <local:StatusToColorConverter x:Key="StatusToColorConverter" />
+        <local:TransactionStatusToColor x:Key="TransactionStatusToColor" />
         <Style x:Key="ActionBarButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="0,0,10,0"/>
             <Setter Property="Padding" Value="10,5"/>
@@ -45,238 +46,377 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style x:Key="DataGridColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#1a237e"/>
+            <Setter Property="Padding" Value="10,5"/>
+        </Style>
+
+        <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="CanUserResizeColumns" Value="False" />
+            <Setter Property="RowHeight" Value="50"/>
+            <Setter Property="ColumnWidth" Value="*" />
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource DataGridColumnHeaderStyle}"/>
+            <Setter Property="CellStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="20,0"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     
     <Grid>
-        <StackPanel>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="400"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+        <Grid Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Margin="0,0,0,10">
-                    <Border Background="White" Width="350" Height="580" CornerRadius="10" Margin="10" Padding="10">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Margin="0,0,0,10">
+                <Border Background="White" Width="350" Height="Auto" CornerRadius="10" Margin="10" Padding="10">
+                    <StackPanel>
                         <StackPanel>
                             <StackPanel>
-                                <StackPanel>
-                                    <Border CornerRadius="5" Padding="10,3" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}" Height="23" Width="65">
-                                        <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Left"/>
-                                    </Border>
-                                </StackPanel>
-                                <StackPanel>
-                                    <Ellipse Width="100" Height="100">
-                                        <Ellipse.Fill>
-                                            <ImageBrush ImageSource="{Binding GuestImage}" Stretch="UniformToFill"/>
-                                        </Ellipse.Fill>
-                                    </Ellipse>
-                                </StackPanel>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding FullName}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,5,0,0"/>
-                                </StackPanel>
+                                <Border CornerRadius="5" Padding="10,3" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}" Height="23" Width="65">
+                                    <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Left"/>
+                                </Border>
                             </StackPanel>
-
-                            <Separator Margin="0,10" Foreground="#e0e0e0" Background="#e0e0e0" />
-
                             <StackPanel>
-                                <Grid Margin="0, 0, 0, 20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="70"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Email:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding Email}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0"/>
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Margin="0, 0, 0, 20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Phone Number:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding PhoneNumber}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0"/>
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Margin="0, 0, 0, 20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="70"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Gender:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding Gender}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0"/>
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Margin="0, 0, 0, 20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="70"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Street:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding Street}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Margin="0, 0, 0, 20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="70"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="City:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding City}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Margin="0, 0, 0, 20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="70"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Country:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding Country}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Margin="0, 0, 0, 20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="70"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Created By:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding CreatedBy}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Margin="0, 0, 0, 20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Date Created:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding DateCreated}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
-                                    </StackPanel>
-                                </Grid>
-
-                                <Grid Margin="0, 0, 0, 20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Date Modified:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding DateModified}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
-                                    </StackPanel>
-                                </Grid>
-
-                                <Button Content="Delete" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand" Click="DeleteGuest_Click">
-                                    <Button.Style>
-                                        <Style TargetType="Button">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="Button">
-                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
-                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
+                                <Ellipse Width="100" Height="100">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="{Binding GuestImage}" Stretch="UniformToFill"/>
+                                    </Ellipse.Fill>
+                                </Ellipse>
                             </StackPanel>
-
+                            <StackPanel>
+                                <TextBlock Text="{Binding FullName}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,5,0,0"/>
+                            </StackPanel>
                         </StackPanel>
-                    </Border>
-                </StackPanel>
 
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Margin="0,0,0,10">
-                    <Border Background="White" Width="740" Height="580" CornerRadius="10" Margin="10" Padding="10">
-                        <TabControl Margin="10" BorderThickness="1">
-                            <TabControl.Resources>
-                                <Style TargetType="TabItem">
-                                    <Setter Property="Background" Value="#4ead16"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="Blue"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TabControl.Resources>
-                            <TabItem Header="User Activities" Width="240" Height="30">
-                                <StackPanel Margin="10">
-                                    <TextBlock Text="Name:" />
-                                    <TextBox Width="200" />
-                                    <TextBlock Text="Email:" Margin="0,10,0,0"/>
-                                    <TextBox Width="200" />
+                        <Separator Margin="0,10" Foreground="#e0e0e0" Background="#e0e0e0" />
+
+                        <StackPanel>
+                            <Grid Margin="0, 0, 0, 20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Email:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                 </StackPanel>
-                            </TabItem>
 
-                            <TabItem Header="Transaction History" Width="240" Height="30">
-                                <StackPanel Margin="10">
-                                    <TextBlock Text="Street:" />
-                                    <TextBox Width="200" />
-                                    <TextBlock Text="City:" Margin="0,10,0,0"/>
-                                    <TextBox Width="200" />
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Email}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0"/>
                                 </StackPanel>
-                            </TabItem>
+                            </Grid>
 
-                            <TabItem Header="Account Statement" Width="216" Height="30">
-                                <TextBlock Text="Additional details go here..." Margin="10"/>
-                            </TabItem>
-                        </TabControl>
-                    </Border>
-                </StackPanel>
-            </Grid>
-        </StackPanel>
-        
+                            <Grid Margin="0, 0, 0, 20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Phone Number:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding PhoneNumber}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0, 0, 0, 20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Gender:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Gender}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0, 0, 0, 20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Street:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Street}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0, 0, 0, 20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="City:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding City}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0, 0, 0, 20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Country:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Country}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0, 0, 0, 20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Created By:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding CreatedBy}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0, 0, 0, 20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Date Created:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding DateCreated}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0, 0, 0, 20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Date Modified:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding DateModified}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,10,0" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Button Content="Delete" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand" Click="DeleteGuest_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <Border Background="White" Height="Auto" CornerRadius="10" Padding="10" Grid.Column="1" Margin="0,0,0,10">
+                <TabControl Margin="10" BorderThickness="1" SelectionChanged="TabControl_SelectionChanged">
+                    <TabControl.Resources>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Background" Value="#4ead16"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="Blue"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TabControl.Resources>
+
+                    <TabItem Header="Transaction History" Name="tbTransactionHistory" Width="240" Height="30">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Margin="20" Grid.Column="0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                            <TextBlock Text="From:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,5"/>
+                                            <DatePicker Name="txtFrom" HorizontalAlignment="Left" Padding="2,5,0,5" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                            <TextBlock Text="To:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,5"/>
+                                            <DatePicker Name="txtTo" HorizontalAlignment="Left" Padding="2,5,0,5" />
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10,25" VerticalAlignment="Bottom">
+                                    <Button Content="Export Data" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="80" />
+                                </StackPanel>
+
+                            </Grid>
+
+
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
+                                    <DataGrid x:Name="TransactionItemDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn Header="Service Id" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                            <TextBlock Text="{Binding ServiceId}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Amount" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                            <TextBlock Text="{Binding Amount, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Category" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                            <TextBlock Text="{Binding Category}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Type" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                            <TextBlock Text="{Binding Type}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Account" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                            <TextBlock Text="{Binding BankAccount}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Issued By" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                            <TextBlock Text="{Binding IssuedBy}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Status" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="{Binding Status, Converter={StaticResource TransactionStatusToColor}}">
+                                                            <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Date" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                            <TextBlock Text="{Binding DateAdded, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Border>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="Account Statement" Width="216" Height="30">
+                        <TextBlock Text="Additional details go here..." Margin="10"/>
+                    </TabItem>
+                </TabControl>
+            </Border>
+        </Grid>
+
 
         <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">

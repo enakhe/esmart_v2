@@ -10,9 +10,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
     public partial class GuestPage : Page
     {
         private readonly IGuestRepository _guestRepository;
-        public GuestPage(IGuestRepository guestRepository)
+        private readonly ITransactionRepository _transactionRepository;
+        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository)
         {
             _guestRepository = guestRepository;
+            _transactionRepository = transactionRepository;
             InitializeComponent();
         }
 
@@ -107,7 +109,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
                 if (selectedGuest.Id != null)
                 {
-                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository);
+                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository, _transactionRepository);
                     if (viewGuestDialog.ShowDialog() == true)
                     {
                         await LoadGuests();

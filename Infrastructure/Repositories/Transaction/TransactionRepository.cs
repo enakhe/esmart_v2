@@ -189,13 +189,14 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => !ti.IsTrashed)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        ServiceId = ti.ServiceId,
                         Amount = ti.Amount,
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
                         Category = ti.Category.ToString(),
                         Type = ti.Type.ToString(),
-                        Status = ti.Status.ToString(),
+                        Status = ti.Status,
                         BankAccount = ti.BankAccount,
                         DateAdded = ti.DateAdded,
                         IssuedBy = ti.ApplicationUser.FullName,
@@ -234,13 +235,14 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.TransactionId == transactionId)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        ServiceId = ti.ServiceId,
                         Amount = ti.Amount,
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
                         Category = ti.Category.ToString(),
                         Type = ti.Type.ToString(),
-                        Status = ti.Status.ToString(),
+                        Status = ti.Status,
                         BankAccount = ti.BankAccount,
                         DateAdded = ti.DateAdded,
                         IssuedBy = ti.ApplicationUser.FullName,
@@ -264,13 +266,14 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Transaction.BookingId == bookingId)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        ServiceId = ti.ServiceId,
                         Amount = ti.Amount,
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
                         Category = ti.Category.ToString(),
                         Type = ti.Type.ToString(),
-                        Status = ti.Status.ToString(),
+                        Status = ti.Status,
                         BankAccount = ti.BankAccount,
                         DateAdded = ti.DateAdded,
                         IssuedBy = ti.ApplicationUser.FullName,
@@ -294,13 +297,14 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Transaction.GuestId == guestId)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        ServiceId = ti.ServiceId,
                         Amount = ti.Amount,
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
                         Category = ti.Category.ToString(),
                         Type = ti.Type.ToString(),
-                        Status = ti.Status.ToString(),
+                        Status = ti.Status,
                         BankAccount = ti.BankAccount,
                         DateAdded = ti.DateAdded,
                         IssuedBy = ti.ApplicationUser.FullName,
@@ -325,13 +329,14 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Id == id)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        ServiceId = ti.ServiceId,
                         Amount = ti.Amount,
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
                         Category = ti.Category.ToString(),
                         Type = ti.Type.ToString(),
-                        Status = ti.Status.ToString(),
+                        Status = ti.Status,
                         BankAccount = ti.BankAccount,
                         DateAdded = ti.DateAdded,
                         IssuedBy = ti.ApplicationUser.FullName,
@@ -387,13 +392,14 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.DateAdded >= fromTime && ti.DateAdded <= endTime)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        ServiceId = ti.ServiceId,
                         Amount = ti.Amount,
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
                         Category = ti.Category.ToString(),
                         Type = ti.Type.ToString(),
-                        Status = ti.Status.ToString(),
+                        Status = ti.Status,
                         BankAccount = ti.BankAccount,
                         DateAdded = ti.DateAdded,
                         IssuedBy = ti.ApplicationUser.FullName,
@@ -417,13 +423,14 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Description.Contains(filter) || ti.BankAccount.Contains(filter) || ti.ApplicationUser.FullName.Contains(filter))
                     .Select(ti => new TransactionItemViewModel
                     {
+                        ServiceId = ti.ServiceId,
                         Amount = ti.Amount,
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
                         Category = ti.Category.ToString(),
                         Type = ti.Type.ToString(),
-                        Status = ti.Status.ToString(),
+                        Status = ti.Status,
                         BankAccount = ti.BankAccount,
                         DateAdded = ti.DateAdded,
                         IssuedBy = ti.ApplicationUser.FullName,

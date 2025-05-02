@@ -1,8 +1,10 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.FrontDesk;
 using System.Globalization;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Guest
 {
@@ -13,10 +15,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
     {
         private readonly string _id;
         private readonly IGuestRepository _guestRepository;
-        public GuestDetailsDialog(string id, IGuestRepository guestRepository)
+        private readonly ITransactionRepository _transactionRepository;
+        public GuestDetailsDialog(string id, IGuestRepository guestRepository, ITransactionRepository transactionRepository)
         {
             _id = id;
             _guestRepository = guestRepository;
+            _transactionRepository = transactionRepository;
             InitializeComponent();
         }
 
@@ -72,6 +76,35 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
+        private void LoadDefaultSetting()
+        {
+            txtFrom.SelectedDate = DateTime.Now;
+            txtTo.SelectedDate = DateTime.Now.AddDays(1);
+        }
+
+        private async Task LoadGuestTransactionHistory()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var guestTransactionItem = await _transactionRepository.GetTransactionItemsByGuestIdAsync(_id);
+                if (guestTransactionItem != null)
+                {
+                    this.TransactionItemDataGrid.ItemsSource = guestTransactionItem;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void DeleteGuest_Click(object sender, RoutedEventArgs e)
         {
             LoaderOverlay.Visibility = Visibility.Visible;
@@ -98,11 +131,25 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private async void Window_Activated(object sender, EventArgs e)
         {
             await LoadGuestDetails();
+            LoadDefaultSetting();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private async void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (e.Source is TabControl tabControl)
+            {
+                var selectedTab = tabControl.SelectedItem as TabItem;
+
+                if (selectedTab == tbTransactionHistory)
+                {
+                    await LoadGuestTransactionHistory();
+                }
+            }
         }
     }
 }

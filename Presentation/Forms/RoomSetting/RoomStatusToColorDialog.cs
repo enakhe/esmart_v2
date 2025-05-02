@@ -15,7 +15,7 @@ namespace ESMART.Presentation.Forms.RoomSetting
             switch (status)
             {
                 case RoomStatus.Vacant:
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4EAD16")); // Light Green
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4EAD16"));
                 case RoomStatus.Maintenance:
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000"));
                 case RoomStatus.Booked:

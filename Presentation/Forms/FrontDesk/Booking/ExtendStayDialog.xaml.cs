@@ -280,7 +280,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
 
                 if (currencySetting != null)
-                    txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
+                    txtTotalAmount.Text = currencySetting?.Value + " " + totalAmount.ToString("N2");
                 else
                     txtTotalAmount.Text = "₦" + " " + totalAmount.ToString("N2");
             }
@@ -322,6 +322,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         {
             if ((int.TryParse(txtDays.Text, out int days) || days > 1) && dtpCheckIn.SelectedDate != null)
             {
+                if (days > (_booking.CheckOut - _booking.CheckIn).Days)
+                {
+                    btnSave.IsEnabled = true;
+                }
                 var checkOut = dtpCheckIn.SelectedDate.Value.AddDays(int.Parse(txtDays.Text));
                 if (checkOut > dtpCheckIn.SelectedDate)
                 {
@@ -337,7 +341,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
 
                         if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
+                            txtTotalAmount.Text = currencySetting?.Value + " " + totalAmount.ToString("N2");
                         else
                             txtTotalAmount.Text = "₦" + " " + totalAmount.ToString("N2");
                     }
@@ -365,7 +369,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
 
                         if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
+                            txtTotalAmount.Text = currencySetting?.Value + " " + totalAmount.ToString("N2");
                         else
                             txtTotalAmount.Text = "₦" + " " + totalAmount.ToString("N2");
                     }
@@ -393,7 +397,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
 
                         if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
+                            txtTotalAmount.Text = currencySetting?.Value + " " + totalAmount.ToString("N2");
                         else
                             txtTotalAmount.Text = "₦" + " " + totalAmount.ToString("N2");
                     }
