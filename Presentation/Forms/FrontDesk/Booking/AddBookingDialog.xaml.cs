@@ -272,7 +272,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 await _verificationCodeService.AddCode(verificationCode);
 
-                var response = await SenderHelper.SendOtp(hotel, booking, bookedGuest.Response, "Booking", verificationCode.Code, booking.TotalAmount);
+                var response = await SenderHelper.SendOtp(hotel, booking, bookedGuest, "Booking", verificationCode.Code, booking.TotalAmount);
                 if (response.IsSuccessStatusCode)
                 {
                     var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking);
@@ -298,7 +298,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 DateAdded = DateTime.Now,
                 IssuedBy = AuthSession.CurrentUser?.Id,
                 TransactionId = transaction.Id,
-                Description = $"Booking for {bookedGuest.Response.FullName} in {bookedRoom?.Number} from {booking.CheckIn.ToShortDateString()} to {booking.CheckOut.ToShortDateString()}",
+                Description = $"Booking for {bookedGuest.FullName} in {bookedRoom?.Number} from {booking.CheckIn.ToShortDateString()} to {booking.CheckOut.ToShortDateString()}",
             };
 
             if (booking.Status == BookingStatus.Completed)

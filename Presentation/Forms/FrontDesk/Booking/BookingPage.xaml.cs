@@ -298,6 +298,39 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
+        private async void ViewBookingDetails_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedBooking = (BookingViewModel)BookingDataGrid.SelectedItem;
+
+                    var booking = await _bookingRepository.GetBookingById(Id);
+
+                    if (selectedBooking.Id != null)
+                    {
+                        var bookingDetailsDialog = new ViewBookingDetailsDialog(booking, _transactionRepository, _bookingRepository);
+                        bookingDetailsDialog.ShowDialog();
+                    }
+
+                    else
+                    {
+                        MessageBox.Show("Please select a booking before viewing details.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void DeleteBooking_Click(object sender, RoutedEventArgs e)
         {
             try

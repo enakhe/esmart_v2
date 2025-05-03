@@ -320,6 +320,72 @@ namespace ESMART.Infrastructure.Repositories.Transaction
         }
 
 
+        public async Task<List<TransactionItemViewModel>> GetTransactionItemByGuestIdAndDate(string guestId, DateTime from, DateTime to)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItems = await context.TransactionItems
+                    .Where(ti => ti.Transaction.GuestId == guestId &&
+                    ti.DateAdded >= from &&
+                    ti.DateAdded <= to)
+                    .Select(ti => new TransactionItemViewModel
+                    {
+                        ServiceId = ti.ServiceId,
+                        Amount = ti.Amount,
+                        TaxAmount = ti.TaxAmount,
+                        ServiceCharge = ti.ServiceCharge,
+                        Discount = ti.Discount,
+                        Category = ti.Category.ToString(),
+                        Type = ti.Type.ToString(),
+                        Status = ti.Status,
+                        BankAccount = ti.BankAccount,
+                        DateAdded = ti.DateAdded,
+                        IssuedBy = ti.ApplicationUser.FullName,
+                    })
+                    .OrderByDescending(ti => ti.DateAdded)
+                    .ToListAsync();
+                return transactionItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
+            }
+        }
+
+        public async Task<List<TransactionItemViewModel>> GetTransactionItemByBookingIdAndDate(string bookingId, DateTime from, DateTime to)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItems = await context.TransactionItems
+                    .Where(ti => ti.Transaction.BookingId == bookingId &&
+                    ti.DateAdded >= from &&
+                    ti.DateAdded <= to)
+                    .Select(ti => new TransactionItemViewModel
+                    {
+                        ServiceId = ti.ServiceId,
+                        Amount = ti.Amount,
+                        TaxAmount = ti.TaxAmount,
+                        ServiceCharge = ti.ServiceCharge,
+                        Discount = ti.Discount,
+                        Category = ti.Category.ToString(),
+                        Type = ti.Type.ToString(),
+                        Status = ti.Status,
+                        BankAccount = ti.BankAccount,
+                        DateAdded = ti.DateAdded,
+                        IssuedBy = ti.ApplicationUser.FullName,
+                    })
+                    .OrderByDescending(ti => ti.DateAdded)
+                    .ToListAsync();
+                return transactionItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
+            }
+        }
+
         public async Task<List<TransactionItemViewModel>> GetTransactionItemsByIdAsync(string id)
         {
             try

@@ -400,9 +400,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 

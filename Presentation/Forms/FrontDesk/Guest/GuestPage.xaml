@@ -50,6 +50,7 @@
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#1a237e"/>
             <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
         <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
@@ -142,7 +143,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                    <TextBlock Text="{Binding PhoneNumber}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                    <TextBlock Text="{Binding PhoneNumber}" VerticalAlignment="Center" HorizontalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
@@ -151,8 +152,8 @@
                                     <DataGridTemplateColumn Header="Email Address" Width="300">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                    <TextBlock Text="{Binding Email}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                <StackPanel Orientation="Horizontal" Margin="5,0">
+                                                    <TextBlock Text="{Binding Email}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
@@ -161,7 +162,7 @@
                                     <DataGridTemplateColumn Header="Status" Width="100">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Border Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}">
+                                                <Border CornerRadius="5" Height="23" Width="65" Padding="10,3" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}">
                                                     <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
                                                 </Border>
                                             </DataTemplate>

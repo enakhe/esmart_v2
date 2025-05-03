@@ -8,7 +8,7 @@ namespace ESMART.Application.Common.Interface
     {
         Task<GuestResult> AddGuestAsync(Guest guest);
         Task<List<Guest>> GetAllGuestsAsync();
-        Task<GuestResult> GetGuestByIdAsync(string id);
+        Task<Guest> GetGuestByIdAsync(string id);
         Task<GuestResult> UpdateGuestAsync(Guest guest);
         Task DeleteGuestAsync(string id);
         Task<List<GuestViewModel>> SearchGuestAsync(string keyword);

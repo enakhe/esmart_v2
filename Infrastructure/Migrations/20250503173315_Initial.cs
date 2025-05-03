@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ESMART.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class TransactionMigration : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -554,7 +554,8 @@ namespace ESMART.Infrastructure.Migrations
                     GuestId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     BookingId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalRevenue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalReceivables = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     InvoiceNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -623,6 +624,7 @@ namespace ESMART.Infrastructure.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServiceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ServiceCharge = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -632,7 +634,10 @@ namespace ESMART.Infrastructure.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     IsTrashed = table.Column<bool>(type: "bit", nullable: false),
                     BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TransactionId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IssuedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TransactionId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -642,6 +647,12 @@ namespace ESMART.Infrastructure.Migrations
                         column: x => x.TransactionId,
                         principalSchema: "ESMART",
                         principalTable: "Transactions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TransactionItems_User_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalSchema: "ESMART",
+                        principalTable: "User",
                         principalColumn: "Id");
                 });
 
@@ -750,6 +761,12 @@ namespace ESMART.Infrastructure.Migrations
                 schema: "ESMART",
                 table: "Rooms",
                 column: "RoomTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransactionItems_ApplicationUserId",
+                schema: "ESMART",
+                table: "TransactionItems",
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TransactionItems_TransactionId",

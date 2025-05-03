@@ -16,6 +16,9 @@
     <Compile Update="Forms\FrontDesk\Booking\AddBookingDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Booking\BookingDetailsDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Booking\BookingPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -26,6 +29,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\FrontDesk\Booking\TransferGuestDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\FrontDesk\Booking\ViewBookingDetailsDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\FrontDesk\Guest\AddGuestDialog.xaml.cs">

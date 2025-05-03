@@ -60,17 +60,14 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<GuestResult> GetGuestByIdAsync(string id)
+        public async Task<Guest?> GetGuestByIdAsync(string id)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var guest = await context.Guests.FirstOrDefaultAsync(c => c.Id == id);
+                var guest = await context.Guests.Include(g => g.ApplicationUser).FirstOrDefaultAsync(g => g.Id == id);
 
-                if (guest != null)
-                    return GuestResult.Success(guest);
-
-                return GuestResult.Failure(["Unable to find a guest with the provided ID"]);
+                return guest ?? null;
             }
             catch (Exception ex)
             {

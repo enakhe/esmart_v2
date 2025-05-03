@@ -64,7 +64,7 @@ namespace ESMART.Infrastructure.Identity
 
         public async Task TrySeedAsync()
         {
-            var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", FirstName = "Super", LastName = "Administrator", MiddleName = "" };
+            var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", FirstName = "Super", LastName = "Administrator", MiddleName = " " };
 
             if (_userManager.Users.All(u => u.UserName != administrator.UserName))
                 await _userManager.CreateAsync(administrator, "Administrator1!");
@@ -82,7 +82,7 @@ namespace ESMART.Infrastructure.Identity
             if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
                 await _roleManager.CreateAsync(administratorRole);
 
-            var admin = new ApplicationUser { UserName = "admin@localhost", Email = "admin@localhost" };
+            var admin = new ApplicationUser { UserName = "admin@localhost", Email = "admin@localhost", FirstName = "Admin", LastName = "User", MiddleName = " " };
 
             if (_userManager.Users.All(u => u.UserName != administrator.UserName))
             {

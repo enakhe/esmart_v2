@@ -200,7 +200,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 await _verificationCodeService.AddCode(verificationCode);
 
-                var response = await SenderHelper.SendOtp(hotel, booking, bookedGuest.Response, "Booking", verificationCode.Code, amount);
+                var response = await SenderHelper.SendOtp(hotel, booking, bookedGuest, "Booking", verificationCode.Code, amount);
                 if (response.IsSuccessStatusCode)
                 {
                     var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking);

@@ -65,23 +65,23 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var result = await _guestRepository.GetGuestByIdAsync(_id);
-                if (result.Succeeded)
+                var guest = await _guestRepository.GetGuestByIdAsync(_id);
+                if (guest != null)
                 {
-                    txtFirstName.Text = result.Response.FirstName;
-                    txtLastName.Text = result.Response.LastName;
-                    txtMiddleName.Text = result.Response.MiddleName;
-                    txtEmail.Text = result.Response.Email;
-                    txtPhoneNumber.Text = result.Response.PhoneNumber;
-                    cbGender.Text = result.Response.Gender;
+                    txtFirstName.Text = guest.FirstName;
+                    txtLastName.Text = guest.LastName;
+                    txtMiddleName.Text = guest.MiddleName;
+                    txtEmail.Text = guest.Email;
+                    txtPhoneNumber.Text = guest.PhoneNumber;
+                    cbGender.Text = guest.Gender;
 
-                    txtStreet.Text = result.Response.Street;
-                    txtCity.Text = result.Response.City;
-                    txtState.Text = result.Response.State;
-                    txtCountry.Text = result.Response.Country;
-                    if (result.Response.GuestImage != null && result.Response.GuestImage.Length > 0)
+                    txtStreet.Text = guest.Street;
+                    txtCity.Text = guest.City;
+                    txtState.Text = guest.State;
+                    txtCountry.Text = guest.Country;
+                    if (guest.GuestImage != null && guest.GuestImage.Length > 0)
                     {
-                        using (var ms = new MemoryStream(result.Response.GuestImage))
+                        using (var ms = new MemoryStream(guest.GuestImage))
                         {
                             BitmapImage bitmap = new BitmapImage();
                             bitmap.BeginInit();
@@ -91,16 +91,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                             imgProfileImg.Source = bitmap;
                         }
                     }
-                }
-                else
-                {
-                    var sb = new StringBuilder();
-                    foreach (var item in result.Errors)
-                    {
-                        sb.AppendLine(item);
-                    }
-
-                    MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
@@ -141,40 +131,45 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, middleName, lastName, phoneNumber, gender, city, state, country);
                 if (!areFieldsEmpty)
                 {
-                    var result = await _guestRepository.GetGuestByIdAsync(_id);
-                    Domain.Entities.FrontDesk.Guest guest = result.Response;
-                    guest.FirstName = firstName.ToUpper();
-                    guest.MiddleName = middleName.ToUpper();
-                    guest.LastName = lastName.ToUpper();
-                    guest.Email = email;
-                    guest.PhoneNumber = phoneNumber;
-                    guest.Gender = gender;
-                    guest.Street = street;
-                    guest.City = city;
-                    guest.State = state;
-                    guest.Country = country;
-                    guest.GuestImage = ImageSourceToByteArray(imgProfileImg.Source);
-                    guest.DateModified = DateTime.Now;
-                    guest.UpdatedBy = AuthSession.CurrentUser?.Id;
+                    var guest = await _guestRepository.GetGuestByIdAsync(_id);
 
-                    var updateResult = await _guestRepository.UpdateGuestAsync(guest);
-                    if (updateResult.Succeeded)
+                    if (guest != null)
                     {
-                        MessageBox.Show("Guest updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        UpdateGuestIdentityDialog updateGuestIdentityDialog = new UpdateGuestIdentityDialog(guest.Id, _guestRepository);
-                        updateGuestIdentityDialog.ShowDialog();
-                        this.DialogResult = true;
-                    }
-                    else
-                    {
-                        var sb = new StringBuilder();
-                        foreach (var item in updateResult.Errors)
+                        guest.FirstName = firstName.ToUpper();
+                        guest.MiddleName = middleName.ToUpper();
+                        guest.LastName = lastName.ToUpper();
+                        guest.Email = email;
+                        guest.PhoneNumber = phoneNumber;
+                        guest.Gender = gender;
+                        guest.Street = street;
+                        guest.City = city;
+                        guest.State = state;
+                        guest.Country = country;
+                        guest.GuestImage = ImageSourceToByteArray(imgProfileImg.Source);
+                        guest.DateModified = DateTime.Now;
+                        guest.UpdatedBy = AuthSession.CurrentUser?.Id;
+
+                        var updateResult = await _guestRepository.UpdateGuestAsync(guest);
+                        if (updateResult.Succeeded)
                         {
-                            sb.AppendLine(item);
+                            MessageBox.Show("Guest updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            UpdateGuestIdentityDialog updateGuestIdentityDialog = new UpdateGuestIdentityDialog(guest.Id, _guestRepository);
+                            updateGuestIdentityDialog.ShowDialog();
+                            this.DialogResult = true;
                         }
+                        else
+                        {
+                            var sb = new StringBuilder();
+                            foreach (var item in updateResult.Errors)
+                            {
+                                sb.AppendLine(item);
+                            }
 
-                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
+
+                    
                 }
                 else
                 {

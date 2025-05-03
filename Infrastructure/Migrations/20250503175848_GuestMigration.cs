@@ -5,26 +5,26 @@
 namespace ESMART.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateRecent : Migration
+    public partial class GuestMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "ServiceId",
+            migrationBuilder.DropColumn(
+                name: "CreatedBy",
                 schema: "ESMART",
-                table: "TransactionItems",
-                type: "nvarchar(max)",
-                nullable: true);
+                table: "Guests");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "ServiceId",
+            migrationBuilder.AddColumn<string>(
+                name: "CreatedBy",
                 schema: "ESMART",
-                table: "TransactionItems");
+                table: "Guests",
+                type: "nvarchar(max)",
+                nullable: true);
         }
     }
 }

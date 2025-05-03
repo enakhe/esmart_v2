@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250502000945_UpdateApplicationUserModel")]
-    partial class UpdateApplicationUserModel
+    [Migration("20250503175848_GuestMigration")]
+    partial class GuestMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -403,9 +403,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -740,6 +737,9 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<decimal>("ServiceCharge")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ServiceId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

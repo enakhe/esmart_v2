@@ -1,4 +1,6 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.FrontDesk;
 using System.Globalization;
@@ -29,20 +31,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var guestResult = await _guestRepository.GetGuestByIdAsync(_id);
-                if (!guestResult.Succeeded)
+                var guest = await _guestRepository.GetGuestByIdAsync(_id);
+                if (guest != null)
                 {
-                    var sb = new StringBuilder();
-                    foreach (var item in guestResult.Errors)
-                    {
-                        sb.AppendLine(item);
-                    }
-
-                    MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else
-                {
-                    var guest = guestResult.Response;
                     var guestViewModel = new GuestViewModel()
                     {
                         Id = guest.Id,
@@ -105,6 +96,38 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
+        private async Task LoadGuestTransactionByDate()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var fromDate = txtFrom.SelectedDate.Value;
+                var toDate = txtTo.SelectedDate.Value;
+
+                if (fromDate > toDate)
+                {
+                    MessageBox.Show("From date cannot be greater than To date", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var guestTransactionItem = await _transactionRepository.GetTransactionItemByGuestIdAndDate(_id, fromDate, toDate);
+
+                if (guestTransactionItem != null)
+                {
+                    this.TransactionItemDataGrid.ItemsSource = guestTransactionItem;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void DeleteGuest_Click(object sender, RoutedEventArgs e)
         {
             LoaderOverlay.Visibility = Visibility.Visible;
@@ -134,9 +157,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             LoadDefaultSetting();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void FilterButton_Click(object sender, RoutedEventArgs e)
         {
-
+            await LoadGuestTransactionByDate();
         }
 
         private async void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
