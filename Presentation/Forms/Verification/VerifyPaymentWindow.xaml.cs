@@ -164,7 +164,7 @@ namespace ESMART.Presentation.Forms.Verification
                     {
                         Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
                         BookingId = _booking.Id,
-                        IssuedBy = AuthSession.CurrentUser?.Id
+                        ApplicationUserId = AuthSession.CurrentUser?.Id
                     };
 
                     await _verificationCodeService.AddCode(verificationCode);

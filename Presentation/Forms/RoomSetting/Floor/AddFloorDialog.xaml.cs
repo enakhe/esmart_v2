@@ -44,7 +44,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Floor
             try
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
-                bool isNull = Helper.AreAnyNullOrEmpty(txtFloorName.Text, txtFloorNumber.Text, cmbBuilding.SelectedValue.ToString());
+                bool isNull = Helper.AreAnyNullOrEmpty(txtFloorName.Text, txtFloorNumber.Text, cmbBuilding.SelectedValue.ToString()!);
                 if (isNull)
                 {
                     MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);

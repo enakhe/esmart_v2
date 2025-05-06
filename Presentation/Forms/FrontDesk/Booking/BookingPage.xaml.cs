@@ -89,7 +89,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             {
                                 Code = booking.BookingId,
                                 BookingId = booking.Id,
-                                IssuedBy = AuthSession.CurrentUser?.Id
+                                ApplicationUserId = AuthSession.CurrentUser?.Id
                             };
 
                             await _verificationCodeService.AddCode(verificationCode);
@@ -105,18 +105,22 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                     VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking);
                                     if (verifyPaymentWindow.ShowDialog() == true)
                                     {
-                                        IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                        IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
                                         if (issueCardDialog.ShowDialog() == true)
                                         {
                                             await LoadBooking();
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    MessageBox.Show($"An error ocurred when sending code. This might be caused by network related issues or otp sender service.", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+                                }
                             }
                         }
                         else
                         {
-                            IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                            IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
                             if (issueCardDialog.ShowDialog() == true)
                             {
                                 await LoadBooking();
@@ -160,7 +164,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                 {
                                     Code = booking.BookingId,
                                     BookingId = booking.Id,
-                                    IssuedBy = AuthSession.CurrentUser?.Id
+                                    ApplicationUserId = AuthSession.CurrentUser?.Id
                                 };
 
                                 await _verificationCodeService.AddCode(verificationCode);
@@ -179,13 +183,17 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                             ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);
                                             if (extendStayDialog.ShowDialog() == true)
                                             {
-                                                IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                                IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
                                                 if (issueCardDialog.ShowDialog() == true)
                                                 {
                                                     await LoadBooking();
                                                 }
                                             }
                                         }
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show($"An error ocurred when sending code. This might be caused by network related issues or otp sender service.", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error);
                                     }
                                 }
                             }
@@ -194,7 +202,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                 ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);
                                 if (extendStayDialog.ShowDialog() == true)
                                 {
-                                    IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                    IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
                                     if (issueCardDialog.ShowDialog() == true)
                                     {
                                         await LoadBooking();
@@ -240,7 +248,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                 {
                                     Code = booking.BookingId,
                                     BookingId = booking.Id,
-                                    IssuedBy = AuthSession.CurrentUser?.Id
+                                    ApplicationUserId = AuthSession.CurrentUser?.Id
                                 };
 
                                 await _verificationCodeService.AddCode(verificationCode);
@@ -258,13 +266,17 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                             TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);
                                             if (transferGuestDialog.ShowDialog() == true)
                                             {
-                                                IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                                IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
                                                 if (issueCardDialog.ShowDialog() == true)
                                                 {
                                                     await LoadBooking();
                                                 }
                                             }
                                         }
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show($"An error ocurred when sending code. This might be caused by network related issues or otp sender service.", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error);
                                     }
                                 }
                             }
@@ -273,7 +285,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                 TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);
                                 if (transferGuestDialog.ShowDialog() == true)
                                 {
-                                    IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, booking);
+                                    IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
                                     if (issueCardDialog.ShowDialog() == true)
                                     {
                                         await LoadBooking();

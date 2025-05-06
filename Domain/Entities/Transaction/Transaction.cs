@@ -21,7 +21,7 @@ namespace ESMART.Domain.Entities.Transaction
         public decimal TotalReceivables { get; set; }
         public string InvoiceNumber { get; set; }
         public string Description { get; set; }
-        public string CreatedBy { get; set; }
+        public string ApplicationUserId { get; set; }
         public bool IsTrashed { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;

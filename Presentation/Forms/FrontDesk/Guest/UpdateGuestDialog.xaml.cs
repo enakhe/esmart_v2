@@ -1,4 +1,6 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Presentation.Session;
 using Microsoft.Win32;
@@ -23,7 +25,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             InitializeComponent();
         }
 
-        public byte[]? ImageSourceToByteArray(ImageSource imageSource)
+        public byte[] ImageSourceToByteArray(ImageSource imageSource)
         {
             if (imageSource is BitmapSource bitmapSource)
             {
@@ -149,24 +151,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         guest.DateModified = DateTime.Now;
                         guest.UpdatedBy = AuthSession.CurrentUser?.Id;
 
-                        var updateResult = await _guestRepository.UpdateGuestAsync(guest);
-                        if (updateResult.Succeeded)
-                        {
-                            MessageBox.Show("Guest updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                            UpdateGuestIdentityDialog updateGuestIdentityDialog = new UpdateGuestIdentityDialog(guest.Id, _guestRepository);
-                            updateGuestIdentityDialog.ShowDialog();
-                            this.DialogResult = true;
-                        }
-                        else
-                        {
-                            var sb = new StringBuilder();
-                            foreach (var item in updateResult.Errors)
-                            {
-                                sb.AppendLine(item);
-                            }
+                        await _guestRepository.UpdateGuestAsync(guest);
 
-                            MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
+                        MessageBox.Show("Guest updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        UpdateGuestIdentityDialog updateGuestIdentityDialog = new UpdateGuestIdentityDialog(guest.Id, _guestRepository);
+                        updateGuestIdentityDialog.ShowDialog();
+                        this.DialogResult = true;
                     }
 
                     

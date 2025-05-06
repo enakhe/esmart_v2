@@ -104,7 +104,45 @@
 
                 <StackPanel Grid.Column="1" Margin="5,0,5,0">
                     <TextBlock Text="State:" FontWeight="Bold" Margin="0,10,0,0"/>
-                    <TextBox x:Name="txtState" Padding="5,5,0,5" />
+                    <ComboBox x:Name="txtState" Padding="5">
+                        <ComboBoxItem Content="Abia" />
+                        <ComboBoxItem Content="Adamawa" />
+                        <ComboBoxItem Content="Akwa Ibom" />
+                        <ComboBoxItem Content="Anambra" />
+                        <ComboBoxItem Content="Bauchi" />
+                        <ComboBoxItem Content="Bayelsa" />
+                        <ComboBoxItem Content="Benue" />
+                        <ComboBoxItem Content="Borno" />
+                        <ComboBoxItem Content="Cross River" />
+                        <ComboBoxItem Content="Delta" />
+                        <ComboBoxItem Content="Ebonyi" />
+                        <ComboBoxItem Content="Edo" />
+                        <ComboBoxItem Content="Ekiti" />
+                        <ComboBoxItem Content="Enugu" />
+                        <ComboBoxItem Content="Gombe" />
+                        <ComboBoxItem Content="Imo" />
+                        <ComboBoxItem Content="Jigawa" />
+                        <ComboBoxItem Content="Kaduna" />
+                        <ComboBoxItem Content="Kano" />
+                        <ComboBoxItem Content="Katsina" />
+                        <ComboBoxItem Content="Kebbi" />
+                        <ComboBoxItem Content="Kogi" />
+                        <ComboBoxItem Content="Kwara" />
+                        <ComboBoxItem Content="Lagos" />
+                        <ComboBoxItem Content="Nasarawa" />
+                        <ComboBoxItem Content="Niger" />
+                        <ComboBoxItem Content="Ogun" />
+                        <ComboBoxItem Content="Ondo" />
+                        <ComboBoxItem Content="Osun" />
+                        <ComboBoxItem Content="Oyo" />
+                        <ComboBoxItem Content="Plateau" />
+                        <ComboBoxItem Content="Rivers" />
+                        <ComboBoxItem Content="Sokoto" />
+                        <ComboBoxItem Content="Taraba" />
+                        <ComboBoxItem Content="Yobe" />
+                        <ComboBoxItem Content="Zamfara" />
+                        <ComboBoxItem Content="Federal Capital Territory" />
+                    </ComboBox>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Margin="5,0,0,0">

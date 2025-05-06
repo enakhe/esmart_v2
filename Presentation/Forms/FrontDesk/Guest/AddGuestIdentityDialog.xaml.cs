@@ -1,4 +1,6 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using Microsoft.Win32;
 using System.IO;

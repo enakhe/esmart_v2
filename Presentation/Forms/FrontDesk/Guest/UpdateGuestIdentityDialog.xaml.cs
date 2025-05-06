@@ -1,4 +1,6 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using Microsoft.Win32;
 using System.IO;
@@ -23,7 +25,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             InitializeComponent();
         }
 
-        public byte[]? ImageSourceToByteArray(ImageSource imageSource)
+        public byte[] ImageSourceToByteArray(ImageSource imageSource)
         {
             if (imageSource is BitmapSource bitmapSource)
             {
@@ -87,14 +89,14 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var result = await _guestRepository.GetGuestIdentityByGuestIdAsync(_guestId);
-                if (result.Succeeded)
+                var guestIdentity = await _guestRepository.GetGuestIdentityByGuestIdAsync(_guestId);
+                if (guestIdentity != null)
                 {
-                    cbIdType.Text = result.Response.IdType;
-                    txtIdNumber.Text = result.Response.IdNumber;
-                    if (result.Response.IdentificationDocumentFront != null && result.Response.IdentificationDocumentFront.Length > 0)
+                    cbIdType.Text = guestIdentity.IdType;
+                    txtIdNumber.Text = guestIdentity.IdNumber;
+                    if (guestIdentity.IdentificationDocumentFront != null && guestIdentity.IdentificationDocumentFront.Length > 0)
                     {
-                        using (var ms = new MemoryStream(result.Response.IdentificationDocumentFront))
+                        using (var ms = new MemoryStream(guestIdentity.IdentificationDocumentFront))
                         {
                             BitmapImage bitmap = new BitmapImage();
                             bitmap.BeginInit();
@@ -105,9 +107,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         }
                     }
 
-                    if (result.Response.IdentificationDocumentBack != null && result.Response.IdentificationDocumentBack.Length > 0)
+                    if (guestIdentity.IdentificationDocumentBack != null && guestIdentity.IdentificationDocumentBack.Length > 0)
                     {
-                        using (var ms = new MemoryStream(result.Response.IdentificationDocumentBack))
+                        using (var ms = new MemoryStream(guestIdentity.IdentificationDocumentBack))
                         {
                             BitmapImage bitmap = new BitmapImage();
                             bitmap.BeginInit();
@@ -120,13 +122,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 }
                 else
                 {
-                    var sb = new StringBuilder();
-                    foreach (var item in result.Errors)
-                    {
-                        sb.AppendLine(item);
-                    }
-
-                    MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Guest identity not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
@@ -156,33 +152,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(idNumber, idType);
                 if (!areFieldsEmpty)
                 {
-                    var result = await _guestRepository.GetGuestIdentityByGuestIdAsync(_guestId);
-                    Domain.Entities.FrontDesk.GuestIdentity guestIdentity = result.Response;
-                    if (result.Succeeded)
+                    var guestIdentity = await _guestRepository.GetGuestIdentityByGuestIdAsync(_guestId);
+                    if (guestIdentity != null)
                     {
                         guestIdentity.IdType = idType;
                         guestIdentity.IdNumber = idNumber;
                         guestIdentity.IdentificationDocumentFront = ImageSourceToByteArray(frontImg.Source);
                         guestIdentity.IdentificationDocumentBack = ImageSourceToByteArray(backImg.Source);
 
-                        var updateResult = await _guestRepository.UpdateGuestIdentityAsync(guestIdentity);
-                        if (updateResult.Succeeded)
-                        {
-                            MessageBox.Show("Guest identity information updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                            this.DialogResult = true;
-                        }
-                        else
-                        {
-                            var sb = new StringBuilder();
-                            foreach (var item in updateResult.Errors)
-                            {
-                                sb.AppendLine(item);
-                            }
-
-                            MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
+                        await _guestRepository.UpdateGuestIdentityAsync(guestIdentity);
+                        MessageBox.Show("Guest identity information updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        this.DialogResult = true;
                     }
-
                 }
                 else
                 {

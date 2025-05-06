@@ -1,4 +1,6 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.ViewModels.FrontDesk;
@@ -12,14 +14,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
 
-        public async Task<GuestResult> AddGuestAsync(Guest guest)
+        public async Task AddGuestAsync(Guest guest)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var result = await context.Guests.AddAsync(guest);
+                await context.Guests.AddAsync(guest);
                 await context.SaveChangesAsync();
-                return GuestResult.Success(guest);
             }
             catch (Exception ex)
             {
@@ -60,14 +61,14 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<Guest?> GetGuestByIdAsync(string id)
+        public async Task<Guest> GetGuestByIdAsync(string id)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
                 var guest = await context.Guests.Include(g => g.ApplicationUser).FirstOrDefaultAsync(g => g.Id == id);
 
-                return guest ?? null;
+                return guest;
             }
             catch (Exception ex)
             {
@@ -75,16 +76,14 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<GuestIdenityResult> GetGuestIdentityByGuestIdAsync(string id)
+        public async Task<GuestIdentity> GetGuestIdentityByGuestIdAsync(string id)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var guest = await context.GuestIdentities.FirstOrDefaultAsync(c => c.GuestId == id);
-                if (guest != null)
-                    return GuestIdenityResult.Success(guest);
-                IEnumerable<string> errors = new List<string> { "Unable to find a guest identity with the provided ID" };
-                return GuestIdenityResult.Failure(errors);
+                var guestIdentities = await context.GuestIdentities.FirstOrDefaultAsync(c => c.GuestId == id);
+
+                return guestIdentities;
             }
             catch (Exception ex)
             {
@@ -92,14 +91,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<GuestResult> UpdateGuestAsync(Guest guest)
+        public async Task UpdateGuestAsync(Guest guest)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
                 context.Entry(guest).State = EntityState.Modified;
                 await context.SaveChangesAsync();
-                return GuestResult.Success(guest);
             }
             catch (Exception ex)
             {
@@ -107,14 +105,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        public async Task<GuestIdenityResult> UpdateGuestIdentityAsync(GuestIdentity guestIdentity)
+        public async Task UpdateGuestIdentityAsync(GuestIdentity guestIdentity)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
                 context.Entry(guestIdentity).State = EntityState.Modified;
                 await context.SaveChangesAsync();
-                return GuestIdenityResult.Success(guestIdentity);
             }
             catch (Exception ex)
             {
@@ -149,11 +146,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
-                if (string.IsNullOrEmpty(keyword))
-                {
-                    throw new Exception("Keyword cannot be empty");
-                }
-
                 using var context = _contextFactory.CreateDbContext();
 
                 var searchGuest = await context.Guests
@@ -169,8 +161,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         City = guest.City,
                         State = guest.State,
                         CreatedBy = guest.ApplicationUser.FullName,
-                        DateCreated = guest.DateCreated.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
-                        DateModified = guest.DateModified.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
+                        DateCreated = guest.DateCreated,
+                        DateModified = guest.DateModified,
                     }).ToListAsync();
 
                 return searchGuest;
@@ -199,8 +191,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         City = guest.City,
                         State = guest.State,
                         CreatedBy = guest.ApplicationUser.FullName,
-                        DateCreated = guest.DateCreated.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
-                        DateModified = guest.DateModified.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
+                        DateCreated = guest.DateCreated,
+                        DateModified = guest.DateModified,
                     }).ToListAsync();
 
                 return allGuest;
@@ -211,76 +203,16 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
-        //public async Task<List<GuestBillViewModel>> GetGuestBillAsync(string guestId)
-        //{
-        //    try
-        //    {
-        //        using var context = _contextFactory.CreateDbContext();
-        //        var guestBills = await context.Transactions
-        //            .Where(t => t.GuestId == guestId && t.TransactionItems.Status.ToString() == PaymentStatus.Pending.ToString())
-        //            .OrderBy(t => t.Date)
-        //            .Select(transaction => new GuestBillViewModel
-        //            {
-        //                TransactionId = transaction.TransactionId,
-        //                Guest = transaction.Guest.FullName,
-        //                GuestPhoneNo = transaction.Guest.PhoneNumber,
-        //                ServiceId = transaction.ServiceId,
-        //                Date = transaction.Date.ToString(),
-        //                Status = transaction.Status.ToString(),
-        //                Amount = transaction.Amount.ToString(),
-        //                TaxAmount = transaction.TaxAmount.ToString(),
-        //                ServiceCharge = transaction.ServiceCharge.ToString(),
-        //                Discount = transaction.Discount.ToString(),
-        //                InvoiceNumber = transaction.InvoiceNumber,
-        //                CreatedBy = transaction.ApplicationUser.FirstName,
-        //                TotalAmount = transaction.TotalAmount,
-        //                Description = transaction.Description,
-        //                Type = transaction.Type.ToString(),
-        //                BankAccount = transaction.BankAccount,
-        //            }).ToListAsync();
+        public async Task<int> GetGuestNumber()
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Guests.Where(b => b.IsTrashed == false).CountAsync();
+        }
 
-        //        return guestBills;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception("An error occurred when getting guest bills. " + ex.Message);
-        //    }
-        //}
-
-        //public async Task<List<GuestBillViewModel>> GetGuestBillByDateAsync(string guestId, DateTime startDate, DateTime endDate)
-        //{
-        //    try
-        //    {
-        //        using var context = _contextFactory.CreateDbContext();
-        //        var guestBills = await context.Transactions
-        //            .Where(t => t.GuestId == guestId && t.Date >= startDate && t.Date <= endDate && t.Status.ToString() == PaymentStatus.Pending.ToString())
-        //            .OrderBy(t => t.Date)
-        //            .Select(transaction => new GuestBillViewModel
-        //            {
-        //                TransactionId = transaction.TransactionId,
-        //                Guest = transaction.Guest.FullName,
-        //                GuestPhoneNo = transaction.Guest.PhoneNumber,
-        //                ServiceId = transaction.ServiceId,
-        //                Date = transaction.Date.ToString(),
-        //                Status = transaction.Status.ToString(),
-        //                Amount = transaction.Amount.ToString(),
-        //                TaxAmount = transaction.TaxAmount.ToString(),
-        //                ServiceCharge = transaction.ServiceCharge.ToString(),
-        //                Discount = transaction.Discount.ToString(),
-        //                InvoiceNumber = transaction.InvoiceNumber,
-        //                CreatedBy = transaction.ApplicationUser.FirstName,
-        //                TotalAmount = transaction.TotalAmount,
-        //                Description = transaction.Description,
-        //                Type = transaction.Type.ToString(),
-        //                BankAccount = transaction.BankAccount,
-        //            }).ToListAsync();
-        //        return guestBills;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception("An error occurred when getting guest bills by date. " + ex.Message);
-        //    }
-        //}
-
+        public async Task<int> GetInHouseGuestNumber()
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Guests.Where(b => b.IsTrashed == false && b.Status == "Active").CountAsync();
+        }
     }
 }

@@ -30,8 +30,8 @@
                             <TextBlock Text="Lock Type" FontWeight="Bold" />
                             <ComboBox x:Name="cmbLockType" Padding="2,5,0,5">
                                 <ComboBoxItem>MIFI</ComboBoxItem>
-                                <ComboBoxItem>RF</ComboBoxItem>
-                                <ComboBoxItem>Pulmos</ComboBoxItem>
+                                <ComboBoxItem>RFID</ComboBoxItem>
+                                <ComboBoxItem>PULMOS</ComboBoxItem>
                             </ComboBox>
                         </StackPanel>
                         

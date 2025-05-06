@@ -49,8 +49,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         State = guest.State,
                         Country = guest.Country,
                         CreatedBy = guest.ApplicationUser?.FullName,
-                        DateCreated = guest.DateCreated.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
-                        DateModified = guest.DateModified.ToString("ddd d MMMM, yyyy", CultureInfo.InvariantCulture),
+                        DateCreated = guest.DateCreated,
+                        DateModified = guest.DateModified,
                     };
 
                     this.DataContext = guestViewModel;

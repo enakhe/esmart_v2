@@ -237,7 +237,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     {
                         Code = booking.BookingId,
                         BookingId = booking.Id,
-                        IssuedBy = AuthSession.CurrentUser?.Id
+                        ApplicationUserId = AuthSession.CurrentUser?.Id
                     };
 
                     await _verificationCodeService.AddCode(verificationCode);
@@ -268,7 +268,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         Type = TransactionType.Adjustment,
                         BankAccount = booking.AccountNumber,
                         DateAdded = DateTime.Now,
-                        IssuedBy = AuthSession.CurrentUser?.Id,
+                        ApplicationUserId = AuthSession.CurrentUser?.Id,
                         TransactionId = transaction.Id,
                         Description = $"Booking room transfered for {booking.Guest.FullName} to {booking.Room.Number} from {booking.CheckIn} to {booking.CheckOut}"
                     };

@@ -466,5 +466,11 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 throw new Exception("Error retriving total number of Guest Booking", ex);
             }
         }
+
+        public async Task<int> GetBookingNumber()
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Bookings.Where(b => b.IsTrashed == false).CountAsync();
+        }
     }
 }

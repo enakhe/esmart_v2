@@ -9,7 +9,7 @@ namespace ESMART.Presentation.Utils
         public static async Task<HttpResponseMessage> SendOtp(Hotel hotel, Booking booking, Guest guest, string service, string otp, decimal amount)
         {
             var apiService = new ApiService(new HttpClient());
-            var response = await apiService.PostAsync("http://localhost:8000/api/send-otp", new
+            var response = await apiService.PostAsync("https://esmart-api.vercel.app/api/otp", new
             {
                 to = hotel.PhoneNumber,
                 otp,

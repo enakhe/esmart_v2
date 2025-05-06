@@ -20,7 +20,7 @@ namespace ESMART.Domain.Entities.Transaction
         public bool IsTrashed { get; set; }
         public string BankAccount { get; set; }
         public DateTime DateAdded { get; set; }
-        public string IssuedBy { get; set; }
+        public string ApplicationUserId { get; set; }
 
 
         public string TransactionId { get; set; }

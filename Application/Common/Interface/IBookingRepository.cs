@@ -6,6 +6,7 @@ namespace ESMART.Application.Common.Interface
 {
     public interface IBookingRepository
     {
+        Task<int> GetBookingNumber();
         Task AddBooking(Booking booking);
         Task<List<BookingViewModel>> GetAllBookingsAsync();
         Task<List<BookingViewModel>> GetBookingsByFilterAsync(string roomTypeId, DateTime fromTime, DateTime endTime, bool IsTrashed);

@@ -198,7 +198,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 PaymentMethod = paymentMethod,
                 GuestId = guestId,
                 RoomId = roomId,
-                CreatedBy = createdBy,
+                ApplicationUserId = createdBy,
                 UpdatedBy = createdBy,
                 DateCreated = DateTime.Now,
                 DateModified = DateTime.Now,
@@ -250,7 +250,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 BookingId = booking.Id,
                 Date = DateTime.Now,
                 InvoiceNumber = booking.BookingId,
-                CreatedBy = AuthSession.CurrentUser?.Id,
+                ApplicationUserId = AuthSession.CurrentUser?.Id,
             };
 
             await _transactionRepository.AddTransactionAsync(transaction);
@@ -267,7 +267,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 {
                     Code = booking.BookingId,
                     BookingId = booking.Id,
-                    IssuedBy = AuthSession.CurrentUser?.Id
+                    ApplicationUserId = AuthSession.CurrentUser?.Id
                 };
 
                 await _verificationCodeService.AddCode(verificationCode);
@@ -296,7 +296,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 Type = TransactionType.Charge,
                 BankAccount = booking.AccountNumber,
                 DateAdded = DateTime.Now,
-                IssuedBy = AuthSession.CurrentUser?.Id,
+                ApplicationUserId = AuthSession.CurrentUser?.Id,
                 TransactionId = transaction.Id,
                 Description = $"Booking for {bookedGuest.FullName} in {bookedRoom?.Number} from {booking.CheckIn.ToShortDateString()} to {booking.CheckOut.ToShortDateString()}",
             };

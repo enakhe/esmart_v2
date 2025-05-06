@@ -11,7 +11,7 @@ namespace ESMART.Domain.Entities.Verification
         public string Code { get; set; }
 
         public string BookingId { get; set; }
-        public string IssuedBy { get; set; }
+        public string ApplicationUserId { get; set; }
         public DateTime IssuedAt { get; set; } = DateTime.Now;
         public DateTime ExpiresAt { get; set; } = DateTime.Now.AddMinutes(20);
 

@@ -24,7 +24,7 @@
             Padding="10">
                 <StackPanel>
                     <TextBlock Text="Guests" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="1500" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="0" Name="txtGuestCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
 
@@ -32,15 +32,23 @@
             Padding="10">
                 <StackPanel>
                     <TextBlock Text="Rooms" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="250,000" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="0" Name="txtRoomCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
 
             <Border Background="#2ecc71" Width="200" Height="100" CornerRadius="10" Margin="10"
             Padding="10">
                 <StackPanel>
-                    <TextBlock Text="Booked Rooms" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="480" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="Bookings" Foreground="White" FontSize="14"/>
+                    <TextBlock Text="0" Name="txtBookingCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10"
+Padding="10">
+                <StackPanel>
+                    <TextBlock Text="In-House Guests" Foreground="White" FontSize="14"/>
+                    <TextBlock Text="0" Name="txtInHouseGuestCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
         </StackPanel>

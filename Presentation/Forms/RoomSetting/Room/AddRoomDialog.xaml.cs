@@ -169,7 +169,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                     FloorId = floorId,
                     AreaId = areaId,
                     RoomTypeId = roomTypeId,
-                    CreatedBy = AuthSession.CurrentUser?.Id,
+                    ApplicationUserId = AuthSession.CurrentUser?.Id,
                     Status = Domain.Entities.RoomSettings.RoomStatus.Vacant,
                     UpdatedBy = AuthSession.CurrentUser?.Id,
                 };

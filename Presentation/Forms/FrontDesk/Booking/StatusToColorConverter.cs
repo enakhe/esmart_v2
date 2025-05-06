@@ -11,7 +11,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             if (value == null)
                 return new SolidColorBrush(Colors.Gray);
 
-            string status = value.ToString();
+            string status = value.ToString()!;
             switch (status)
             {
                 case "Active":

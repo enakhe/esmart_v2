@@ -575,10 +575,10 @@ namespace ESMART.Presentation.Forms.RoomSetting
                 var areaCount = await _roomRepository.GetAreaNumber();
                 var roomCount = await _roomRepository.GetRoomNumber();
 
-                txtBuildingCount.Text = buildingCount.ToString();
-                txtFloorCount.Text = floorCount.ToString();
-                txtAreaCount.Text = areaCount.ToString();
-                txtRoomCount.Text = roomCount.ToString();
+                txtBuildingCount.Text = buildingCount.ToString("N0");
+                txtFloorCount.Text = floorCount.ToString("N0");
+                txtAreaCount.Text = areaCount.ToString("N0");
+                txtRoomCount.Text = roomCount.ToString("N0");
             }
             catch (Exception ex)
             {
@@ -613,6 +613,7 @@ namespace ESMART.Presentation.Forms.RoomSetting
                     await LoadRoom();
                 }
             }
+            await LoadMetrics();
         }
 
         private async void RoomSettingPage1_Loaded(object sender, RoutedEventArgs e)

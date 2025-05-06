@@ -1,6 +1,10 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Domain.Enum;
+using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.LockSDK;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
@@ -11,10 +15,14 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
     public partial class IssueCardDialog : Window
     {
         private IBookingRepository _bookingRepository;
+        private IGuestRepository _guestRepository;
+        private IHotelSettingsService _hotelSettingsService;
         private Domain.Entities.FrontDesk.Booking _booking;
-        public IssueCardDialog(IBookingRepository bookingRepository, Domain.Entities.FrontDesk.Booking booking)
+        public IssueCardDialog(IBookingRepository bookingRepository, IGuestRepository guestRepository,  Domain.Entities.FrontDesk.Booking booking, IHotelSettingsService hotelSettingsService)
         {
             _bookingRepository = bookingRepository;
+            _hotelSettingsService = hotelSettingsService;
+            _guestRepository = guestRepository;
             _booking = booking;
             InitializeComponent();
         }
@@ -60,31 +68,67 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
-        private void IssueButton_Click(object sender, RoutedEventArgs e)
+        private async void IssueButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                char[] card_snr = new char[100];
-                string roomno = $"{_booking.Room?.Building?.Number}.{_booking.Room?.Floor?.Number}.{_booking.Room?.Number}";
-                string intime = _booking.CheckIn.ToString("yyyy-MM-dd HH:mm:ss");
-                String outtime = _booking.CheckOut.ToString("yyyy-MM-dd HH:mm:ss");
-
-                CARD_FLAGS iflags = CARD_FLAGS.CF_CHECK_TIMESTAMP;
-
-                if (LockSDKHeaders.PreparedIssue(card_snr) == false)
-                    return;
-                var st = LockSDKMethods.MakeGuestCard(card_snr, roomno, _booking.Room.Area.Number, "", intime, outtime, iflags);
-
-                if (st == 1)
-                    this.DialogResult = true;
-
+                var lockSetting = await _hotelSettingsService.GetSettingsByCategoryAsync("Operation Settings");
+                if (lockSetting != null)
+                {
+                    var lockType = lockSetting.FirstOrDefault(x => x.Key == "LockType")?.Value;
+                    if (lockType == "MIFI")
+                    {
+                        await IssueCardForMIFI();
+                    }
+                    else if(lockType == "RFID")
+                    {
+                        MessageBox.Show("RFID card issuing is not implemented yet", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else if (lockType == "PULMOS")
+                    {
+                        MessageBox.Show("PULMOS card issuing is not implemented yet", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Invalid lock type selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
                 else
-                    LockSDKMethods.CheckErr(st);
+                {
+                    MessageBox.Show("Lock settings not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task IssueCardForMIFI()
+        {
+            char[] card_snr = new char[100];
+            string roomno = $"{_booking.Room?.Building?.Number}.{_booking.Room?.Floor?.Number}.{_booking.Room?.Number}";
+            string intime = _booking.CheckIn.ToString("yyyy-MM-dd HH:mm:ss");
+            String outtime = _booking.CheckOut.ToString("yyyy-MM-dd HH:mm:ss");
+
+            CARD_FLAGS iflags = CARD_FLAGS.CF_CHECK_TIMESTAMP;
+
+            if (LockSDKHeaders.PreparedIssue(card_snr) == false)
+                return;
+            var st = LockSDKMethods.MakeGuestCard(card_snr, roomno, _booking.Room.Area.Number, "", intime, outtime, iflags);
+
+            if (st == 1)
+            {
+                _booking.Guest.Status = "Active";
+                await _guestRepository.UpdateGuestAsync(_booking.Guest);
+                string cardSnr = new string(card_snr);
+                MessageBox.Show($"Successfully issued card: {cardSnr}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                this.DialogResult = true;
+            }
+            else
+            {
+                LockSDKMethods.CheckErr(st);
             }
         }
 

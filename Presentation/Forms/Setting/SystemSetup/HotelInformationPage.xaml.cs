@@ -14,7 +14,7 @@ namespace ESMART.Presentation.Forms.Setting.SystemSetup
     public partial class HotelInformationPage : Page
     {
         private readonly IHotelSettingsService _hotelSettingsService;
-        private string profilePictureImage;
+        private string? profilePictureImage;
         public HotelInformationPage(IHotelSettingsService hotelSettingsService)
         {
             _hotelSettingsService = hotelSettingsService;
@@ -37,15 +37,13 @@ namespace ESMART.Presentation.Forms.Setting.SystemSetup
 
                     if (hotel.LogoUrl != null)
                     {
-                        using (var ms = new MemoryStream(hotel.LogoUrl))
-                        {
-                            BitmapImage bitmap = new BitmapImage();
-                            bitmap.BeginInit();
-                            bitmap.StreamSource = ms;
-                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                            bitmap.EndInit();
-                            imgLogo.Source = bitmap;
-                        }
+                        using var ms = new MemoryStream(hotel.LogoUrl);
+                        BitmapImage bitmap = new();
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = ms;
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        imgLogo.Source = bitmap;
                     }
                     else
                     {
@@ -99,7 +97,7 @@ namespace ESMART.Presentation.Forms.Setting.SystemSetup
                 string address = txtAddress.Text;
                 string phoneNumber = txtPhoneNumber.Text;
                 string email = txtEmail.Text;
-                byte[] logoImage = null;
+                byte[]? logoImage = null;
 
                 if (!string.IsNullOrEmpty(profilePictureImage))
                 {

@@ -1,4 +1,7 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Models;
 using ESMART.Application.Common.Utils;
 using ESMART.Presentation.Session;
 using Microsoft.Win32;
@@ -61,7 +64,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, middleName, lastName, phoneNumber, gender, city, state, country);
                 if (!areFieldsEmpty)
                 {
-                    byte[]? profileImageBytes = null;
+                    byte[] profileImageBytes = null;
                     if (!string.IsNullOrEmpty(profilePictureImage))
                     {
                         profileImageBytes = File.ReadAllBytes(profilePictureImage);
@@ -85,24 +88,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         IsTrashed = false,
                         ApplicationUserId = AuthSession.CurrentUser?.Id
                     };
-                    var result = await _guestRepository.AddGuestAsync(guest);
-                    if (result.Succeeded)
-                    {
-                        MessageBox.Show("Guest added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        AddGuestIdentityDialog addGuestIdentityDialog = new AddGuestIdentityDialog(result.Response, _guestRepository);
-                        addGuestIdentityDialog.ShowDialog();
-                        this.DialogResult = true;
-                    }
-                    else
-                    {
-                        var sb = new StringBuilder();
-                        foreach (var item in result.Errors)
-                        {
-                            sb.AppendLine(item);
-                        }
+                    
+                    await _guestRepository.AddGuestAsync(guest);
 
-                        MessageBox.Show(sb.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    MessageBox.Show("Guest added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    AddGuestIdentityDialog addGuestIdentityDialog = new AddGuestIdentityDialog(guest, _guestRepository);
+                    addGuestIdentityDialog.ShowDialog();
+                    this.DialogResult = true;
                 }
                 else
                 {
