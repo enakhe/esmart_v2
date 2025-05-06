@@ -21,6 +21,8 @@
     <None Remove="Assets\images\favicon.ico" />
     <None Remove="Assets\images\logo-main.png" />
     <None Remove="Forms\appointment.png" />
+    <None Remove="Forms\Export\excel.png" />
+    <None Remove="Forms\Export\pdf.png" />
     <None Remove="Forms\FrontDesk\Booking\appointment.png" />
     <None Remove="Forms\FrontDesk\Booking\logo.png" />
     <None Remove="Forms\FrontDesk\Guest\logo.png" />
@@ -55,6 +57,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+    <PackageReference Include="EPPlus" Version="8.0.3" />
+    <PackageReference Include="itext7" Version="9.1.0" />
+    <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.1.0" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
@@ -68,6 +75,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1001" />
+    <PackageReference Include="PdfiumViewer" Version="2.13.0" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
   </ItemGroup>
 
@@ -78,6 +87,8 @@
 
   <ItemGroup>
     <Resource Include="Forms\appointment.png" />
+    <Resource Include="Forms\Export\excel.png" />
+    <Resource Include="Forms\Export\pdf.png" />
     <Resource Include="Forms\FrontDesk\Booking\appointment.png" />
     <Resource Include="Forms\FrontDesk\Booking\logo.png" />
     <Resource Include="Forms\FrontDesk\Guest\logo.png" />

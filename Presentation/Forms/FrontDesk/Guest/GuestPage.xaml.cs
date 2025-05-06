@@ -1,4 +1,7 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,10 +14,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
     {
         private readonly IGuestRepository _guestRepository;
         private readonly ITransactionRepository _transactionRepository;
-        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository)
+        private readonly IHotelSettingsService _hotelSettingsService;
+        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService)
         {
             _guestRepository = guestRepository;
             _transactionRepository = transactionRepository;
+            _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
 
@@ -153,6 +158,51 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 {
                     MessageBox.Show("Please select a guest before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+            }
+        }
+
+        //[Obsolete]
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var columnNames = GuestDataGrid.Columns
+                    .Where(c => c.Header != null)
+                    .Select(c => c.Header.ToString())
+                    .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
+                    .ToList();
+
+                var optionsWindow = new ExportDialog(columnNames);
+                var result = optionsWindow.ShowDialog();
+
+                if (result == true)
+                {
+                    var exportResult = optionsWindow.GetResult();
+                    var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                    if (exportResult.SelectedColumns.Count == 0)
+                    {
+                        MessageBox.Show("Please select at least one column to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else
+                    {
+                        if(hotel != null)
+                        {
+                            ExportHelper.ExportAndPrint(GuestDataGrid, exportResult.SelectedColumns, exportResult.ExportFormat, exportResult.FileName, hotel.LogoUrl!, hotel.Name, hotel.Email, hotel.PhoneNumber, hotel.Address);
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
 

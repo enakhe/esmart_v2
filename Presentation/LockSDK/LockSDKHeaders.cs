@@ -7,7 +7,7 @@ namespace ESMART.Presentation.LockSDK
 {
     public class LockSDKHeaders
     {
-        #region Declear DLL functions
+        #region MIFI functions
         [DllImport("LockSDK.dll", EntryPoint = "TP_Configuration")]
         public static extern int TP_Configuration(short LockType);
 
