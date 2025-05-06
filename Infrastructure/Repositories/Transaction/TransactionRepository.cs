@@ -190,7 +190,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
-                        Amount = ti.Amount,
+                        Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
@@ -236,7 +236,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
-                        Amount = ti.Amount,
+                        Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
@@ -267,7 +267,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
-                        Amount = ti.Amount,
+                        Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
@@ -298,7 +298,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
-                        Amount = ti.Amount,
+                        Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
@@ -332,7 +332,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
-                        Amount = ti.Amount,
+                        Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
@@ -365,7 +365,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
-                        Amount = ti.Amount,
+                        Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
@@ -396,7 +396,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
-                        Amount = ti.Amount,
+                        Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
@@ -459,7 +459,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
-                        Amount = ti.Amount,
+                        Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,
@@ -490,7 +490,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
-                        Amount = ti.Amount,
+                        Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
                         ServiceCharge = ti.ServiceCharge,
                         Discount = ti.Discount,

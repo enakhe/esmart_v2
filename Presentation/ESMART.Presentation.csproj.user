@@ -103,6 +103,9 @@
     <Compile Update="Forms\Setting\SystemSetup\HotelInformationPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\UserSetting\UserSettingPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Verification\VerifyPaymentWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

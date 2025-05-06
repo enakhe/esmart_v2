@@ -4,6 +4,7 @@ using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.RoomSetting;
 using ESMART.Presentation.Forms.Setting;
+using ESMART.Presentation.Forms.UserSetting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
@@ -110,6 +111,16 @@ namespace ESMART.Presentation.Forms
 
             SettingDialog settingPage = serviceProvider.GetRequiredService<SettingDialog>();
             settingPage.ShowDialog();
+        }
+
+        private void UserSettingButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            UserSettingPage userSettingPage = serviceProvider.GetRequiredService<UserSettingPage>();
+            MainFrame.Navigate(userSettingPage);
         }
 
         private void OpenSidebar_Click(object sender, RoutedEventArgs e)

@@ -30,6 +30,8 @@
     <None Remove="Forms\logo.png" />
     <None Remove="Forms\menu.png" />
     <None Remove="Forms\passanger.png" />
+    <None Remove="Forms\project-manager.png" />
+    <None Remove="Forms\report.png" />
     <None Remove="Forms\RoomSetting\logo.png" />
     <None Remove="Forms\RoomSetting\Room\editing.png" />
     <None Remove="Forms\setting.png" />
@@ -96,6 +98,8 @@
     <Resource Include="Forms\logo.png" />
     <Resource Include="Forms\menu.png" />
     <Resource Include="Forms\passanger.png" />
+    <Resource Include="Forms\project-manager.png" />
+    <Resource Include="Forms\report.png" />
     <Resource Include="Forms\RoomSetting\logo.png" />
     <Resource Include="Forms\RoomSetting\Room\editing.png" />
     <Resource Include="Forms\setting.png" />

@@ -2,6 +2,7 @@
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.ViewModels.FrontDesk;
+using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
@@ -323,7 +324,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                     if (selectedBooking.Id != null)
                     {
-                        var bookingDetailsDialog = new ViewBookingDetailsDialog(booking, _transactionRepository, _bookingRepository);
+                        var bookingDetailsDialog = new ViewBookingDetailsDialog(booking, _transactionRepository, _bookingRepository, _hotelSettingsService);
                         bookingDetailsDialog.ShowDialog();
                     }
 
@@ -336,6 +337,50 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var columnNames = BookingDataGrid.Columns
+                    .Where(c => c.Header != null)
+                    .Select(c => c.Header.ToString())
+                    .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
+                    .ToList();
+
+                var optionsWindow = new ExportDialog(columnNames);
+                var result = optionsWindow.ShowDialog();
+
+                if (result == true)
+                {
+                    var exportResult = optionsWindow.GetResult();
+                    var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                    if (exportResult.SelectedColumns.Count == 0)
+                    {
+                        MessageBox.Show("Please select at least one column to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else
+                    {
+                        if (hotel != null)
+                        {
+                            ExportHelper.ExportAndPrint(BookingDataGrid, exportResult.SelectedColumns, exportResult.ExportFormat, exportResult.FileName, hotel.LogoUrl!, hotel.Name, hotel.Email, hotel.PhoneNumber, hotel.Address);
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
             finally
             {

@@ -10,6 +10,7 @@ using ESMART.Presentation.Forms.RoomSetting.RoomType;
 using ESMART.Presentation.Forms.Setting;
 using ESMART.Presentation.Forms.Setting.OperationalSetting;
 using ESMART.Presentation.Forms.Setting.SystemSetup;
+using ESMART.Presentation.Forms.UserSetting;
 using ESMART.Presentation.Forms.Verification;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -48,6 +49,8 @@ namespace ESMART.Presentation
             services.AddScoped<OperationSettingPage>();
 
             services.AddScoped<VerifyPaymentWindow>();
+
+            services.AddScoped<UserSettingPage>();
 
             return services;
         }

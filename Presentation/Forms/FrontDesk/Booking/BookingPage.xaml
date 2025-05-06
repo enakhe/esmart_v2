@@ -113,7 +113,7 @@
                                 <Button Content="Single Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="100" Click="AddSingleBooking_Click" />
                                 <Button Content="Bulk Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="90" />
                                 <Button Content="Import" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
-                                <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
+                                <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="ExportButton_Click" />
                             </StackPanel>
 
                         </Grid>
@@ -136,7 +136,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding GuestPhoneNo}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding PhoneNumber}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -182,7 +182,7 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Amount" Width="*">
+                                        <DataGridTemplateColumn Header="Total Amount" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">

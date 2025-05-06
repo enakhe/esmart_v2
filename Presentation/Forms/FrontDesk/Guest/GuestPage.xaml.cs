@@ -114,7 +114,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
                 if (selectedGuest.Id != null)
                 {
-                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository, _transactionRepository);
+                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository, _transactionRepository, _hotelSettingsService);
                     if (viewGuestDialog.ShowDialog() == true)
                     {
                         await LoadGuests();
@@ -161,7 +161,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
-        //[Obsolete]
         private async void ExportButton_Click(object sender, RoutedEventArgs e)
         {
             LoaderOverlay.Visibility = Visibility.Visible;

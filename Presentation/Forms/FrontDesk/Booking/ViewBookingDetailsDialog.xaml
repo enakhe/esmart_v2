@@ -370,7 +370,7 @@
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10,40" VerticalAlignment="Bottom">
-                                    <Button Content="Export Data" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="80" />
+                                    <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="80" Click="ExportButton_Click" />
                                 </StackPanel>
 
                             </Grid>
@@ -394,7 +394,7 @@
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding Amount, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            <TextBlock Text="{Binding Amount}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -420,7 +420,7 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Account" Width="*">
+                                            <DataGridTemplateColumn Header="Bank Account" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -450,7 +450,7 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Date" Width="*">
+                                            <DataGridTemplateColumn Header="Date Added" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">

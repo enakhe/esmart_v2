@@ -3,6 +3,9 @@
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.FrontDesk;
+using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Utils;
 using System.Globalization;
 using System.Text;
 using System.Windows;
@@ -18,11 +21,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private readonly string _id;
         private readonly IGuestRepository _guestRepository;
         private readonly ITransactionRepository _transactionRepository;
-        public GuestDetailsDialog(string id, IGuestRepository guestRepository, ITransactionRepository transactionRepository)
+        private readonly IHotelSettingsService _hotelSettingsService;
+        public GuestDetailsDialog(string id, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService)
         {
             _id = id;
             _guestRepository = guestRepository;
             _transactionRepository = transactionRepository;
+            _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
 
@@ -160,6 +165,50 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private async void FilterButton_Click(object sender, RoutedEventArgs e)
         {
             await LoadGuestTransactionByDate();
+        }
+
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var columnNames = TransactionItemDataGrid.Columns
+                    .Where(c => c.Header != null)
+                    .Select(c => c.Header.ToString())
+                    .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
+                    .ToList();
+
+                var optionsWindow = new ExportDialog(columnNames);
+                var result = optionsWindow.ShowDialog();
+
+                if (result == true)
+                {
+                    var exportResult = optionsWindow.GetResult();
+                    var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                    if (exportResult.SelectedColumns.Count == 0)
+                    {
+                        MessageBox.Show("Please select at least one column to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else
+                    {
+                        if (hotel != null)
+                        {
+                            ExportHelper.ExportAndPrint(TransactionItemDataGrid, exportResult.SelectedColumns, exportResult.ExportFormat, exportResult.FileName, hotel.LogoUrl!, hotel.Name, hotel.Email, hotel.PhoneNumber, hotel.Address);
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

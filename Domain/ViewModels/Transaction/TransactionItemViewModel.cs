@@ -12,7 +12,7 @@ namespace ESMART.Domain.ViewModels.Transaction
     public class TransactionItemViewModel
     {
         public string ServiceId { get; set; }
-        public decimal Amount { get; set; }
+        public string Amount { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal ServiceCharge { get; set; }
         public decimal Discount { get; set; }

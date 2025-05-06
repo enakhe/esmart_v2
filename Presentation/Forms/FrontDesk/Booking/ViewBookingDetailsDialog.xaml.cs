@@ -2,6 +2,9 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.ViewModels.FrontDesk;
+using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +30,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly Domain.Entities.FrontDesk.Booking _booking;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IBookingRepository _bookingRepository;
-        public ViewBookingDetailsDialog(Domain.Entities.FrontDesk.Booking booking, ITransactionRepository transactionRepository, IBookingRepository bookingRepository)
+        private readonly IHotelSettingsService _hotelSettingsService;
+        public ViewBookingDetailsDialog(Domain.Entities.FrontDesk.Booking booking, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService)
         {
             _booking = booking;
             _transactionRepository = transactionRepository;
             _bookingRepository = bookingRepository;
+            _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
 
@@ -44,14 +49,14 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 {
                     Id = _booking.Id,
                     Guest = _booking.Guest.FullName,
-                    GuestPhoneNo = _booking.Guest.PhoneNumber,
+                    PhoneNumber = _booking.Guest.PhoneNumber,
                     Room = _booking.Room.Number,
                     CheckIn = _booking.CheckIn,
                     CheckOut = _booking.CheckOut,
                     PaymentMethod = _booking.PaymentMethod.ToString(),
                     Duration = _booking.Duration.ToString(),
                     Status = _booking.Status.ToString(),
-                    TotalAmount = _booking.TotalAmount,
+                    TotalAmount = _booking.TotalAmount.ToString("N2"),
                     CreatedBy = _booking.ApplicationUser?.FullName,
                     DateCreated = _booking.DateCreated,
                     DateModified = _booking.DateModified
@@ -147,6 +152,50 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 {
                     await LoadBookingTransactionHistory();
                 }
+            }
+        }
+
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var columnNames = TransactionItemDataGrid.Columns
+                    .Where(c => c.Header != null)
+                    .Select(c => c.Header.ToString())
+                    .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
+                    .ToList();
+
+                var optionsWindow = new ExportDialog(columnNames);
+                var result = optionsWindow.ShowDialog();
+
+                if (result == true)
+                {
+                    var exportResult = optionsWindow.GetResult();
+                    var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                    if (exportResult.SelectedColumns.Count == 0)
+                    {
+                        MessageBox.Show("Please select at least one column to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else
+                    {
+                        if (hotel != null)
+                        {
+                            ExportHelper.ExportAndPrint(TransactionItemDataGrid, exportResult.SelectedColumns, exportResult.ExportFormat, exportResult.FileName, hotel.LogoUrl!, hotel.Name, hotel.Email, hotel.PhoneNumber, hotel.Address);
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
 
