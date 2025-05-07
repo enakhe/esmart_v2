@@ -1,8 +1,13 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Repositories.FrontDesk;
+using ESMART.Infrastructure.Repositories.RoomSetting;
+using ESMART.Infrastructure.Repositories.Transaction;
+using ESMART.Infrastructure.Repositories.Verification;
 using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -29,10 +34,21 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
     {
         private readonly IReservationRepository _reservationRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
-        public ReservationPage(IReservationRepository reservationRepository, IHotelSettingsService hotelSettingsService)
+        private readonly IGuestRepository _guestRepository;
+        private readonly IRoomRepository _roomRepository;
+        private readonly IBookingRepository _bookingRepository;
+        private readonly IVerificationCodeService _verificationCodeService;
+        private readonly ITransactionRepository _transactionRepository;
+
+        public ReservationPage(IReservationRepository reservationRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, IRoomRepository roomRepository, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository)
         {
             _reservationRepository = reservationRepository;
             _hotelSettingsService = hotelSettingsService;
+            _guestRepository = guestRepository;
+            _roomRepository = roomRepository;
+            _bookingRepository = bookingRepository;
+            _verificationCodeService = verificationCodeService;
+            _transactionRepository = transactionRepository;
             InitializeComponent();
         }
 
@@ -137,6 +153,40 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     else
                     {
                         MessageBox.Show("Please select a reservation before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        // Extend Reservation
+        private async void ExtendReservation_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedReservation = (ReservationViewModel)ReservationDataGrid.SelectedItem;
+
+                    if (selectedReservation.Id != null)
+                    {
+                        var reservation = await _reservationRepository.GetReservationByIdAsync(selectedReservation.Id);
+                        ExtendReservationStayDialog extendStayDialog = new ExtendReservationStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _reservationRepository, _verificationCodeService, _transactionRepository, reservation, _bookingRepository);
+                        if (extendStayDialog.ShowDialog() == true)
+                        {
+                            await LoadReservation();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a reservation before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
             }

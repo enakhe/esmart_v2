@@ -182,5 +182,10 @@ namespace ESMART.Presentation.Forms.Verification
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = false;
+        }
     }
 }

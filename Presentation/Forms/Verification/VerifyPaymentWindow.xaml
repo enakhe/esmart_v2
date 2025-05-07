@@ -81,7 +81,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
-                        <Button Content="Cancel" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand">
+                        <Button Content="Cancel" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand" Click="Cancel_Click">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="Template">

@@ -226,11 +226,11 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Button Width="30" Height="30" ToolTip="Extend Stay" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                        <Button Width="30" Height="30" ToolTip="Extend Stay" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="ExtendReservation_Click">
                                                             <TextBlock Text="⏱" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 
-                                                        <Button Width="30" Height="30" ToolTip="Transfer Guest" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="TransferGuest_Click">
+                                                        <Button Width="30" Height="30" ToolTip="Transfer Guest" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
                                                             <TextBlock Text="✈️" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 

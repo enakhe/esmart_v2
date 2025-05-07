@@ -90,5 +90,10 @@ namespace ESMART.Presentation
             PasswordTextPanel.Visibility = Visibility.Collapsed;
             PasswordPanel.Visibility = Visibility.Visible;
         }
+
+        private void passwordTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            txtPassword.Password = passwordTextBox.Text;
+        }
     }
 }
