@@ -106,6 +106,9 @@
     <Compile Update="Forms\UserSetting\Roles\AddRoleDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\UserSetting\Roles\UpdateRoleDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\UserSetting\UserSettingPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

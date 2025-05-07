@@ -101,7 +101,7 @@
 
             <Border Background="#fafafa" Grid.Row="1">
                 <Border Background="White" CornerRadius="10" Padding="20">
-                    <TabControl BorderThickness="1">
+                    <TabControl BorderThickness="1" SelectionChanged="TabControl_SelectionChanged">
                         <TabControl.Resources>
                             <Style TargetType="TabItem">
                                 <Setter Property="Background" Value="#4ead16"/>
@@ -181,11 +181,11 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                                <Button Width="30" Height="30" ToolTip="Edit Room Type" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                                <Button Width="30" Height="30" ToolTip="Edit Room Type" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="UpdateButton_Click">
                                                                     <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
 
-                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Room Type"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}">
+                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Room Type"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteButton_Click">
                                                                     <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
                                                             </StackPanel>

@@ -1,4 +1,8 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.RoomSettings;
+using ESMART.Domain.ViewModels.Data;
+using ESMART.Infrastructure.Repositories.FrontDesk;
+using ESMART.Infrastructure.Repositories.RoomSetting;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.UserSetting.Roles;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +35,7 @@ namespace ESMART.Presentation.Forms.UserSetting
             InitializeComponent();
         }
 
-        public async Task LoadData()
+        public async Task LoadRoleData()
         {
             LoaderOverlay.Visibility = Visibility.Visible;
             try
@@ -68,13 +72,90 @@ namespace ESMART.Presentation.Forms.UserSetting
             AddRoleDialog addRoleDialog = serviceProvider.GetRequiredService<AddRoleDialog>();
             if (addRoleDialog.ShowDialog() == true)
             {
-                await LoadData();
+                await LoadRoleData();
+            }
+        }
+
+        private async void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedRole = (ApplicationRoleViewModel)RoleDataGrid.SelectedItem;
+
+                if (selectedRole.Id != null)
+                { 
+                    var role = await _applicationRoleService.GetRoleById(selectedRole.Id);
+                    UpdateRoleDialog updateRoleDialog = new UpdateRoleDialog(role, _applicationRoleService);
+                    if (updateRoleDialog.ShowDialog() == true)
+                    {
+                        await LoadRoleData();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private async void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedRole = (ApplicationRoleViewModel)RoleDataGrid.SelectedItem;
+                if (selectedRole.Id != null)
+                {
+                    var role = await _applicationRoleService.GetRoleById(selectedRole.Id);
+                    if (role != null)
+                    {
+                        var result = MessageBox.Show($"Are you sure you want to delete the role '{role.Name}'?", "Delete Role", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            await _applicationRoleService.DeleteRole(role);
+                            await LoadRoleData();
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private async Task LoadMetrics()
+        {
+            try
+            {
+                var roleCount = await _applicationRoleService.GetAllRoles();
+
+                txtRoleCount.Text = roleCount.Count.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await LoadData();
+            await LoadMetrics();
+        }
+
+        private async void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.Source is TabControl tabControl)
+            {
+                var selectedTab = tabControl.SelectedItem as TabItem;
+
+                if (selectedTab == tbRole)
+                {
+                    await LoadRoleData();
+                }
+
+                await LoadMetrics();
+            }
         }
     }
 }
