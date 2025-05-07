@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Background="#f0f4f9"
-      Title="User Setting">
+      Title="User Setting" Loaded="Page_Loaded">
 
     <Page.Resources>
         <local:StatusToColorConverter x:Key="StatusToColorConverter" />
@@ -87,7 +87,7 @@
                 <Border Background="#3498db" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                     <StackPanel>
                         <TextBlock Text="Roles" Foreground="White" FontSize="14"/>
-                        <TextBlock Text="0" Name="txtBuildingCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        <TextBlock Text="0" Name="txtRoleCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
 
@@ -133,7 +133,7 @@
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                                        <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
+                                        <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddButton_Click"/>
                                     </StackPanel>
 
                                 </Grid>
@@ -167,31 +167,11 @@
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
 
-                                                <DataGridTemplateColumn Header="Status" Width="100">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <Border CornerRadius="5" Height="23" Width="65" Padding="10,3" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}">
-                                                                <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
-                                                            </Border>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
-
                                                 <DataGridTemplateColumn Header="Date Created" Width="*">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
                                                                 <TextBlock Text="{Binding DateCreated, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
-
-                                                <DataGridTemplateColumn Header="Date Modified" Width="*">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                                <TextBlock Text="{Binding DateModified, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>

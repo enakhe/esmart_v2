@@ -65,7 +65,6 @@ namespace ESMART.Infrastructure.Identity
         public async Task TrySeedAsync()
         {
             var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", FirstName = "Super", LastName = "Administrator", MiddleName = " " };
-
             if (_userManager.Users.All(u => u.UserName != administrator.UserName))
                 await _userManager.CreateAsync(administrator, "Administrator1!");
 
@@ -73,22 +72,106 @@ namespace ESMART.Infrastructure.Identity
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = DefaultRoles.Administrator.ToString(),
-                ManagerId = administrator.Id,
-                Manager = administrator,
                 Description = "Administrator Role",
-
             };
 
             if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
                 await _roleManager.CreateAsync(administratorRole);
 
+            var adminRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.Admin.ToString(),
+                Description = "Admin Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != adminRole.Name))
+                await _roleManager.CreateAsync(adminRole);
+
+            var managerRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.Manager.ToString(),
+                Description = "Manager Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != managerRole.Name))
+                await _roleManager.CreateAsync(managerRole);
+
+            var receptionistRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.Receptionist.ToString(),
+                Description = "Receptionist Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != receptionistRole.Name))
+                await _roleManager.CreateAsync(receptionistRole);
+
+            var accountantRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.Accountant.ToString(),
+                Description = "Accountant Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != accountantRole.Name))
+                await _roleManager.CreateAsync(accountantRole);
+
+            var barRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.Bar.ToString(),
+                Description = "Bar Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != barRole.Name))
+                await _roleManager.CreateAsync(barRole);
+
+            var restaurantRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.Restaurant.ToString(),
+                Description = "Restaurant Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != restaurantRole.Name))
+                await _roleManager.CreateAsync(restaurantRole);
+
+            var storeKeeperRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.StoreKeeper.ToString(),
+                Description = "Store Keeper Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != storeKeeperRole.Name))
+                await _roleManager.CreateAsync(storeKeeperRole);
+
+            var auditorRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.Auditor.ToString(),
+                Description = "Auditor Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != auditorRole.Name))
+                await _roleManager.CreateAsync(auditorRole);
+
             var admin = new ApplicationUser { UserName = "admin@localhost", Email = "admin@localhost", FirstName = "Admin", LastName = "User", MiddleName = " " };
+            if (_userManager.Users.All(u => u.UserName != admin.UserName))
+                await _userManager.CreateAsync(admin, "Admin1!");
 
             if (_userManager.Users.All(u => u.UserName != administrator.UserName))
             {
                 if (!string.IsNullOrWhiteSpace(administratorRole.Name))
                 {
                     await _userManager.AddToRolesAsync(administrator, [administratorRole.Name]);
+                }
+
+                if (!string.IsNullOrWhiteSpace(adminRole.Name))
+                {
+                    await _userManager.AddToRolesAsync(admin, [adminRole.Name]);
                 }
             }
         }

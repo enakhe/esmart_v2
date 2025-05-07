@@ -11,6 +11,7 @@ using ESMART.Presentation.Forms.Setting;
 using ESMART.Presentation.Forms.Setting.OperationalSetting;
 using ESMART.Presentation.Forms.Setting.SystemSetup;
 using ESMART.Presentation.Forms.UserSetting;
+using ESMART.Presentation.Forms.UserSetting.Roles;
 using ESMART.Presentation.Forms.Verification;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -51,6 +52,7 @@ namespace ESMART.Presentation
             services.AddScoped<VerifyPaymentWindow>();
 
             services.AddScoped<UserSettingPage>();
+            services.AddScoped<AddRoleDialog>();
 
             return services;
         }
