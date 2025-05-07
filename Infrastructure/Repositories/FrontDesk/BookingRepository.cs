@@ -303,7 +303,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Include(b => b.Guest)
                     .Include(b => b.Room)
                     .Include(b => b.ApplicationUser)
-                    .FirstOrDefaultAsync(b => b.Id == id);
+                    .FirstOrDefaultAsync(b => b.Id == id || b.BookingId == id);
 
                 return booking;
             }

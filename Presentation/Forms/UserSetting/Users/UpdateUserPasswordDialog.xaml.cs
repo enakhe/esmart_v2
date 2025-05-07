@@ -1,5 +1,7 @@
-﻿using ESMART.Application.Common.Interface;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.Data;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,10 +34,13 @@ namespace ESMART.Presentation.Forms.UserSetting.Users
 
         private async void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
-            //LoaderOverlay.Visibility = Visibility.Visible;
-            //try
-            //{
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
                 var password = txtNewPassword.Text;
+
+                var passwordHasher = new PasswordHasher<ApplicationUser>();
+                _user.PasswordHash = passwordHasher.HashPassword(_user, password);
 
                 if (string.IsNullOrEmpty(password))
                 {
@@ -43,19 +48,19 @@ namespace ESMART.Presentation.Forms.UserSetting.Users
                     return;
                 }
 
-                await _userService.UpdateUserPassword(_user, password);
+                await _userService.UpdateUser(_user);
 
                 MessageBox.Show("User password updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.DialogResult = true;
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
-            //finally
-            //{
-            //    LoaderOverlay.Visibility = Visibility.Collapsed;
-            //}
+        }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

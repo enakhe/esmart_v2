@@ -18,6 +18,7 @@ namespace ESMART.Domain.Entities.Data
             this.Rooms = new HashSet<Room>();
             this.Bookings = new HashSet<Booking>();
             this.VerificationCodes = new HashSet<VerificationCode>();
+            this.Reservation = new HashSet<Reservation>();
         }
 
         public string FirstName { get; set; }
@@ -33,6 +34,7 @@ namespace ESMART.Domain.Entities.Data
         public ICollection<TransactionItem> TransactionItems { get; set; }
         public ICollection<Booking> Bookings { get; set; }
         public ICollection<VerificationCode> VerificationCodes { get; set; }
+        public ICollection<Reservation> Reservation { get; set; }
 
         public virtual ApplicationRole Role { get; set; }
     }

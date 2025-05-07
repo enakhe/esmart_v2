@@ -5,6 +5,7 @@ using ESMART.Presentation.Session;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ESMART.Presentation
 {
@@ -74,6 +75,20 @@ namespace ESMART.Presentation
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
 
+        }
+
+        private void chkPassword_Checked(object sender, RoutedEventArgs e)
+        {
+            passwordTextBox.Text = txtPassword.Password;
+            PasswordTextPanel.Visibility = Visibility.Visible;
+            PasswordPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void chkPassword_Unchecked(object sender, RoutedEventArgs e)
+        {
+            txtPassword.Password = passwordTextBox.Text;
+            PasswordTextPanel.Visibility = Visibility.Collapsed;
+            PasswordPanel.Visibility = Visibility.Visible;
         }
     }
 }

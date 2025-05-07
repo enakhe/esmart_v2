@@ -10,6 +10,7 @@ namespace ESMART.Domain.Entities.RoomSettings
         public Room()
         {
             this.Bookings = new HashSet<Booking>();
+            this.Reservation = new HashSet<Reservation>();
         }
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -35,6 +36,7 @@ namespace ESMART.Domain.Entities.RoomSettings
         public virtual Floor Floor { get; set; }
 
         public ICollection<Booking> Bookings { get; set; }
+        public ICollection<Reservation> Reservation { get; set; }
     }
 
     public enum RoomStatus

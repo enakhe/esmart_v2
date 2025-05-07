@@ -22,13 +22,18 @@
                 <TextBox Name="txtUsername" Width="300" Padding="2,5,0,5" FontSize="18" />
             </StackPanel>
 
-            <StackPanel Margin="0,0,0,20">
+            <StackPanel Margin="0,0,0,20" Name="PasswordPanel">
                 <Label Content="Password:" HorizontalAlignment="Left" VerticalAlignment="Center" />
                 <PasswordBox Name="txtPassword" Width="300" Padding="2,5,0,5" FontSize="19" />
             </StackPanel>
 
+            <StackPanel Margin="0,0,0,20" Visibility="Collapsed" Name="PasswordTextPanel">
+                <Label Content="Password:" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBox Name="passwordTextBox" Width="300" Padding="2,5,0,5" FontSize="19" />
+            </StackPanel>
+
             <StackPanel Margin="0,0,0,20">
-                <CheckBox Content="Show password" x:Name="chkPassword" HorizontalAlignment="Right" />
+                <CheckBox Content="Show password" x:Name="chkPassword" HorizontalAlignment="Right" Checked="chkPassword_Checked" Unchecked="chkPassword_Unchecked" />
             </StackPanel>
 
             <Button Content="Login" Width="100" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="Button_Click">

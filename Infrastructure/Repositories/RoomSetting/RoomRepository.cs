@@ -50,7 +50,7 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             {
                 using var context = _contextFactory.CreateDbContext();
                 var allRooms = await context.Rooms
-                                .Where(r => !r.IsTrashed && r.Status == RoomStatus.Vacant)
+                                .Where(r => !r.IsTrashed && r.Status == RoomStatus.Vacant || r.Status == RoomStatus.Reserved)
                                 .OrderBy(r => r.Number)
                                 .ToListAsync();
                 return allRooms;

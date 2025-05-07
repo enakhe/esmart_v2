@@ -149,19 +149,19 @@ namespace ESMART.Infrastructure.Identity
         // Update user password
         public async Task UpdateUserPassword(ApplicationUser user, string newPassword)
         {
-            //try
-            //{
+            try
+            {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
                 if (!result.Succeeded)
                 {
                     throw new Exception("An error occured when updating user password. " + string.Join(", ", result.Errors.Select(e => e.Description)));
                 }
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new Exception("An error occured when updating user password. " + ex.Message);
-            //}
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when updating user password. " + ex.Message);
+            }
         }
 
         public async Task<List<ApplicationRoleViewModel>> GetAllRoles()

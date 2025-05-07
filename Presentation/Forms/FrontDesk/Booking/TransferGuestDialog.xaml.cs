@@ -234,17 +234,17 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 {
                     var verificationCode = new VerificationCode
                     {
-                        Code = booking.BookingId,
-                        BookingId = booking.Id,
+                        Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                        ServiceId = booking.Id,
                         ApplicationUserId = AuthSession.CurrentUser?.Id
                     };
 
                     await _verificationCodeService.AddCode(verificationCode);
 
-                    var response = await SenderHelper.SendOtp(hotel, booking, bookedGuest, "Booking", verificationCode.Code, amount);
+                    var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, bookedGuest, "Booking", verificationCode.Code, amount);
                     if (response.IsSuccessStatusCode)
                     {
-                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking);
+                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
                         verifyPaymentWindow.ShowDialog();
                     }
                     else

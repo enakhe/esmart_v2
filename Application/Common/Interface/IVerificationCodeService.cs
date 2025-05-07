@@ -7,8 +7,8 @@ namespace ESMART.Application.Common.Interface
         Task AddCode(VerificationCode verificationCode);
         Task<VerificationCode> GetCodeByIDAsync(string id);
         Task DeleteAsync(string id);
-        Task<bool> VerifyCodeAsync(string bookingId, string code);
-        Task<VerificationCode> GetCodeByBookingId(string id);
+        Task<bool> VerifyCodeAsync(string serviceId, string code);
+        Task<VerificationCode> GetCodeByServiceId(string id);
         Task<VerificationCode> GetCodeByCode(string code);
     }
 }

@@ -55,7 +55,16 @@
     <Compile Update="Forms\FrontDesk\Guest\UpdateGuestIdentityDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Reservation\AddReservationDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\FrontDesk\Reservation\ReservationPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Home\IndexPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Reports\ReportPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\RoomSetting\Area\AddAreaDialog.xaml.cs">

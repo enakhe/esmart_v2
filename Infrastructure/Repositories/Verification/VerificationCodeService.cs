@@ -37,12 +37,12 @@ namespace ESMART.Infrastructure.Repositories.Verification
             }
         }
 
-        public async Task<VerificationCode> GetCodeByBookingId(string id)
+        public async Task<VerificationCode> GetCodeByServiceId(string id)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                VerificationCode? verificationCode = await context.VerificationCodes.FirstOrDefaultAsync(v => v.BookingId == id);
+                VerificationCode? verificationCode = await context.VerificationCodes.FirstOrDefaultAsync(v => v.ServiceId == id);
                 return verificationCode!;
             }
             catch (Exception ex)
@@ -83,12 +83,12 @@ namespace ESMART.Infrastructure.Repositories.Verification
             }
         }
 
-        public async Task<bool> VerifyCodeAsync(string bookingId, string code)
+        public async Task<bool> VerifyCodeAsync(string serviceId, string code)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var foundCode = await context.VerificationCodes.FirstOrDefaultAsync(v => v.BookingId == bookingId && v.Code == code);
+                var foundCode = await context.VerificationCodes.FirstOrDefaultAsync(v => v.ServiceId == serviceId && v.Code == code);
 
                 if (foundCode != null)
                 {

@@ -22,18 +22,16 @@ namespace ESMART.Presentation.Forms.Verification
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IBookingRepository _bookingRepository;
         private readonly ITransactionRepository _transactionRepository;
-        private readonly Booking _booking;
         private string _serviceId;
         private DispatcherTimer _timer;
         private TimeSpan _timeRemaining;
-        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, ITransactionRepository transactionRepository, string serviceId, Booking booking)
+        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, ITransactionRepository transactionRepository, string serviceId)
         {
             _verificationCodeService = verificationCodeService;
             _hotelSettingsService = hotelSettingsService;
             _bookingRepository = bookingRepository;
             _transactionRepository = transactionRepository;
             _serviceId = serviceId;
-            _booking = booking;
             InitializeComponent();
             StartCountdown(TimeSpan.FromMinutes(20));
         }
@@ -105,18 +103,14 @@ namespace ESMART.Presentation.Forms.Verification
                         }
                         else
                         {
-                            var isValid = await _verificationCodeService.VerifyCodeAsync(_booking.Id, enteredCode);
+                            var isValid = await _verificationCodeService.VerifyCodeAsync(_serviceId, enteredCode);
 
                             if (isValid)
                             {
                                 MessageBox.Show("Successfully verified OTP, kindly issue a card for the guest", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
                                 await _verificationCodeService.DeleteAsync(code.Id);
 
-                                _booking.Status = BookingStatus.Completed;
-                                await _bookingRepository.UpdateBooking(_booking);
-
-                                var transaction = await _transactionRepository.GetTransactionItemsByServiceIdAsync(_serviceId, _booking.Id);
+                                var transaction = await _transactionRepository.GetUnpaidTransactionItemsByServiceIdAsync(_serviceId);
                                 if (transaction != null)
                                 {
                                     transaction.Status = TransactionStatus.Paid;
@@ -151,7 +145,7 @@ namespace ESMART.Presentation.Forms.Verification
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var oldCode = await _verificationCodeService.GetCodeByBookingId(_booking.Id);
+                var oldCode = await _verificationCodeService.GetCodeByServiceId(_serviceId);
                 if (oldCode != null)
                 {
                     await _verificationCodeService.DeleteAsync(oldCode.Id);
@@ -163,13 +157,15 @@ namespace ESMART.Presentation.Forms.Verification
                     var verificationCode = new VerificationCode()
                     {
                         Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
-                        BookingId = _booking.Id,
+                        ServiceId = _serviceId,
                         ApplicationUserId = AuthSession.CurrentUser?.Id
                     };
 
                     await _verificationCodeService.AddCode(verificationCode);
 
-                    var response = await SenderHelper.SendOtp(hotel, _booking, _booking.Guest, "Booking", verificationCode.Code, _booking.TotalAmount);
+                    var booking = await _bookingRepository.GetBookingById(_serviceId);
+
+                    var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("New Verification code has been sent", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

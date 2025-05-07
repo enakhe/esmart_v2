@@ -6,7 +6,7 @@ namespace ESMART.Presentation.Utils
 {
     public static class SenderHelper
     {
-        public static async Task<HttpResponseMessage> SendOtp(Hotel hotel, Booking booking, Guest guest, string service, string otp, decimal amount)
+        public static async Task<HttpResponseMessage> SendOtp(Hotel hotel, string accountNumber, Guest guest, string service, string otp, decimal amount)
         {
             var apiService = new ApiService(new HttpClient());
             var response = await apiService.PostAsync("https://esmart-api.vercel.app/api/otp", new
@@ -16,7 +16,7 @@ namespace ESMART.Presentation.Utils
                 guest = guest.FullName,
                 service,
                 amount = amount.ToString("N2"),
-                account = booking.AccountNumber
+                account = accountNumber
             });
 
             return response;

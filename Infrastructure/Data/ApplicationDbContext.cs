@@ -25,6 +25,7 @@ namespace ESMART.Infrastructure.Data
         public DbSet<Room> Rooms { get; set; }
 
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
 
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<SettingsCategory> SettingsCategories { get; set; }

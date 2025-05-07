@@ -87,7 +87,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             var verificationCode = new VerificationCode()
                             {
                                 Code = booking.BookingId,
-                                BookingId = booking.Id,
+                                ServiceId = booking.Id,
                                 ApplicationUserId = AuthSession.CurrentUser?.Id
                             };
 
@@ -95,13 +95,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                             if (hotel != null)
                             {
-                                var response = await SenderHelper.SendOtp(hotel, booking, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
+                                var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
 
                                 if (response.IsSuccessStatusCode)
                                 {
                                     MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                    VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking);
+                                    VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
                                     if (verifyPaymentWindow.ShowDialog() == true)
                                     {
                                         IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
@@ -162,7 +162,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                 var verificationCode = new VerificationCode()
                                 {
                                     Code = booking.BookingId,
-                                    BookingId = booking.Id,
+                                    ServiceId = booking.Id,
                                     ApplicationUserId = AuthSession.CurrentUser?.Id
                                 };
 
@@ -170,13 +170,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                                 if (hotel != null)
                                 {
-                                    var response = await SenderHelper.SendOtp(hotel, booking, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
+                                    var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
 
                                     if (response.IsSuccessStatusCode)
                                     {
                                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking);
+                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
                                         if (verifyPaymentWindow.ShowDialog() == true)
                                         {
                                             ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);
@@ -246,7 +246,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                 var verificationCode = new VerificationCode()
                                 {
                                     Code = booking.BookingId,
-                                    BookingId = booking.Id,
+                                    ServiceId = booking.Id,
                                     ApplicationUserId = AuthSession.CurrentUser?.Id
                                 };
 
@@ -254,12 +254,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                                 if (hotel != null)
                                 {
-                                    var response = await SenderHelper.SendOtp(hotel, booking, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
+                                    var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
                                     if (response.IsSuccessStatusCode)
                                     {
                                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking);
+                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
                                         if (verifyPaymentWindow.ShowDialog() == true)
                                         {
                                             TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);

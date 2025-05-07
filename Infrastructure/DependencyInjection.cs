@@ -29,6 +29,7 @@ namespace ESMART.Infrastructure
             services.AddScoped<RoomTypeRepository>();
             services.AddScoped<TransactionRepository>();
             services.AddScoped<ApplicationUserRoleService>();
+            services.AddScoped<ReservationRepository>();
             return services;
         }
 
@@ -43,6 +44,7 @@ namespace ESMART.Infrastructure
             services.AddTransient<IVerificationCodeService, VerificationCodeService>();
             services.AddTransient<ITransactionRepository, TransactionRepository>();
             services.AddTransient<IApplicationUserRoleRepository, ApplicationUserRoleService>();
+            services.AddTransient<IReservationRepository, ReservationRepository>();
             return services;
         }
     }
