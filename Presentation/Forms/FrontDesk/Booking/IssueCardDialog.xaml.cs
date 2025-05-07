@@ -2,9 +2,7 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.Enum;
-using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.LockSDK;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
@@ -18,7 +16,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private IGuestRepository _guestRepository;
         private IHotelSettingsService _hotelSettingsService;
         private Domain.Entities.FrontDesk.Booking _booking;
-        public IssueCardDialog(IBookingRepository bookingRepository, IGuestRepository guestRepository,  Domain.Entities.FrontDesk.Booking booking, IHotelSettingsService hotelSettingsService)
+        public IssueCardDialog(IBookingRepository bookingRepository, IGuestRepository guestRepository, Domain.Entities.FrontDesk.Booking booking, IHotelSettingsService hotelSettingsService)
         {
             _bookingRepository = bookingRepository;
             _hotelSettingsService = hotelSettingsService;
@@ -80,7 +78,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     {
                         await IssueCardForMIFI();
                     }
-                    else if(lockType == "RFID")
+                    else if (lockType == "RFID")
                     {
                         MessageBox.Show("RFID card issuing is not implemented yet", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                     }

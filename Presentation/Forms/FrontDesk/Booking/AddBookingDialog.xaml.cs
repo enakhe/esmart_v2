@@ -7,9 +7,7 @@ using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using System.Globalization;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -308,7 +306,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             else
             {
                 transactionItem.Status = TransactionStatus.Unpaid;
-            }   
+            }
 
             await _transactionRepository.AddTransactionItemAsync(transactionItem);
         }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ESMART.Domain.Entities.Transaction;
+﻿using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.ViewModels.Transaction;
 
 namespace ESMART.Application.Common.Interface

@@ -1,12 +1,10 @@
 ﻿#nullable disable
 
 using ESMART.Application.Common.Interface;
-using ESMART.Application.Common.Models;
 using ESMART.Application.Common.Utils;
 using ESMART.Presentation.Session;
 using Microsoft.Win32;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -88,7 +86,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         IsTrashed = false,
                         ApplicationUserId = AuthSession.CurrentUser?.Id
                     };
-                    
+
                     await _guestRepository.AddGuestAsync(guest);
 
                     MessageBox.Show("Guest added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

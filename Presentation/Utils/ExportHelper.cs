@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Printing;
-using System.Windows;
-using System.Windows.Controls;
-using OfficeOpenXml;
+﻿using iText.IO.Font.Constants;
+using iText.Kernel.Colors;
+using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
-using iText.Layout.Properties;
-using iText.IO.Font.Constants;
-using iText.Kernel.Font;
+using System.Data;
 using System.Drawing.Printing;
-using iText.Kernel.Colors;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace ESMART.Presentation.Utils
 {

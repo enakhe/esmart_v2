@@ -112,6 +112,15 @@
     <Compile Update="Forms\UserSetting\UserSettingPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\UserSetting\Users\AddUserDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\UserSetting\Users\UpdateUserDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\UserSetting\Users\UpdateUserPasswordDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Verification\VerifyPaymentWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

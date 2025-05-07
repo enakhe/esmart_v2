@@ -94,7 +94,7 @@
                 <Border Background="#e74c3c" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                     <StackPanel>
                         <TextBlock Text="Users" Foreground="White" FontSize="14"/>
-                        <TextBlock Text="0" x:Name="txtFloorCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        <TextBlock Text="0" x:Name="txtUserCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -181,11 +181,11 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                                <Button Width="30" Height="30" ToolTip="Edit Room Type" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="UpdateButton_Click">
+                                                                <Button Width="30" Height="30" ToolTip="Edit Role" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="UpdateButton_Click">
                                                                     <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
 
-                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Room Type"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteButton_Click">
+                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Role"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteButton_Click">
                                                                     <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
                                                             </StackPanel>
@@ -217,13 +217,13 @@
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                                        <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
+                                        <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="AddUserButton_Click" />
                                     </StackPanel>
                                 </Grid>
 
                                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                     <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                                        <DataGrid x:Name="RoomDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
+                                        <DataGrid x:Name="UserDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
                                             <DataGrid.Columns>
                                                 <DataGridTemplateColumn Header="Full Name" Width="2*">
                                                     <DataGridTemplateColumn.CellTemplate>
@@ -275,25 +275,19 @@
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
 
-                                                <DataGridTemplateColumn Header="Date Modified" Width="*">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                                <TextBlock Text="{Binding DateModified, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
-
                                                 <DataGridTemplateColumn Header="Operation" Width="2*">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                                <Button Width="30" Height="30" ToolTip="Edit Building" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                                <Button Width="30" Height="30" ToolTip="Edit User" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="UpdateUserButton_Click">
                                                                     <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
 
-                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Building"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}">
+                                                                <Button  Width="30"  Height="30"  ToolTip="Update Password"  Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="UpdatePasswordButton_Click">
+                                                                    <TextBlock Text="🔐" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                </Button>
+
+                                                                <Button  Width="30"  Height="30"  ToolTip="Delete User"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteUserButton_Click">
                                                                     <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                                 </Button>
                                                             </StackPanel>

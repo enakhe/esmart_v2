@@ -1,5 +1,4 @@
 ﻿using ESMART.Application.Common.Interface;
-using ESMART.Domain.Entities.Data;
 using ESMART.Infrastructure.Identity;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Repositories.FrontDesk;
@@ -29,7 +28,7 @@ namespace ESMART.Infrastructure
             services.AddScoped<RoomRepository>();
             services.AddScoped<RoomTypeRepository>();
             services.AddScoped<TransactionRepository>();
-            services.AddScoped<ApplicationRoleService>();
+            services.AddScoped<ApplicationUserRoleService>();
             return services;
         }
 
@@ -43,7 +42,7 @@ namespace ESMART.Infrastructure
             services.AddTransient<IBookingRepository, BookingRepository>();
             services.AddTransient<IVerificationCodeService, VerificationCodeService>();
             services.AddTransient<ITransactionRepository, TransactionRepository>();
-            services.AddTransient<IApplicationRole, ApplicationRoleService>();
+            services.AddTransient<IApplicationUserRoleRepository, ApplicationUserRoleService>();
             return services;
         }
     }

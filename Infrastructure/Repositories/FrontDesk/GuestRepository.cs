@@ -1,12 +1,10 @@
 ﻿#nullable disable
 
 using ESMART.Application.Common.Interface;
-using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 namespace ESMART.Infrastructure.Repositories.FrontDesk
 {

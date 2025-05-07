@@ -5,7 +5,6 @@ using ESMART.Application.Common.Utils;
 using ESMART.Presentation.Session;
 using Microsoft.Win32;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -159,7 +158,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         this.DialogResult = true;
                     }
 
-                    
+
                 }
                 else
                 {

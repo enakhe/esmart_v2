@@ -24,6 +24,8 @@ namespace ESMART.Domain.Entities.Data
         public string LastName { get; set; }
         public string MiddleName { get; set; }
         public string FullName => $"{FirstName} {LastName} {MiddleName}";
+        public DateTime DateCreated { get; set; } = DateTime.Now;
+        public string RoleId { get; set; }
 
         public ICollection<Guest> Guests { get; set; }
         public ICollection<Room> Rooms { get; set; }
@@ -31,5 +33,7 @@ namespace ESMART.Domain.Entities.Data
         public ICollection<TransactionItem> TransactionItems { get; set; }
         public ICollection<Booking> Bookings { get; set; }
         public ICollection<VerificationCode> VerificationCodes { get; set; }
+
+        public virtual ApplicationRole Role { get; set; }
     }
 }

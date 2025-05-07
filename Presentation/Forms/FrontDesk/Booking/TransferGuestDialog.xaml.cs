@@ -3,7 +3,6 @@ using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
-using ESMART.Infrastructure.Repositories.Transaction;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;

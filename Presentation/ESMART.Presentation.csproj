@@ -37,6 +37,7 @@
     <None Remove="Forms\setting.png" />
     <None Remove="Forms\Setting\logo.png" />
     <None Remove="Forms\UserSetting\Roles\logo.png" />
+    <None Remove="Forms\UserSetting\Users\logo.png" />
     <None Remove="Forms\Verification\logo.png" />
     <None Remove="Forms\workshop.png" />
   </ItemGroup>
@@ -106,6 +107,7 @@
     <Resource Include="Forms\setting.png" />
     <Resource Include="Forms\Setting\logo.png" />
     <Resource Include="Forms\UserSetting\Roles\logo.png" />
+    <Resource Include="Forms\UserSetting\Users\logo.png" />
     <Resource Include="Forms\Verification\logo.png" />
     <Resource Include="Forms\workshop.png" />
   </ItemGroup>

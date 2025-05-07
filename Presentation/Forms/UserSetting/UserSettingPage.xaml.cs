@@ -1,25 +1,10 @@
 ﻿using ESMART.Application.Common.Interface;
-using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.Data;
-using ESMART.Infrastructure.Repositories.FrontDesk;
-using ESMART.Infrastructure.Repositories.RoomSetting;
-using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.UserSetting.Roles;
+using ESMART.Presentation.Forms.UserSetting.Users;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.UserSetting
 {
@@ -28,8 +13,8 @@ namespace ESMART.Presentation.Forms.UserSetting
     /// </summary>
     public partial class UserSettingPage : Page
     {
-        private readonly IApplicationRole _applicationRoleService;
-        public UserSettingPage(IApplicationRole applicationRoleService)
+        private readonly IApplicationUserRoleRepository _applicationRoleService;
+        public UserSettingPage(IApplicationUserRoleRepository applicationRoleService)
         {
             _applicationRoleService = applicationRoleService;
             InitializeComponent();
@@ -63,6 +48,35 @@ namespace ESMART.Presentation.Forms.UserSetting
             }
         }
 
+        // Load User Data
+        private async Task LoadUserData()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var allUsers = await _applicationRoleService.GetAllUsers();
+                if (allUsers != null)
+                {
+                    UserDataGrid.ItemsSource = allUsers;
+                    txtUserCount.Text = allUsers.Count.ToString();
+                }
+                else
+                {
+                    MessageBox.Show("No users found", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         public async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var services = new ServiceCollection();
@@ -76,6 +90,19 @@ namespace ESMART.Presentation.Forms.UserSetting
             }
         }
 
+        public async void AddUserButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            AddUserDialog addUserDialog = serviceProvider.GetRequiredService<AddUserDialog>();
+            if (addUserDialog.ShowDialog() == true)
+            {
+                await LoadUserData();
+            }
+        }
+
         private async void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.Tag is string Id)
@@ -83,7 +110,7 @@ namespace ESMART.Presentation.Forms.UserSetting
                 var selectedRole = (ApplicationRoleViewModel)RoleDataGrid.SelectedItem;
 
                 if (selectedRole.Id != null)
-                { 
+                {
                     var role = await _applicationRoleService.GetRoleById(selectedRole.Id);
                     UpdateRoleDialog updateRoleDialog = new UpdateRoleDialog(role, _applicationRoleService);
                     if (updateRoleDialog.ShowDialog() == true)
@@ -97,6 +124,77 @@ namespace ESMART.Presentation.Forms.UserSetting
                 }
             }
         }
+
+        // Update user
+        private async void UpdateUserButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedUser = (ApplicationUserViewModel)UserDataGrid.SelectedItem;
+                if (selectedUser.Id != null)
+                {
+                    var user = await _applicationRoleService.GetUserById(selectedUser.Id);
+                    UpdateUserDialog updateUserDialog = new UpdateUserDialog(user, _applicationRoleService);
+                    if (updateUserDialog.ShowDialog() == true)
+                    {
+                        await LoadUserData();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        //Update password
+        private async void UpdatePasswordButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedUser = (ApplicationUserViewModel)UserDataGrid.SelectedItem;
+                if (selectedUser.Id != null)
+                {
+                    var user = await _applicationRoleService.GetUserById(selectedUser.Id);
+                    UpdateUserPasswordDialog updatePasswordDialog = new UpdateUserPasswordDialog(_applicationRoleService, user);
+                    if (updatePasswordDialog.ShowDialog() == true)
+                    {
+                        await LoadUserData();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        // Delete User
+        private async void DeleteUserButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedUser = (ApplicationUserViewModel)UserDataGrid.SelectedItem;
+                if (selectedUser.Id != null)
+                {
+                    var user = await _applicationRoleService.GetUserById(selectedUser.Id);
+                    if (user != null)
+                    {
+                        var result = MessageBox.Show($"Are you sure you want to delete the user '{user.FullName}'?", "Delete User", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            await _applicationRoleService.DeleteUser(user);
+                            await LoadUserData();
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
 
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
@@ -129,8 +227,10 @@ namespace ESMART.Presentation.Forms.UserSetting
             try
             {
                 var roleCount = await _applicationRoleService.GetAllRoles();
+                var allUsers = await _applicationRoleService.GetAllUsers();
 
                 txtRoleCount.Text = roleCount.Count.ToString();
+                txtUserCount.Text = allUsers.Count.ToString();
             }
             catch (Exception ex)
             {
@@ -153,8 +253,10 @@ namespace ESMART.Presentation.Forms.UserSetting
                 {
                     await LoadRoleData();
                 }
-
-                await LoadMetrics();
+                else if (selectedTab == tbUsers)
+                {
+                    await LoadUserData();
+                }
             }
         }
     }

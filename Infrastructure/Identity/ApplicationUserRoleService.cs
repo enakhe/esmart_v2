@@ -1,32 +1,45 @@
 ﻿#nullable disable
 
 using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.ViewModels.Data;
+using ESMART.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESMART.Infrastructure.Identity
 {
-    public class ApplicationRoleService(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager): IApplicationRole
+    public class ApplicationUserRoleService(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IDbContextFactory<ApplicationDbContext> contextFactory) : IApplicationUserRoleRepository
     {
         private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
 
         public async Task AddRole(ApplicationRole role)
         {
             try
             {
+                using var context = _contextFactory.CreateDbContext();
                 await _roleManager.CreateAsync(role);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("An error occured when adding role. " + ex.Message);
+            }
+        }
+
+        // Add application user
+        public async Task<Result> AddUser(ApplicationUser user, string password)
+        {
+            try
+            {
+                var result = await _userManager.CreateAsync(user, password);
+                return (result.ToApplicationResult(user));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when adding user. " + ex.Message);
             }
         }
 
@@ -43,6 +56,20 @@ namespace ESMART.Infrastructure.Identity
             }
         }
 
+        // Get user by id
+        public async Task<ApplicationUser> GetUserById(string id)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when getting user by id. " + ex.Message);
+            }
+        }
+
         public async Task<ApplicationRole> GetRoleByName(string name)
         {
             try
@@ -53,6 +80,19 @@ namespace ESMART.Infrastructure.Identity
             catch (Exception ex)
             {
                 throw new Exception("An error occured when getting role by name. " + ex.Message);
+            }
+        }
+
+        public async Task<ApplicationUser> GetUserByName(string name)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(name);
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when getting user by name. " + ex.Message);
             }
         }
 
@@ -68,6 +108,19 @@ namespace ESMART.Infrastructure.Identity
             }
         }
 
+        // Update user
+        public async Task UpdateUser(ApplicationUser user)
+        {
+            try
+            {
+                await _userManager.UpdateAsync(user);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when updating user. " + ex.Message);
+            }
+        }
+
         public async Task DeleteRole(ApplicationRole role)
         {
             try
@@ -78,6 +131,37 @@ namespace ESMART.Infrastructure.Identity
             {
                 throw new Exception("An error occured when deleting role. " + ex.Message);
             }
+        }
+
+        // Delete user
+        public async Task DeleteUser(ApplicationUser user)
+        {
+            try
+            {
+                await _userManager.DeleteAsync(user);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when deleting user. " + ex.Message);
+            }
+        }
+
+        // Update user password
+        public async Task UpdateUserPassword(ApplicationUser user, string newPassword)
+        {
+            //try
+            //{
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+                if (!result.Succeeded)
+                {
+                    throw new Exception("An error occured when updating user password. " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new Exception("An error occured when updating user password. " + ex.Message);
+            //}
         }
 
         public async Task<List<ApplicationRoleViewModel>> GetAllRoles()
@@ -104,6 +188,36 @@ namespace ESMART.Infrastructure.Identity
             catch (Exception ex)
             {
                 throw new Exception("An error occured when getting all roles. " + ex.Message);
+            }
+        }
+
+        // Get all users
+        public async Task<List<ApplicationUserViewModel>> GetAllUsers()
+        {
+            try
+            {
+                var users = await _userManager.Users
+                    .Where(u => u.UserName != "administrator@localhost")
+                    .Select(u => new ApplicationUserViewModel
+                    {
+                        Id = u.Id,
+                        UserName = u.UserName,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        MiddleName = u.MiddleName,
+                        Email = u.Email,
+                        PhoneNumber = u.PhoneNumber,
+                        DateCreated = u.DateCreated,
+                        Role = _userManager.GetRolesAsync(u).Result.FirstOrDefault()
+                    })
+                    .OrderBy(u => u.FirstName)
+                    .ToListAsync();
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when getting all users. " + ex.Message);
             }
         }
 
@@ -143,6 +257,24 @@ namespace ESMART.Infrastructure.Identity
             catch (Exception ex)
             {
                 throw new Exception("An error occured when removing role from user. " + ex.Message);
+            }
+        }
+
+        // Update user role
+        public async Task UpdateUserRole(ApplicationUser user, ApplicationRole role)
+        {
+            try
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                foreach (var r in roles)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, r);
+                }
+                await _userManager.AddToRoleAsync(user, role.Name);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when updating user role. " + ex.Message);
             }
         }
 

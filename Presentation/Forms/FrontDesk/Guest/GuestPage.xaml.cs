@@ -1,5 +1,4 @@
 ﻿using ESMART.Application.Common.Interface;
-using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Utils;
 using Microsoft.Extensions.DependencyInjection;
@@ -186,7 +185,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     }
                     else
                     {
-                        if(hotel != null)
+                        if (hotel != null)
                         {
                             ExportHelper.ExportAndPrint(GuestDataGrid, exportResult.SelectedColumns, exportResult.ExportFormat, exportResult.FileName, hotel.LogoUrl!, hotel.Name, hotel.Email, hotel.PhoneNumber, hotel.Address);
                         }

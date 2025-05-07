@@ -1,11 +1,5 @@
-﻿using ESMART.Domain.Entities.RoomSettings;
-using ESMART.Domain.Enum;
-using System;
-using System.Collections.Generic;
+﻿using ESMART.Domain.Enum;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 

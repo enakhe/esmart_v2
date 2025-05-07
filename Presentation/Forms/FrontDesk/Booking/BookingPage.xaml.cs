@@ -1,5 +1,4 @@
 ﻿using ESMART.Application.Common.Interface;
-using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Presentation.Forms.Export;
@@ -7,7 +6,6 @@ using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 

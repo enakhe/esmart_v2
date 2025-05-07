@@ -4,7 +4,6 @@ using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using Microsoft.Win32;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;

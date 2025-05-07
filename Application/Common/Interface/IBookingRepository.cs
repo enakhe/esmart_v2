@@ -1,5 +1,4 @@
-﻿using ESMART.Application.Common.Models;
-using ESMART.Domain.Entities.FrontDesk;
+﻿using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.ViewModels.FrontDesk;
 
 namespace ESMART.Application.Common.Interface
