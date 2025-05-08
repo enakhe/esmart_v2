@@ -321,13 +321,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                         {
                             reservation.TransactionStatus = TransactionStatus.Pending;
                         }
-
-                        await _reservationRepository.UpdateReservationAsync(reservation);
                     }
                     else
                     {
                         reservation.TransactionStatus = TransactionStatus.Unpaid;
                     }
+                    await _reservationRepository.UpdateReservationAsync(reservation);
                 }
                 else
                 {

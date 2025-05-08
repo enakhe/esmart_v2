@@ -148,6 +148,21 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             }
         }
 
+        // Get transaction by InvoiceNumber
+        public async Task<Domain.Entities.Transaction.Transaction> GetByInvoiceNumberAsync(string invoiceNumber)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transaction = await context.Transactions.FirstOrDefaultAsync(t => t.InvoiceNumber == invoiceNumber);
+                return transaction;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving a transaction by invoice number" + ex.Message);
+            }
+        }
+
         // TrnsactionItem
         public async Task AddTransactionItemAsync(TransactionItem transactionItem)
         {

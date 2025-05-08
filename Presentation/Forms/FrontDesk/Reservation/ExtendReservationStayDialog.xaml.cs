@@ -208,6 +208,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             var reservedRoom = await _roomRepository.GetRoomById(reservation.RoomId);
             var reservedGuest = await _guestRepository.GetGuestByIdAsync(reservation.GuestId);
             var hotel = await _hotelSettingsService.GetHotelInformation();
+            var transaction = await _transactionRepository.GetByInvoiceNumberAsync(reservation.ReservationId);
 
             if (hotel != null)
             {
@@ -234,9 +235,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                         {
                             reservation.TransactionStatus = TransactionStatus.Pending;
                         }
-
-                        await _reservationRepository.UpdateReservationAsync(reservation);
                     }
+                    else
+                    {
+                        reservation.TransactionStatus = TransactionStatus.Pending;
+                    }
+                    await _reservationRepository.UpdateReservationAsync(reservation);
                 }
                 else
                 {
@@ -245,32 +249,35 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 }
             }
 
-            var transactionItem = new Domain.Entities.Transaction.TransactionItem
+            if (transaction != null)
             {
-                Amount = amount,
-                ServiceId = reservation.ReservationId,
-                TaxAmount = reservation.VAT,
-                ServiceCharge = reservation.ServiceCharge,
-                Discount = reservation.Discount,
-                Category = Category.Accomodation,
-                Type = TransactionType.Charge,
-                BankAccount = reservation.AccountNumber,
-                DateAdded = DateTime.Now,
-                ApplicationUserId = AuthSession.CurrentUser?.Id,
-                TransactionId = reservation.Guest.Transactions.FirstOrDefault(t => t.InvoiceNumber == reservation.ReservationId).Id,
-                Description = $"Reservation extended for {reservedGuest.FullName} in {reservedRoom?.Number} from {reservation.ArrivateDate.ToShortDateString()} to {reservation.DepartureDate.ToShortDateString()}",
-            };
+                var transactionItem = new Domain.Entities.Transaction.TransactionItem
+                {
+                    Amount = amount,
+                    TaxAmount = reservation.VAT,
+                    ServiceId = reservation.ReservationId,
+                    ServiceCharge = reservation.ServiceCharge,
+                    Discount = reservation.Discount,
+                    Category = Category.Accomodation,
+                    Type = TransactionType.Adjustment,
+                    BankAccount = reservation.AccountNumber,
+                    DateAdded = DateTime.Now,
+                    ApplicationUserId = AuthSession.CurrentUser?.Id,
+                    TransactionId = transaction.Id,
+                    Description = $"Reservation extended for {reservation.Guest.FullName} to {reservation.Room.Number} from {reservation.ArrivateDate} to {reservation.DepartureDate}"
+                };
 
-            if (reservation.TransactionStatus != TransactionStatus.Unpaid)
-            {
-                transactionItem.Status = TransactionStatus.Paid;
-            }
-            else
-            {
-                transactionItem.Status = TransactionStatus.Unpaid;
-            }
+                if (reservation.TransactionStatus != TransactionStatus.Unpaid)
+                {
+                    transactionItem.Status = TransactionStatus.Paid;
+                }
+                else
+                {
+                    transactionItem.Status = TransactionStatus.Unpaid;
+                }
 
-            await _transactionRepository.AddTransactionItemAsync(transactionItem);
+                await _transactionRepository.AddTransactionItemAsync(transactionItem);
+            }
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

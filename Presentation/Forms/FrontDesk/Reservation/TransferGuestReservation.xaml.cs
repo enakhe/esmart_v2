@@ -252,7 +252,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 var reservedGuest = await _guestRepository.GetGuestByIdAsync(reservation.GuestId);
                 var hotel = await _hotelSettingsService.GetHotelInformation();
 
-                var transaction = await _transactionRepository.GetByBookingIdAsync(reservation.Id);
+                var transaction = await _transactionRepository.GetByInvoiceNumberAsync(reservation.ReservationId);
 
                 if (reservedRoom != null)
                 {
@@ -285,11 +285,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                             {
                                 reservation.TransactionStatus = TransactionStatus.Pending;
                             }
-                            else
-                            {
-                                reservation.TransactionStatus = TransactionStatus.Unpaid;
-                            }
                         }
+                        else
+                        {
+                            reservation.TransactionStatus = TransactionStatus.Pending;
+                        }
+
+                        await _reservationRepository.UpdateReservationAsync(reservation);
                     }
                     else
                     {

@@ -24,7 +24,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         {
             get
             {
-                var duration = DepartureDate - ArrivateDate;
+                var duration = DepartureDate.Date - ArrivateDate.Date;
                 if (duration.TotalDays >= 1)
                 {
                     int days = (int)duration.TotalDays;
