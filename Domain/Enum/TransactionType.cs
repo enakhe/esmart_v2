@@ -19,6 +19,7 @@
     public enum Category
     {
         Accomodation,
+        Reservation,
         FoodAndBeverage,
         Spa,
         Laundry,

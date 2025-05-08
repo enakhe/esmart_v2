@@ -1,24 +1,22 @@
-﻿<Window x:Class="ESMART.Presentation.Forms.FrontDesk.Reservation.AddReservationDialog"
+﻿<Window x:Class="ESMART.Presentation.Forms.FrontDesk.Reservation.TransferGuestReservation"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ESMART.Presentation.Forms.FrontDesk.Reservation"
-        mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Add Booking" Height="670" Width="400" Activated="Window_Activated" Icon="/Forms/FrontDesk/Reservation/logo.png">
+        Title="Transfer Reservation" Height="550" Width="350" Icon="/Forms/FrontDesk/Reservation/logo.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="31*"/>
             <ColumnDefinition Width="33*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Margin="20,20,20,20" Grid.ColumnSpan="2">
-            <TextBlock Text="Reservation Information" FontSize="25" FontWeight="Bold" Margin="0,10" />
+            <TextBlock Text="Transfer Reservation" FontSize="25" FontWeight="Bold" Margin="0,10" />
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
@@ -58,12 +56,7 @@
                     </Grid>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2" Margin="0,0,0,20">
-                    <TextBlock Text="Guest:" FontWeight="Bold" />
-                    <ComboBox x:Name="cmbGuest" Padding="2,5,0,5" />
-                </StackPanel>
-
-                <StackPanel Grid.Row="3" Margin="0,0,0,20" Orientation="Horizontal" HorizontalAlignment="Right">
+                <StackPanel Grid.Row="2" Margin="0,0,0,20" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -71,7 +64,26 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Text="Days:" FontWeight="Bold" Margin="0,5,5,0" Grid.Column="0" />
-                        <TextBox x:Name="txtDays" Padding="2,5,0,5" PreviewTextInput="NumberOnly_PreviewTextInput" Grid.Column="1" Width="50" TextChanged="txtDays_TextChanged" />
+                        <TextBox x:Name="txtDays" Padding="2,5,0,5" PreviewTextInput="NumberOnly_PreviewTextInput" IsEnabled="False" Grid.Column="1" Width="50" TextChanged="txtDays_TextChanged" />
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,2,0">
+                            <TextBlock Text="Check In:" FontWeight="Bold" />
+                            <DatePicker x:Name="dtpCheckIn" Padding="2,5,0,5" IsEnabled="False" SelectedDateChanged="dtpCheckIn_SelectedDateChanged" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="2,0,0,0">
+                            <TextBlock Text="Check Out:" FontWeight="Bold" />
+                            <DatePicker x:Name="dtpCheckOut" Padding="2,5,0,5" IsEnabled="False" SelectedDateChanged="dtpCheckOut_SelectedDateChanged" />
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
 
@@ -83,56 +95,18 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" Margin="0,0,2,0">
-                            <TextBlock Text="Arrival:" FontWeight="Bold" />
-                            <DatePicker x:Name="dtpArrivalDate" Padding="2,5,0,5" SelectedDateChanged="dtpArrivalDate_SelectedDateChanged" />
+                            <TextBlock Text="Discount:" FontWeight="Bold" />
+                            <TextBox x:Name="txtDiscount" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" LostFocus="DiscountTextBox_LostFocus" GotFocus="txtDiscount_GotFocus" TextChanged="txtDiscount_TextChanged" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="2,0,0,0">
-                            <TextBlock Text="Departure:" FontWeight="Bold" />
-                            <DatePicker x:Name="dtpDepartureDate" Padding="2,5,0,5" SelectedDateChanged="dtpDepartureDate_SelectedDateChanged" />
+                            <TextBlock Text="VAT:" FontWeight="Bold" />
+                            <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="VatTextBox_PreviewTextInput" LostFocus="VatTextBox_LostFocus" GotFocus="VatTextBox_GotFocus" TextChanged="txtVAT_TextChanged" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>
 
                 <StackPanel Grid.Row="5" Margin="0,0,0,20">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-
-                        <Grid Grid.Column="0" Margin="0,0,2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Discount:" FontWeight="Bold" />
-                                <TextBox x:Name="txtDiscount" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" LostFocus="DiscountTextBox_LostFocus" GotFocus="txtDiscount_GotFocus" TextChanged="txtDiscount_TextChanged" />
-                            </StackPanel>
-
-                            <Image Cursor="Hand" x:Name="EditButtonDiscount" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Discount is set by default. You can change it later." MouseLeftButtonDown="EditButton_MouseLeftButtonDown" />
-
-                        </Grid>
-
-                        <Grid Grid.Column="1" Margin="2,0,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="VAT:" FontWeight="Bold" />
-                                <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="VatTextBox_PreviewTextInput" LostFocus="VatTextBox_LostFocus" GotFocus="VatTextBox_GotFocus" TextChanged="txtVAT_TextChanged" />
-                            </StackPanel>
-
-                            <Image Cursor="Hand" x:Name="EditButtonVAT" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="VAT is set by default. You can change it later." MouseLeftButtonDown="EditButton_MouseLeftButtonDown" />
-                        </Grid>
-                    </Grid>
-                </StackPanel>
-
-                <StackPanel Grid.Row="6" Margin="0,0,0,20">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -153,40 +127,27 @@
                     </Grid>
                 </StackPanel>
 
-                <StackPanel Grid.Row="7" Margin="0,0,0,20">
+                <StackPanel Grid.Row="6" Margin="0,0,0,20">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <Grid Grid.Column="0" Margin="0,0,2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Service Charge:" FontWeight="Bold" />
-                                <TextBox x:Name="txtServiceCharge" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" LostFocus="ServiceChargeTextBox_LostFocus" GotFocus="ServiceChargeTextBox_GotFocus" IsEnabled="False" Padding="2,5,0,5" TextChanged="txtServiceCharge_TextChanged" />
-                            </StackPanel>
-
-                            <Image Cursor="Hand" x:Name="EditButtonServiceCharge" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Room rate is set to room type rate by default. You can change it later." MouseLeftButtonDown="EditButton_MouseLeftButtonDown" />
-                        </Grid>
+                        <StackPanel Grid.Column="0" Margin="0,0,2,0">
+                            <TextBlock Text="Service Charge:" FontWeight="Bold" />
+                            <TextBox x:Name="txtServiceCharge" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" LostFocus="ServiceChargeTextBox_LostFocus" GotFocus="ServiceChargeTextBox_GotFocus" IsEnabled="False" Padding="2,5,0,5" TextChanged="txtServiceCharge_TextChanged" />
+                        </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="2,0,0,0">
                             <TextBlock Text="Total Amount:" FontWeight="Bold" />
                             <TextBox x:Name="txtTotalAmount" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="DecimalInput_TextChanged" PreviewKeyDown="DecimalInput_PreviewKeyDown" IsEnabled="False" Padding="2,5,0,5" />
                         </StackPanel>
                     </Grid>
+
                 </StackPanel>
 
-                <StackPanel Grid.Row="8" Margin="0,0,0,20">
-                    <TextBlock Text="Amount Paid:" FontWeight="Bold" />
-                    <TextBox x:Name="txtAmountPaid" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="DecimalInput_TextChanged" PreviewKeyDown="DecimalInput_PreviewKeyDown" Padding="2,5,0,5" />
-                </StackPanel>
-
-                <StackPanel Grid.Row="9" Margin="0,0,0,20">
+                <StackPanel Grid.Row="7" Margin="0,0,0,20">
                     <Grid Margin="1,0,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />

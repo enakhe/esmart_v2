@@ -3,6 +3,7 @@ using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
+using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
@@ -25,9 +26,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IBookingRepository _bookingRepository;
         private readonly IVerificationCodeService _verificationCodeService;
         private readonly ITransactionRepository _transactionRepository;
+        private readonly IReservationRepository _reservationRepository;
         private bool _suppressTextChanged = false;
         private Domain.Entities.FrontDesk.Booking _booking;
-        public ExtendStayDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, Domain.Entities.FrontDesk.Booking booking)
+        public ExtendStayDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, Domain.Entities.FrontDesk.Booking booking, IReservationRepository reservationRepository)
         {
             _guestRepository = guestRepository;
             _roomRepository = roomRepository;
@@ -35,6 +37,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _verificationCodeService = verificationCodeService;
             _bookingRepository = bookingRepository;
             _transactionRepository = transactionRepository;
+            _reservationRepository = reservationRepository;
             _booking = booking;
             InitializeComponent();
         }
@@ -114,13 +117,20 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     return;
                 }
 
-                var booking = await UpdateBooking(BookingStatus.Pending, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber);
+                var isRoomAvailable = await CheckIfRoomCanBeBooked(_booking.Room.Number, checkIn, checkOut);
 
+                if(isRoomAvailable)
+                {
+                    var booking = await UpdateBooking(BookingStatus.Pending, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber);
+                    await HandlePostBookingAsync(booking, totalAmount);
 
-                await HandlePostBookingAsync(booking, totalAmount);
-
-                MessageBox.Show("Booking extended successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                this.DialogResult = true;
+                    MessageBox.Show("Booking extended successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    this.DialogResult = true;
+                }
+                else
+                {
+                    MessageBox.Show("Room is not available for the selected dates.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -130,6 +140,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private async Task<bool> CheckIfRoomCanBeBooked(string roomno, DateTime checkIn, DateTime checkOut)
+        {
+            var reservations = await _reservationRepository.GetReservationsByRoomNoAndDateRangeAsync(roomno, checkIn, checkOut);
+            if (reservations.Count > 0)
+            {
+                return false;
+            }
+            return true;
         }
 
         private bool ValidateInputs(out string guestId, out string roomId, out DateTime checkIn, out DateTime checkOut, out PaymentMethod paymentMethod, out decimal totalAmount, out decimal discount, out decimal vat, out decimal serviceCharge, out string accountNumber)

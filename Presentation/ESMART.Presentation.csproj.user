@@ -64,6 +64,9 @@
     <Compile Update="Forms\FrontDesk\Reservation\ReservationPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Reservation\TransferGuestReservation.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Home\IndexPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

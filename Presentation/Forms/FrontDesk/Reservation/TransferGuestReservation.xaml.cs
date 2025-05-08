@@ -1,44 +1,55 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
-namespace ESMART.Presentation.Forms.FrontDesk.Booking
+namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 {
     /// <summary>
-    /// Interaction logic for TransferGuestDialog.xaml
+    /// Interaction logic for TransferGuestReservation.xaml
     /// </summary>
-    public partial class TransferGuestDialog : Window
+    public partial class TransferGuestReservation : Window
     {
         private readonly IGuestRepository _guestRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IRoomRepository _roomRepository;
-        private readonly IBookingRepository _bookingRepository;
+        private readonly IReservationRepository _reservationRepository;
         private readonly IVerificationCodeService _verificationCodeService;
         private readonly ITransactionRepository _transactionRepository;
-        private readonly IReservationRepository _reservationRepository;
+        private readonly IBookingRepository _bookingRepository;
         private bool _suppressTextChanged = false;
-        private Domain.Entities.FrontDesk.Booking _booking;
+        private readonly Domain.Entities.FrontDesk.Reservation _reservation;
 
-        public TransferGuestDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, Domain.Entities.FrontDesk.Booking booking, IReservationRepository reservationRepository)
+        public TransferGuestReservation(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IReservationRepository reservationRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, Domain.Entities.FrontDesk.Reservation reservation, IBookingRepository bookingRepository)
         {
             _guestRepository = guestRepository;
             _roomRepository = roomRepository;
             _hotelSettingsService = hotelSettingsService;
             _verificationCodeService = verificationCodeService;
-            _bookingRepository = bookingRepository;
-            _transactionRepository = transactionRepository;
             _reservationRepository = reservationRepository;
-            _booking = booking;
+            _transactionRepository = transactionRepository;
+            _bookingRepository = bookingRepository;
+            _reservation = reservation;
             InitializeComponent();
         }
 
@@ -87,7 +98,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 if (rooms != null)
                 {
-                    var avalableTransferRooms = rooms.Where(r => r.Rate >= _booking.Room.Rate).ToList();
+                    var avalableTransferRooms = rooms.Where(r => r.Rate >= _reservation.Room.Rate).ToList();
 
                     cmbRoom.ItemsSource = avalableTransferRooms;
                     cmbRoom.DisplayMemberPath = "Number";
@@ -128,13 +139,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                dtpCheckIn.SelectedDate = _booking.CheckIn;
-                dtpCheckOut.SelectedDate = _booking.CheckOut;
+                dtpCheckIn.SelectedDate = _reservation.ArrivateDate;
+                dtpCheckOut.SelectedDate = _reservation.DepartureDate;
 
                 txtDays.Text = (dtpCheckOut.SelectedDate.Value - dtpCheckIn.SelectedDate.Value).Days.ToString();
-                txtDiscount.Text = _booking.Discount.ToString();
-                txtVAT.Text = _booking.VAT.ToString();
-                txtServiceCharge.Text = _booking.ServiceCharge.ToString();
+                txtDiscount.Text = _reservation.Discount.ToString();
+                txtVAT.Text = _reservation.VAT.ToString();
+                txtServiceCharge.Text = _reservation.ServiceCharge.ToString();
             }
             catch (Exception ex)
             {
@@ -158,11 +169,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     return;
                 }
 
-                decimal oldRate = _booking.Room.Rate;
+                decimal oldRate = _reservation.Room.Rate;
                 decimal newRate = selectedRoom.Rate;
+
                 var checkIn = dtpCheckOut.SelectedDate!.Value;
                 var checkOut = dtpCheckIn.SelectedDate!.Value;
                 int numberOfDays = (checkIn - checkOut).Days;
+
                 decimal differencePerDay = newRate - oldRate;
                 decimal totalDifference = Helper.GetPriceByRateAndTime(checkIn, checkOut, differencePerDay);
                 decimal totalAmount = Helper.CalculateTotal(
@@ -184,32 +197,34 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     }
                 }
 
-                _booking.Room.Status = RoomStatus.Vacant;
-                await _roomRepository.UpdateRoom(_booking.Room);
+                _reservation.Room.Status = RoomStatus.Vacant;
+                await _roomRepository.UpdateRoom(_reservation.Room);
 
-                _booking.RoomId = selectedRoom.Id;
-                _booking.Room = selectedRoom;
-                _booking.Amount += Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, newRate);
+                _reservation.RoomId = selectedRoom.Id;
+                _reservation.Room = selectedRoom;
+                _reservation.Amount += Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, newRate);
 
                 if (differencePerDay != 0)
                 {
-                    _booking.TotalAmount += totalAmount;
+                    _reservation.TotalAmount += totalAmount;
                 }
 
                 var isRoomAvailable = await CheckIfRoomCanBeBooked(selectedRoom.Number, dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value);
 
                 if (isRoomAvailable)
                 {
-                    await _bookingRepository.UpdateBooking(_booking);
-                    await HandlePostBookingAsync(_booking, differencePerDay, totalAmount);
+                    await _reservationRepository.UpdateReservationAsync(_reservation);
+
+                    await HandlePostBookingAsync(_reservation, differencePerDay, totalAmount);
 
                     MessageBox.Show("Guest transferred successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     this.DialogResult = true;
                 }
                 else
                 {
-                    MessageBox.Show("The selected room is not available for the specified dates.", "Room Unavailable", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("The selected room is not available for the selected dates.", "Room Unavailable", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+               
             }
             catch (Exception ex)
             {
@@ -231,21 +246,23 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             return true;
         }
 
-        private async Task HandlePostBookingAsync(Domain.Entities.FrontDesk.Booking booking, decimal differencePerDay, decimal amount)
+        private async Task HandlePostBookingAsync(Domain.Entities.FrontDesk.Reservation reservation, decimal differencePerDay, decimal amount)
         {
+            reservation.Room.Status = RoomStatus.Vacant;
+            await _roomRepository.UpdateRoom(reservation.Room);
 
             if (differencePerDay != 0)
             {
-                var bookedRoom = await _roomRepository.GetRoomById(booking.RoomId);
-                var bookedGuest = await _guestRepository.GetGuestByIdAsync(booking.GuestId);
+                var reservedRoom = await _roomRepository.GetRoomById(reservation.RoomId);
+                var reservedGuest = await _guestRepository.GetGuestByIdAsync(reservation.GuestId);
                 var hotel = await _hotelSettingsService.GetHotelInformation();
 
-                var transaction = await _transactionRepository.GetByBookingIdAsync(booking.Id);
+                var transaction = await _transactionRepository.GetByBookingIdAsync(reservation.Id);
 
-                if (bookedRoom != null)
+                if (reservedRoom != null)
                 {
-                    bookedRoom.Status = RoomStatus.Booked;
-                    await _roomRepository.UpdateRoom(bookedRoom);
+                    reservedRoom.Status = RoomStatus.Reserved;
+                    await _roomRepository.UpdateRoom(reservedRoom);
                 }
 
                 if (hotel != null)
@@ -253,21 +270,35 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     var verificationCode = new VerificationCode
                     {
                         Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
-                        ServiceId = booking.BookingId,
+                        ServiceId = reservation.ReservationId,
                         ApplicationUserId = AuthSession.CurrentUser?.Id
                     };
 
                     await _verificationCodeService.AddCode(verificationCode);
 
-                    var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, bookedGuest, "Booking", verificationCode.Code, amount);
+                    var response = await SenderHelper.SendOtp(hotel, reservation.AccountNumber, reservedGuest, "Reservation", verificationCode.Code, amount);
                     if (response.IsSuccessStatusCode)
                     {
-                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
-                        verifyPaymentWindow.ShowDialog();
+                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId);
+                        if (verifyPaymentWindow.ShowDialog() == true)
+                        {
+                            if (reservation.AmountPaid == reservation.TotalAmount)
+                            {
+                                reservation.TransactionStatus = TransactionStatus.Paid;
+                            }
+                            else if (reservation.TotalAmount > reservation.AmountPaid)
+                            {
+                                reservation.TransactionStatus = TransactionStatus.Pending;
+                            }
+                            else
+                            {
+                                reservation.TransactionStatus = TransactionStatus.Unpaid;
+                            }
+                        }
                     }
                     else
                     {
-                        MessageBox.Show("Booking room transfered successfully but could not verify payment. Payment will be flagged as pending.",
+                        MessageBox.Show("Reservation room transfered successfully but could not verify payment. Payment will be flagged as pending.",
                             "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
@@ -277,20 +308,20 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     var transactionItem = new Domain.Entities.Transaction.TransactionItem
                     {
                         Amount = amount,
-                        TaxAmount = booking.VAT,
-                        ServiceId = booking.BookingId,
-                        ServiceCharge = booking.ServiceCharge,
-                        Discount = booking.Discount,
+                        TaxAmount = reservation.VAT,
+                        ServiceId = reservation.ReservationId,
+                        ServiceCharge = reservation.ServiceCharge,
+                        Discount = reservation.Discount,
                         Category = Category.Accomodation,
                         Type = TransactionType.Adjustment,
-                        BankAccount = booking.AccountNumber,
+                        BankAccount = reservation.AccountNumber,
                         DateAdded = DateTime.Now,
                         ApplicationUserId = AuthSession.CurrentUser?.Id,
                         TransactionId = transaction.Id,
-                        Description = $"Booking room transfered for {booking.Guest.FullName} to {booking.Room.Number} from {booking.CheckIn} to {booking.CheckOut}"
+                        Description = $"Reservation room transfered for {reservation.Guest.FullName} to {reservation.Room.Number} from {reservation.ArrivateDate} to {reservation.DepartureDate}"
                     };
 
-                    if (booking.Status == BookingStatus.Completed)
+                    if (reservation.TransactionStatus != TransactionStatus.Unpaid)
                     {
                         transactionItem.Status = TransactionStatus.Paid;
                     }
@@ -347,13 +378,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 decimal amountToDisplay;
 
-                if (_booking.Room.Rate == decimal.Parse(txtRoomRate.Text))
+                if (_reservation.Room.Rate == decimal.Parse(txtRoomRate.Text))
                 {
                     amountToDisplay = 0;
                 }
-                else if (decimal.Parse(txtRoomRate.Text) > _booking.Room.Rate)
+                else if (decimal.Parse(txtRoomRate.Text) > _reservation.Room.Rate)
                 {
-                    amountToDisplay = newTotalAmount - _booking.TotalAmount;
+                    amountToDisplay = newTotalAmount - _reservation.AmountPaid;
                 }
                 else
                 {
@@ -420,13 +451,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                     decimal amountToDisplay;
 
-                    if (_booking.Room.Rate == selectedRoom.Rate)
+                    if (_reservation.Room.Rate == selectedRoom.Rate)
                     {
                         amountToDisplay = 0;
                     }
-                    else if (selectedRoom.Rate > _booking.Room.Rate)
+                    else if (selectedRoom.Rate > _reservation.Room.Rate)
                     {
-                        amountToDisplay = newTotalAmount - _booking.TotalAmount;
+                        amountToDisplay = newTotalAmount - _reservation.AmountPaid;
                     }
                     else
                     {
@@ -465,13 +496,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                         decimal amountToDisplay;
 
-                        if (_booking.Room.Rate == decimal.Parse(txtRoomRate.Text))
+                        if (_reservation.Room.Rate == decimal.Parse(txtRoomRate.Text))
                         {
                             amountToDisplay = 0;
                         }
-                        else if (decimal.Parse(txtRoomRate.Text) > _booking.Room.Rate)
+                        else if (decimal.Parse(txtRoomRate.Text) > _reservation.Room.Rate)
                         {
-                            amountToDisplay = newTotalAmount - _booking.TotalAmount;
+                            amountToDisplay = newTotalAmount - _reservation.AmountPaid;
                         }
                         else
                         {
@@ -512,13 +543,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                         decimal amountToDisplay;
 
-                        if (_booking.Room.Rate == decimal.Parse(txtRoomRate.Text))
+                        if (_reservation.Room.Rate == decimal.Parse(txtRoomRate.Text))
                         {
                             amountToDisplay = 0;
                         }
-                        else if (decimal.Parse(txtRoomRate.Text) > _booking.Room.Rate)
+                        else if (decimal.Parse(txtRoomRate.Text) > _reservation.Room.Rate)
                         {
-                            amountToDisplay = newTotalAmount - _booking.TotalAmount;
+                            amountToDisplay = newTotalAmount - _reservation.AmountPaid;
                         }
                         else
                         {
@@ -559,13 +590,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                         decimal amountToDisplay;
 
-                        if (_booking.Room.Rate == decimal.Parse(txtRoomRate.Text))
+                        if (_reservation.Room.Rate == decimal.Parse(txtRoomRate.Text))
                         {
                             amountToDisplay = 0;
                         }
-                        else if (decimal.Parse(txtRoomRate.Text) > _booking.Room.Rate)
+                        else if (decimal.Parse(txtRoomRate.Text) > _reservation.Room.Rate)
                         {
-                            amountToDisplay = newTotalAmount - _booking.TotalAmount;
+                            amountToDisplay = newTotalAmount - _reservation.AmountPaid;
                         }
                         else
                         {

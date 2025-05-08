@@ -22,7 +22,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IGuestRepository _guestRepository;
         private readonly IRoomRepository _roomRepository;
         private readonly ITransactionRepository _transactionRepository;
-        public BookingPage(IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IRoomRepository roomRepository, IGuestRepository guestRepository, ITransactionRepository transactionRepository)
+        private readonly IReservationRepository _reservationRepository;
+        public BookingPage(IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IRoomRepository roomRepository, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IReservationRepository reservationRepository)
         {
             _bookingRepository = bookingRepository;
             _verificationCodeService = verificationCodeService;
@@ -30,6 +31,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _roomRepository = roomRepository;
             _transactionRepository = transactionRepository;
             _guestRepository = guestRepository;
+            _reservationRepository = reservationRepository;
             InitializeComponent();
         }
 
@@ -179,7 +181,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                         VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
                                         if (verifyPaymentWindow.ShowDialog() == true)
                                         {
-                                            ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);
+                                            ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
                                             if (extendStayDialog.ShowDialog() == true)
                                             {
                                                 IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
@@ -198,7 +200,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             }
                             else
                             {
-                                ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);
+                                ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
                                 if (extendStayDialog.ShowDialog() == true)
                                 {
                                     IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
@@ -262,7 +264,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                         VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
                                         if (verifyPaymentWindow.ShowDialog() == true)
                                         {
-                                            TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);
+                                            TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
                                             if (transferGuestDialog.ShowDialog() == true)
                                             {
                                                 IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
@@ -281,7 +283,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             }
                             else
                             {
-                                TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking);
+                                TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
                                 if (transferGuestDialog.ShowDialog() == true)
                                 {
                                     IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);

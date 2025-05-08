@@ -272,8 +272,12 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 using var context = _contextFactory.CreateDbContext();
+
                 return await context.Reservations
-                    .Where(r => r.Room.Number == roomNo && r.ArrivateDate >= startDate && r.DepartureDate <= endDate && r.Status != ReservationStatus.Cancelled)
+                    .Where(r => r.Room.Number == roomNo &&
+                                r.Status != ReservationStatus.Cancelled &&
+                                r.ArrivateDate <= endDate &&
+                                r.DepartureDate >= startDate)
                     .Select(r => new ReservationViewModel
                     {
                         Id = r.Id,

@@ -200,6 +200,39 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             }
         }
 
+        //Transfer Reservation
+        private async void TransferReservation_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedReservation = (ReservationViewModel)ReservationDataGrid.SelectedItem;
+                    if (selectedReservation.Id != null)
+                    {
+                        var reservation = await _reservationRepository.GetReservationByIdAsync(selectedReservation.Id);
+                        TransferGuestReservation transferDialog = new TransferGuestReservation(_guestRepository, _roomRepository, _hotelSettingsService, _reservationRepository, _verificationCodeService, _transactionRepository, reservation, _bookingRepository);
+                        if (transferDialog.ShowDialog() == true)
+                        {
+                            await LoadReservation();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a reservation before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadReservation();

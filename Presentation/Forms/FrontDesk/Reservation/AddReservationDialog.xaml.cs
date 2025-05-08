@@ -156,6 +156,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
         private void LoadDefaultSetting()
         {
+            dtpArrivalDate.DisplayDateStart = DateTime.Today;
             dtpArrivalDate.SelectedDate = DateTime.Now;
             dtpDepartureDate.SelectedDate = DateTime.Now.AddDays(1);
         }
@@ -172,20 +173,28 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 }
 
                 var isRoomAvailable = await CheckIfRoomCanBeBooked(((Room)cmbRoom.SelectedItem).Number, checkIn, checkOut);
+                var isReservationAllowed = amountPaid >= (totalAmount / 2);
 
-                if (isRoomAvailable)
+                if (!isReservationAllowed)
                 {
-                    var reservation = await CreateReservation(guestId, roomId, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber, amountPaid);
-
-                    await HandlePostBookingAsync(reservation);
-
-                    MessageBox.Show("Reservation added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    this.DialogResult = true;
+                    MessageBox.Show("Amount paid must be at least 50% of the total amount.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    MessageBox.Show("Room is not available for the selected dates.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
+                    if (isRoomAvailable)
+                    {
+                        var reservation = await CreateReservation(guestId, roomId, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber, amountPaid);
+
+                        await HandlePostBookingAsync(reservation);
+
+                        MessageBox.Show("Reservation added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        this.DialogResult = true;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Room is not available for the selected dates.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
                 }
             }
             catch (Exception ex)
@@ -210,7 +219,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 DepartureDate = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0),
                 Amount = amount,
                 Status = ReservationStatus.Tentative,
-                TransactionStatus = TransactionStatus.Unpaid,
+                TransactionStatus = TransactionStatus.Pending,
                 AccountNumber = accountNumber,
                 Discount = discount,
                 VAT = vat,
@@ -311,16 +320,19 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     {
                         if (reservation.AmountPaid == reservation.TotalAmount)
                         {
+                            reservation.Status = ReservationStatus.Confirmed;
                             reservation.TransactionStatus = TransactionStatus.Paid;
                         }
                         else if (reservation.TotalAmount > reservation.AmountPaid)
                         {
                             reservation.TransactionStatus = TransactionStatus.Pending;
                         }
-                        else
-                        {
-                            reservation.TransactionStatus = TransactionStatus.Unpaid;
-                        }
+
+                        await _reservationRepository.UpdateReservationAsync(reservation);
+                    }
+                    else
+                    {
+                        reservation.TransactionStatus = TransactionStatus.Unpaid;
                     }
                 }
                 else
@@ -337,7 +349,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 TaxAmount = reservation.VAT,
                 ServiceCharge = reservation.ServiceCharge,
                 Discount = reservation.Discount,
-                Category = Category.Accomodation,
+                Category = Category.Reservation,
                 Type = TransactionType.Charge,
                 BankAccount = reservation.AccountNumber,
                 DateAdded = DateTime.Now,
@@ -508,6 +520,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             if (dtpArrivalDate.SelectedDate != null && dtpDepartureDate.SelectedDate != null)
             {
                 var days = (dtpDepartureDate.SelectedDate.Value - dtpArrivalDate.SelectedDate.Value).Days;
+                dtpDepartureDate.DisplayDateStart = dtpArrivalDate.SelectedDate.Value.AddDays(1);
 
                 if (days > 0)
                 {

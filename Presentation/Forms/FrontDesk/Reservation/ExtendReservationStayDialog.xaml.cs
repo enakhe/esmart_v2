@@ -128,13 +128,22 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     return;
                 }
 
-                var booking = await UpdateReservation(ReservationStatus.Tentative, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber, amountPaid);
+                var isRoomAvailable = await CheckIfRoomCanBeBooked(_reservation.Room.Number, checkIn, checkOut);
+
+                if(isRoomAvailable)
+                {
+                    var booking = await UpdateReservation(ReservationStatus.Tentative, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber, amountPaid);
 
 
-                await HandlePostBookingAsync(booking, totalAmount);
+                    await HandlePostBookingAsync(booking, totalAmount);
 
-                MessageBox.Show("Booking extended successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                this.DialogResult = true;
+                    MessageBox.Show("Booking extended successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    this.DialogResult = true;
+                }
+                else
+                {
+                    MessageBox.Show("Room is not available for the selected dates. Please choose a different room or date range.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -144,6 +153,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private async Task<bool> CheckIfRoomCanBeBooked(string roomno, DateTime checkIn, DateTime checkOut)
+        {
+            var reservations = await _reservationRepository.GetReservationsByRoomNoAndDateRangeAsync(roomno, checkIn, checkOut);
+            if (reservations.Count > 0)
+            {
+                return false;
+            }
+            return true;
         }
 
         private bool ValidateInputs(out string guestId, out string roomId, out DateTime checkIn, out DateTime checkOut, out PaymentMethod paymentMethod, out decimal totalAmount, out decimal discount, out decimal vat, out decimal serviceCharge, out string accountNumber, out decimal amountPaid)
