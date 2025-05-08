@@ -41,8 +41,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         private readonly IBookingRepository _bookingRepository;
         private readonly IVerificationCodeService _verificationCodeService;
         private readonly ITransactionRepository _transactionRepository;
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
 
-        public ReservationPage(IReservationRepository reservationRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, IRoomRepository roomRepository, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository)
+        public ReservationPage(IReservationRepository reservationRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, IRoomRepository roomRepository, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
             _reservationRepository = reservationRepository;
             _hotelSettingsService = hotelSettingsService;
@@ -51,6 +52,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             _bookingRepository = bookingRepository;
             _verificationCodeService = verificationCodeService;
             _transactionRepository = transactionRepository;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
             InitializeComponent();
         }
 
@@ -180,7 +182,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     if (selectedReservation.Id != null)
                     {
                         var reservation = await _reservationRepository.GetReservationByIdAsync(selectedReservation.Id);
-                        ExtendReservationStayDialog extendStayDialog = new ExtendReservationStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _reservationRepository, _verificationCodeService, _transactionRepository, reservation, _bookingRepository);
+                        ExtendReservationStayDialog extendStayDialog = new ExtendReservationStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _reservationRepository, _verificationCodeService, _transactionRepository, reservation, _bookingRepository, _applicationUserRoleRepository);
                         if (extendStayDialog.ShowDialog() == true)
                         {
                             await LoadReservation();
@@ -213,7 +215,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     if (selectedReservation.Id != null)
                     {
                         var reservation = await _reservationRepository.GetReservationByIdAsync(selectedReservation.Id);
-                        TransferGuestReservation transferDialog = new TransferGuestReservation(_guestRepository, _roomRepository, _hotelSettingsService, _reservationRepository, _verificationCodeService, _transactionRepository, reservation, _bookingRepository);
+                        TransferGuestReservation transferDialog = new TransferGuestReservation(_guestRepository, _roomRepository, _hotelSettingsService, _reservationRepository, _verificationCodeService, _transactionRepository, reservation, _bookingRepository, _applicationUserRoleRepository);
                         if (transferDialog.ShowDialog() == true)
                         {
                             await LoadReservation();
@@ -283,7 +285,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                             var amount = reservation.TotalAmount - reservation.AmountPaid;
                             booking.Receivables = amount;
 
-                            BookReservationDialog bookDialog = new BookReservationDialog(_bookingRepository, _transactionRepository, _hotelSettingsService, _verificationCodeService, amount, booking, transaction, reservation.Guest.FullName);
+                            BookReservationDialog bookDialog = new BookReservationDialog(_bookingRepository, _transactionRepository, _hotelSettingsService, _verificationCodeService, amount, booking, transaction, reservation.Guest.FullName, _applicationUserRoleRepository);
                             if (bookDialog.ShowDialog() == true)
                             {
                                 if (transaction != null)
@@ -361,6 +363,83 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
+
+        // Cancel Reservation
+        private async void CancelReservation_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedReservation = (ReservationViewModel)ReservationDataGrid.SelectedItem;
+                    if (selectedReservation.Id != null)
+                    {
+                        MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to cancel this reservation?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (messageResult == MessageBoxResult.Yes)
+                        {
+                            LoaderOverlay.Visibility = Visibility.Visible;
+
+                            var reservation = await _reservationRepository.GetReservationByIdAsync(selectedReservation.Id);
+                            var refundSetting = await _hotelSettingsService.GetSettingAsync("RefundPercent");
+
+                            if (reservation != null && refundSetting != null)
+                            {
+                                var amount = (decimal.Parse(refundSetting.Value) / 100) * reservation.AmountPaid;
+                                CancelReservationDialog cancelReservationDialog = new CancelReservationDialog(reservation, amount, decimal.Parse(refundSetting.Value), _reservationRepository, _transactionRepository, _hotelSettingsService, _verificationCodeService, _applicationUserRoleRepository, _bookingRepository, _guestRepository);
+                                if (cancelReservationDialog.ShowDialog() == true)
+                                {
+                                    var transaction = await _transactionRepository.GetByInvoiceNumberAsync(reservation.ReservationId);
+                                    if (transaction != null)
+                                    {
+                                        var transactionItem = new Domain.Entities.Transaction.TransactionItem
+                                        {
+                                            Amount = reservation.TotalAmount,
+                                            ServiceId = reservation.ReservationId,
+                                            TaxAmount = reservation.VAT,
+                                            ServiceCharge = reservation.ServiceCharge,
+                                            Discount = reservation.Discount,
+                                            Category = Category.Accomodation,
+                                            Type = TransactionType.Refund,
+                                            BankAccount = reservation.AccountNumber,
+                                            DateAdded = DateTime.Now,
+                                            ApplicationUserId = AuthSession.CurrentUser?.Id,
+                                            TransactionId = transaction.Id,
+                                            Description = $"Reservation cancelled for {reservation.Guest.FullName} to {reservation.Room.Number} from {reservation.ArrivateDate} to {reservation.DepartureDate}"
+                                        };
+                                        await _transactionRepository.AddTransactionItemAsync(transactionItem);
+                                    }
+
+                                    var room = await _roomRepository.GetRoomById(reservation.RoomId);
+                                    if (room != null)
+                                    {
+                                        room.Status = Domain.Entities.RoomSettings.RoomStatus.Vacant;
+                                        await _roomRepository.UpdateRoom(room);
+                                    }
+
+                                    reservation.Status = ReservationStatus.Cancelled;
+                                    await _reservationRepository.UpdateReservationAsync(reservation);
+                                    await LoadReservation();
+
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a reservation before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadReservation();

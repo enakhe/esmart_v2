@@ -22,17 +22,19 @@ namespace ESMART.Presentation.Forms.Verification
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IBookingRepository _bookingRepository;
         private readonly ITransactionRepository _transactionRepository;
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private string _serviceId;
         private decimal _amount;
         private DispatcherTimer _timer;
         private TimeSpan _timeRemaining;
-        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, ITransactionRepository transactionRepository, string serviceId, decimal amount)
+        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, ITransactionRepository transactionRepository, string serviceId, decimal amount, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
             _verificationCodeService = verificationCodeService;
             _hotelSettingsService = hotelSettingsService;
             _bookingRepository = bookingRepository;
             _transactionRepository = transactionRepository;
             _serviceId = serviceId;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
             _amount = amount;
             InitializeComponent();
             StartCountdown(TimeSpan.FromMinutes(20));
@@ -150,6 +152,7 @@ namespace ESMART.Presentation.Forms.Verification
             try
             {
                 var oldCode = await _verificationCodeService.GetCodeByServiceId(_serviceId);
+                var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
                 if (oldCode != null)
                 {
                     await _verificationCodeService.DeleteAsync(oldCode.Id);
@@ -167,9 +170,8 @@ namespace ESMART.Presentation.Forms.Verification
 
                     await _verificationCodeService.AddCode(verificationCode);
 
-                    var booking = await _bookingRepository.GetBookingById(_serviceId);
 
-                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.TotalAmount);
+                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, "", "", "Booking", verificationCode.Code, _amount, "Transfer", activeUser.FullName!, activeUser.PhoneNumber!);
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("New Verification code has been sent", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

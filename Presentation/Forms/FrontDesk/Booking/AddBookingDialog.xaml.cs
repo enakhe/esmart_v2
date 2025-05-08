@@ -28,9 +28,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IReservationRepository _reservationRepository;
         private readonly IVerificationCodeService _verificationCodeService;
         private readonly ITransactionRepository _transactionRepository;
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private bool _suppressTextChanged = false;
 
-        public AddBookingDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, IReservationRepository reservationRepository)
+        public AddBookingDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, IReservationRepository reservationRepository, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
             _guestRepository = guestRepository;
             _roomRepository = roomRepository;
@@ -39,6 +40,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _bookingRepository = bookingRepository;
             _transactionRepository = transactionRepository;
             _reservationRepository = reservationRepository;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
             InitializeComponent();
         }
 
@@ -266,6 +268,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             var bookedRoom = await _roomRepository.GetRoomById(booking.RoomId);
             var bookedGuest = await _guestRepository.GetGuestByIdAsync(booking.GuestId);
             var hotel = await _hotelSettingsService.GetHotelInformation();
+            var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
 
             var transaction = new Domain.Entities.Transaction.Transaction
             {
@@ -278,6 +281,25 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             };
 
             await _transactionRepository.AddTransactionAsync(transaction);
+
+            var transactionItem = new Domain.Entities.Transaction.TransactionItem
+            {
+                Amount = booking.Amount,
+                ServiceId = booking.BookingId,
+                TaxAmount = booking.VAT,
+                ServiceCharge = booking.ServiceCharge,
+                Discount = booking.Discount,
+                Category = Category.Accomodation,
+                Type = TransactionType.Charge,
+                Status = TransactionStatus.Unpaid,
+                BankAccount = booking.AccountNumber,
+                DateAdded = DateTime.Now,
+                ApplicationUserId = AuthSession.CurrentUser?.Id,
+                TransactionId = transaction.Id,
+                Description = $"Booking for {bookedGuest.FullName} in {bookedRoom?.Number} from {booking.CheckIn.ToShortDateString()} to {booking.CheckOut.ToShortDateString()}",
+            };
+
+            await _transactionRepository.AddTransactionItemAsync(transactionItem);
 
             if (bookedRoom != null)
             {
@@ -296,10 +318,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 await _verificationCodeService.AddCode(verificationCode);
 
-                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, bookedGuest.FullName, "Booking", verificationCode.Code, booking.TotalAmount);
+                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, booking.AccountNumber, bookedGuest.FullName, "Booking", verificationCode.Code, booking.TotalAmount, booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
                 if (response.IsSuccessStatusCode)
                 {
-                    var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.TotalAmount);
+                    var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.TotalAmount, _applicationUserRoleRepository);
                     if (verifyPaymentWindow.ShowDialog() == true)
                     {
                         booking.Status = BookingStatus.Completed;
@@ -319,32 +341,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 }
             }
 
-            var transactionItem = new Domain.Entities.Transaction.TransactionItem
-            {
-                Amount = booking.Amount,
-                ServiceId = booking.BookingId,
-                TaxAmount = booking.VAT,
-                ServiceCharge = booking.ServiceCharge,
-                Discount = booking.Discount,
-                Category = Category.Accomodation,
-                Type = TransactionType.Charge,
-                BankAccount = booking.AccountNumber,
-                DateAdded = DateTime.Now,
-                ApplicationUserId = AuthSession.CurrentUser?.Id,
-                TransactionId = transaction.Id,
-                Description = $"Booking for {bookedGuest.FullName} in {bookedRoom?.Number} from {booking.CheckIn.ToShortDateString()} to {booking.CheckOut.ToShortDateString()}",
-            };
-
             if (booking.Status == BookingStatus.Completed)
             {
                 transactionItem.Status = TransactionStatus.Paid;
             }
-            else
-            {
-                transactionItem.Status = TransactionStatus.Unpaid;
-            }
 
-            await _transactionRepository.AddTransactionItemAsync(transactionItem);
+            await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
         }
 
 

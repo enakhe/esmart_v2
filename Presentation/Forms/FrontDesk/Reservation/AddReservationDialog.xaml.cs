@@ -37,9 +37,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         private readonly IVerificationCodeService _verificationCodeService;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IReservationRepository _reservationRepository;
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private bool _suppressTextChanged = false;
 
-        public AddReservationDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, IReservationRepository reservationRepository)
+        public AddReservationDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, IReservationRepository reservationRepository, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
             _guestRepository = guestRepository;
             _roomRepository = roomRepository;
@@ -48,6 +49,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             _bookingRepository = bookingRepository;
             _transactionRepository = transactionRepository;
             _reservationRepository = reservationRepository;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
             InitializeComponent();
         }
 
@@ -283,6 +285,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             var reservedRoom = await _roomRepository.GetRoomById(reservation.RoomId);
             var reservedGuest = await _guestRepository.GetGuestByIdAsync(reservation.GuestId);
             var hotel = await _hotelSettingsService.GetHotelInformation();
+            var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
 
             var transaction = new Domain.Entities.Transaction.Transaction
             {
@@ -325,10 +328,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 await _verificationCodeService.AddCode(verificationCode);
 
-                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, reservation.AccountNumber, reservedGuest.FullName, "Reservation", verificationCode.Code, reservation.AmountPaid);
+                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, reservation.AccountNumber, reservedGuest.FullName, "Reservation", verificationCode.Code, reservation.AmountPaid, reservation.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
                 if (response.IsSuccessStatusCode)
                 {
-                    var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId, reservation.AmountPaid);
+                    var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId, reservation.AmountPaid, _applicationUserRoleRepository);
                     if(verifyPaymentWindow.ShowDialog() == true)
                     {
                         if (reservation.AmountPaid == reservation.TotalAmount)
@@ -358,10 +361,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             if (reservation.TransactionStatus != TransactionStatus.Unpaid)
             {
                 transactionItem.Status = TransactionStatus.Paid;
-            }
-            else
-            {
-                transactionItem.Status = TransactionStatus.Unpaid;
             }
 
             await _transactionRepository.UpdateTransactionItemAsync(transactionItem);

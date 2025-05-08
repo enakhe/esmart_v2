@@ -33,11 +33,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         private readonly ITransactionRepository _transactionRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IVerificationCodeService _verificationCodeService;
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private readonly decimal _amount;
         private readonly Domain.Entities.FrontDesk.Booking _booking;
         private readonly Domain.Entities.Transaction.Transaction _transaction;
         private readonly string _guest;
-        public BookReservationDialog(IBookingRepository bookingRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IVerificationCodeService verificationCodeService, decimal amount, Domain.Entities.FrontDesk.Booking booking, Domain.Entities.Transaction.Transaction transaction, string guest)
+        public BookReservationDialog(IBookingRepository bookingRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IVerificationCodeService verificationCodeService, decimal amount, Domain.Entities.FrontDesk.Booking booking, Domain.Entities.Transaction.Transaction transaction, string guest, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
             _amount = amount;
             _booking = booking;
@@ -47,6 +48,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             _transactionRepository = transactionRepository;
             _hotelSettingsService = hotelSettingsService;
             _verificationCodeService = verificationCodeService;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
             InitializeComponent();
 
             txtAmount.Text = _amount.ToString("N2");
@@ -58,6 +60,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             try
             {
                 var hotel = await _hotelSettingsService.GetHotelInformation();
+                var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
 
                 var verificationCode = new VerificationCode()
                 {
@@ -70,12 +73,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 if (hotel != null)
                 {
-                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, _booking.AccountNumber, _guest, "Booking", verificationCode.Code, _booking.Receivables);
+                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, _booking.AccountNumber, _guest, "Booking", verificationCode.Code, _booking.Receivables, _booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, _booking.BookingId, _amount);
+                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, _booking.BookingId, _amount, _applicationUserRoleRepository);
                         if (verifyPaymentWindow.ShowDialog() == true)
                         {
                             _booking.Status = Domain.Enum.BookingStatus.Completed;

@@ -23,7 +23,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IRoomRepository _roomRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IReservationRepository _reservationRepository;
-        public BookingPage(IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IRoomRepository roomRepository, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IReservationRepository reservationRepository)
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
+        public BookingPage(IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IRoomRepository roomRepository, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IReservationRepository reservationRepository, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
             _bookingRepository = bookingRepository;
             _verificationCodeService = verificationCodeService;
@@ -32,6 +33,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _transactionRepository = transactionRepository;
             _guestRepository = guestRepository;
             _reservationRepository = reservationRepository;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
             InitializeComponent();
         }
 
@@ -80,6 +82,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 if (sender is Button button && button.Tag is string Id)
                 {
                     var selectedBooking = (BookingViewModel)BookingDataGrid.SelectedItem;
+                    var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
                     if (selectedBooking.Id != null)
                     {
                         var hotel = await _hotelSettingsService.GetHotelInformation();
@@ -97,13 +100,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                             if (hotel != null)
                             {
-                                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.Receivables);
+                                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.Receivables, booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
 
                                 if (response.IsSuccessStatusCode)
                                 {
                                     MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                    VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.Receivables);
+                                    VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.Receivables, _applicationUserRoleRepository);
                                     if (verifyPaymentWindow.ShowDialog() == true)
                                     {
                                         booking.Status = Domain.Enum.BookingStatus.Completed;
@@ -155,6 +158,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 if (sender is Button button && button.Tag is string Id)
                 {
                     var selectedBooking = (BookingViewModel)BookingDataGrid.SelectedItem;
+                    var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
                     if (selectedBooking.Id != null)
                     {
                         var hotel = await _hotelSettingsService.GetHotelInformation();
@@ -175,20 +179,20 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                                 if (hotel != null)
                                 {
-                                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.Receivables);
+                                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.Receivables, booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
 
                                     if (response.IsSuccessStatusCode)
                                     {
                                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.Receivables);
+                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.Receivables, _applicationUserRoleRepository);
                                         if (verifyPaymentWindow.ShowDialog() == true)
                                         {
                                             booking.Status = Domain.Enum.BookingStatus.Completed;
                                             booking.Receivables = 0;
                                             await _bookingRepository.UpdateBooking(booking);
 
-                                            ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
+                                            ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
                                             if (extendStayDialog.ShowDialog() == true)
                                             {
                                                 IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
@@ -207,7 +211,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             }
                             else
                             {
-                                ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
+                                ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
                                 if (extendStayDialog.ShowDialog() == true)
                                 {
                                     IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
@@ -243,6 +247,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 if (sender is Button button && button.Tag is string Id)
                 {
                     var selectedBooking = (BookingViewModel)BookingDataGrid.SelectedItem;
+                    var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
                     if (selectedBooking.Id != null)
                     {
                         var hotel = await _hotelSettingsService.GetHotelInformation();
@@ -263,18 +268,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                                 if (hotel != null)
                                 {
-                                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.TotalAmount);
+                                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.TotalAmount, booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
                                     if (response.IsSuccessStatusCode)
                                     {
                                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.Receivables);
+                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.Receivables, _applicationUserRoleRepository);
                                         if (verifyPaymentWindow.ShowDialog() == true)
                                         {
                                             booking.Status = Domain.Enum.BookingStatus.Completed;
                                             await _bookingRepository.UpdateBooking(booking);
 
-                                            TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
+                                            TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
                                             if (transferGuestDialog.ShowDialog() == true)
                                             {
                                                 IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
@@ -293,7 +298,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             }
                             else
                             {
-                                TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
+                                TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
                                 if (transferGuestDialog.ShowDialog() == true)
                                 {
                                     IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);

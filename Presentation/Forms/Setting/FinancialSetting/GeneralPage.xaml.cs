@@ -61,6 +61,9 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
                             case "CurrencySymbol":
                                 cmbCurrency.SelectedValue = setting.Value;
                                 break;
+                            case "RefundPercent":
+                                txtRefundPercent.Text = setting.Value;
+                                break;
                         }
                     }
                 }
@@ -85,13 +88,15 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
                 var serviceCharge = txtServicCharge.Text.Replace("%", "").Trim();
                 var discount = txtDiscount.Text;
                 var currencySymbol = cmbCurrency.SelectedValue.ToString();
+                var refundPercent = txtRefundPercent.Text.Replace("%", "").Trim();
 
                 var vatSetting = await _hotelSettingsService.GetSettingAsync("VAT");
                 var serviceChargeSetting = await _hotelSettingsService.GetSettingAsync("ServiceCharge");
                 var discountSetting = await _hotelSettingsService.GetSettingAsync("Discount");
                 var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+                var refundSetting = await _hotelSettingsService.GetSettingAsync("RefundPercent");
 
-                if (vatSetting == null || serviceChargeSetting == null || discountSetting == null || currencySetting == null)
+                if (vatSetting == null || serviceChargeSetting == null || discountSetting == null || currencySetting == null || refundSetting == null)
                 {
                     MessageBox.Show("One or more settings not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -101,11 +106,13 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
                 serviceChargeSetting.Value = serviceCharge;
                 discountSetting.Value = discount;
                 currencySetting.Value = currencySymbol!;
+                refundSetting.Value = refundPercent;
 
                 await _hotelSettingsService.UpdateSettingAsync(vatSetting);
                 await _hotelSettingsService.UpdateSettingAsync(serviceChargeSetting);
                 await _hotelSettingsService.UpdateSettingAsync(discountSetting);
                 await _hotelSettingsService.UpdateSettingAsync(currencySetting);
+                await _hotelSettingsService.UpdateSettingAsync(refundSetting);
 
                 MessageBox.Show("Financial settings updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 await LoadFiancialData();

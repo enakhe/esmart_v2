@@ -248,8 +248,12 @@
                                                             <TextBlock Text="📅" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 
-                                                        <Button  Width="30"  Height="30"  ToolTip="Cancel Reservation"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteReservation_Click">
+                                                        <Button  Width="30"  Height="30"  ToolTip="Cancel Reservation"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="CancelReservation_Click">
                                                             <TextBlock Text="❌" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        </Button>
+
+                                                        <Button  Width="30"  Height="30"  ToolTip="Cancel Reservation"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteReservation_Click">
+                                                            <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
                                                     </StackPanel>
                                                 </DataTemplate>
