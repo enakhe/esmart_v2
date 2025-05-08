@@ -9,9 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ESMART.Infrastructure.Repositories.RoomSetting
 {
-    public class RoomRepository(IDbContextFactory<ApplicationDbContext> contextFactory) : IRoomRepository
+    public class RoomRepository(IDbContextFactory<ApplicationDbContext> contextFactory, IReservationRepository reservationRepository) : IRoomRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
+        private readonly IReservationRepository _reservationRepository = reservationRepository;
 
         public async Task AddRoom(Room room)
         {
@@ -31,11 +32,30 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
         {
             try
             {
+                // Get today's reservations
+                var reservations = await _reservationRepository.GetTodayReservationsAsync();
+
                 using var context = _contextFactory.CreateDbContext();
+
+                // Fetch all rooms
                 var allRooms = await context.Rooms
-                                .Where(r => r.IsTrashed == false)
-                                .OrderBy(r => r.Number)
-                                .ToListAsync();
+                                    .Where(r => r.IsTrashed == false)
+                                    .OrderBy(r => r.Number)
+                                    .ToListAsync();
+
+                // Update room status to Reserved if the room is reserved for today
+                foreach (var reservation in reservations)
+                {
+                    var room = allRooms.FirstOrDefault(r => r.Number == reservation.Room);
+                    if (room != null && room.Status != RoomStatus.Reserved)
+                    {
+                        room.Status = RoomStatus.Reserved;
+                        context.Entry(room).State = EntityState.Modified;
+                    }
+                }
+
+                // Save changes to the database
+                await context.SaveChangesAsync();
                 return allRooms;
             }
             catch (Exception ex)
@@ -43,6 +63,7 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                 throw new Exception("An error occurred when retrieving rooms. " + ex.Message);
             }
         }
+
 
         public async Task<List<Room>> GetAvailableRooms()
         {

@@ -7,7 +7,7 @@
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Transfer Reservation" Height="550" Width="350" Icon="/Forms/FrontDesk/Reservation/logo.png">
+        Title="Transfer Reservation" Height="550" Width="350" Icon="/Forms/FrontDesk/Reservation/logo.png" Activated="Window_Activated">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="31*"/>

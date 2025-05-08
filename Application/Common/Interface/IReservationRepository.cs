@@ -17,6 +17,8 @@ namespace ESMART.Application.Common.Interface
         Task UpdateReservationAsync(Reservation reservation);
         Task DeleteReservationAsync(string id);
         Task<List<ReservationViewModel>> GetReservationsByGuestIdAsync(string guestId);
+        Task<List<ReservationViewModel>> GetTodayReservationsAsync();
+        Task<bool> CanExtendStayAsync(string reservationId, string roomId, DateTime newDepartureDate);
         Task<List<ReservationViewModel>> GetReservationsByRoomIdAsync(string roomId);
         Task<List<ReservationViewModel>> GetReservationsByApplicationUserIdAsync(string applicationUserId);
         Task<List<ReservationViewModel>> GetReservationsByDateRangeAsync(DateTime startDate, DateTime endDate);

@@ -98,7 +98,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 if (rooms != null)
                 {
-                    var avalableTransferRooms = rooms.Where(r => r.Rate >= _reservation.Room.Rate).ToList();
+                    var avalableTransferRooms = rooms.Where(r => r.Rate >= _reservation.Room.Rate && r.Number != _reservation.Room.Number).ToList();
 
                     cmbRoom.ItemsSource = avalableTransferRooms;
                     cmbRoom.DisplayMemberPath = "Number";
@@ -142,7 +142,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 dtpCheckIn.SelectedDate = _reservation.ArrivateDate;
                 dtpCheckOut.SelectedDate = _reservation.DepartureDate;
 
-                txtDays.Text = (dtpCheckOut.SelectedDate.Value - dtpCheckIn.SelectedDate.Value).Days.ToString();
+                txtDays.Text = (dtpCheckOut.SelectedDate.Value.Date - dtpCheckIn.SelectedDate.Value.Date).Days.ToString();
                 txtDiscount.Text = _reservation.Discount.ToString();
                 txtVAT.Text = _reservation.VAT.ToString();
                 txtServiceCharge.Text = _reservation.ServiceCharge.ToString();
@@ -188,7 +188,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 if (differencePerDay != 0)
                 {
                     string message = differencePerDay > 0
-                        ? $"The new room is ₦{differencePerDay:N2} higher per day. Total additional charge: ₦{totalDifference:N2}.\nDo you want to proceed?"
+                        ? $"The new room is ₦{differencePerDay:N2} higher per day. Total additional charge: ₦{Math.Abs(totalDifference):N2}.\nDo you want to proceed?"
                         : $"The new room is ₦{Math.Abs(differencePerDay):N2} cheaper per day. Total refund/discount: ₦{Math.Abs(totalDifference):N2}.\nDo you want to proceed?";
 
                     if (MessageBox.Show(message, "Confirm Room Transfer", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
@@ -196,9 +196,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                         return;
                     }
                 }
-
-                _reservation.Room.Status = RoomStatus.Vacant;
-                await _roomRepository.UpdateRoom(_reservation.Room);
 
                 _reservation.RoomId = selectedRoom.Id;
                 _reservation.Room = selectedRoom;
@@ -248,8 +245,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
         private async Task HandlePostBookingAsync(Domain.Entities.FrontDesk.Reservation reservation, decimal differencePerDay, decimal amount)
         {
-            reservation.Room.Status = RoomStatus.Vacant;
-            await _roomRepository.UpdateRoom(reservation.Room);
 
             if (differencePerDay != 0)
             {
@@ -454,6 +449,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     if (_reservation.Room.Rate == selectedRoom.Rate)
                     {
                         amountToDisplay = 0;
+                        cmbAccountNumber.IsEnabled = false;
+                        cmbPaymentMethod.IsEnabled = false;
                     }
                     else if (selectedRoom.Rate > _reservation.Room.Rate)
                     {

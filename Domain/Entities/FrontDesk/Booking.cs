@@ -23,7 +23,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         {
             get
             {
-                var duration = CheckOut - CheckIn;
+                var duration = CheckOut.Date - CheckIn.Date;
                 if (duration.TotalDays >= 1)
                 {
                     int days = (int)duration.TotalDays;

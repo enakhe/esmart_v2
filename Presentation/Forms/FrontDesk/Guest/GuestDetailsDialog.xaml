@@ -343,7 +343,7 @@
 
                             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                                 <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                                    <DataGrid x:Name="TransactionItemDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="500">
+                                    <DataGrid x:Name="TransactionItemDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="1300">
                                         <DataGrid.Columns>
                                             <DataGridTemplateColumn Header="Service Id" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>

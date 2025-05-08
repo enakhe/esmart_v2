@@ -1,4 +1,6 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
@@ -110,6 +112,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
         private void LoadDefaultSetting()
         {
+            dtpCheckIn.DisplayDateStart = DateTime.Today;
             dtpCheckIn.SelectedDate = _reservation.ArrivateDate;
             dtpCheckOut.SelectedDate = _reservation.DepartureDate;
 
@@ -157,12 +160,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
         private async Task<bool> CheckIfRoomCanBeBooked(string roomno, DateTime checkIn, DateTime checkOut)
         {
-            var reservations = await _reservationRepository.GetReservationsByRoomNoAndDateRangeAsync(roomno, checkIn, checkOut);
-            if (reservations.Count > 0)
-            {
-                return false;
-            }
-            return true;
+            return await _reservationRepository.CanExtendStayAsync(_reservation.Id, _reservation.RoomId, checkOut);
         }
 
         private bool ValidateInputs(out string guestId, out string roomId, out DateTime checkIn, out DateTime checkOut, out PaymentMethod paymentMethod, out decimal totalAmount, out decimal discount, out decimal vat, out decimal serviceCharge, out string accountNumber, out decimal amountPaid)
@@ -211,23 +209,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             var reservedGuest = await _guestRepository.GetGuestByIdAsync(reservation.GuestId);
             var hotel = await _hotelSettingsService.GetHotelInformation();
 
-            var transaction = new Domain.Entities.Transaction.Transaction
-            {
-                TransactionId = $"TR{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}",
-                GuestId = reservation.GuestId,
-                Date = DateTime.Now,
-                InvoiceNumber = reservation.ReservationId,
-                ApplicationUserId = AuthSession.CurrentUser?.Id,
-            };
-
-            await _transactionRepository.AddTransactionAsync(transaction);
-
-            if (reservedRoom != null)
-            {
-                reservedRoom.Status = RoomStatus.Reserved;
-                await _roomRepository.UpdateRoom(reservedRoom);
-            }
-
             if (hotel != null)
             {
                 var verificationCode = new VerificationCode
@@ -253,10 +234,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                         {
                             reservation.TransactionStatus = TransactionStatus.Pending;
                         }
-                        else
-                        {
-                            reservation.TransactionStatus = TransactionStatus.Unpaid;
-                        }
+
+                        await _reservationRepository.UpdateReservationAsync(reservation);
                     }
                 }
                 else
@@ -278,7 +257,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 BankAccount = reservation.AccountNumber,
                 DateAdded = DateTime.Now,
                 ApplicationUserId = AuthSession.CurrentUser?.Id,
-                TransactionId = transaction.Id,
+                TransactionId = reservation.Guest.Transactions.FirstOrDefault(t => t.InvoiceNumber == reservation.ReservationId).Id,
                 Description = $"Reservation extended for {reservedGuest.FullName} in {reservedRoom?.Number} from {reservation.ArrivateDate.ToShortDateString()} to {reservation.DepartureDate.ToShortDateString()}",
             };
 
@@ -400,27 +379,43 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
         private async void dtpCheckOut_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
+            if (dtpCheckOut.SelectedDate != null && dtpCheckIn.SelectedDate != null)
             {
-                var days = (dtpCheckOut.SelectedDate.Value - dtpCheckIn.SelectedDate.Value).Days;
-
-                if (days > 0)
+                if (dtpCheckOut.SelectedDate <= dtpCheckIn.SelectedDate)
                 {
-                    txtDays.Text = days.ToString();
+                    dtpCheckOut.SelectedDate = dtpCheckIn.SelectedDate.Value.AddDays(1);
+                }
 
-                    bool isNull = Helper.AreAnyNullOrEmpty(txtRoomRate.Text);
+                var days = (dtpCheckOut.SelectedDate.Value.Date - dtpCheckIn.SelectedDate.Value.Date).Days;
+                txtDays.Text = days.ToString();
 
-                    if (!isNull)
+                bool isNull = Helper.AreAnyNullOrEmpty(txtRoomRate.Text);
+
+                if (!isNull)
+                {
+                    var totalPrice = Helper.GetPriceByRateAndTime(
+                        dtpCheckIn.SelectedDate.Value,
+                        dtpCheckOut.SelectedDate.Value,
+                        decimal.Parse(txtRoomRate.Text)
+                    );
+
+                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+
+                    if (currencySetting != null)
                     {
-                        var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
-                        var totalAmount = Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)) - _reservation.AmountPaid;
-
-                        var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                        if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + totalAmount.ToString("N2");
-                        else
-                            txtTotalAmount.Text = "₦" + " " + totalAmount.ToString("N2");
+                        txtTotalAmount.Text = currencySetting.Value + " " +
+                            Helper.CalculateTotal(totalPrice,
+                                decimal.Parse(txtDiscount.Text),
+                                decimal.Parse(txtVAT.Text),
+                                decimal.Parse(txtServiceCharge.Text)).ToString("N2");
+                    }
+                    else
+                    {
+                        txtTotalAmount.Text = "₦" + " " +
+                            Helper.CalculateTotal(totalPrice,
+                                decimal.Parse(txtDiscount.Text),
+                                decimal.Parse(txtVAT.Text),
+                                decimal.Parse(txtServiceCharge.Text)).ToString("N2");
                     }
                 }
             }
@@ -428,28 +423,30 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
         private async void dtpCheckIn_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
+            if (dtpCheckIn.SelectedDate != null)
             {
-                var days = (dtpCheckOut.SelectedDate.Value - dtpCheckIn.SelectedDate.Value).Days;
+                dtpCheckOut.DisplayDateStart = dtpCheckIn.SelectedDate.Value.AddDays(1);
 
-                if (days > 0)
+                if (dtpCheckOut.SelectedDate == null || dtpCheckOut.SelectedDate <= dtpCheckIn.SelectedDate)
                 {
-                    txtDays.Text = days.ToString();
+                    dtpCheckOut.SelectedDate = dtpCheckIn.SelectedDate.Value.AddDays(1);
+                }
 
-                    bool isNull = Helper.AreAnyNullOrEmpty(txtRoomRate.Text);
+                var days = (dtpCheckOut.SelectedDate.Value.Date - dtpCheckIn.SelectedDate.Value.Date).Days;
+                txtDays.Text = days.ToString();
 
-                    if (!isNull)
-                    {
-                        var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
-                        var totalAmount = Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)) - _reservation.AmountPaid;
+                bool isNull = Helper.AreAnyNullOrEmpty(txtRoomRate.Text);
 
-                        var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+                if (!isNull)
+                {
+                    var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
 
-                        if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + totalAmount.ToString("N2");
-                        else
-                            txtTotalAmount.Text = "₦" + " " + totalAmount.ToString("N2");
-                    }
+                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+
+                    if (currencySetting != null)
+                        txtTotalAmount.Text = currencySetting.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
+                    else
+                        txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
                 }
             }
         }

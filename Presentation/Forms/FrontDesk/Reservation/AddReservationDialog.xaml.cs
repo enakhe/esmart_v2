@@ -295,12 +295,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
             await _transactionRepository.AddTransactionAsync(transaction);
 
-            if (reservedRoom != null)
-            {
-                reservedRoom.Status = RoomStatus.Reserved;
-                await _roomRepository.UpdateRoom(reservedRoom);
-            }
-
             if (hotel != null)
             {
                 var verificationCode = new VerificationCode
@@ -490,58 +484,79 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
         private async void dtpDepartureDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dtpArrivalDate.SelectedDate != null && dtpDepartureDate.SelectedDate != null)
+            if (dtpDepartureDate.SelectedDate != null && dtpArrivalDate.SelectedDate != null)
             {
-                var days = (dtpDepartureDate.SelectedDate.Value - dtpArrivalDate.SelectedDate.Value).Days;
-
-                if (days > 0)
+                if (dtpDepartureDate.SelectedDate <= dtpArrivalDate.SelectedDate)
                 {
-                    txtDays.Text = days.ToString();
+                    dtpDepartureDate.SelectedDate = dtpArrivalDate.SelectedDate.Value.AddDays(1);
+                }
 
-                    bool isNull = Helper.AreAnyNullOrEmpty(txtRoomRate.Text);
+                var days = (dtpDepartureDate.SelectedDate.Value.Date - dtpArrivalDate.SelectedDate.Value.Date).Days;
+                txtDays.Text = days.ToString();
 
-                    if (!isNull)
+                bool isNull = Helper.AreAnyNullOrEmpty(txtRoomRate.Text);
+
+                if (!isNull)
+                {
+                    var totalPrice = Helper.GetPriceByRateAndTime(
+                        dtpArrivalDate.SelectedDate.Value,
+                        dtpDepartureDate.SelectedDate.Value,
+                        decimal.Parse(txtRoomRate.Text)
+                    );
+
+                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+
+                    if (currencySetting != null)
                     {
-                        var totalPrice = Helper.GetPriceByRateAndTime(dtpArrivalDate.SelectedDate.Value, dtpDepartureDate.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
-
-                        var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                        if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
-                        else
-                            txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
+                        txtTotalAmount.Text = currencySetting.Value + " " +
+                            Helper.CalculateTotal(totalPrice,
+                                decimal.Parse(txtDiscount.Text),
+                                decimal.Parse(txtVAT.Text),
+                                decimal.Parse(txtServiceCharge.Text)).ToString("N2");
+                    }
+                    else
+                    {
+                        txtTotalAmount.Text = "₦" + " " +
+                            Helper.CalculateTotal(totalPrice,
+                                decimal.Parse(txtDiscount.Text),
+                                decimal.Parse(txtVAT.Text),
+                                decimal.Parse(txtServiceCharge.Text)).ToString("N2");
                     }
                 }
             }
         }
+
 
         private async void dtpArrivalDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dtpArrivalDate.SelectedDate != null && dtpDepartureDate.SelectedDate != null)
+            if (dtpArrivalDate.SelectedDate != null)
             {
-                var days = (dtpDepartureDate.SelectedDate.Value - dtpArrivalDate.SelectedDate.Value).Days;
                 dtpDepartureDate.DisplayDateStart = dtpArrivalDate.SelectedDate.Value.AddDays(1);
 
-                if (days > 0)
+                if (dtpDepartureDate.SelectedDate == null || dtpDepartureDate.SelectedDate <= dtpArrivalDate.SelectedDate)
                 {
-                    txtDays.Text = days.ToString();
+                    dtpDepartureDate.SelectedDate = dtpArrivalDate.SelectedDate.Value.AddDays(1);
+                }
 
-                    bool isNull = Helper.AreAnyNullOrEmpty(txtRoomRate.Text);
+                var days = (dtpDepartureDate.SelectedDate.Value.Date - dtpArrivalDate.SelectedDate.Value.Date).Days;
+                txtDays.Text = days.ToString();
 
-                    if (!isNull)
-                    {
-                        var totalPrice = Helper.GetPriceByRateAndTime(dtpArrivalDate.SelectedDate.Value, dtpDepartureDate.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
+                bool isNull = Helper.AreAnyNullOrEmpty(txtRoomRate.Text);
 
-                        var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+                if (!isNull)
+                {
+                    var totalPrice = Helper.GetPriceByRateAndTime(dtpArrivalDate.SelectedDate.Value, dtpDepartureDate.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
 
-                        if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
-                        else
-                            txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
-                    }
+                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+
+                    if (currencySetting != null)
+                        txtTotalAmount.Text = currencySetting.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
+                    else
+                        txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)).ToString("N2");
                 }
             }
         }
+
 
         private void VatTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {

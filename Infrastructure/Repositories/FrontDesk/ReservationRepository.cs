@@ -50,6 +50,44 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
+        // Get reservation where arrivaldate is today
+        public async Task<List<ReservationViewModel>> GetTodayReservationsAsync()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                return await context.Reservations
+                    .Include(r => r.Guest)
+                    .Include(r => r.Room)
+                    .Where(r => r.ArrivateDate.Date == DateTime.Today && r.Status != ReservationStatus.Cancelled)
+                    .Select(r => new ReservationViewModel
+                    {
+                        Id = r.Id,
+                        Guest = r.Guest.FullName,
+                        PhoneNumber = r.Guest.PhoneNumber,
+                        Room = r.Room.Number,
+                        ArrivalDate = r.ArrivateDate,
+                        DepartureDate = r.DepartureDate,
+                        PaymentMethod = r.PaymentMethod.ToString(),
+                        Duration = r.Duration,
+                        Status = r.Status.ToString(),
+                        PaymentStatus = r.TransactionStatus.ToString(),
+                        TotalAmount = r.TotalAmount,
+                        AmountPaid = r.AmountPaid,
+                        Receivables = r.TotalAmount - r.AmountPaid,
+                        CreatedBy = r.ApplicationUser.UserName,
+                        DateCreated = r.DateAdded,
+                        DateModified = r.DateModified
+                    })
+                    .OrderBy(r => r.DateCreated)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving today's reservations. " + ex.Message);
+            }
+        }
+
         // Get All Reservations
         public async Task<List<ReservationViewModel>> GetAllReservationsAsync()
         {
@@ -303,6 +341,31 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             catch (Exception ex)
             {
                 throw new Exception("An error occurred when retrieving reservations by room number and date range. " + ex.Message);
+            }
+        }
+
+        public async Task<bool> CanExtendStayAsync(string reservationId, string roomId, DateTime newDepartureDate)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+
+                var reservation = await context.Reservations.FindAsync(reservationId);
+                if (reservation == null) throw new Exception("Reservation not found.");
+
+                var overlappingReservation = await context.Reservations
+                    .Where(r => r.RoomId == roomId
+                        && r.Id != reservationId
+                        && r.ArrivateDate < newDepartureDate
+                        && r.DepartureDate > reservation.DepartureDate
+                        && r.Status != ReservationStatus.Cancelled)
+                    .AnyAsync();
+
+                return !overlappingReservation;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when checking if reservation can be extended. " + ex.Message);
             }
         }
 
