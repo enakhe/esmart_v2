@@ -49,6 +49,8 @@ namespace ESMART.Domain.Entities.FrontDesk
         public decimal VAT { get; set; }
         public decimal ServiceCharge { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal Receivables { get; set; }
+        public bool isOverStay { get; set; } = false;
         public PaymentMethod PaymentMethod { get; set; }
 
         public string GuestId { get; set; }

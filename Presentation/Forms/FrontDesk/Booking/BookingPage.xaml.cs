@@ -88,8 +88,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         {
                             var verificationCode = new VerificationCode()
                             {
-                                Code = booking.BookingId,
-                                ServiceId = booking.Id,
+                                Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                                ServiceId = booking.BookingId,
                                 ApplicationUserId = AuthSession.CurrentUser?.Id
                             };
 
@@ -97,15 +97,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                             if (hotel != null)
                             {
-                                var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
+                                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.Receivables);
 
                                 if (response.IsSuccessStatusCode)
                                 {
                                     MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                    VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
+                                    VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.Receivables);
                                     if (verifyPaymentWindow.ShowDialog() == true)
                                     {
+                                        booking.Status = Domain.Enum.BookingStatus.Completed;
+                                        booking.Receivables = 0;
+                                        await _bookingRepository.UpdateBooking(booking);
                                         IssueCardDialog issueCardDialog = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
                                         if (issueCardDialog.ShowDialog() == true)
                                         {
@@ -163,8 +166,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             {
                                 var verificationCode = new VerificationCode()
                                 {
-                                    Code = booking.BookingId,
-                                    ServiceId = booking.Id,
+                                    Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                                    ServiceId = booking.BookingId,
                                     ApplicationUserId = AuthSession.CurrentUser?.Id
                                 };
 
@@ -172,15 +175,19 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                                 if (hotel != null)
                                 {
-                                    var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
+                                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.Receivables);
 
                                     if (response.IsSuccessStatusCode)
                                     {
                                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
+                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.Receivables);
                                         if (verifyPaymentWindow.ShowDialog() == true)
                                         {
+                                            booking.Status = Domain.Enum.BookingStatus.Completed;
+                                            booking.Receivables = 0;
+                                            await _bookingRepository.UpdateBooking(booking);
+
                                             ExtendStayDialog extendStayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
                                             if (extendStayDialog.ShowDialog() == true)
                                             {
@@ -247,8 +254,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             {
                                 var verificationCode = new VerificationCode()
                                 {
-                                    Code = booking.BookingId,
-                                    ServiceId = booking.Id,
+                                    Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                                    ServiceId = booking.BookingId,
                                     ApplicationUserId = AuthSession.CurrentUser?.Id
                                 };
 
@@ -256,14 +263,17 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                                 if (hotel != null)
                                 {
-                                    var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
+                                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.TotalAmount);
                                     if (response.IsSuccessStatusCode)
                                     {
                                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
+                                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.Receivables);
                                         if (verifyPaymentWindow.ShowDialog() == true)
                                         {
+                                            booking.Status = Domain.Enum.BookingStatus.Completed;
+                                            await _bookingRepository.UpdateBooking(booking);
+
                                             TransferGuestDialog transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository);
                                             if (transferGuestDialog.ShowDialog() == true)
                                             {
@@ -403,6 +413,14 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         {
                             LoaderOverlay.Visibility = Visibility.Visible;
                             await _bookingRepository.DeleteBooking(selectedBooking.Id);
+
+                            var room = await _roomRepository.GetRoomByNumber(selectedBooking.Room);
+                            if (room != null)
+                            {
+                                room.Status = Domain.Entities.RoomSettings.RoomStatus.Vacant;
+                                await _roomRepository.UpdateRoom(room);
+                            }
+
                             await LoadBooking();
                         }
                     }

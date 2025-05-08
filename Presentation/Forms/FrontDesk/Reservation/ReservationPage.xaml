@@ -244,7 +244,7 @@
                                                             <TextBlock Text="✈️" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 
-                                                        <Button Width="30" Height="30" ToolTip="Book Reservation" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                        <Button Width="30" Height="30" ToolTip="Book Reservation" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="BookReservation_Click">
                                                             <TextBlock Text="📅" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                         </Button>
 

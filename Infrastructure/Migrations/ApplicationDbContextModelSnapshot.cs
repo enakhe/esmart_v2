@@ -289,6 +289,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Receivables")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("RoomId")
                         .HasColumnType("nvarchar(450)");
 
@@ -306,6 +309,9 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<decimal>("VAT")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("isOverStay")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

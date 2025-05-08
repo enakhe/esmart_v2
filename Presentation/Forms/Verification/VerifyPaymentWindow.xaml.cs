@@ -23,17 +23,20 @@ namespace ESMART.Presentation.Forms.Verification
         private readonly IBookingRepository _bookingRepository;
         private readonly ITransactionRepository _transactionRepository;
         private string _serviceId;
+        private decimal _amount;
         private DispatcherTimer _timer;
         private TimeSpan _timeRemaining;
-        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, ITransactionRepository transactionRepository, string serviceId)
+        public VerifyPaymentWindow(IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, ITransactionRepository transactionRepository, string serviceId, decimal amount)
         {
             _verificationCodeService = verificationCodeService;
             _hotelSettingsService = hotelSettingsService;
             _bookingRepository = bookingRepository;
             _transactionRepository = transactionRepository;
             _serviceId = serviceId;
+            _amount = amount;
             InitializeComponent();
             StartCountdown(TimeSpan.FromMinutes(20));
+            txtAmount.Text = _amount.ToString("N2");
         }
 
         private void txtCode_TextChanged(object sender, TextChangedEventArgs e)
@@ -110,10 +113,11 @@ namespace ESMART.Presentation.Forms.Verification
                                 MessageBox.Show("Successfully verified OTP, kindly issue a card for the guest", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                                 await _verificationCodeService.DeleteAsync(code.Id);
 
-                                var transaction = await _transactionRepository.GetUnpaidTransactionItemsByServiceIdAsync(_serviceId);
+                                var transaction = await _transactionRepository.GetUnpaidTransactionItemsByServiceIdAsync(_serviceId, _amount);
                                 if (transaction != null)
                                 {
                                     transaction.Status = TransactionStatus.Paid;
+                                    await _transactionRepository.UpdateTransactionItemAsync(transaction);
                                 }
 
                                 this.DialogResult = true;
@@ -165,7 +169,7 @@ namespace ESMART.Presentation.Forms.Verification
 
                     var booking = await _bookingRepository.GetBookingById(_serviceId);
 
-                    var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, booking.Guest, "Booking", verificationCode.Code, booking.TotalAmount);
+                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, booking.Guest.FullName, "Booking", verificationCode.Code, booking.TotalAmount);
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("New Verification code has been sent", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

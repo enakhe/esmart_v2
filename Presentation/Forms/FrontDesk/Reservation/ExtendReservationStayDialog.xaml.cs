@@ -221,10 +221,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 await _verificationCodeService.AddCode(verificationCode);
 
-                var response = await SenderHelper.SendOtp(hotel, reservation.AccountNumber, reservedGuest, "Reservation", verificationCode.Code, amount);
+                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, reservation.AccountNumber, reservedGuest.FullName, "Reservation", verificationCode.Code, amount);
                 if (response.IsSuccessStatusCode)
                 {
-                    var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId);
+                    var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId, amount);
                     if (verifyPaymentWindow.ShowDialog() == true)
                     {
                         if (reservation.AmountPaid == reservation.TotalAmount)
@@ -238,7 +238,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     }
                     else
                     {
-                        reservation.TransactionStatus = TransactionStatus.Pending;
+                        await _verificationCodeService.DeleteAsync(verificationCode.Id);
+                        reservation.TransactionStatus = TransactionStatus.Unpaid;
                     }
                     await _reservationRepository.UpdateReservationAsync(reservation);
                 }

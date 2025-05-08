@@ -58,6 +58,9 @@
     <Compile Update="Forms\FrontDesk\Reservation\AddReservationDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Reservation\BookReservationDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Reservation\ExtendReservationStayDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

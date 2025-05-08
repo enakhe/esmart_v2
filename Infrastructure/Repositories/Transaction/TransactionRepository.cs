@@ -226,12 +226,15 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             }
         }
 
-        public async Task<TransactionItem> GetUnpaidTransactionItemsByServiceIdAsync(string serviceId)
+        public async Task<TransactionItem> GetUnpaidTransactionItemsByServiceIdAsync(string serviceId, decimal amount)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var transactionItems = await context.TransactionItems.FirstOrDefaultAsync(ti => ti.ServiceId == serviceId && ti.Status == TransactionStatus.Unpaid);
+                var transactionItems = await context.TransactionItems
+                    .FirstOrDefaultAsync(ti => ti.ServiceId == serviceId && 
+                    ti.Amount == amount &&
+                    ti.Status == TransactionStatus.Unpaid);
                 return transactionItems;
             }
             catch (Exception ex)

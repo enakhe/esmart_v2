@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250507025903_UpdateapplicationUser")]
-    partial class UpdateapplicationUser
+    [Migration("20250508175619_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -203,6 +203,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -223,6 +226,8 @@ namespace ESMART.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("RoleId");
+
                     b.ToTable("User", "ESMART");
                 });
 
@@ -237,29 +242,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("ApplicationRoleId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("DateAssigned")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("isActive")
-                        .HasColumnType("bit");
-
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("ApplicationRoleId");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("RoleId");
 
@@ -429,6 +414,79 @@ namespace ESMART.Infrastructure.Migrations
                         .HasFilter("[GuestId] IS NOT NULL");
 
                     b.ToTable("GuestIdentities", "ESMART");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Reservation", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccountNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AmountPaid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("ArrivateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DepartureDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("GuestId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsTrashed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReservationId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoomId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("ServiceCharge")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TransactionStatus")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("VAT")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("GuestId");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Reservations", "ESMART");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Area", b =>
@@ -720,6 +778,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<DateTime>("IssuedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ServiceId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
@@ -829,15 +890,20 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationUser", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationUserRole", b =>
                 {
-                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationRole", "ApplicationRole")
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationRole", null)
                         .WithMany("JoinEntities")
                         .HasForeignKey("ApplicationRoleId");
-
-                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("ESMART.Domain.Entities.Data.ApplicationRole", null)
                         .WithMany()
@@ -850,10 +916,6 @@ namespace ESMART.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ApplicationRole");
-
-                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Booking", b =>
@@ -893,6 +955,27 @@ namespace ESMART.Infrastructure.Migrations
                         .HasForeignKey("ESMART.Domain.Entities.FrontDesk.GuestIdentity", "GuestId");
 
                     b.Navigation("Guest");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Reservation", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "ApplicationUser")
+                        .WithMany("Reservation")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Guest", "Guest")
+                        .WithMany("Reservation")
+                        .HasForeignKey("GuestId");
+
+                    b.HasOne("ESMART.Domain.Entities.RoomSettings.Room", "Room")
+                        .WithMany("Reservation")
+                        .HasForeignKey("RoomId");
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Guest");
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Floor", b =>
@@ -979,13 +1062,11 @@ namespace ESMART.Infrastructure.Migrations
                         .WithMany("VerificationCodes")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Booking", "Booking")
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Booking", null)
                         .WithMany("Codes")
                         .HasForeignKey("BookingId");
 
                     b.Navigation("ApplicationUser");
-
-                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1040,6 +1121,8 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Navigation("Guests");
 
+                    b.Navigation("Reservation");
+
                     b.Navigation("Rooms");
 
                     b.Navigation("TransactionItems");
@@ -1061,6 +1144,8 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("Bookings");
 
                     b.Navigation("GuestIdentity");
+
+                    b.Navigation("Reservation");
 
                     b.Navigation("Transactions");
                 });
@@ -1085,6 +1170,8 @@ namespace ESMART.Infrastructure.Migrations
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Room", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Reservation");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.RoomType", b =>

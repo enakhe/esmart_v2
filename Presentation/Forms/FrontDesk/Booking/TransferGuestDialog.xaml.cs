@@ -259,11 +259,21 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                     await _verificationCodeService.AddCode(verificationCode);
 
-                    var response = await SenderHelper.SendOtp(hotel, booking.AccountNumber, bookedGuest, "Booking", verificationCode.Code, amount);
+                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, booking.AccountNumber, bookedGuest.FullName, "Booking", verificationCode.Code, amount);
                     if (response.IsSuccessStatusCode)
                     {
-                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId);
-                        verifyPaymentWindow.ShowDialog();
+                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, amount);
+                        if (verifyPaymentWindow.ShowDialog() == true)
+                        {
+                            booking.Status = BookingStatus.Completed;
+                        }
+                        else
+                        {
+                            booking.Receivables += amount;
+                            await _verificationCodeService.DeleteAsync(verificationCode.Id);
+                        }
+
+                        await _bookingRepository.UpdateBooking(booking);
                     }
                     else
                     {

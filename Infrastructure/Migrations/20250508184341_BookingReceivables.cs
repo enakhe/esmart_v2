@@ -5,39 +5,40 @@
 namespace ESMART.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class ReservationMigrationUpdate2 : Migration
+    public partial class BookingReceivables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "ServiceId",
-                schema: "ESMART",
-                table: "VerificationCodes",
-                type: "nvarchar(max)",
-                nullable: true);
-
             migrationBuilder.AddColumn<decimal>(
-                name: "AmountPaid",
+                name: "Receivables",
                 schema: "ESMART",
-                table: "Reservations",
+                table: "Bookings",
                 type: "decimal(18,2)",
                 nullable: false,
                 defaultValue: 0m);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "isOverStay",
+                schema: "ESMART",
+                table: "Bookings",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ServiceId",
+                name: "Receivables",
                 schema: "ESMART",
-                table: "VerificationCodes");
+                table: "Bookings");
 
             migrationBuilder.DropColumn(
-                name: "AmountPaid",
+                name: "isOverStay",
                 schema: "ESMART",
-                table: "Reservations");
+                table: "Bookings");
         }
     }
 }

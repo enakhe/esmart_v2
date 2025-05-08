@@ -45,6 +45,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                     Duration = b.Duration.ToString(),
                                     Status = b.Status.ToString(),
                                     TotalAmount = b.TotalAmount.ToString("N2"),
+                                    Receivables = b.Receivables.ToString("N2"),
                                     CreatedBy = b.ApplicationUser.FullName,
                                     DateCreated = b.DateCreated,
                                     DateModified = b.DateModified,

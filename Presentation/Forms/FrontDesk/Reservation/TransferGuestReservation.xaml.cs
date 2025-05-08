@@ -188,14 +188,17 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 if (differencePerDay != 0)
                 {
                     string message = differencePerDay > 0
-                        ? $"The new room is ₦{differencePerDay:N2} higher per day. Total additional charge: ₦{Math.Abs(totalDifference):N2}.\nDo you want to proceed?"
-                        : $"The new room is ₦{Math.Abs(differencePerDay):N2} cheaper per day. Total refund/discount: ₦{Math.Abs(totalDifference):N2}.\nDo you want to proceed?";
+                        ? $"The new room is ₦{differencePerDay:N2} higher per day.\nDo you want to proceed?"
+                        : $"The new room is ₦{Math.Abs(differencePerDay):N2} cheaper per day.\nDo you want to proceed?";
 
                     if (MessageBox.Show(message, "Confirm Room Transfer", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                     {
                         return;
                     }
                 }
+
+                _reservation.Room.Status = RoomStatus.Vacant;
+                await _roomRepository.UpdateRoom(_reservation.Room);
 
                 _reservation.RoomId = selectedRoom.Id;
                 _reservation.Room = selectedRoom;
@@ -271,24 +274,25 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                     await _verificationCodeService.AddCode(verificationCode);
 
-                    var response = await SenderHelper.SendOtp(hotel, reservation.AccountNumber, reservedGuest, "Reservation", verificationCode.Code, amount);
+                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, reservation.AccountNumber, reservedGuest.FullName, "Reservation", verificationCode.Code, amount);
                     if (response.IsSuccessStatusCode)
                     {
-                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId);
+                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId, amount);
                         if (verifyPaymentWindow.ShowDialog() == true)
                         {
-                            if (reservation.AmountPaid == reservation.TotalAmount)
+                            if (amount == reservation.TotalAmount)
                             {
                                 reservation.TransactionStatus = TransactionStatus.Paid;
                             }
-                            else if (reservation.TotalAmount > reservation.AmountPaid)
+                            else if (amount > reservation.AmountPaid)
                             {
                                 reservation.TransactionStatus = TransactionStatus.Pending;
                             }
                         }
                         else
                         {
-                            reservation.TransactionStatus = TransactionStatus.Pending;
+                            await _verificationCodeService.DeleteAsync(verificationCode.Id);
+                            reservation.TransactionStatus = TransactionStatus.Unpaid;
                         }
 
                         await _reservationRepository.UpdateReservationAsync(reservation);
@@ -518,7 +522,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         {
             if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
             {
-                var days = (dtpCheckOut.SelectedDate.Value - dtpCheckIn.SelectedDate.Value).Days;
+                var days = (dtpCheckOut.SelectedDate.Value.Date - dtpCheckIn.SelectedDate.Value.Date).Days;
 
                 if (days > 0)
                 {
@@ -565,7 +569,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         {
             if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
             {
-                var days = (dtpCheckOut.SelectedDate.Value - dtpCheckIn.SelectedDate.Value).Days;
+                var days = (dtpCheckOut.SelectedDate.Value.Date - dtpCheckIn.SelectedDate.Value.Date).Days;
 
                 if (days > 0)
                 {

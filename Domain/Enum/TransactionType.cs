@@ -11,8 +11,8 @@
     public enum PaymentMethod
     {
         Cash,
-        DebitCard,
-        BankTransfer,
+        POS,
+        Transfer,
         Other
     }
 

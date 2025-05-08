@@ -16,7 +16,7 @@ namespace ESMART.Application.Common.Interface
         Task AddTransactionItemAsync(TransactionItem transactionItem);
         Task UpdateTransactionItemAsync(TransactionItem transactionItem);
         Task DeleteTransactionItemAsync(string id);
-        Task<TransactionItem> GetUnpaidTransactionItemsByServiceIdAsync(string serviceId);
+        Task<TransactionItem> GetUnpaidTransactionItemsByServiceIdAsync(string serviceId, decimal amount);
         Task<Transaction> GetByInvoiceNumberAsync(string invoiceNumber);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByTransactionIdAsync(string transactionId);
         Task<List<TransactionItemViewModel>> GetAllTransactionItemsAsync();
