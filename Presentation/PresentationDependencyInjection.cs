@@ -10,6 +10,7 @@ using ESMART.Presentation.Forms.RoomSetting.Floor;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Forms.RoomSetting.RoomType;
 using ESMART.Presentation.Forms.Setting;
+using ESMART.Presentation.Forms.Setting.Licence;
 using ESMART.Presentation.Forms.Setting.OperationalSetting;
 using ESMART.Presentation.Forms.Setting.SystemSetup;
 using ESMART.Presentation.Forms.UserSetting;
@@ -25,6 +26,7 @@ namespace ESMART.Presentation
         public static IServiceCollection AddPresentationServices(this IServiceCollection services)
         {
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<SplashScreen>();
             services.AddPages();
             return services;
         }
@@ -62,6 +64,8 @@ namespace ESMART.Presentation
 
             services.AddScoped<ReservationPage>();
             services.AddScoped<AddReservationDialog>();
+
+            services.AddScoped<LicenceDialog>();
 
             return services;
         }

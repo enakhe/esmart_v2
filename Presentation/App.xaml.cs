@@ -47,8 +47,8 @@ namespace ESMART.Presentation
             await hotelSettingService.SeedHotelSettingAsync();
             await hotelSettingService.SeedHotelInformation();
 
-            MainWindow mainWindow = serviceProvider.GetRequiredService<MainWindow>();
-            mainWindow.Show();
+            Presentation.Forms.SplashScreen splashScreen = serviceProvider.GetRequiredService<Presentation.Forms.SplashScreen>();
+            splashScreen.Show();
         }
     }
 

@@ -115,6 +115,9 @@
     <Compile Update="Forms\Setting\FinancialSetting\GeneralPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Setting\Licence\LicenceDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Setting\OperationalSetting\OperationSettingPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -122,6 +125,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Setting\SystemSetup\HotelInformationPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\SplashScreen.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\UserSetting\Roles\AddRoleDialog.xaml.cs">

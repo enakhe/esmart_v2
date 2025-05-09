@@ -30,6 +30,7 @@ namespace ESMART.Infrastructure
             services.AddScoped<TransactionRepository>();
             services.AddScoped<ApplicationUserRoleService>();
             services.AddScoped<ReservationRepository>();
+            services.AddScoped<LicenceRepository>();
             return services;
         }
 
@@ -45,6 +46,7 @@ namespace ESMART.Infrastructure
             services.AddTransient<ITransactionRepository, TransactionRepository>();
             services.AddTransient<IApplicationUserRoleRepository, ApplicationUserRoleService>();
             services.AddTransient<IReservationRepository, ReservationRepository>();
+            services.AddTransient<ILicenceRepository, LicenceRepository>();
             return services;
         }
     }

@@ -32,6 +32,7 @@ namespace ESMART.Infrastructure.Data
         public DbSet<HotelSetting> HotelSettings { get; set; }
 
         public DbSet<VerificationCode> VerificationCodes { get; set; }
+        public DbSet<LicenceInformation> LicenceInformation { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
