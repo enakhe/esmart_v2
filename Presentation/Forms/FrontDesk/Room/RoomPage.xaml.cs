@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -24,9 +25,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
     public partial class RoomPage : Page
     {
         private readonly IRoomRepository _roomRepository;
-        public RoomPage(IRoomRepository roomRepository)
+        private readonly ICardRepository _cardRepository;
+        public RoomPage(IRoomRepository roomRepository, ICardRepository cardRepository)
         {
             _roomRepository = roomRepository;
+            _cardRepository = cardRepository;
             InitializeComponent();
         }
 
@@ -114,6 +117,29 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
             finally
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void ShowRoom_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedRoom = (Domain.Entities.RoomSettings.Room)RoomDataGrid.SelectedItem;
+                if (selectedRoom.Id != null)
+                {
+                    var room = await _roomRepository.GetRoomById(selectedRoom.Id);
+
+                    ShowRoomCardDialog showRoomCardDialog = new ShowRoomCardDialog(_cardRepository, room);
+
+                    if (showRoomCardDialog.ShowDialog() == true)
+                    {
+                        await LoadRoom();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
 

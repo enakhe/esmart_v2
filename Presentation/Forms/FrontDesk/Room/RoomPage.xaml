@@ -168,7 +168,7 @@
                                                             <materialDesign:PackIcon Kind="EyeOutline" Width="20" Height="20" Foreground="Black" />
                                                         </Button>
 
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Show Room" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Show Room" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="ShowRoom_Click">
                                                             <materialDesign:PackIcon Kind="CreditCard" Width="20" Height="20" Foreground="Black" />
                                                         </Button>
 

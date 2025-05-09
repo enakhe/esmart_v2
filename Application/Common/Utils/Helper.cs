@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using ESMART.Domain.Enum;
+using System.Text;
 
 namespace ESMART.Application.Common.Utils
 {
@@ -45,6 +46,18 @@ namespace ESMART.Application.Common.Utils
                 return string.Empty;
 
             return Encoding.ASCII.GetString(byteArray).TrimEnd('\0');
+        }
+
+        public static MakeCardType GetCardType(int cardTypeValue)
+        {
+            if (System.Enum.IsDefined(typeof(MakeCardType), cardTypeValue))
+            {
+                return (MakeCardType)cardTypeValue;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(cardTypeValue), "Invalid card type value.");
+            }
         }
 
     }

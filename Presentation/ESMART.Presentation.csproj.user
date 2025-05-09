@@ -88,6 +88,9 @@
     <Compile Update="Forms\FrontDesk\Room\RoomPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Room\ShowRoomCardDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Home\IndexPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

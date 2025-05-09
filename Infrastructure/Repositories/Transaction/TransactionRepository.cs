@@ -306,6 +306,41 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             }
         }
 
+        public async Task<List<TransactionItemViewModel>> GetTransactionItemByRoomIdAsync(string roomId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItems = await context.TransactionItems
+                    .Include(ti => ti.Transaction)
+                    .Include(ti => ti.Transaction.Booking)
+                    .Include(ti => ti.Transaction.Guest)
+                    .Include(ti => ti.Transaction.Booking.Room)
+                    .Where(ti => ti.Transaction.Booking.RoomId == roomId)
+                    .Select(ti => new TransactionItemViewModel
+                    {
+                        ServiceId = ti.ServiceId,
+                        Amount = ti.Amount.ToString("N2"),
+                        TaxAmount = ti.TaxAmount,
+                        ServiceCharge = ti.ServiceCharge,
+                        Discount = ti.Discount,
+                        Category = ti.Category.ToString(),
+                        Type = ti.Type.ToString(),
+                        Status = ti.Status,
+                        BankAccount = ti.BankAccount,
+                        DateAdded = ti.DateAdded,
+                        IssuedBy = ti.ApplicationUser.FullName,
+                    })
+                    .OrderByDescending(ti => ti.DateAdded)
+                    .ToListAsync();
+                return transactionItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
+            }
+        }
+
         public async Task<List<TransactionItemViewModel>> GetTransactionItemsByGuestIdAsync(string guestId)
         {
             try
