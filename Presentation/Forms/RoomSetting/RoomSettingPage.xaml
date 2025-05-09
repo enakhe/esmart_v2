@@ -550,8 +550,8 @@
                                                                     <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                                 </Button>
 
-                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Room Setting Card" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
-                                                                    <materialDesign:PackIcon Kind="Setting" Width="20" Height="20" Foreground="Black" />
+                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Room Setting Card" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="RoomSetting_Click">
+                                                                    <materialDesign:PackIcon Kind="Settings" Width="20" Height="20" Foreground="Black" />
                                                                 </Button>
 
                                                                 <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteRoom_Click" FontFamily="Segoe UI Emoji">

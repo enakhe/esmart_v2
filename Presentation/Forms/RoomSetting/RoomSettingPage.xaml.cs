@@ -17,9 +17,11 @@ namespace ESMART.Presentation.Forms.RoomSetting
     public partial class RoomSettingPage : Page
     {
         private readonly IRoomRepository _roomRepository;
-        public RoomSettingPage(IRoomRepository roomRepository)
+        private readonly ICardRepository _cardRepository;
+        public RoomSettingPage(IRoomRepository roomRepository, ICardRepository cardRepository)
         {
             _roomRepository = roomRepository;
+            _cardRepository = cardRepository;
             InitializeComponent();
         }
 
@@ -563,6 +565,29 @@ namespace ESMART.Presentation.Forms.RoomSetting
             finally
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void RoomSetting_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedRoom = (Domain.Entities.RoomSettings.Room)RoomDataGrid.SelectedItem;
+                if (selectedRoom.Id != null)
+                {
+                    var room = await _roomRepository.GetRoomById(selectedRoom.Id);
+
+                    RoomSettingCardDialog roomSettingCardDialog = new RoomSettingCardDialog(_roomRepository, _cardRepository, room);
+
+                    if (roomSettingCardDialog.ShowDialog() == true)
+                    {
+                        await LoadRoom();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
 

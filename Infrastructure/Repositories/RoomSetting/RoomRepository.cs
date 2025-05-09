@@ -87,7 +87,12 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var room = await context.Rooms.FirstOrDefaultAsync(r => r.Id == Id);
+                var room = await context.Rooms
+                    .Include(r => r.Building)
+                    .Include(r => r.Floor)
+                    .Include(r => r.Area)
+                    .Include(r => r.RoomType)
+                    .FirstOrDefaultAsync(r => r.Id == Id);
 
                 return room;
             }

@@ -124,6 +124,9 @@
     <Compile Update="Forms\RoomSetting\Room\AddRoomDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\RoomSetting\Room\RoomSettingCardDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\RoomSetting\Room\UpdateRoomDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
