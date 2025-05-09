@@ -33,6 +33,7 @@ namespace ESMART.Infrastructure.Data
 
         public DbSet<VerificationCode> VerificationCodes { get; set; }
         public DbSet<LicenceInformation> LicenceInformation { get; set; }
+        public DbSet<AuthorizationCard> AuthorizationCards { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

@@ -1,4 +1,5 @@
 ﻿using ESMART.Presentation.Forms;
+using ESMART.Presentation.Forms.Cards;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.FrontDesk.Reservation;
@@ -66,6 +67,8 @@ namespace ESMART.Presentation
             services.AddScoped<AddReservationDialog>();
 
             services.AddScoped<LicenceDialog>();
+
+            services.AddScoped<CardPage>();
 
             return services;
         }

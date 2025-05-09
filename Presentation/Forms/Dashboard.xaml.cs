@@ -1,5 +1,6 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.Data;
+using ESMART.Presentation.Forms.Cards;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.FrontDesk.Reservation;
@@ -150,6 +151,17 @@ namespace ESMART.Presentation.Forms
 
             ReservationPage reservationPage = serviceProvider.GetRequiredService<ReservationPage>();
             MainFrame.Navigate(reservationPage);
+        }
+
+        //Navigate to Card setting page
+        private void CarSettingButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            CardPage cardPage = serviceProvider.GetRequiredService<CardPage>();
+            MainFrame.Navigate(cardPage);
         }
 
         private void OpenSidebar_Click(object sender, RoutedEventArgs e)

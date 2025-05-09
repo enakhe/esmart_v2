@@ -1,4 +1,6 @@
-﻿namespace ESMART.Application.Common.Utils
+﻿using System.Text;
+
+namespace ESMART.Application.Common.Utils
 {
     public class Helper
     {
@@ -35,6 +37,14 @@
             decimal total = (basePrice + vatAmount + serviceCharge) - discount;
 
             return Math.Round(total, 2);
+        }
+
+        public static string ByteArrayToString(byte[] byteArray)
+        {
+            if (byteArray == null)
+                return string.Empty;
+
+            return Encoding.ASCII.GetString(byteArray).TrimEnd('\0');
         }
 
     }

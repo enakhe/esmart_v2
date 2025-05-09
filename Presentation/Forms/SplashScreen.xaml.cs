@@ -27,7 +27,6 @@ namespace ESMART.Presentation.Forms
         public SplashScreen()
         {
             InitializeComponent();
-            Loaded += SplashScreenForm_Loaded;
         }
 
         private async void SplashScreenForm_Loaded(object sender, RoutedEventArgs e)
@@ -40,21 +39,18 @@ namespace ESMART.Presentation.Forms
             if (!TryLoadAndValidateLicense(out var licenseError))
             {
                 MessageBox.Show(licenseError, "License Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                if (!ShowLicenseForm()) 
-                { 
-                    Close(); 
-                    return; 
-                }
+
+                var licenseForm = _serviceProvider.GetRequiredService<LicenceDialog>();
+                licenseForm.Show();
+                this.Close();
+                return;
             }
 
-            if (!ShowLoginForm()) 
-            { 
-                Close(); 
-                return; 
-            }
-
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            mainWindow.Show();
             this.Close();
         }
+
 
         private void InitializeServices()
         {
@@ -87,29 +83,5 @@ namespace ESMART.Presentation.Forms
             errorMessage = "No valid license found. Please enter a valid product key.";
             return false;
         }
-
-        private bool ShowLicenseForm()
-        {
-            var licenseForm = _serviceProvider.GetRequiredService<LicenceDialog>();
-
-            if (licenseForm.ShowDialog() == true)
-            {
-                return true;
-            }    
-
-            return false;
-        }
-
-        private bool ShowLoginForm()
-        {
-            MainWindow mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-            if (mainWindow.ShowDialog() == true)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
     }
 }
