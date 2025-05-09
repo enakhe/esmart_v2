@@ -25,11 +25,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
     public partial class RoomPage : Page
     {
         private readonly IRoomRepository _roomRepository;
+        private readonly ITransactionRepository _transactionRepository;
+        private readonly IBookingRepository _bookingRepository;
+        private readonly IHotelSettingsService _hotelSettingsService;
         private readonly ICardRepository _cardRepository;
-        public RoomPage(IRoomRepository roomRepository, ICardRepository cardRepository)
+        public RoomPage(IRoomRepository roomRepository, ICardRepository cardRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService)
         {
             _roomRepository = roomRepository;
             _cardRepository = cardRepository;
+            _transactionRepository = transactionRepository;
+            _bookingRepository = bookingRepository;
+            _roomRepository = roomRepository;
+            _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
 
@@ -132,6 +139,29 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
                     ShowRoomCardDialog showRoomCardDialog = new ShowRoomCardDialog(_cardRepository, room);
 
                     if (showRoomCardDialog.ShowDialog() == true)
+                    {
+                        await LoadRoom();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before editing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private async void RoomDetails_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedRoom = (Domain.Entities.RoomSettings.Room)RoomDataGrid.SelectedItem;
+                if (selectedRoom.Id != null)
+                {
+                    var room = await _roomRepository.GetRoomById(selectedRoom.Id);
+
+                    RoomDetailsDialog roomDetails = new RoomDetailsDialog(_roomRepository, _transactionRepository, _bookingRepository, _hotelSettingsService, room);
+
+                    if (roomDetails.ShowDialog() == true)
                     {
                         await LoadRoom();
                     }

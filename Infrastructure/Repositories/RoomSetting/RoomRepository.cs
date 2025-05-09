@@ -91,6 +91,7 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                     .Include(r => r.Building)
                     .Include(r => r.Floor)
                     .Include(r => r.Area)
+                    .Include(r => r.ApplicationUser)
                     .Include(r => r.RoomType)
                     .FirstOrDefaultAsync(r => r.Id == Id);
 
