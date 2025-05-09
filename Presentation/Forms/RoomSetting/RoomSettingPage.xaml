@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:local="clr-namespace:ESMART.Presentation.Forms.RoomSetting"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
@@ -116,22 +117,8 @@
 
             <Border Background="#fafafa" Grid.Row="1">
                 <Border Background="White" CornerRadius="10" Padding="20">
-                    <TabControl BorderThickness="1" SelectionChanged="TabControl_SelectionChanged">
-                        <TabControl.Resources>
-                            <Style TargetType="TabItem">
-                                <Setter Property="Background" Value="#4ead16"/>
-                                <Setter Property="Foreground" Value="White"/>
-                                <Style.Triggers>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="Blue"/>
-                                        <Setter Property="Foreground" Value="Black"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-
-                        </TabControl.Resources>
-
-                        <TabItem Header="Building" Name="tbBuilding" Width="170" Height="30">
+                    <TabControl Style="{StaticResource MaterialDesignTabControl}" SelectionChanged="TabControl_SelectionChanged">
+                        <TabItem Header="Building" Name="tbBuilding">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -202,12 +189,12 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                                <Button Width="30" Height="30" ToolTip="Edit Building" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomButton_Click">
-                                                                    <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Edit Building" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditBuildingButton_Click">
+                                                                    <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                                 </Button>
 
-                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Building"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomButton_Click">
-                                                                    <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteBuilding_Click" FontFamily="Segoe UI Emoji">
+                                                                    <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
                                                                 </Button>
                                                             </StackPanel>
                                                         </DataTemplate>
@@ -220,7 +207,7 @@
                             </Grid>
                         </TabItem>
 
-                        <TabItem Header="Floor" Name="tbFloor" Width="170" Height="30">
+                        <TabItem Header="Floor" Name="tbFloor">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -291,12 +278,12 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                                <Button Width="30" Height="30" ToolTip="Edit Floor" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditFloorButton_Click">
-                                                                    <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Edit Floor" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditFloorButton_Click">
+                                                                    <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                                 </Button>
 
-                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Floor"  Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteFloor_Click">
-                                                                    <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteFloor_Click" FontFamily="Segoe UI Emoji">
+                                                                    <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
                                                                 </Button>
                                                             </StackPanel>
                                                         </DataTemplate>
@@ -309,7 +296,7 @@
                             </Grid>
                         </TabItem>
 
-                        <TabItem Header="Area" Name="tbArea" Width="176" Height="30">
+                        <TabItem Header="Area" Name="tbArea">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -380,12 +367,12 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                                <Button Width="30" Height="30" ToolTip="Edit Area" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditAreaButton_Click">
-                                                                    <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Edit Area" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditAreaButton_Click">
+                                                                    <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                                 </Button>
 
-                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Area"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteArea_Click">
-                                                                    <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteArea_Click" FontFamily="Segoe UI Emoji">
+                                                                    <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
                                                                 </Button>
                                                             </StackPanel>
                                                         </DataTemplate>
@@ -398,7 +385,7 @@
                             </Grid>
                         </TabItem>
 
-                        <TabItem Header="Room Type" Name="tbRoomType" Width="176" Height="30">
+                        <TabItem Header="Room Type" Name="tbRoomType">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -469,12 +456,12 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                                <Button Width="30" Height="30" ToolTip="Edit Room Type" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomTypeButton_Click">
-                                                                    <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomButton_Click">
+                                                                    <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                                 </Button>
 
-                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Room Type"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteRoomType_Click">
-                                                                    <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteRoomType_Click" FontFamily="Segoe UI Emoji">
+                                                                    <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
                                                                 </Button>
                                                             </StackPanel>
                                                         </DataTemplate>
@@ -487,7 +474,7 @@
                             </Grid>
                         </TabItem>
 
-                        <TabItem Header="Room" Name="tbRoom" Width="180" Height="30">
+                        <TabItem Header="Room" Name="tbRoom">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -559,12 +546,16 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                                <Button Width="30" Height="30" ToolTip="Edit Building" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomButton_Click">
-                                                                    <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomButton_Click">
+                                                                    <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                                 </Button>
 
-                                                                <Button  Width="30"  Height="30"  ToolTip="Delete Building"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteRoom_Click">
-                                                                    <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Room Setting Card" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                                    <materialDesign:PackIcon Kind="Setting" Width="20" Height="20" Foreground="Black" />
+                                                                </Button>
+
+                                                                <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteRoom_Click" FontFamily="Segoe UI Emoji">
+                                                                    <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
                                                                 </Button>
                                                             </StackPanel>
                                                         </DataTemplate>

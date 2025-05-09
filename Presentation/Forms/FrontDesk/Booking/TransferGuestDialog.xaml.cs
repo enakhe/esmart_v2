@@ -155,7 +155,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             {
                 LoaderOverlay.Visibility = Visibility.Visible;
 
-                if (cmbRoom.SelectedItem is not Room selectedRoom)
+                if (cmbRoom.SelectedItem is not Domain.Entities.RoomSettings.Room selectedRoom)
                 {
                     MessageBox.Show("Please select a room.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
@@ -409,7 +409,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
         private async void cmbRoom_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbRoom.SelectedItem is Room selectedRoom)
+            if (cmbRoom.SelectedItem is Domain.Entities.RoomSettings.Room selectedRoom)
             {
                 txtRoomRate.Text = selectedRoom.Rate.ToString();
                 txtRoomRate.IsEnabled = false;

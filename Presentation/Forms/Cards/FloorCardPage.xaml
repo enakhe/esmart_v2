@@ -35,6 +35,11 @@
                         </StackPanel>
 
                         <ListBox x:Name="listFloors" SelectionMode="Multiple" Grid.Row="1">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="2"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <CheckBox Content="{Binding}" IsChecked="{Binding IsChecked, Mode=TwoWay}" />

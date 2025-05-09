@@ -5,7 +5,7 @@ namespace ESMART.Presentation.Forms.Home
 {
     public class IndexPageViewModel
     {
-        public ObservableCollection<Room> Rooms { get; set; } = new();
+        public ObservableCollection<Domain.Entities.RoomSettings.Room> Rooms { get; set; } = new();
     }
 
 }

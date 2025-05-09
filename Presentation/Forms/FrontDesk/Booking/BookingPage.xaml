@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ESMART.Presentation.Forms.FrontDesk.Booking"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Background="#f0f4f9"
@@ -216,28 +217,28 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Button Width="30" Height="30" ToolTip="Issue Card" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="IssueCard_Click">
-                                                            <TextBlock Text="💳" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Issue Card" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="IssueCard_Click">
+                                                            <materialDesign:PackIcon Kind="CreditCard" Width="20" Height="20" Foreground="Black" />
                                                         </Button>
 
-                                                        <Button Width="30" Height="30" ToolTip="Extend Stay" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="ExtendStay_Click">
-                                                            <TextBlock Text="⏱" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Extend Stay" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="ExtendStay_Click">
+                                                            <materialDesign:PackIcon Kind="ClockOutline"  Width="20" Height="20" Foreground="Black" />
                                                         </Button>
 
-                                                        <Button Width="30" Height="30" ToolTip="Transfer Guest" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="TransferGuest_Click">
-                                                            <TextBlock Text="✈️" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Transfer Guest" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="TransferGuest_Click">
+                                                            <materialDesign:PackIcon Kind="Airplane" Width="20" Height="20" Foreground="Black" />
                                                         </Button>
 
-                                                        <Button Width="30" Height="30" ToolTip="View Booking" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="ViewBookingDetails_Click">
-                                                            <TextBlock Text="👁" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        <Button Width="30" Height="30" Padding="2" ToolTip="View Booking" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="ViewBookingDetails_Click">
+                                                            <materialDesign:PackIcon Kind="EyeOutline" Width="20" Height="20" Foreground="Black" />
                                                         </Button>
 
-                                                        <Button  Width="30"  Height="30"  ToolTip="Checkout"  Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
-                                                            <TextBlock Text="🧾" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Checkout"  Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                            <materialDesign:PackIcon Kind="Receipt" Width="20" Height="20" Foreground="Black"/>
                                                         </Button>
 
-                                                        <Button  Width="30"  Height="30"  ToolTip="Delete Booking"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteBooking_Click">
-                                                            <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete Booking" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteBooking_Click" FontFamily="Segoe UI Emoji">
+                                                            <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
                                                         </Button>
                                                     </StackPanel>
                                                 </DataTemplate>

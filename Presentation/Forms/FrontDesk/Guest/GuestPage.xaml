@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:ESMART.Presentation.Forms.FrontDesk.Guest"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Background="#f0f4f9"
@@ -173,16 +174,16 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <Button Width="30" Height="30" ToolTip="Edit Guest" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditGuest_Click">
-                                                        <TextBlock Text="✎" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                    <Button Width="30" Height="30" Padding="2" ToolTip="Edit Guest" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditGuest_Click">
+                                                        <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                     </Button>
 
-                                                    <Button  Width="30"  Height="30"  ToolTip="View Guest"  Background="#E0E7FF"  Cursor="Hand" Tag="{Binding Id}" Click="ViewGuest_Click">
-                                                        <TextBlock Text="👁" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                    <Button  Width="30"  Height="30" Padding="2" ToolTip="View Guest"  Background="#E0E7FF"  Cursor="Hand" Tag="{Binding Id}" Click="ViewGuest_Click">
+                                                        <materialDesign:PackIcon Kind="EyeOutline" Width="20" Height="20" Foreground="Black" />
                                                     </Button>
 
-                                                    <Button  Width="30"  Height="30"  ToolTip="Delete Guest"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteGuest_Click">
-                                                        <TextBlock Text="🗑" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                    <Button  Width="30"  Height="30" Padding="2"  ToolTip="Delete Guest"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteGuest_Click">
+                                                        <materialDesign:PackIcon Kind="Delete"  Width="20" Height="20" Foreground="Black"/>
                                                     </Button>
                                                 </StackPanel>
                                             </DataTemplate>

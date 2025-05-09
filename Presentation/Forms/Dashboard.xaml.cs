@@ -4,6 +4,7 @@ using ESMART.Presentation.Forms.Cards;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.FrontDesk.Reservation;
+using ESMART.Presentation.Forms.FrontDesk.Room;
 using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.Reports;
 using ESMART.Presentation.Forms.RoomSetting;
@@ -162,6 +163,16 @@ namespace ESMART.Presentation.Forms
 
             CardPage cardPage = serviceProvider.GetRequiredService<CardPage>();
             MainFrame.Navigate(cardPage);
+        }
+
+        private void RoomButton_Click(Object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            RoomPage roomPage = serviceProvider.GetRequiredService<RoomPage>();
+            MainFrame.Navigate(roomPage);
         }
 
         private void OpenSidebar_Click(object sender, RoutedEventArgs e)

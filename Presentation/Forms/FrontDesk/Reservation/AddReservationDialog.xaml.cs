@@ -174,7 +174,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     return;
                 }
 
-                var isRoomAvailable = await CheckIfRoomCanBeBooked(((Room)cmbRoom.SelectedItem).Number, checkIn, checkOut);
+                var isRoomAvailable = await CheckIfRoomCanBeBooked(((Domain.Entities.RoomSettings.Room)cmbRoom.SelectedItem).Number, checkIn, checkOut);
                 var isReservationAllowed = amountPaid >= (totalAmount / 2);
 
                 if (!isReservationAllowed)
@@ -266,7 +266,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             }
 
             guestId = ((Domain.Entities.FrontDesk.Guest)cmbGuest.SelectedItem).Id;
-            roomId = ((Room)cmbRoom.SelectedItem).Id;
+            roomId = ((Domain.Entities.RoomSettings.Room)cmbRoom.SelectedItem).Id;
             checkIn = dtpArrivalDate.SelectedDate!.Value;
             checkOut = dtpDepartureDate.SelectedDate!.Value;
             paymentMethod = Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!);
@@ -439,7 +439,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
         private async void cmbRoom_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbRoom.SelectedItem is Room selectedRoom)
+            if (cmbRoom.SelectedItem is Domain.Entities.RoomSettings.Room selectedRoom)
             {
                 txtRoomRate.Text = selectedRoom.Rate.ToString();
                 txtRoomRate.IsEnabled = false;

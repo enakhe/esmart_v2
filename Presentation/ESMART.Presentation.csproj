@@ -21,6 +21,7 @@
     <None Remove="Assets\images\favicon.ico" />
     <None Remove="Assets\images\logo-main.png" />
     <None Remove="Forms\appointment.png" />
+    <None Remove="Forms\bed.png" />
     <None Remove="Forms\credit-card.png" />
     <None Remove="Forms\Export\excel.png" />
     <None Remove="Forms\Export\pdf.png" />
@@ -97,6 +98,7 @@
 
   <ItemGroup>
     <Resource Include="Forms\appointment.png" />
+    <Resource Include="Forms\bed.png" />
     <Resource Include="Forms\credit-card.png" />
     <Resource Include="Forms\Export\excel.png" />
     <Resource Include="Forms\Export\pdf.png" />

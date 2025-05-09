@@ -3,6 +3,7 @@ using ESMART.Presentation.Forms.Cards;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.FrontDesk.Reservation;
+using ESMART.Presentation.Forms.FrontDesk.Room;
 using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.Reports;
 using ESMART.Presentation.Forms.RoomSetting;
@@ -72,6 +73,8 @@ namespace ESMART.Presentation
             services.AddScoped<MasterCardPage>();
             services.AddScoped<BuildingCardPage>();
             services.AddScoped<FloorCardPage>();
+
+            services.AddScoped<RoomPage>();
 
             return services;
         }
