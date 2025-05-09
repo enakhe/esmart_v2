@@ -10,7 +10,16 @@
     <Compile Update="Components\RoundedButton.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Cards\BuildingCardPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Cards\CardPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Cards\FloorCardPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Cards\MasterCardPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Dashboard.xaml.cs">

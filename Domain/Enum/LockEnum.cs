@@ -32,7 +32,7 @@ namespace ESMART.Domain.Enum
         RT_HOTEL_GATE = 0x10      // Hotel gate
     }
 
-    enum ERROR_TYPE
+    public enum ERROR_TYPE
     {
         OPR_OK = 1,      // Operation successful
         NO_CARD = -1,     // No card detected

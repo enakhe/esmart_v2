@@ -8,7 +8,7 @@
         WindowStyle="None" 
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="SplashScreen" Height="450" Width="800" Loaded="SplashScreenForm_Loaded">
+        Title="SplashScreen" Height="450" Width="800" Loaded="SplashScreenForm_Loaded" Icon="/Forms/logo.png">
     <Grid>
         <Image Source="/Forms/splashscreen.png" Stretch="Fill" />
     </Grid>

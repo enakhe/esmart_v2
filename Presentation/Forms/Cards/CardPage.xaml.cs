@@ -2,8 +2,10 @@
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Enum;
+using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.LockSDK;
 using ESMART.Presentation.Session;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
@@ -35,6 +37,14 @@ namespace ESMART.Presentation.Forms.Cards
             _hotelSettingsService = hotelSettingsService;
             _cardRepository = cardRepository;
             InitializeComponent();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            MasterCardPage masterCaredPage = serviceProvider.GetRequiredService<MasterCardPage>();
+
+            MainFrame.Navigate(masterCaredPage);
         }
 
         private async void OpenPortButton_Click(object sender, RoutedEventArgs e)
@@ -353,6 +363,28 @@ namespace ESMART.Presentation.Forms.Cards
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
             
+        }
+
+        private void BuildingCardButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            BuildingCardPage buildingCardPage = serviceProvider.GetRequiredService<BuildingCardPage>();
+
+            MainFrame.Navigate(buildingCardPage);
+        }
+
+        private void FloorCardButton_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            FloorCardPage floorCardPage = serviceProvider.GetRequiredService<FloorCardPage>();
+
+            MainFrame.Navigate(floorCardPage);
         }
     }
 }

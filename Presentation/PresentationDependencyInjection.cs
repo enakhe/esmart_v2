@@ -69,6 +69,9 @@ namespace ESMART.Presentation
             services.AddScoped<LicenceDialog>();
 
             services.AddScoped<CardPage>();
+            services.AddScoped<MasterCardPage>();
+            services.AddScoped<BuildingCardPage>();
+            services.AddScoped<FloorCardPage>();
 
             return services;
         }

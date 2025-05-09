@@ -51,8 +51,8 @@
 
                     <StackPanel Margin="12" Grid.Row="0">
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Master Card" FontSize="12" Margin="10,20" Name="btnMasterCard" IsEnabled="False" />
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Building Card" FontSize="12" Margin="10, 20" Name="btnBuildingCard" IsEnabled="False"/>
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Floor Card" Margin="10, 20" FontSize="12" Name="btnFloorCard" IsEnabled="False"/>
+                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Building Card" FontSize="12" Margin="10, 20" Name="btnBuildingCard" IsEnabled="False" Click="BuildingCardButton_Click"/>
+                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Floor Card" Margin="10, 20" FontSize="12" Name="btnFloorCard" Click="FloorCardButton_Click"/>
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Emergency Card" Margin="10, 20" FontSize="12" IsEnabled="False"/>
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Backup Guest Card" Margin="10, 20" FontSize="12" IsEnabled="False"/>
                     </StackPanel>
