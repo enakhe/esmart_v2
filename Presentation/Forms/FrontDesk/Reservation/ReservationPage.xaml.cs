@@ -395,6 +395,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                                         {
                                             Amount = reservation.TotalAmount,
                                             ServiceId = reservation.ReservationId,
+                                            Status = TransactionStatus.Refunded,
                                             TaxAmount = reservation.VAT,
                                             ServiceCharge = reservation.ServiceCharge,
                                             Discount = reservation.Discount,

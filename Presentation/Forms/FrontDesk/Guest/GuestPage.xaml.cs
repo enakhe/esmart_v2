@@ -89,7 +89,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         {
             if (sender is Button button && button.Tag is string Id)
             {
-                var selectedGuest = (Domain.ViewModels.FrontDesk.GuestViewModel)GuestDataGrid.SelectedItem;
+                var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
 
                 if (selectedGuest.Id != null)
                 {

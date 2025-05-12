@@ -15,7 +15,7 @@ namespace ESMART.Domain.ViewModels.FrontDesk
         public string Status { get; set; }
         public bool IsOverStayed { get; set; }
         public string TotalAmount { get; set; }
-        public string Receivables { get; set; }
+        public decimal Receivables { get; set; }
         public string CreatedBy { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateModified { get; set; }

@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Export Options" Height="605" Width="400">
+        Title="Export Options" Height="605" Width="400" Icon="/Forms/Export/logo.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

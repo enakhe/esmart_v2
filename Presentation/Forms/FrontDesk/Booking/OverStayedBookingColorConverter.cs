@@ -17,13 +17,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 return new SolidColorBrush(Colors.Gray);
 
             bool status = (bool)value;
-            switch (status)
+            return status switch
             {
-                case false:
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000")); // Light Red
-                default:
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#111827"));
-            }
+                true => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000")),// Light Red
+                _ => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#111827")),
+            };
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

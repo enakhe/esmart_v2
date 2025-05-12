@@ -113,8 +113,6 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
                                 <Button Content="Single Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="100" Click="AddSingleBooking_Click" />
-                                <Button Content="Bulk Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="90" />
-                                <Button Content="Import" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
                                 <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="ExportButton_Click" />
                             </StackPanel>
 
@@ -128,7 +126,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Guest}" Foreground="{Binding isOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding Guest}" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -138,7 +136,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding PhoneNumber}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding PhoneNumber}" VerticalAlignment="Center" HorizontalAlignment="Left"  FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -148,27 +146,27 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Room}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding Room}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Check In" Width="*">
+                                        <DataGridTemplateColumn Header="Check In" Width="1.5*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding CheckIn, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding CheckIn, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Check Out" Width="*">
+                                        <DataGridTemplateColumn Header="Check Out" Width="1.5*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding CheckOut, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding CheckOut, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -178,7 +176,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -188,7 +186,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding TotalAmount, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding TotalAmount, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -198,7 +196,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Receivables, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding Receivables, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -208,7 +206,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Status}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding Status}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>

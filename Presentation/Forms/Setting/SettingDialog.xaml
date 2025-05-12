@@ -53,7 +53,6 @@
                 <Expander Header="System Setup" Grid.Row="0" Foreground="White" Background="Transparent" BorderBrush="Transparent" FontSize="18" Margin="10" IsExpanded="True">
                     <StackPanel Margin="12">
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Hotel Information" Margin="10" Click="SystemSetup_HotelInfo_Click"/>
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Contact Persons" Margin="10"/>
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Operational Settings" Margin="10" Click="SystemSetup_OpearationSetting_Click"/>
                     </StackPanel>
                 </Expander>

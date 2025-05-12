@@ -3,6 +3,7 @@
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
+using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -40,32 +41,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                 .Include(b => b.ApplicationUser)
                                 .Include(b => b.Room)
                                 .Where(r => r.IsTrashed == false)
-                                .Select(b => new BookingViewModel
-                                {
-                                    Id = b.Id,
-                                    Guest = b.Guest.FullName,
-                                    PhoneNumber = b.Guest.PhoneNumber,
-                                    Room = b.Room.Number,
-                                    CheckIn = b.CheckIn,
-                                    CheckOut = b.CheckOut,
-                                    PaymentMethod = b.PaymentMethod.ToString(),
-                                    Duration = b.Duration.ToString(),
-                                    Status = b.Status.ToString(),
-                                    IsOverStayed = b.IsOverStay,
-                                    TotalAmount = b.TotalAmount.ToString("N2"),
-                                    Receivables = b.Receivables.ToString("N2"),
-                                    CreatedBy = b.ApplicationUser.FullName,
-                                    DateCreated = b.DateCreated,
-                                    DateModified = b.DateModified,
-                                })
                                 .OrderByDescending(r => r.DateCreated)
                                 .ToListAsync();
 
 
                 foreach(var overstay in overstayedBooking)
                 {
-                    var foundBooking = allBookings.FirstOrDefault(b => b.Id == overstay.Id);
-                    var booking = await GetBookingById(foundBooking.Id);
+                    var booking = allBookings.FirstOrDefault(b => b.Id == overstay.Id);
                     if(booking != null)
                     {
                         booking.IsOverStay = true;
@@ -74,7 +56,26 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 }
 
                 await context.SaveChangesAsync();
-                return allBookings;
+
+                return [.. allBookings
+                    .Select(b => new BookingViewModel
+                    {
+                        Id = b.Id,
+                        Guest = b.Guest.FullName,
+                        PhoneNumber = b.Guest.PhoneNumber,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        PaymentMethod = b.PaymentMethod.ToString(),
+                        Duration = b.Duration.ToString(),
+                        Status = b.Status.ToString(),
+                        TotalAmount = b.TotalAmount.ToString("N2"),
+                        CreatedBy = b.ApplicationUser.FullName,
+                        DateCreated = b.DateCreated,
+                        DateModified = b.DateModified,
+                        IsOverStayed = b.IsOverStay,
+                        Receivables = b.Receivables,
+                        Room = b.Room.Number
+                    })];
             }
             catch (Exception ex)
             {

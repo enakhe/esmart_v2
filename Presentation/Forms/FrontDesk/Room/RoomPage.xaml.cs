@@ -1,6 +1,8 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.RoomSetting.Room;
+using ESMART.Presentation.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -184,6 +186,50 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var columnNames = RoomDataGrid.Columns
+                    .Where(c => c.Header != null)
+                    .Select(c => c.Header.ToString())
+                    .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
+                    .ToList();
+
+                var optionsWindow = new ExportDialog(columnNames);
+                var result = optionsWindow.ShowDialog();
+
+                if (result == true)
+                {
+                    var exportResult = optionsWindow.GetResult();
+                    var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                    if (exportResult.SelectedColumns.Count == 0)
+                    {
+                        MessageBox.Show("Please select at least one column to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else
+                    {
+                        if (hotel != null)
+                        {
+                            ExportHelper.ExportAndPrint(RoomDataGrid, exportResult.SelectedColumns, exportResult.ExportFormat, exportResult.FileName, hotel.LogoUrl!, hotel.Name, hotel.Email, hotel.PhoneNumber, hotel.Address);
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
 

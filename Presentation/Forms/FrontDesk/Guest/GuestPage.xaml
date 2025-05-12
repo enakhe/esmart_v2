@@ -116,7 +116,6 @@
 
                             <StackPanel Orientation="Horizontal" Margin="20,20,20,10" Grid.Column="1" HorizontalAlignment="Right">
                                 <Button Content="Add Guest" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="72" Click="AddGuest_Click" />
-                                <Button Content="Import" Style="{StaticResource ActionBarButtonStyle}" Width="60" />
                                 <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Width="52" Click="ExportButton_Click" />
                             </StackPanel>
 
@@ -140,7 +139,7 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn Header="Phone Number" Width="120">
+                                    <DataGridTemplateColumn Header="Phone Number" Width="1*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -150,7 +149,7 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn Header="Email" Width="300">
+                                    <DataGridTemplateColumn Header="Email" Width="1*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" Margin="5,0">
@@ -160,7 +159,7 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn Header="Status" Width="100">
+                                    <DataGridTemplateColumn Header="Status" Width="1*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Border CornerRadius="5" Height="23" Width="65" Padding="10,3" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}">
@@ -170,7 +169,7 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn Header="Operation" Width="200">
+                                    <DataGridTemplateColumn Header="Operation" Width="2*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
