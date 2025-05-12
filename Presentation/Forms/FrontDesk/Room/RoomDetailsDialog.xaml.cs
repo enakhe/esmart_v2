@@ -187,10 +187,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
             }
         }
 
-        private void Window_Activated(object sender, EventArgs e)
+        private async void Window_Activated(object sender, EventArgs e)
         {
             LoadRoomDetails();
-            LoadBookingTransactionHistory();
+            await LoadBookingTransactionHistory();
             LoadDefaultSetting();
         }
     }

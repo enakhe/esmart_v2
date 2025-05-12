@@ -13,6 +13,8 @@ namespace ESMART.Application.Common.Interface
         Task<BookingViewModel> GetBookingByIdViewModel(string id);
         Task<List<BookingViewModel>> GetAllBookingByDate(DateTime fromTime, DateTime endTime);
         Task<Booking> GetBookingById(string id);
+        Task<List<BookingViewModel>> GetOverStayedBooking();
+        Task<List<BookingViewModel>> GetTodayBooking();
         Task<List<BookingViewModel>> GetCheckedOutBookingByDate(DateTime fromTime, DateTime endTime);
         Task<List<BookingViewModel>> GetRoomTypeBookingByFilter(string roomTypeId, DateTime fromTime, DateTime endTime);
         Task UpdateBooking(Booking booking);

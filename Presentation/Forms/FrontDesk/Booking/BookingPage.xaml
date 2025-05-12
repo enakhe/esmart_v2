@@ -11,6 +11,7 @@
       Title="Booking" Loaded="Page_Loaded">
 
     <Page.Resources>
+        <local:OverStayedBookingColorConverter x:Key="OverStayedBookingColorConverter" />
         <Style x:Key="ActionBarButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="0,0,10,0"/>
             <Setter Property="Padding" Value="5"/>
@@ -127,7 +128,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Guest}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding Guest}" Foreground="{Binding isOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>

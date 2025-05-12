@@ -2,6 +2,7 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -30,8 +31,14 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         {
             try
             {
+                var overstayedBooking = await GetOverStayedBooking();
+
                 using var context = _contextFactory.CreateDbContext();
+
                 var allBookings = await context.Bookings
+                                .Include(b => b.Guest)
+                                .Include(b => b.ApplicationUser)
+                                .Include(b => b.Room)
                                 .Where(r => r.IsTrashed == false)
                                 .Select(b => new BookingViewModel
                                 {
@@ -44,6 +51,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                     PaymentMethod = b.PaymentMethod.ToString(),
                                     Duration = b.Duration.ToString(),
                                     Status = b.Status.ToString(),
+                                    IsOverStayed = b.IsOverStay,
                                     TotalAmount = b.TotalAmount.ToString("N2"),
                                     Receivables = b.Receivables.ToString("N2"),
                                     CreatedBy = b.ApplicationUser.FullName,
@@ -52,11 +60,91 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                 })
                                 .OrderByDescending(r => r.DateCreated)
                                 .ToListAsync();
+
+
+                foreach(var overstay in overstayedBooking)
+                {
+                    var foundBooking = allBookings.FirstOrDefault(b => b.Id == overstay.Id);
+                    var booking = await GetBookingById(foundBooking.Id);
+                    if(booking != null)
+                    {
+                        booking.IsOverStay = true;
+                        context.Entry(booking).State = EntityState.Modified;
+                    }
+                }
+
+                await context.SaveChangesAsync();
                 return allBookings;
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occurred when retrieving booking. " + ex.Message);
+            }
+        }
+
+        public async Task<List<BookingViewModel>> GetOverStayedBooking()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                return await context.Bookings
+                    .Include(b => b.Guest)
+                    .Include(b => b.Room)
+                    .Where(b => DateTime.Today > b.CheckOut.Date && !b.IsTrashed)
+                    .Select(b => new BookingViewModel
+                    {
+                        Id = b.Id,
+                        Guest = b.Guest.FullName,
+                        PhoneNumber = b.Guest.PhoneNumber,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        PaymentMethod = b.PaymentMethod.ToString(),
+                        Duration = b.Duration.ToString(),
+                        Status = b.Status.ToString(),
+                        TotalAmount = b.TotalAmount.ToString("N2"),
+                        CreatedBy = b.ApplicationUser.FullName,
+                        DateCreated = b.DateCreated,
+                        DateModified = b.DateModified,
+                    })
+                    .OrderBy(r => r.DateCreated)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving today's reservations. " + ex.Message);
+            }
+        }
+
+        public async Task<List<BookingViewModel>> GetTodayBooking()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                return await context.Bookings
+                    .Include(b => b.Guest)
+                    .Include(b => b.Room)
+                    .Where(b => b.CheckIn.Date >= DateTime.Today && !b.IsTrashed)
+                    .Select(b => new BookingViewModel
+                    {
+                        Id = b.Id,
+                        Guest = b.Guest.FullName,
+                        PhoneNumber = b.Guest.PhoneNumber,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        PaymentMethod = b.PaymentMethod.ToString(),
+                        Duration = b.Duration.ToString(),
+                        Status = b.Status.ToString(),
+                        TotalAmount = b.TotalAmount.ToString("N2"),
+                        CreatedBy = b.ApplicationUser.FullName,
+                        DateCreated = b.DateCreated,
+                        DateModified = b.DateModified,
+                    })
+                    .OrderBy(r => r.DateCreated)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving today's reservations. " + ex.Message);
             }
         }
 
