@@ -26,6 +26,7 @@ namespace ESMART.Application.Common.Interface
         Task<List<TransactionItemViewModel>> GetTransactionItemByBookingIdAndDate(string bookingId, DateTime from, DateTime to);
         Task<List<TransactionItemViewModel>> GetTransactionItemByRoomIdAndDate(string roomId, DateTime from, DateTime to);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByGuestIdAsync(string guestId);
+        Task<List<TransactionItemViewModel>> GetUnpaidTransactionItemsByGuestIdAsync(string guestId);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByIdAsync(string id);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByDateAsync(DateTime fromTime, DateTime endTime);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByFilterAsync(string filter);

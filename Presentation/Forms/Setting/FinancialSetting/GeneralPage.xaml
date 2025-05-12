@@ -71,6 +71,10 @@
                                 <TextBlock Text="Refund Precent:" FontWeight="Bold" />
                                 <TextBox x:Name="txtRefundPercent" Padding="2,5,0,5" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" LostFocus="ServiceChargeTextBox_LostFocus" GotFocus="ServiceChargeTextBox_GotFocus" />
                             </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="0,0,5,20">
+                                <CheckBox Content="Verify Transaction" IsChecked="True" x:Name="chkVerifyTransaction" />
+                            </StackPanel>
                         </Grid>
 
                         <StackPanel Grid.Row="3" Margin="0,0,0,20">

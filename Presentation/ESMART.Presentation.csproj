@@ -24,6 +24,7 @@
     <None Remove="Forms\bed.png" />
     <None Remove="Forms\credit-card.png" />
     <None Remove="Forms\Export\excel.png" />
+    <None Remove="Forms\Export\logo.png" />
     <None Remove="Forms\Export\pdf.png" />
     <None Remove="Forms\FrontDesk\Booking\appointment.png" />
     <None Remove="Forms\FrontDesk\Booking\logo.png" />
@@ -103,6 +104,7 @@
     <Resource Include="Forms\bed.png" />
     <Resource Include="Forms\credit-card.png" />
     <Resource Include="Forms\Export\excel.png" />
+    <Resource Include="Forms\Export\logo.png" />
     <Resource Include="Forms\Export\pdf.png" />
     <Resource Include="Forms\FrontDesk\Booking\appointment.png" />
     <Resource Include="Forms\FrontDesk\Booking\logo.png" />

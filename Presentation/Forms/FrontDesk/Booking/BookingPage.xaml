@@ -232,7 +232,7 @@
                                                             <materialDesign:PackIcon Kind="EyeOutline" Width="20" Height="20" Foreground="Black" />
                                                         </Button>
 
-                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Checkout"  Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Checkout"  Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="CancelBooking_Click">
                                                             <materialDesign:PackIcon Kind="Receipt" Width="20" Height="20" Foreground="Black"/>
                                                         </Button>
 

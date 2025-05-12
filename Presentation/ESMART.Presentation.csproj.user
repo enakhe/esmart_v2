@@ -37,6 +37,9 @@
     <Compile Update="Forms\FrontDesk\Booking\BookingPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Booking\CheckOutBooking.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Booking\ExtendStayDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

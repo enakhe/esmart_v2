@@ -1,7 +1,11 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Domain.Entities.Configuration;
+using ESMART.Domain.Entities.Data;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
+using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
 using ESMART.Presentation.Forms.Verification;
@@ -269,6 +273,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             var bookedGuest = await _guestRepository.GetGuestByIdAsync(booking.GuestId);
             var hotel = await _hotelSettingsService.GetHotelInformation();
             var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
+            string base64Logo = Convert.ToBase64String(hotel?.LogoUrl!);
+            string logo = $"data:image/png;base64,{base64Logo}";
 
             var transaction = new Domain.Entities.Transaction.Transaction
             {
@@ -309,44 +315,126 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
             if (hotel != null)
             {
-                var verificationCode = new VerificationCode
+                var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
+                if (isVerifyPayment != null)
                 {
-                    Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
-                    ServiceId = booking.BookingId,
-                    ApplicationUserId = AuthSession.CurrentUser?.Id
-                };
-
-                await _verificationCodeService.AddCode(verificationCode);
-
-                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, booking.AccountNumber, bookedGuest.FullName, "Booking", verificationCode.Code, booking.TotalAmount, booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
-                if (response.IsSuccessStatusCode)
-                {
-                    var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, booking.BookingId, booking.TotalAmount, _applicationUserRoleRepository);
-                    if (verifyPaymentWindow.ShowDialog() == true)
+                    var value = isVerifyPayment.Value;
+                    if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        booking.Status = BookingStatus.Completed;
+                        await VerifyPayment(hotel, booking, bookedGuest, activeUser, transaction, transactionItem, logo);
                     }
                     else
                     {
-                        booking.Receivables += booking.TotalAmount;
-                        await _verificationCodeService.DeleteAsync(verificationCode.Id);
-                    }
+                        booking.Status = BookingStatus.Completed;
 
-                    await _bookingRepository.UpdateBooking(booking);
+                        transactionItem.Status = TransactionStatus.Paid;
+                        await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
+                        await _bookingRepository.UpdateBooking(booking);
+
+                        await SenderHelper.SendEmail(
+                            bookedGuest.Email,
+                            "Booking Payment Receipt",
+                            "guest_receipt",
+                            new
+                            {
+                                accountNumber = booking.AccountNumber,
+                                amount = booking.TotalAmount,
+                                guestName = bookedGuest.FullName,
+                                hotelName = hotel.Name,
+                                invoiceNumber = transaction.InvoiceNumber,
+                                paymentMethod = booking.PaymentMethod,
+                                receptionist = activeUser.FullName,
+                                receptionistContact = activeUser.PhoneNumber,
+                                service = booking.BookingId,
+                                logo
+                            });
+                    }
+                }
+            }
+        }
+
+        private async Task VerifyPayment(Hotel hotel, Domain.Entities.FrontDesk.Booking booking, Domain.Entities.FrontDesk.Guest bookedGuest, ApplicationUser activeUser, Transaction transaction, TransactionItem transactionItem, string logo)
+        {
+            var verificationCode = new VerificationCode
+            {
+                Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                ServiceId = booking.BookingId,
+                ApplicationUserId = AuthSession.CurrentUser?.Id
+            };
+
+            await _verificationCodeService.AddCode(verificationCode);
+
+            var response = await SenderHelper.SendOtp(
+                hotel.PhoneNumber,
+                hotel.Name,
+                booking.AccountNumber,
+                bookedGuest.FullName,
+                "Booking",
+                verificationCode.Code,
+                booking.TotalAmount,
+                booking.PaymentMethod.ToString(),
+                activeUser.FullName!,
+                activeUser.PhoneNumber!
+            );
+
+            if (response.IsSuccessStatusCode)
+            {
+                var verifyPaymentWindow = new VerifyPaymentWindow(
+                    _verificationCodeService,
+                    _hotelSettingsService,
+                    _bookingRepository,
+                    _transactionRepository,
+                    booking.BookingId,
+                    booking.TotalAmount,
+                    _applicationUserRoleRepository
+                );
+
+                await SenderHelper.SendEmail(
+                        bookedGuest.Email,
+                        "Booking Payment Receipt",
+                        "guest_receipt",
+                        new
+                        {
+                            accountNumber = booking.AccountNumber,
+                            amount = booking.TotalAmount,
+                            guestName = bookedGuest.FullName,
+                            hotelName = hotel.Name,
+                            invoiceNumber = transaction.InvoiceNumber,
+                            paymentMethod = booking.PaymentMethod,
+                            receptionist = activeUser.FullName,
+                            receptionistContact = activeUser.PhoneNumber,
+                            service = booking.BookingId,
+                            logo
+                        }
+                );
+
+                if (verifyPaymentWindow.ShowDialog() == true)
+                {
+                    booking.Status = BookingStatus.Completed;
+
+                    transactionItem.Status = TransactionStatus.Paid;
+                    await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
+
+
                 }
                 else
                 {
-                    MessageBox.Show("Booking added successfully but could not verify payment. Payment will be flagged as pending.",
-                        "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                    booking.Receivables += booking.TotalAmount;
+                    await _verificationCodeService.DeleteAsync(verificationCode.Id);
                 }
             }
-
-            if (booking.Status == BookingStatus.Completed)
+            else
             {
-                transactionItem.Status = TransactionStatus.Paid;
+                booking.Receivables += booking.TotalAmount;
+                MessageBox.Show(
+                    "Booking added successfully but could not verify payment. Payment will be flagged as pending.",
+                    "Info",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
             }
 
-            await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
+            await _bookingRepository.UpdateBooking(booking);
         }
 
 

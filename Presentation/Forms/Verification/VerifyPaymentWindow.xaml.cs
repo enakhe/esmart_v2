@@ -115,13 +115,6 @@ namespace ESMART.Presentation.Forms.Verification
                                 MessageBox.Show("Successfully verified OTP, kindly issue a card for the guest", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                                 await _verificationCodeService.DeleteAsync(code.Id);
 
-                                var transaction = await _transactionRepository.GetUnpaidTransactionItemsByServiceIdAsync(_serviceId, _amount);
-                                if (transaction != null)
-                                {
-                                    transaction.Status = TransactionStatus.Paid;
-                                    await _transactionRepository.UpdateTransactionItemAsync(transaction);
-                                }
-
                                 this.DialogResult = true;
                             }
                             else

@@ -359,6 +359,56 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
+        private async void CancelBooking_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedBooking = (BookingViewModel)BookingDataGrid.SelectedItem;
+
+                    var booking = await _bookingRepository.GetBookingById(Id);
+
+                    if (selectedBooking.Id != null)
+                    {
+                        MessageBoxResult messageResult = MessageBox.Show("Are you sure you want to check out this booking?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (messageResult == MessageBoxResult.Yes)
+                        {
+                            var unPaidTransaction = await _transactionRepository.GetUnpaidTransactionItemsByGuestIdAsync(booking.GuestId);
+
+                            var totalAmount = unPaidTransaction.Sum(ut => decimal.Parse(ut.Amount));
+
+                            if (totalAmount > 0)
+                            {
+                                var checkOutBooking = new CheckOutBooking(booking, booking.Guest, totalAmount, _reservationRepository, _transactionRepository, _hotelSettingsService, _verificationCodeService, _applicationUserRoleRepository, _bookingRepository, _guestRepository);
+                                checkOutBooking.ShowDialog();
+                            }
+                            else
+                            {
+                                booking.Status = Domain.Enum.BookingStatus.Cancelled;
+                                booking.IsTrashed = true;
+                                await _bookingRepository.UpdateBooking(booking);
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        MessageBox.Show("Please select a booking before checking out.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async void ExportButton_Click(object sender, RoutedEventArgs e)
         {
             LoaderOverlay.Visibility = Visibility.Visible;

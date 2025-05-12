@@ -61,6 +61,10 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
                             case "CurrencySymbol":
                                 cmbCurrency.SelectedValue = setting.Value;
                                 break;
+                            case "VerifyTransaction":
+                                var val = setting.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase);
+                                chkVerifyTransaction.IsChecked = val;
+                                break;
                             case "RefundPercent":
                                 txtRefundPercent.Text = setting.Value;
                                 break;
@@ -89,14 +93,16 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
                 var discount = txtDiscount.Text;
                 var currencySymbol = cmbCurrency.SelectedValue.ToString();
                 var refundPercent = txtRefundPercent.Text.Replace("%", "").Trim();
+                var verifyTransaction = chkVerifyTransaction.IsChecked;
 
                 var vatSetting = await _hotelSettingsService.GetSettingAsync("VAT");
                 var serviceChargeSetting = await _hotelSettingsService.GetSettingAsync("ServiceCharge");
                 var discountSetting = await _hotelSettingsService.GetSettingAsync("Discount");
                 var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
                 var refundSetting = await _hotelSettingsService.GetSettingAsync("RefundPercent");
+                var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
 
-                if (vatSetting == null || serviceChargeSetting == null || discountSetting == null || currencySetting == null || refundSetting == null)
+                if (vatSetting == null || serviceChargeSetting == null || discountSetting == null || currencySetting == null || refundSetting == null || isVerifyPayment == null)
                 {
                     MessageBox.Show("One or more settings not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -107,12 +113,14 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
                 discountSetting.Value = discount;
                 currencySetting.Value = currencySymbol!;
                 refundSetting.Value = refundPercent;
+                isVerifyPayment.Value = verifyTransaction.ToString()!;
 
                 await _hotelSettingsService.UpdateSettingAsync(vatSetting);
                 await _hotelSettingsService.UpdateSettingAsync(serviceChargeSetting);
                 await _hotelSettingsService.UpdateSettingAsync(discountSetting);
                 await _hotelSettingsService.UpdateSettingAsync(currencySetting);
                 await _hotelSettingsService.UpdateSettingAsync(refundSetting);
+                await _hotelSettingsService.UpdateSettingAsync(isVerifyPayment);
 
                 MessageBox.Show("Financial settings updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 await LoadFiancialData();

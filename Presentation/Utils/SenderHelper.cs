@@ -43,5 +43,19 @@ namespace ESMART.Presentation.Utils
             });
             return response;
         }
+
+        public static async Task<HttpResponseMessage> SendEmail(string to, string subject, string templateName, object variable)
+        {
+            var apiService = new ApiService(new HttpClient());
+            var response = await apiService.PostAsync("https://esmart-api.vercel.app/api/email", new
+            {
+                to,
+                subject,
+                templateName,
+                variable
+            });
+
+            return response;
+        }
     }
 }
