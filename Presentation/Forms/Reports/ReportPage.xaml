@@ -57,15 +57,14 @@
                     <StackPanel Margin="12">
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Expected Departure Report" FontSize="12" Margin="10" Click="ExpectedDepartureReport_Click" />
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Current In-House Guests Report" FontSize="12" Margin="10" Click="CurrentInHouseGuestReport_Click"/>
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Overstayed Guests Report" Margin="10" FontSize="12"/>
+                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Overstayed Guests Report" Margin="10" FontSize="12" Click="OverstayedGuestReport_Click"/>
                     </StackPanel>
                 </Expander>
 
                 <!-- Financial Settings with Submenu -->
                 <Expander Header="Occupancy / Room Status Reports" Grid.Row="1" Foreground="White" Background="Transparent" BorderBrush="Transparent" FontSize="14" Margin="10">
                     <StackPanel Margin="12">
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Room Occupancy Report" Margin="10" FontSize="12" />
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Room Status Report" Margin="10" FontSize="12" />
+                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Room Status Report" Margin="10" FontSize="12" Click="RoomStatusReport_Click" />
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Room Transaction Report" Margin="10" FontSize="12" />
                     </StackPanel>
                 </Expander>

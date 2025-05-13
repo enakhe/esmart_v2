@@ -106,7 +106,13 @@
     <Compile Update="Forms\Reports\ExpectedDepartureReport.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Reports\OverstayedGuestReport.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Reports\ReportPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Reports\RoomStatusReport.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\RoomSetting\Area\AddAreaDialog.xaml.cs">

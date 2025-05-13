@@ -185,6 +185,12 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             {
                 using var context = _contextFactory.CreateDbContext();
                 var allRooms = await context.Rooms
+                                .Include(r => r.RoomType)
+                                .Include(r => r.Building)
+                                .Include(r => r.Floor)
+                                .Include(r => r.Area)
+                                .Include(r => r.Bookings)
+                                .Include(r => r.Reservation)
                                 .Where(r => r.Status.ToString() == (keyword) && r.IsTrashed == false)
                                 .OrderBy(r => r.Number)
                                 .Select(r => new RoomViewModel
