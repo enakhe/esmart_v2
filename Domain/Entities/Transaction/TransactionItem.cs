@@ -2,6 +2,7 @@
 
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Enum;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ESMART.Domain.Entities.Transaction
 {
@@ -22,7 +23,7 @@ namespace ESMART.Domain.Entities.Transaction
         public DateTime DateAdded { get; set; }
         public string ApplicationUserId { get; set; }
 
-
+        [ForeignKey("Transaction")]
         public string TransactionId { get; set; }
         public virtual Transaction Transaction { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }

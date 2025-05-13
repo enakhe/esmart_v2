@@ -1,6 +1,9 @@
-﻿using ESMART.Domain.Entities.Configuration;
+﻿#nullable disable
+
+using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Entities.FrontDesk;
 using System.Net.Http;
+using System.Text.Json;
 
 namespace ESMART.Presentation.Utils
 {
@@ -44,18 +47,32 @@ namespace ESMART.Presentation.Utils
             return response;
         }
 
-        public static async Task<HttpResponseMessage> SendEmail(string to, string subject, string templateName, object variable)
+        public static async Task<HttpResponseMessage> SendEmail(string to, string subject, string templateName, ReceiptVariable variables)
         {
             var apiService = new ApiService(new HttpClient());
-            var response = await apiService.PostAsync("https://esmart-api.vercel.app/api/email", new
+            var response = await apiService.PostAsync("http://localhost:8000/api/email", new
             {
                 to,
                 subject,
                 templateName,
-                variable
+                variables
             });
 
             return response;
         }
+    }
+
+    public class ReceiptVariable
+    {
+        public string accountNumber { get; set; }
+        public string amount { get; set; }
+        public string guestName { get; set; }
+        public string hotelName { get; set; }
+        public string invoiceNumber { get; set; }
+        public string paymentMethod { get; set; }
+        public string receptionist { get; set; }
+        public string receptionistContact { get; set; }
+        public string service { get; set; }
+        public string logo { get; set; }
     }
 }

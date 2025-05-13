@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250508175619_Initial")]
+    [Migration("20250513033341_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -25,6 +25,28 @@ namespace ESMART.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Configuration.AuthorizationCard", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AuthId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ComputerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuthorizationCards", "ESMART");
+                });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Configuration.Hotel", b =>
                 {
@@ -97,6 +119,31 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("HotelSettings", "ESMART");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Configuration.LicenceInformation", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("HotelName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastUpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LicenceKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LicenceInformation", "ESMART");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Configuration.SettingsCategory", b =>
@@ -286,11 +333,17 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("GuestId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("IsOverStay")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsTrashed")
                         .HasColumnType("bit");
 
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Receivables")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("RoomId")
                         .HasColumnType("nvarchar(450)");

@@ -32,6 +32,22 @@ namespace ESMART.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AuthorizationCards",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ComputerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AuthId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuthorizationCards", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Buildings",
                 schema: "ESMART",
                 columns: table => new
@@ -64,6 +80,23 @@ namespace ESMART.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Hotels", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LicenceInformation",
+                schema: "ESMART",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    HotelName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LicenceKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastUpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LicenceInformation", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -454,6 +487,8 @@ namespace ESMART.Infrastructure.Migrations
                     VAT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ServiceCharge = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Receivables = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsOverStay = table.Column<bool>(type: "bit", nullable: false),
                     PaymentMethod = table.Column<int>(type: "int", nullable: false),
                     GuestId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     RoomId = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -842,6 +877,10 @@ namespace ESMART.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AuthorizationCards",
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
                 name: "GuestIdentities",
                 schema: "ESMART");
 
@@ -851,6 +890,10 @@ namespace ESMART.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "HotelSettings",
+                schema: "ESMART");
+
+            migrationBuilder.DropTable(
+                name: "LicenceInformation",
                 schema: "ESMART");
 
             migrationBuilder.DropTable(

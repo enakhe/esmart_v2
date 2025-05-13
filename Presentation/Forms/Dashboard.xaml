@@ -385,14 +385,42 @@
         <!-- Header with Menu -->
         <Grid Grid.Row="0" Grid.Column="1" Background="White">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="344*"/>
-                <ColumnDefinition Width="281*"/>
+                <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
 
-            <TextBlock Text="Esmart Hotel Management Software" x:Name="txtHotelName" FontSize="24" FontWeight="Bold" Margin="20,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="#1a237e"/>
+            <TextBlock Text="Esmart Hotel Management Software" Grid.Column="0" x:Name="txtHotelName" FontSize="24" FontWeight="Bold" Margin="20,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="#1a237e"/>
+
+            <Button Cursor="Hand" Background="Transparent" Grid.Column="1" Foreground="Black" BorderThickness="0" HorizontalAlignment="Right" Padding="5,10,0,10" Margin="20,10" FontSize="18" HorizontalContentAlignment="Right" Click="LogOutButton_Click">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Source="/Forms/log-out.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Log Out" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
         </Grid>
 
         <!-- Main Content -->

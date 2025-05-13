@@ -111,7 +111,7 @@
                                 <TextBox x:Name="txtDiscount" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" LostFocus="DiscountTextBox_LostFocus" GotFocus="txtDiscount_GotFocus" TextChanged="txtDiscount_TextChanged" />
                             </StackPanel>
 
-                            <Image Cursor="Hand" x:Name="EditButtonDiscount" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Discount is set by default. You can change it later." MouseLeftButtonDown="EditButton_MouseLeftButtonDown" />
+                            <Image Cursor="Hand" x:Name="EditButtonDiscount" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Discount is set by default. You can change it later." MouseLeftButtonDown="EditDiscountButton_MouseLeftButtonDown" />
                             
                         </Grid>
 
@@ -126,7 +126,7 @@
                                 <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="VatTextBox_PreviewTextInput" LostFocus="VatTextBox_LostFocus" GotFocus="VatTextBox_GotFocus" TextChanged="txtVAT_TextChanged" />
                             </StackPanel>
 
-                            <Image Cursor="Hand" x:Name="EditButtonVAT" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="VAT is set by default. You can change it later." MouseLeftButtonDown="EditButton_MouseLeftButtonDown" />
+                            <Image Cursor="Hand" x:Name="EditButtonVAT" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="VAT is set by default. You can change it later." MouseLeftButtonDown="EditVATButton_MouseLeftButtonDown" />
                         </Grid>
                     </Grid>
                 </StackPanel>
@@ -170,7 +170,7 @@
                                 <TextBox x:Name="txtServiceCharge" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" LostFocus="ServiceChargeTextBox_LostFocus" GotFocus="ServiceChargeTextBox_GotFocus" IsEnabled="False" Padding="2,5,0,5" TextChanged="txtServiceCharge_TextChanged" />
                             </StackPanel>
 
-                            <Image Cursor="Hand" x:Name="EditButtonServiceCharge" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Room rate is set to room type rate by default. You can change it later." MouseLeftButtonDown="EditButton_MouseLeftButtonDown" />
+                            <Image Cursor="Hand" x:Name="EditButtonServiceCharge" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Room rate is set to room type rate by default. You can change it later." MouseLeftButtonDown="EditServiceButton_MouseLeftButtonDown" />
                         </Grid>
 
                         <StackPanel Grid.Column="1" Margin="2,0,0,0">

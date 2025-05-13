@@ -273,8 +273,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             var bookedGuest = await _guestRepository.GetGuestByIdAsync(booking.GuestId);
             var hotel = await _hotelSettingsService.GetHotelInformation();
             var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
-            string base64Logo = Convert.ToBase64String(hotel?.LogoUrl!);
-            string logo = $"data:image/png;base64,{base64Logo}";
 
             var transaction = new Domain.Entities.Transaction.Transaction
             {
@@ -290,7 +288,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
             var transactionItem = new Domain.Entities.Transaction.TransactionItem
             {
-                Amount = booking.Amount,
+                Amount = booking.TotalAmount,
                 ServiceId = booking.BookingId,
                 TaxAmount = booking.VAT,
                 ServiceCharge = booking.ServiceCharge,
@@ -321,7 +319,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     var value = isVerifyPayment.Value;
                     if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        await VerifyPayment(hotel, booking, bookedGuest, activeUser, transaction, transactionItem, logo);
+                        await VerifyPayment(hotel, booking, bookedGuest, activeUser, transaction, transactionItem);
                     }
                     else
                     {
@@ -331,29 +329,29 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
                         await _bookingRepository.UpdateBooking(booking);
 
-                        await SenderHelper.SendEmail(
+                       await SenderHelper.SendEmail(
                             bookedGuest.Email,
                             "Booking Payment Receipt",
                             "guest_receipt",
-                            new
+                            new ReceiptVariable
                             {
                                 accountNumber = booking.AccountNumber,
-                                amount = booking.TotalAmount,
+                                amount = booking.TotalAmount.ToString("N2"),
                                 guestName = bookedGuest.FullName,
                                 hotelName = hotel.Name,
                                 invoiceNumber = transaction.InvoiceNumber,
-                                paymentMethod = booking.PaymentMethod,
+                                paymentMethod = booking.PaymentMethod.ToString(),
                                 receptionist = activeUser.FullName,
                                 receptionistContact = activeUser.PhoneNumber,
                                 service = booking.BookingId,
-                                logo
-                            });
+                            }
+                        );
                     }
                 }
             }
         }
 
-        private async Task VerifyPayment(Hotel hotel, Domain.Entities.FrontDesk.Booking booking, Domain.Entities.FrontDesk.Guest bookedGuest, ApplicationUser activeUser, Transaction transaction, TransactionItem transactionItem, string logo)
+        private async Task VerifyPayment(Hotel hotel, Domain.Entities.FrontDesk.Booking booking, Domain.Entities.FrontDesk.Guest bookedGuest, ApplicationUser activeUser, Transaction transaction, TransactionItem transactionItem)
         {
             var verificationCode = new VerificationCode
             {
@@ -389,25 +387,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     _applicationUserRoleRepository
                 );
 
-                await SenderHelper.SendEmail(
-                        bookedGuest.Email,
-                        "Booking Payment Receipt",
-                        "guest_receipt",
-                        new
-                        {
-                            accountNumber = booking.AccountNumber,
-                            amount = booking.TotalAmount,
-                            guestName = bookedGuest.FullName,
-                            hotelName = hotel.Name,
-                            invoiceNumber = transaction.InvoiceNumber,
-                            paymentMethod = booking.PaymentMethod,
-                            receptionist = activeUser.FullName,
-                            receptionistContact = activeUser.PhoneNumber,
-                            service = booking.BookingId,
-                            logo
-                        }
-                );
-
                 if (verifyPaymentWindow.ShowDialog() == true)
                 {
                     booking.Status = BookingStatus.Completed;
@@ -415,7 +394,23 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     transactionItem.Status = TransactionStatus.Paid;
                     await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
 
-
+                    await SenderHelper.SendEmail(
+                        bookedGuest.Email,
+                        "Booking Payment Receipt",
+                        "guest_receipt",
+                        new ReceiptVariable
+                        {
+                            accountNumber = booking.AccountNumber,
+                            amount = booking.TotalAmount.ToString("N2"),
+                            guestName = bookedGuest.FullName,
+                            hotelName = hotel.Name,
+                            invoiceNumber = transaction.InvoiceNumber,
+                            paymentMethod = booking.PaymentMethod.ToString(),
+                            receptionist = activeUser.FullName,
+                            receptionistContact = activeUser.PhoneNumber,
+                            service = booking.BookingId,
+                        }
+                    );
                 }
                 else
                 {
@@ -498,6 +493,21 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private void EditButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             txtRoomRate.IsEnabled = true;
+        }
+
+        private void EditVATButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            txtVAT.IsEnabled = true;
+        }
+
+        private void EditServiceButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            txtServiceCharge.IsEnabled = true;
+        }
+
+        private void EditDiscountButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            txtDiscount.IsEnabled = true;
         }
 
         private async void Window_Activated(object sender, EventArgs e)

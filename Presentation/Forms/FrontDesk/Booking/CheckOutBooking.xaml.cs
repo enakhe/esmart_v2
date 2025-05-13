@@ -76,10 +76,20 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
-                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, _booking.BookingId, _amount, _applicationUserRoleRepository);
+
+                        VerifyPaymentWindow verifyPaymentWindow = new(
+                            _verificationCodeService, 
+                            _hotelSettingsService, 
+                            _bookingRepository, 
+                            _transactionRepository, 
+                            _booking.BookingId, 
+                            _amount, 
+                            _applicationUserRoleRepository
+                        );
+
                         if (verifyPaymentWindow.ShowDialog() == true)
                         {
-
+                            this.DialogResult = true;
                         }
                     }
                 }

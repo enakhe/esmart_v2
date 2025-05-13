@@ -155,21 +155,37 @@ namespace ESMART.Infrastructure.Identity
             if (_roleManager.Roles.All(r => r.Name != auditorRole.Name))
                 await _roleManager.CreateAsync(auditorRole);
 
-            var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", FirstName = "Super", LastName = "Administrator", MiddleName = " ", PhoneNumber = "+2349069477106", RoleId = administratorRole.Id };
-            if (_userManager.Users.All(u => u.UserName != administrator.UserName))
-                await _userManager.CreateAsync(administrator, "Administrator1!");
-
-            var admin = new ApplicationUser { UserName = "admin@localhost", Email = "admin@localhost", FirstName = "Admin", LastName = "User", MiddleName = " ", RoleId = adminRole.Id };
-            if (_userManager.Users.All(u => u.UserName != admin.UserName))
-                await _userManager.CreateAsync(admin, "Admin1!");
+            var administrator = new ApplicationUser { 
+                UserName = "administrator@localhost", 
+                Email = "administrator@localhost", 
+                FirstName = "Super", 
+                LastName = "Administrator", 
+                MiddleName = "User", 
+                PhoneNumber = "+2349069477106", 
+                RoleId = administratorRole.Id 
+            };
 
             if (_userManager.Users.All(u => u.UserName != administrator.UserName))
             {
+                await _userManager.CreateAsync(administrator, "Administrator1!");
                 if (!string.IsNullOrWhiteSpace(administratorRole.Name))
                 {
                     await _userManager.AddToRolesAsync(administrator, [administratorRole.Name]);
                 }
+            }
 
+            var admin = new ApplicationUser { 
+                UserName = "admin@localhost", 
+                Email = "admin@localhost", 
+                FirstName = "Hotel", 
+                LastName = "Admin", 
+                MiddleName = "User", 
+                RoleId = adminRole.Id 
+            };
+
+            if (_userManager.Users.All(u => u.UserName != admin.UserName))
+            {
+                await _userManager.CreateAsync(admin, "Admin1!");
                 if (!string.IsNullOrWhiteSpace(adminRole.Name))
                 {
                     await _userManager.AddToRolesAsync(admin, [adminRole.Name]);

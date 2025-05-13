@@ -226,7 +226,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             }
         }
 
-        public async Task<TransactionItem> GetUnpaidTransactionItemsByServiceIdAsync(string serviceId, decimal amount)
+        public async Task<TransactionItem> GetUnpaidTransactionItemsByServiceIdAsync(string serviceId, string guestId, decimal amount)
         {
             try
             {
@@ -234,6 +234,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                 var transactionItems = await context.TransactionItems
                     .FirstOrDefaultAsync(ti => ti.ServiceId == serviceId && 
                     ti.Amount == amount &&
+                    ti.Transaction.GuestId == guestId &&
                     ti.Status == TransactionStatus.Unpaid);
                 return transactionItems;
             }

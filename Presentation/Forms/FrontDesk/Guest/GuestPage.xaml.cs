@@ -1,6 +1,9 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.Data;
 using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,10 +17,14 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private readonly IGuestRepository _guestRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
-        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService)
+        private readonly IApplicationUserRoleRepository _userService;
+        private readonly UserManager<ApplicationUser> _userManager;
+        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager)
         {
             _guestRepository = guestRepository;
             _transactionRepository = transactionRepository;
+            _userService = userService;
+            _userManager = userManager;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
@@ -130,33 +137,53 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         {
             if (sender is Button button && button.Tag is string Id)
             {
-                var selectedGuest = (Domain.ViewModels.FrontDesk.GuestViewModel)GuestDataGrid.SelectedItem;
-                if (selectedGuest.Id != null)
+                var userId = AuthSession.CurrentUser?.Id;
+
+                if (userId != null)
                 {
-                    LoaderOverlay.Visibility = Visibility.Visible;
-                    try
+                    var user = await _userService.GetUserById(userId);
+                    if (user != null)
                     {
-                        MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this guest?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                        if (result == MessageBoxResult.Yes)
+                        bool isAdmin = await _userManager.IsInRoleAsync(user, DefaultRoles.Administrator.ToString()) ||
+                                        await _userManager.IsInRoleAsync(user, DefaultRoles.Admin.ToString()) ||
+                                        await _userManager.IsInRoleAsync(user, DefaultRoles.Manager.ToString());
+                        if (!isAdmin)
                         {
-                            await _guestRepository.DeleteGuestAsync(selectedGuest.Id);
-                            await LoadGuests();
+                            MessageBox.Show("You are not authorized to perform this action", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else
+                        {
+                            var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
+                            if (selectedGuest.Id != null)
+                            {
+                                LoaderOverlay.Visibility = Visibility.Visible;
+                                try
+                                {
+                                    MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this guest?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                                    if (result == MessageBoxResult.Yes)
+                                    {
+                                        await _guestRepository.DeleteGuestAsync(selectedGuest.Id);
+                                        await LoadGuests();
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                                        MessageBoxImage.Error);
+                                }
+                                finally
+                                {
+                                    LoaderOverlay.Visibility = Visibility.Collapsed;
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Please select a guest before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                            MessageBoxImage.Error);
-                    }
-                    finally
-                    {
-                        LoaderOverlay.Visibility = Visibility.Collapsed;
-                    }
                 }
-                else
-                {
-                    MessageBox.Show("Please select a guest before deleting.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+                            
             }
         }
 

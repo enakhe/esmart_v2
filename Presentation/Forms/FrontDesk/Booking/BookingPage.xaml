@@ -236,7 +236,7 @@
                                                             <materialDesign:PackIcon Kind="Receipt" Width="20" Height="20" Foreground="Black"/>
                                                         </Button>
 
-                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete Booking" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteBooking_Click" FontFamily="Segoe UI Emoji">
+                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete Booking" Background="Red" Name="DeleteBtn" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteBooking_Click" FontFamily="Segoe UI Emoji">
                                                             <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
                                                         </Button>
                                                     </StackPanel>

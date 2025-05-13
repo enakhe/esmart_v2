@@ -2,6 +2,7 @@
 
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ESMART.Domain.Entities.Transaction
 {
@@ -15,6 +16,8 @@ namespace ESMART.Domain.Entities.Transaction
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string TransactionId { get; set; }
         public string GuestId { get; set; }
+
+        [ForeignKey("Booking")]
         public string BookingId { get; set; }
         public DateTime Date { get; set; }
         public decimal TotalRevenue { get; set; }

@@ -185,7 +185,7 @@ namespace ESMART.Presentation.Forms
 
         private async void Window_Activated(object sender, EventArgs e)
         {
-            //await ApplyAuthorization();
+            await ApplyAuthorization();
             await LoadData();
         }
 
@@ -216,6 +216,15 @@ namespace ESMART.Presentation.Forms
             {
                 MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
                     MessageBoxImage.Error);
+            }
+        }
+
+        private void LogOutButton_Click(Object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to log out?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                AppSessionManager.LogoutToLogin();
             }
         }
     }

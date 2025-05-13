@@ -91,7 +91,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 return await context.Bookings
                     .Include(b => b.Guest)
                     .Include(b => b.Room)
-                    .Where(b => DateTime.Today > b.CheckOut.Date && !b.IsTrashed)
+                    .Where(b => DateTime.Now > b.CheckOut && !b.IsTrashed)
                     .Select(b => new BookingViewModel
                     {
                         Id = b.Id,
