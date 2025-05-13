@@ -225,6 +225,138 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
+        public async Task<List<BookingViewModel>> GetExpectedDepartureBooking(DateTime fromTime, DateTime endTime)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+
+                var bookings = await context.Bookings
+                    .Include(b => b.Room)
+                    .Include(b => b.Guest)
+                    .Include(b => b.ApplicationUser)
+                    .Where(b =>
+                        b.CheckOut >= fromTime &&
+                        b.CheckOut <= endTime &&
+                        !b.IsTrashed
+                    )
+                    .Select(b => new BookingViewModel
+                    {
+                        Id = b.Id,
+                        Guest = b.Guest.FullName,
+                        PhoneNumber = b.Guest.PhoneNumber,
+                        Room = b.Room.Number,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        PaymentMethod = b.PaymentMethod.ToString(),
+                        Duration = b.Duration.ToString(),
+                        Status = b.Status.ToString(),
+                        TotalAmount = b.TotalAmount.ToString("N2"),
+                        CreatedBy = b.ApplicationUser.FullName,
+                        DateCreated = b.DateCreated,
+                        DateModified = b.DateModified,
+                    })
+                    .OrderBy(b => b.DateCreated)
+                    .ToListAsync();
+
+                return bookings;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to retrieve expected departure bookings", ex);
+            }
+        }
+
+
+        public async Task<List<BookingViewModel>> GetInHouseGuest()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+
+                var bookings = await context.Bookings
+                    .Include(b => b.Room)
+                    .Include(b => b.Guest)
+                    .Include(b => b.ApplicationUser)
+                    .Where(b =>
+                        b.Guest.Status == "Active" &&
+                        !b.IsTrashed
+                    )
+                    .Select(b => new BookingViewModel
+                    {
+                        Id = b.Id,
+                        Guest = b.Guest.FullName,
+                        PhoneNumber = b.Guest.PhoneNumber,
+                        Room = b.Room.Number,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        PaymentMethod = b.PaymentMethod.ToString(),
+                        Duration = b.Duration.ToString(),
+                        Status = b.Status.ToString(),
+                        TotalAmount = b.TotalAmount.ToString("N2"),
+                        CreatedBy = b.ApplicationUser.FullName,
+                        DateCreated = b.DateCreated,
+                        DateModified = b.DateModified,
+                    })
+                    .OrderBy(b => b.DateCreated)
+                    .ToListAsync();
+
+                return bookings;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to retrieve in house guests", ex);
+            }
+        }
+
+        public async Task<List<BookingViewModel>> GetOverstayedGuestsAsync(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+
+                var now = DateTime.Now;
+
+                var bookings = await context.Bookings
+                    .Include(b => b.Room)
+                    .Include(b => b.Guest)
+                    .Include(b => b.ApplicationUser)
+                    .Where(b =>
+                        b.CheckOut < now &&              
+                        b.CheckOut >= fromDate &&               
+                        b.CheckOut <= toDate &&                 
+                        !b.IsTrashed &&
+                        b.Status != BookingStatus.CheckedOut
+                    )
+                    .Select(b => new BookingViewModel
+                    {
+                        Id = b.Id,
+                        Guest = b.Guest.FullName,
+                        PhoneNumber = b.Guest.PhoneNumber,
+                        Room = b.Room.Number,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        PaymentMethod = b.PaymentMethod.ToString(),
+                        Duration = b.Duration.ToString(),
+                        Status = b.Status.ToString(),
+                        TotalAmount = b.TotalAmount.ToString("N2"),
+                        CreatedBy = b.ApplicationUser.FullName,
+                        DateCreated = b.DateCreated,
+                        DateModified = b.DateModified,
+                    })
+                    .OrderBy(b => b.CheckOut)
+                    .ToListAsync();
+
+                return bookings;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to retrieve overstayed guest bookings", ex);
+            }
+        }
+
+
+
         public async Task<List<BookingViewModel>> GetBookingByDate(DateTime fromTime, DateTime endTime, bool IsTrashed)
         {
             try

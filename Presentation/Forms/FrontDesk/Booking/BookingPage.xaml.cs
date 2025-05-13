@@ -310,7 +310,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             }
                             else
                             {
-                                booking.Status = Domain.Enum.BookingStatus.Cancelled;
+                                booking.Status = Domain.Enum.BookingStatus.CheckedOut;
                                 booking.IsTrashed = true;
                                 await _bookingRepository.UpdateBooking(booking);
 

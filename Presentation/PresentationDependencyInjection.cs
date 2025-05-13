@@ -63,6 +63,7 @@ namespace ESMART.Presentation
             services.AddScoped<AddUserDialog>();
 
             services.AddScoped<ReportPage>();
+            services.AddScoped<ExpectedDepartureReport>();
 
             services.AddScoped<ReservationPage>();
             services.AddScoped<AddReservationDialog>();

@@ -22,5 +22,9 @@ namespace ESMART.Application.Common.Interface
         Task<List<BookingViewModel>> GetRecycledBookings();
         Task<List<BookingViewModel>> SearchBooking(string keyword);
         int GetGuestBooking(string id);
+
+        Task<List<BookingViewModel>> GetExpectedDepartureBooking(DateTime fromTime, DateTime endTime);
+        Task<List<BookingViewModel>> GetInHouseGuest();
+        Task<List<BookingViewModel>> GetOverstayedGuestsAsync(DateTime fromDate, DateTime toDate);
     }
 }

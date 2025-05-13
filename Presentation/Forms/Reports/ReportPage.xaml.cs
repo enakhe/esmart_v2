@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ESMART.Presentation.Forms.Home;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,17 @@ namespace ESMART.Presentation.Forms.Reports
         public ReportPage()
         {
             InitializeComponent();
+        }
+
+        public void ExpectedDepartureReport_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            ExpectedDepartureReport expectedDepartureReport = serviceProvider.GetRequiredService<ExpectedDepartureReport>();
+
+            MainFrame.Navigate(expectedDepartureReport);
         }
     }
 }
