@@ -1,7 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.ViewModels.FrontDesk;
-using ESMART.Infrastructure.Repositories.Configuration;
-using ESMART.Infrastructure.Repositories.Transaction;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Utils;
@@ -23,14 +21,15 @@ using System.Windows.Shapes;
 namespace ESMART.Presentation.Forms.Reports
 {
     /// <summary>
-    /// Interaction logic for ExpectedDepartureReport.xaml
+    /// Interaction logic for CurrentinHouseGuestReport.xaml
     /// </summary>
-    public partial class ExpectedDepartureReport : Page
+    public partial class CurrentinHouseGuestReport : Page
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly ITransactionRepository _transactionRepository;
-        public ExpectedDepartureReport(IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository)
+
+        public CurrentinHouseGuestReport(IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository)
         {
             _bookingRepository = bookingRepository;
             _hotelSettingsService = hotelSettingsService;
@@ -38,18 +37,12 @@ namespace ESMART.Presentation.Forms.Reports
             InitializeComponent();
         }
 
-        private void LoadDefaultSetting()
-        {
-            txtFrom.SelectedDate = DateTime.Now;
-            txtTo.SelectedDate = DateTime.Now.AddDays(1);
-        }
-
         private async Task LoadData()
         {
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var expectedDepartureBooking = await _bookingRepository.GetExpectedDepartureBooking(DateTime.Now, DateTime.Now.AddDays(1));
+                var expectedDepartureBooking = await _bookingRepository.GetInHouseGuest();
                 if (expectedDepartureBooking != null)
                 {
                     this.BookingDataGrid.ItemsSource = expectedDepartureBooking;
@@ -111,43 +104,6 @@ namespace ESMART.Presentation.Forms.Reports
             }
         }
 
-        private async Task LoadExpectedDepartureBookingByDate()
-        {
-            LoaderOverlay.Visibility = Visibility.Visible;
-            try
-            {
-                var fromDate = txtFrom.SelectedDate.Value!;
-                var toDate = txtTo.SelectedDate.Value!;
-
-                if (fromDate > toDate)
-                {
-                    MessageBox.Show("From date cannot be greater than To date", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                var expectedDepartureBooking = await _bookingRepository.GetExpectedDepartureBooking(fromDate, toDate);
-
-                if (expectedDepartureBooking != null)
-                {
-                    this.BookingDataGrid.ItemsSource = expectedDepartureBooking;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-            finally
-            {
-                LoaderOverlay.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private async void FilterButton_Click(object sender, RoutedEventArgs e)
-        {
-            await LoadExpectedDepartureBookingByDate();
-        }
-
         private async void ViewBookingDetails_Click(object sender, RoutedEventArgs e)
         {
             LoaderOverlay.Visibility = Visibility.Visible;
@@ -183,7 +139,6 @@ namespace ESMART.Presentation.Forms.Reports
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadDefaultSetting();
             await LoadData();
         }
     }

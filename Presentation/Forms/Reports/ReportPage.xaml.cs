@@ -37,5 +37,16 @@ namespace ESMART.Presentation.Forms.Reports
 
             MainFrame.Navigate(expectedDepartureReport);
         }
+
+        public void CurrentInHouseGuestReport_Click(object sender, RoutedEventArgs e)
+        {
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            CurrentinHouseGuestReport currentinHouseGuestReport = serviceProvider.GetRequiredService<CurrentinHouseGuestReport>();
+
+            MainFrame.Navigate(currentinHouseGuestReport);
+        }
     }
 }
