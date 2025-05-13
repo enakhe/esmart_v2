@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ESMART.Presentation.Forms.Setting"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Setting" Height="700" Width="900" ResizeMode="NoResize" Icon="/Forms/Setting/logo.png">
+        Title="Setting" Height="700" Width="1100" ResizeMode="NoResize" Icon="/Forms/Setting/logo.png">
 
     <Window.Resources>
         <!-- Main menu button style -->
@@ -61,6 +61,7 @@
                 <Expander Header="Financial Settings" Grid.Row="1" Foreground="White" Background="Transparent" BorderBrush="Transparent" FontSize="18" Margin="10">
                     <StackPanel Margin="12">
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="General" Margin="10" Click="FinancialSetting_General_Click" />
+                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Bank Account" Margin="10" Click="FinancialSetting_BankAccount" />
                     </StackPanel>
                 </Expander>
             </Grid>

@@ -628,5 +628,76 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                 throw new Exception("An error occurred when retrieving transaction items by filter. " + ex.Message);
             }
         }
+
+        public async Task AddBankAccountAsync(BankAccount bankAccount)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                await context.BankAccount.AddAsync(bankAccount);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when adding bank account details. " + ex.Message);
+            }
+        }
+
+        public async Task<BankAccount> GetBankAccountById(string id)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var bankAccount = await context.BankAccount.FirstOrDefaultAsync(ba => ba.Id == id);
+
+                return bankAccount;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when getting bank account details by id. " + ex.Message);
+            }
+        }
+
+        public async Task<List<BankAccount>> GetAllBankAccountAsync()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var allBankAccounts = await context.BankAccount.ToListAsync();
+                return allBankAccounts;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving al bank accounts. " + ex.Message);
+            }
+        }
+
+        public async Task UpdateBankAccountAsync(BankAccount bankAccount)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                context.Entry(bankAccount).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when updating the bank account. " + ex.Message);
+            }
+        }
+
+        public async Task DeleteBankAccountAsync(BankAccount bankAccount)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                context.BankAccount.Remove(bankAccount);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error ocurred when deleting the bank account. " + ex.Message);
+            }
+        }
     }
 }

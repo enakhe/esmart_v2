@@ -44,6 +44,7 @@
     <None Remove="Forms\RoomSetting\Room\editing.png" />
     <None Remove="Forms\RoomSetting\Room\logo.png" />
     <None Remove="Forms\setting.png" />
+    <None Remove="Forms\Setting\FinancialSetting\logo.png" />
     <None Remove="Forms\Setting\Licence\logo.png" />
     <None Remove="Forms\Setting\logo.png" />
     <None Remove="Forms\splashscreen.png" />
@@ -123,6 +124,7 @@
     <Resource Include="Forms\RoomSetting\Room\editing.png" />
     <Resource Include="Forms\RoomSetting\Room\logo.png" />
     <Resource Include="Forms\setting.png" />
+    <Resource Include="Forms\Setting\FinancialSetting\logo.png" />
     <Resource Include="Forms\Setting\Licence\logo.png" />
     <Resource Include="Forms\Setting\logo.png" />
     <Resource Include="Forms\splashscreen.png" />

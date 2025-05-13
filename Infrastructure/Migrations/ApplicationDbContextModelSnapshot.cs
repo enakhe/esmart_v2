@@ -700,6 +700,28 @@ namespace ESMART.Infrastructure.Migrations
                     b.ToTable("RoomTypes", "ESMART");
                 });
 
+            modelBuilder.Entity("ESMART.Domain.Entities.Transaction.BankAccount", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BankAccountName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankAccountNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BankAccount", "ESMART");
+                });
+
             modelBuilder.Entity("ESMART.Domain.Entities.Transaction.Transaction", b =>
                 {
                     b.Property<string>("Id")

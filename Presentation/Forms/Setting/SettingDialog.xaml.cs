@@ -65,5 +65,13 @@ namespace ESMART.Presentation.Forms.Setting
 
             MainFrame.Navigate(operationSettingPage);
         }
+
+        private void FinancialSetting_BankAccount(object sender, RoutedEventArgs e)
+        {
+            InitializeServices();
+
+            BankAccountPage bankAccountPage = _serviceProvider.GetRequiredService<BankAccountPage>();
+            MainFrame.Navigate(bankAccountPage);
+        }
     }
 }

@@ -35,8 +35,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "C:\Users\izuag\OneDrive\Desktop\ESMART\ESMARTV2\Presentation\bin\x86\Debug\net9.0-windows\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion restartreplace
 Source: "C:\Users\izuag\OneDrive\Desktop\ESMART\ESMARTV2\Presentation\bin\x86\Debug\net9.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs restartreplace
+Source: "C:\Users\izuag\OneDrive\Desktop\ESMART\ESMARTV2\Presentation\favicon.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\izuag\OneDrive\Desktop\ESMART\ESMARTV2\Prerequisite\SQLServer.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 Source: "C:\Users\izuag\OneDrive\Desktop\ESMART\ESMARTV2\Prerequisite\NET4.8.exe"; DestDir: "{tmp}"; Flags: ignoreversion
+Source: "C:\Users\izuag\OneDrive\Desktop\ESMART\ESMARTV2\Presentation\bin\x86\Debug\net9.0-windows\appsettings.json"; DestDir: "{userappdata}\ESMART"; Flags: ignoreversion
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\.myp\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppExeName}"; ValueData: ""; Flags: uninsdeletevalue
@@ -46,8 +48,8 @@ Root: HKA; Subkey: "Software\Classes\{#MyAppExeName}\shell\open\command"; ValueT
 Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\favicon.ico"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\favicon.ico"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: postinstall nowait skipifsilent
@@ -55,7 +57,6 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: po
 [Code]
 function IsSQLServerInstalled(): Boolean;
 begin
-  // Check for SQL Server instances in various paths
   Result := RegKeyExists(HKLM, 'SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL') or
             RegKeyExists(HKLM, 'SOFTWARE\Microsoft\Microsoft SQL Server Local DB\Installed Versions');
 end;
@@ -71,12 +72,9 @@ function InstallSQLServer(): Boolean;
 var
   ResultCode: Integer;
 begin
-  // Install SQL Server silently
   Result := Exec(ExpandConstant('{tmp}\SQLServer.exe'),
     '/QS /ACTION=Install /IACCEPTSQLSERVERLICENSETERMS /FEATURES=SQLEngine /INSTANCENAME=MSSQLSERVER /SQLSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE" /SQLSYSADMINACCOUNTS="BUILTIN\ADMINISTRATORS"',
     '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-
-  // Check if installation succeeded
   if Result and (ResultCode = 0) then
   begin
     MsgBox('SQL Server installed successfully.', mbInformation, MB_OK);
@@ -112,7 +110,6 @@ procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then
   begin
-    // Try to install SQL Server if it's not already installed
     if not IsSQLServerInstalled() then
     begin
       if not InstallSQLServer() then

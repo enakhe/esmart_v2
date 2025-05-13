@@ -30,5 +30,11 @@ namespace ESMART.Application.Common.Interface
         Task<List<TransactionItemViewModel>> GetTransactionItemsByIdAsync(string id);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByDateAsync(DateTime fromTime, DateTime endTime);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByFilterAsync(string filter);
+
+        Task AddBankAccountAsync(BankAccount bankAccount);
+        Task<BankAccount> GetBankAccountById(string id);
+        Task<List<BankAccount>> GetAllBankAccountAsync();
+        Task UpdateBankAccountAsync(BankAccount bankAccount);
+        Task DeleteBankAccountAsync(BankAccount bankAccount);
     }
 }

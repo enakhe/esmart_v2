@@ -12,6 +12,7 @@ using ESMART.Presentation.Forms.RoomSetting.Floor;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Forms.RoomSetting.RoomType;
 using ESMART.Presentation.Forms.Setting;
+using ESMART.Presentation.Forms.Setting.FinancialSetting;
 using ESMART.Presentation.Forms.Setting.Licence;
 using ESMART.Presentation.Forms.Setting.OperationalSetting;
 using ESMART.Presentation.Forms.Setting.SystemSetup;
@@ -55,6 +56,7 @@ namespace ESMART.Presentation
             services.AddScoped<HotelInformationPage>();
             services.AddScoped<ESMART.Presentation.Forms.Setting.FinancialSetting.General>();
             services.AddScoped<OperationSettingPage>();
+            services.AddScoped<BankAccountPage>();
 
             services.AddScoped<VerifyPaymentWindow>();
 

@@ -19,8 +19,8 @@ namespace ESMART.Domain.Enum
         LS_PROMPT_CLOSE_EN = 0x0800,   // Prompt guest to close the door
         LS_NO_BLOCK_LIGHT_EN = 0x1000,   // No light prompt when backlocking
 
-        LOCK_TYPE_MIFI = 5,
-        LOCK_TYPE_PULMOS = 4
+        LOCK_TYPE_MIFI = 4,
+        LOCK_TYPE_PULMOS = 5
     }
 
     public enum ROOM_TYPE

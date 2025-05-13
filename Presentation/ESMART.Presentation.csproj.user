@@ -154,6 +154,12 @@
     <Compile Update="Forms\RoomSetting\Room\UpdateRoomDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Setting\FinancialSetting\AddBankAccountDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Setting\FinancialSetting\BankAccountPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Setting\FinancialSetting\GeneralPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
