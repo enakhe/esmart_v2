@@ -67,6 +67,7 @@ namespace ESMART.Presentation
             services.AddScoped<CurrentinHouseGuestReport>();
             services.AddScoped<OverstayedGuestReport>();
             services.AddScoped<RoomStatusReport>();
+            services.AddScoped<RoomTransactionReport>();
 
             services.AddScoped<ReservationPage>();
             services.AddScoped<AddReservationDialog>();

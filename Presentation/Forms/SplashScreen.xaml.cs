@@ -1,9 +1,11 @@
 ﻿using ESMART.Presentation.Forms.Setting.Licence;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,9 +43,14 @@ namespace ESMART.Presentation.Forms
                 MessageBox.Show(licenseError, "License Error", MessageBoxButton.OK, MessageBoxImage.Warning);
 
                 var licenseForm = _serviceProvider.GetRequiredService<LicenceDialog>();
-                licenseForm.Show();
-                this.Close();
-                return;
+                bool? dialogResult = licenseForm.ShowDialog();
+
+                if (!TryLoadAndValidateLicense(out licenseError))
+                {
+                    MessageBox.Show("License is still invalid. Application will now close.", "License Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.Application.Current.Shutdown();
+                    return;
+                }
             }
 
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
@@ -54,8 +61,13 @@ namespace ESMART.Presentation.Forms
 
         private void InitializeServices()
         {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
             var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
+            DependencyInjection.ConfigureServices(services, configuration);
             _serviceProvider = services.BuildServiceProvider();
         }
 

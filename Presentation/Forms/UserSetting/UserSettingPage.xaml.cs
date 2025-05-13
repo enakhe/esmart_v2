@@ -5,7 +5,10 @@ using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.UserSetting.Roles;
 using ESMART.Presentation.Forms.UserSetting.Users;
 using ESMART.Presentation.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -18,11 +21,24 @@ namespace ESMART.Presentation.Forms.UserSetting
     {
         private readonly IApplicationUserRoleRepository _applicationRoleService;
         private readonly IHotelSettingsService _hotelSettingsService;
+        private IServiceProvider _serviceProvider;
         public UserSettingPage(IApplicationUserRoleRepository applicationRoleService, IHotelSettingsService hotelSettingsService)
         {
             _applicationRoleService = applicationRoleService;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
+        }
+
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         public async Task LoadRoleData()
@@ -84,11 +100,9 @@ namespace ESMART.Presentation.Forms.UserSetting
 
         public async void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            AddRoleDialog addRoleDialog = serviceProvider.GetRequiredService<AddRoleDialog>();
+            AddRoleDialog addRoleDialog = _serviceProvider.GetRequiredService<AddRoleDialog>();
             if (addRoleDialog.ShowDialog() == true)
             {
                 await LoadRoleData();
@@ -97,11 +111,9 @@ namespace ESMART.Presentation.Forms.UserSetting
 
         public async void AddUserButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            AddUserDialog addUserDialog = serviceProvider.GetRequiredService<AddUserDialog>();
+            AddUserDialog addUserDialog = _serviceProvider.GetRequiredService<AddUserDialog>();
             if (addUserDialog.ShowDialog() == true)
             {
                 await LoadUserData();

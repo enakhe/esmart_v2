@@ -115,6 +115,9 @@
     <Compile Update="Forms\Reports\RoomStatusReport.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Reports\RoomTransactionReport.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\RoomSetting\Area\AddAreaDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

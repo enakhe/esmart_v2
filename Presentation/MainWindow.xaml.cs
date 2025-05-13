@@ -2,7 +2,10 @@
 using ESMART.Application.UseCases.Data;
 using ESMART.Presentation.Forms;
 using ESMART.Presentation.Session;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,10 +18,23 @@ namespace ESMART.Presentation
     public partial class MainWindow : Window
     {
         private readonly IdentityUseCases _identityUseCases;
+        private IServiceProvider _serviceProvider;
         public MainWindow(IdentityUseCases identityUseCases)
         {
             _identityUseCases = identityUseCases;
             InitializeComponent();
+        }
+
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -46,11 +62,10 @@ namespace ESMART.Presentation
                     else
                     {
                         AuthSession.CurrentUser = result.Response;
-                        var services = new ServiceCollection();
-                        DependencyInjection.ConfigureServices(services);
-                        var serviceProvider = services.BuildServiceProvider();
 
-                        Dashboard dashboard = serviceProvider.GetRequiredService<Dashboard>();
+                        InitializeServices();
+
+                        Dashboard dashboard = _serviceProvider.GetRequiredService<Dashboard>();
                         dashboard.Show();
                         this.Close();
                     }

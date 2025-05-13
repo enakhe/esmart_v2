@@ -7,7 +7,10 @@ using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -28,6 +31,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private readonly IApplicationUserRoleRepository _userService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private IServiceProvider _serviceProvider;
 
         public BookingPage(IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IRoomRepository roomRepository, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IReservationRepository reservationRepository, IApplicationUserRoleRepository applicationUserRoleRepository, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager)
         {
@@ -42,6 +46,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _reservationRepository = reservationRepository;
             _applicationUserRoleRepository = applicationUserRoleRepository;
             InitializeComponent();
+        }
+
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         private async Task LoadBooking()
@@ -70,11 +86,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
         private async void AddSingleBooking_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            AddBookingDialog addBookingDialog = serviceProvider.GetRequiredService<AddBookingDialog>();
+            AddBookingDialog addBookingDialog = _serviceProvider.GetRequiredService<AddBookingDialog>();
             if (addBookingDialog.ShowDialog() == true)
             {
                 await LoadBooking();

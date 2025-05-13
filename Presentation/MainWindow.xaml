@@ -9,7 +9,7 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Name="Login"
-        Icon="Assets/images/favicon.ico">
+        Icon="/logo.png">
     <Grid>
         <StackPanel Grid.Column="0" Margin="30,20,30,20">
             <StackPanel>

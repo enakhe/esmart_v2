@@ -4,7 +4,10 @@ using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,6 +22,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IApplicationUserRoleRepository _userService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private IServiceProvider _serviceProvider;
+
         public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager)
         {
             _guestRepository = guestRepository;
@@ -27,6 +32,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             _userManager = userManager;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
+        }
+
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         public async Task LoadGuests()
@@ -51,10 +68,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
         private async void AddGuest_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
-            AddGuestDialog addGuestDialog = serviceProvider.GetRequiredService<AddGuestDialog>();
+            InitializeServices();
+
+            AddGuestDialog addGuestDialog = _serviceProvider.GetRequiredService<AddGuestDialog>();
             if (addGuestDialog.ShowDialog() == true)
             {
                 await LoadGuests();

@@ -1,7 +1,9 @@
 ﻿using ESMART.Presentation.Forms.Home;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,53 +24,67 @@ namespace ESMART.Presentation.Forms.Reports
     /// </summary>
     public partial class ReportPage : Page
     {
+        private IServiceProvider _serviceProvider;
         public ReportPage()
         {
             InitializeComponent();
         }
 
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
+        }
+
         public void ExpectedDepartureReport_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            ExpectedDepartureReport expectedDepartureReport = serviceProvider.GetRequiredService<ExpectedDepartureReport>();
+            ExpectedDepartureReport expectedDepartureReport = _serviceProvider.GetRequiredService<ExpectedDepartureReport>();
 
             MainFrame.Navigate(expectedDepartureReport);
         }
 
         public void CurrentInHouseGuestReport_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            CurrentinHouseGuestReport currentinHouseGuestReport = serviceProvider.GetRequiredService<CurrentinHouseGuestReport>();
+            CurrentinHouseGuestReport currentinHouseGuestReport = _serviceProvider.GetRequiredService<CurrentinHouseGuestReport>();
 
             MainFrame.Navigate(currentinHouseGuestReport);
         }
 
         public void OverstayedGuestReport_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            OverstayedGuestReport overstayedGuestReport = serviceProvider.GetRequiredService<OverstayedGuestReport>();
+            OverstayedGuestReport overstayedGuestReport = _serviceProvider.GetRequiredService<OverstayedGuestReport>();
 
             MainFrame.Navigate(overstayedGuestReport);
         }
 
         public void RoomStatusReport_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            RoomStatusReport roomStatusReport = serviceProvider.GetRequiredService<RoomStatusReport>();
+            RoomStatusReport roomStatusReport = _serviceProvider.GetRequiredService<RoomStatusReport>();
 
             MainFrame.Navigate(roomStatusReport);
+        }
+
+        public void RoomTransactionReport_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeServices();
+
+            RoomTransactionReport roomTransactionReport = _serviceProvider.GetRequiredService<RoomTransactionReport>();
+
+            MainFrame.Navigate(roomTransactionReport);
         }
     }
 }

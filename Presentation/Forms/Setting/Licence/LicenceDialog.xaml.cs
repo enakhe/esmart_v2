@@ -150,7 +150,6 @@ namespace ESMART.Presentation.Forms.Setting.Licence
 
                                 await _licenceRepository.AddLicenceAsync(licenceInfo);
                                 SecureFileHelper.SaveSecureFile(txtHotelName.Text, txtLicenceKey.Text, expirationDate);
-
                                 this.DialogResult = true;
 
                             }
@@ -171,7 +170,7 @@ namespace ESMART.Presentation.Forms.Setting.Licence
                         }
                         else
                         {
-                            MessageBox.Show("Invalid product key", "Invalid product key", MessageBoxButton.OK,                                                     MessageBoxImage.Warning);
+                            MessageBox.Show("Invalid product key", "Invalid product key", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
 
                            

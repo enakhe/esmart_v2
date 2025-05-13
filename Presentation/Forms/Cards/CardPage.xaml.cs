@@ -5,10 +5,12 @@ using ESMART.Domain.Enum;
 using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.LockSDK;
 using ESMART.Presentation.Session;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,19 +34,27 @@ namespace ESMART.Presentation.Forms.Cards
         private readonly string computerName = Environment.MachineName;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly ICardRepository _cardRepository;
+        private IServiceProvider _serviceProvider;
+
         public CardPage(IHotelSettingsService hotelSettingsService, ICardRepository cardRepository)
         {
             _hotelSettingsService = hotelSettingsService;
             _cardRepository = cardRepository;
             InitializeComponent();
 
+            LoadMasterCard();
+        }
+
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
             var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
-
-            MasterCardPage masterCaredPage = serviceProvider.GetRequiredService<MasterCardPage>();
-
-            MainFrame.Navigate(masterCaredPage);
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         private async void OpenPortButton_Click(object sender, RoutedEventArgs e)
@@ -367,24 +377,34 @@ namespace ESMART.Presentation.Forms.Cards
 
         private void BuildingCardButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            BuildingCardPage buildingCardPage = serviceProvider.GetRequiredService<BuildingCardPage>();
+            BuildingCardPage buildingCardPage = _serviceProvider.GetRequiredService<BuildingCardPage>();
 
             MainFrame.Navigate(buildingCardPage);
         }
 
         private void FloorCardButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            FloorCardPage floorCardPage = serviceProvider.GetRequiredService<FloorCardPage>();
+            FloorCardPage floorCardPage = _serviceProvider.GetRequiredService<FloorCardPage>();
 
             MainFrame.Navigate(floorCardPage);
+        }
+
+        private void MasterButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadMasterCard();
+        }
+
+        private void LoadMasterCard()
+        {
+            InitializeServices();
+
+            MasterCardPage masterCardPage = _serviceProvider.GetRequiredService<MasterCardPage>();
+
+            MainFrame.Navigate(masterCardPage);
         }
     }
 }

@@ -6,14 +6,16 @@ using ESMART.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Configuration;
 
 namespace ESMART.Presentation
 {
     public class DependencyInjection
     {
-        public static void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddLogging(loggingBuilder =>
             {
@@ -21,9 +23,11 @@ namespace ESMART.Presentation
                 loggingBuilder.AddConsole();
             });
 
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
             services.AddDbContextFactory<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer("Server=ENAKHE;Database=ESMART;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+                options.UseSqlServer(connectionString);
             });
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()

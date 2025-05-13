@@ -12,6 +12,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Configurations>Debug;Release;Migration</Configurations>
     <Platforms>AnyCPU;x86</Platforms>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,6 +51,7 @@
     <None Remove="Forms\UserSetting\Users\logo.png" />
     <None Remove="Forms\Verification\logo.png" />
     <None Remove="Forms\workshop.png" />
+    <None Remove="logo.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,9 +62,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\haarcascades\haarcascade_frontalface_default.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\images\favicon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\images\logo-main.png">
@@ -131,12 +130,12 @@
     <Resource Include="Forms\UserSetting\Users\logo.png" />
     <Resource Include="Forms\Verification\logo.png" />
     <Resource Include="Forms\workshop.png" />
+    <Resource Include="logo.png" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="favicon.ico">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -12,7 +12,10 @@ using ESMART.Presentation.Forms.Setting;
 using ESMART.Presentation.Forms.UserSetting;
 using ESMART.Presentation.Session;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System;
 using System.Windows;
 
 namespace ESMART.Presentation.Forms
@@ -23,6 +26,8 @@ namespace ESMART.Presentation.Forms
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IApplicationUserRoleRepository _userService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private IServiceProvider _serviceProvider;
+
         public Dashboard(IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager)
         {
             _hotelSettingsService = hotelSettingsService;
@@ -30,13 +35,19 @@ namespace ESMART.Presentation.Forms
             _userManager = userManager;
             InitializeComponent();
 
+            LoadHomePage();
+        }
+
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
             var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
-
-            IndexPage indexPage = serviceProvider.GetRequiredService<IndexPage>();
-
-            MainFrame.Navigate(indexPage);
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         public bool IsLoading
@@ -70,108 +81,93 @@ namespace ESMART.Presentation.Forms
             }
         }
 
-        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        private void LoadHomePage()
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            IndexPage indexPage = serviceProvider.GetRequiredService<IndexPage>();
+            IndexPage indexPage = _serviceProvider.GetRequiredService<IndexPage>();
 
             MainFrame.Navigate(indexPage);
         }
 
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadHomePage();
+        }
+
         private void GuestButton_Click(Object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            GuestPage guestPage = serviceProvider.GetRequiredService<GuestPage>();
+            GuestPage guestPage = _serviceProvider.GetRequiredService<GuestPage>();
 
             MainFrame.Navigate(guestPage);
         }
 
         private void BookingButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            BookingPage bookingPage = serviceProvider.GetRequiredService<BookingPage>();
+            BookingPage bookingPage = _serviceProvider.GetRequiredService<BookingPage>();
 
             MainFrame.Navigate(bookingPage);
         }
 
         private void RoomSettingButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            RoomSettingPage roomSettingPage = serviceProvider.GetRequiredService<RoomSettingPage>();
+            RoomSettingPage roomSettingPage = _serviceProvider.GetRequiredService<RoomSettingPage>();
 
             MainFrame.Navigate(roomSettingPage);
         }
 
         private void SettingButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            SettingDialog settingPage = serviceProvider.GetRequiredService<SettingDialog>();
+            SettingDialog settingPage = _serviceProvider.GetRequiredService<SettingDialog>();
             settingPage.ShowDialog();
         }
 
         private void UserSettingButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            UserSettingPage userSettingPage = serviceProvider.GetRequiredService<UserSettingPage>();
+            UserSettingPage userSettingPage = _serviceProvider.GetRequiredService<UserSettingPage>();
             MainFrame.Navigate(userSettingPage);
         }
 
         private void ReportButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            ReportPage reportPage = serviceProvider.GetRequiredService<ReportPage>();
+            ReportPage reportPage = _serviceProvider.GetRequiredService<ReportPage>();
             MainFrame.Navigate(reportPage);
         }
 
         private void ReservationButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            ReservationPage reservationPage = serviceProvider.GetRequiredService<ReservationPage>();
+            ReservationPage reservationPage = _serviceProvider.GetRequiredService<ReservationPage>();
             MainFrame.Navigate(reservationPage);
         }
 
         //Navigate to Card setting page
         private void CarSettingButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            CardPage cardPage = serviceProvider.GetRequiredService<CardPage>();
+            CardPage cardPage = _serviceProvider.GetRequiredService<CardPage>();
             MainFrame.Navigate(cardPage);
         }
 
         private void RoomButton_Click(Object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            RoomPage roomPage = serviceProvider.GetRequiredService<RoomPage>();
+            RoomPage roomPage = _serviceProvider.GetRequiredService<RoomPage>();
             MainFrame.Navigate(roomPage);
         }
 

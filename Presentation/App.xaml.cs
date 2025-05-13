@@ -11,19 +11,38 @@ namespace ESMART.Presentation
 {
     public partial class App : System.Windows.Application
     {
-        private readonly ServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
 
         public App()
         {
+            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ESMART");
+            string appSettingsPath = Path.Combine(appDataPath, "appsettings.json");
+
+            if (!Directory.Exists(appDataPath))
+            {
+                Directory.CreateDirectory(appDataPath);
+                File.SetAttributes(appDataPath, FileAttributes.Hidden);
+            }
+
+            if (!File.Exists(appSettingsPath))
+            {
+                string defaultPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                if (File.Exists(defaultPath))
+                {
+                    File.Copy(defaultPath, appSettingsPath);
+                }
+                else
+                {
+                    throw new FileNotFoundException("Missing appsettings.json in both AppData and application directory.");
+                }
+            }
+
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(appDataPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             _configuration = builder.Build();
 
-            var serviceCollection = new ServiceCollection();
-            _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
         protected async override void OnStartup(StartupEventArgs e)
@@ -31,7 +50,9 @@ namespace ESMART.Presentation
             base.OnStartup(e);
 
             var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
+
+            DependencyInjection.ConfigureServices(services, _configuration);
+
             var serviceProvider = services.BuildServiceProvider();
 
             using (var scope = serviceProvider.CreateScope())

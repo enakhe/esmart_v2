@@ -3,9 +3,11 @@ using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +33,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
         private readonly IBookingRepository _bookingRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly ICardRepository _cardRepository;
+        private IServiceProvider _serviceProvider;
         public RoomPage(IRoomRepository roomRepository, ICardRepository cardRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService)
         {
             _roomRepository = roomRepository;
@@ -40,6 +43,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
             _roomRepository = roomRepository;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
+        }
+
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         public async Task LoadRoom()
@@ -62,10 +77,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
 
         private async void AddRoomButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
-            AddRoomDialog addRoom = serviceProvider.GetRequiredService<AddRoomDialog>();
+            InitializeServices(); 
+
+            AddRoomDialog addRoom = _serviceProvider.GetRequiredService<AddRoomDialog>();
             if (addRoom.ShowDialog() == true)
             {
                 await LoadRoom();

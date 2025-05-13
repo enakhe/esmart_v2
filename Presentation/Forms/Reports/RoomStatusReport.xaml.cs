@@ -83,7 +83,7 @@ namespace ESMART.Presentation.Forms.Reports
         {
             if (sender is Button button && button.Tag is string Id)
             {
-                var selectedRoom = (Domain.Entities.RoomSettings.Room)RoomDataGrid.SelectedItem;
+                var selectedRoom = (Domain.ViewModels.RoomSetting.RoomViewModel)RoomDataGrid.SelectedItem;
                 if (selectedRoom.Id != null)
                 {
                     var room = await _roomRepository.GetRoomById(selectedRoom.Id);

@@ -11,9 +11,11 @@ using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +44,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         private readonly IVerificationCodeService _verificationCodeService;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
+        private IServiceProvider _serviceProvider;
 
         public ReservationPage(IReservationRepository reservationRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, IRoomRepository roomRepository, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
@@ -54,6 +57,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             _transactionRepository = transactionRepository;
             _applicationUserRoleRepository = applicationUserRoleRepository;
             InitializeComponent();
+        }
+
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         private async Task LoadReservation()
@@ -124,11 +139,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         // Add reservation
         private async void AddReservation_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            AddReservationDialog reservationForm = serviceProvider.GetRequiredService<AddReservationDialog>();
+            AddReservationDialog reservationForm = _serviceProvider.GetRequiredService<AddReservationDialog>();
             if (reservationForm.ShowDialog() == true)
             {
                 await LoadReservation();

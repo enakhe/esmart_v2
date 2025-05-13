@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +16,12 @@ namespace ESMART.Presentation
         public static void LogoutToLogin()
         {
             var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            DependencyInjection.ConfigureServices(services, configuration);
             var serviceProvider = services.BuildServiceProvider();
 
             // Show login screen again

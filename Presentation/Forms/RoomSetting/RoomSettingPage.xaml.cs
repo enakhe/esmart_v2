@@ -4,7 +4,10 @@ using ESMART.Presentation.Forms.RoomSetting.Building;
 using ESMART.Presentation.Forms.RoomSetting.Floor;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Forms.RoomSetting.RoomType;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,11 +21,24 @@ namespace ESMART.Presentation.Forms.RoomSetting
     {
         private readonly IRoomRepository _roomRepository;
         private readonly ICardRepository _cardRepository;
+        private IServiceProvider _serviceProvider;
         public RoomSettingPage(IRoomRepository roomRepository, ICardRepository cardRepository)
         {
             _roomRepository = roomRepository;
             _cardRepository = cardRepository;
             InitializeComponent();
+        }
+
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         public async Task LoadBuilding()
@@ -45,11 +61,9 @@ namespace ESMART.Presentation.Forms.RoomSetting
 
         private async void AddBuildingButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
+            InitializeServices();
 
-            AddBuildingDialog addBuilding = serviceProvider.GetRequiredService<AddBuildingDialog>();
+            AddBuildingDialog addBuilding = _serviceProvider.GetRequiredService<AddBuildingDialog>();
             if (addBuilding.ShowDialog() == true)
             {
                 await LoadBuilding();
@@ -163,10 +177,9 @@ namespace ESMART.Presentation.Forms.RoomSetting
 
         private async void AddFloorButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
-            AddFloorDialog addFloor = serviceProvider.GetRequiredService<AddFloorDialog>();
+            InitializeServices();
+
+            AddFloorDialog addFloor = _serviceProvider.GetRequiredService<AddFloorDialog>();
             if (addFloor.ShowDialog() == true)
             {
                 await LoadFloor();
@@ -274,10 +287,9 @@ namespace ESMART.Presentation.Forms.RoomSetting
 
         private async void AddAreaButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
-            AddAreaDialog addArea = serviceProvider.GetRequiredService<AddAreaDialog>();
+            InitializeServices();
+
+            AddAreaDialog addArea = _serviceProvider.GetRequiredService<AddAreaDialog>();
             if (addArea.ShowDialog() == true)
             {
                 await LoadArea();
@@ -387,10 +399,9 @@ namespace ESMART.Presentation.Forms.RoomSetting
 
         private async void AddRoomTypeButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
-            AddRoomTypeDialog addRoomType = serviceProvider.GetRequiredService<AddRoomTypeDialog>();
+            InitializeServices();
+
+            AddRoomTypeDialog addRoomType = _serviceProvider.GetRequiredService<AddRoomTypeDialog>();
 
             if (addRoomType.ShowDialog() == true)
             {
@@ -501,10 +512,9 @@ namespace ESMART.Presentation.Forms.RoomSetting
 
         private async void AddRoomButton_Click(object sender, RoutedEventArgs e)
         {
-            var services = new ServiceCollection();
-            DependencyInjection.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
-            AddRoomDialog addRoom = serviceProvider.GetRequiredService<AddRoomDialog>();
+            InitializeServices();
+
+            AddRoomDialog addRoom = _serviceProvider.GetRequiredService<AddRoomDialog>();
             if (addRoom.ShowDialog() == true)
             {
                 await LoadRoom();
