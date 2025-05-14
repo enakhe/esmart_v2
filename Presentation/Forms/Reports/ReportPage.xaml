@@ -72,21 +72,11 @@
                 <!-- Financial Settings with Submenu -->
                 <Expander Header="Financial Reports" Grid.Row="2" Foreground="White" Background="Transparent" BorderBrush="Transparent" FontSize="14" Margin="10">
                     <StackPanel Margin="12">
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Daily Revenue Report" Margin="10" FontSize="12" />
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Advance Deposit Report" Margin="10" FontSize="12" />
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Folio / Guest Billing Report" Margin="10" FontSize="12" />
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Refund and Adjustment Report" Margin="10" FontSize="12" />
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Booking Source Revenue Report" Margin="10" FontSize="12" />
+                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Daily Revenue Report" Margin="10" FontSize="12" Click="DailyRevenueReport_Click" />
                     </StackPanel>
                 </Expander>
 
-                <Expander Header="Guest Information Reports" Grid.Row="3" Foreground="White" Background="Transparent" BorderBrush="Transparent" FontSize="14" Margin="10">
-                    <StackPanel Margin="12">
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Guest History Report" Margin="10" FontSize="12" />
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Guest Profile Report" Margin="10" FontSize="12" />
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Folio / Guest Billing Report" Margin="10" FontSize="12" />
-                    </StackPanel>
-                </Expander>
+
             </Grid>
         </ScrollViewer>
 

@@ -349,8 +349,8 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                 using var context = _contextFactory.CreateDbContext();
                 var transactionItems = await context.TransactionItems
                     .Where(ti => ti.Transaction.Booking.RoomId == roomId &&
-                    ti.DateAdded >= from &&
-                    ti.DateAdded <= to)
+                    ti.DateAdded.Date >= from.Date &&
+                    ti.DateAdded.Date <= to.Date)
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,
@@ -628,6 +628,32 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                 throw new Exception("An error occurred when retrieving transaction items by filter. " + ex.Message);
             }
         }
+
+        public async Task<List<RevenueViewModel>> GetRevenueByDateRange(DateTime from, DateTime to)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+
+                var dailyRevenue = await context.TransactionItems
+                    .Where(ti => ti.DateAdded.Date >= from.Date && ti.DateAdded.Date <= to.Date && ti.Status == TransactionStatus.Paid)
+                    .GroupBy(ti => ti.DateAdded.Date)
+                    .Select(g => new RevenueViewModel
+                    {
+                        Date = g.Key,
+                        TotalRevenue = g.Sum(ti => ti.Amount)
+                    })
+                    .OrderBy(r => r.Date)
+                    .ToListAsync();
+
+                return dailyRevenue;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving daily revenue by filter. " + ex.Message);
+            }
+        }
+
 
         public async Task AddBankAccountAsync(BankAccount bankAccount)
         {

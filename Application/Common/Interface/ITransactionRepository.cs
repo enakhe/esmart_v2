@@ -1,5 +1,6 @@
 ﻿using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.ViewModels.Transaction;
+using System.Collections;
 
 namespace ESMART.Application.Common.Interface
 {
@@ -30,6 +31,7 @@ namespace ESMART.Application.Common.Interface
         Task<List<TransactionItemViewModel>> GetTransactionItemsByIdAsync(string id);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByDateAsync(DateTime fromTime, DateTime endTime);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByFilterAsync(string filter);
+        Task<List<RevenueViewModel>> GetRevenueByDateRange(DateTime from, DateTime to);
 
         Task AddBankAccountAsync(BankAccount bankAccount);
         Task<BankAccount> GetBankAccountById(string id);

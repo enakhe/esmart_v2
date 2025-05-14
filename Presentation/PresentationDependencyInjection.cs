@@ -70,6 +70,7 @@ namespace ESMART.Presentation
             services.AddScoped<OverstayedGuestReport>();
             services.AddScoped<RoomStatusReport>();
             services.AddScoped<RoomTransactionReport>();
+            services.AddScoped<DailyRevenueReport>();
 
             services.AddScoped<ReservationPage>();
             services.AddScoped<AddReservationDialog>();

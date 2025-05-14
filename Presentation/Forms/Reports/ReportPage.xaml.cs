@@ -86,5 +86,14 @@ namespace ESMART.Presentation.Forms.Reports
 
             MainFrame.Navigate(roomTransactionReport);
         }
+
+        public void DailyRevenueReport_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeServices();
+
+            DailyRevenueReport dailyRevenueReport = _serviceProvider.GetRequiredService<DailyRevenueReport>();
+
+            MainFrame.Navigate(dailyRevenueReport);
+        }
     }
 }

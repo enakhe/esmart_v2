@@ -236,8 +236,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Include(b => b.Guest)
                     .Include(b => b.ApplicationUser)
                     .Where(b =>
-                        b.CheckOut >= fromTime &&
-                        b.CheckOut <= endTime &&
+                        b.CheckOut.Date >= fromTime.Date &&
+                        b.CheckOut.Date <= endTime.Date &&
                         !b.IsTrashed
                     )
                     .Select(b => new BookingViewModel

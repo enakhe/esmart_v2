@@ -103,6 +103,9 @@
     <Compile Update="Forms\Reports\CurrentinHouseGuestReport.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Reports\DailyRevenueReport.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Reports\ExpectedDepartureReport.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
