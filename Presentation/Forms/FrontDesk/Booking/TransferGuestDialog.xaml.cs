@@ -128,6 +128,22 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
+        public async Task LoadBankAccount()
+        {
+            try
+            {
+                var accountNumber = await _transactionRepository.GetAllBankAccountAsync();
+
+                cmbAccountNumber.ItemsSource = accountNumber;
+                cmbAccountNumber.DisplayMemberPath = "BankAccountNumber";
+                cmbAccountNumber.SelectedValuePath = "Id";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void LoadDefaultSetting()
         {
             LoaderOverlay.Visibility = Visibility.Visible;
@@ -140,6 +156,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 txtDiscount.Text = _booking.Discount.ToString();
                 txtVAT.Text = _booking.VAT.ToString();
                 txtServiceCharge.Text = _booking.ServiceCharge.ToString();
+                cmbAccountNumber.SelectedValue = _booking.AccountNumber;
+                cmbPaymentMethod.SelectedValue = _booking.PaymentMethod;
             }
             catch (Exception ex)
             {
@@ -168,7 +186,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 var checkIn = dtpCheckOut.SelectedDate!.Value;
                 var checkOut = dtpCheckIn.SelectedDate!.Value;
                 int numberOfDays = (checkIn - checkOut).Days;
-                var accountNumber = cmbAccountNumber.Text;
+                var accountNumber = ((BankAccount)cmbAccountNumber.SelectedItem).Id;
                 var paymentMethod = Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!);
 
                 decimal differencePerDay = newRate - oldRate;
@@ -251,6 +269,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             if (differencePerDay != 0)
             {
                 var bookedRoom = await _roomRepository.GetRoomById(booking.RoomId);
+                var bookingAccount = await _transactionRepository.GetBankAccountById(booking.AccountNumber);
                 var bookedGuest = await _guestRepository.GetGuestByIdAsync(booking.GuestId);
                 var hotel = await _hotelSettingsService.GetHotelInformation();
                 var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
@@ -268,7 +287,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     Category = Category.Accomodation,
                     Type = TransactionType.Adjustment,
                     Status = TransactionStatus.Unpaid,
-                    BankAccount = booking.AccountNumber,
+                    BankAccount = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
                     DateAdded = DateTime.Now,
                     ApplicationUserId = AuthSession.CurrentUser?.Id,
                     TransactionId = transaction?.Id,
@@ -285,7 +304,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         var value = isVerifyPayment.Value;
                         if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            await VerifyPayment(hotel, booking, bookedGuest, activeUser, transaction!, transactionItem, amount);
+                            await VerifyPayment(hotel, booking, bookedGuest, activeUser, transaction!, transactionItem, amount, bookingAccount);
                         }
                         else
                         {
@@ -301,7 +320,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                  "guest_receipt",
                                  new ReceiptVariable
                                  {
-                                     accountNumber = booking.AccountNumber,
+                                     accountNumber = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
                                      amount = booking.TotalAmount.ToString("N2"),
                                      guestName = bookedGuest.FullName,
                                      hotelName = hotel.Name,
@@ -318,7 +337,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
-        private async Task VerifyPayment(Hotel hotel, Domain.Entities.FrontDesk.Booking booking, Domain.Entities.FrontDesk.Guest bookedGuest, ApplicationUser activeUser, Transaction transaction, TransactionItem transactionItem, decimal amount)
+        private async Task VerifyPayment(Hotel hotel, Domain.Entities.FrontDesk.Booking booking, Domain.Entities.FrontDesk.Guest bookedGuest, ApplicationUser activeUser, Transaction transaction, TransactionItem transactionItem, decimal amount, BankAccount bookingAccount)
         {
             var verificationCode = new VerificationCode
             {
@@ -332,7 +351,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             var response = await SenderHelper.SendOtp(
                 hotel.PhoneNumber,
                 hotel.Name,
-                booking.AccountNumber,
+                $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
                 bookedGuest.FullName,
                 "Booking",
                 verificationCode.Code,
@@ -367,7 +386,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         "guest_receipt",
                         new ReceiptVariable
                         {
-                            accountNumber = booking.AccountNumber,
+                            accountNumber = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
                             amount = booking.TotalAmount.ToString("N2"),
                             guestName = bookedGuest.FullName,
                             hotelName = hotel.Name,
@@ -491,6 +510,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         {
             await LoadRooms();
             await LoadFinancialMetric();
+            await LoadBankAccount();
             LoadDefaultSetting();
             LoadPaymentMethod();
         }

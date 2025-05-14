@@ -118,6 +118,22 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             }
         }
 
+        public async Task LoadBankAccount()
+        {
+            try
+            {
+                var accountNumber = await _transactionRepository.GetAllBankAccountAsync();
+
+                cmbAccountNumber.ItemsSource = accountNumber;
+                cmbAccountNumber.DisplayMemberPath = "BankAccountNumber";
+                cmbAccountNumber.SelectedValuePath = "Id";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         public void LoadPaymentMethod()
         {
             try
@@ -149,6 +165,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 txtDiscount.Text = _reservation.Discount.ToString();
                 txtVAT.Text = _reservation.VAT.ToString();
                 txtServiceCharge.Text = _reservation.ServiceCharge.ToString();
+                cmbAccountNumber.SelectedValue = _reservation.AccountNumber;
+                cmbPaymentMethod.SelectedValue = _reservation.PaymentMethod;
             }
             catch (Exception ex)
             {
@@ -256,6 +274,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             {
                 var reservedRoom = await _roomRepository.GetRoomById(reservation.RoomId);
                 var reservedGuest = await _guestRepository.GetGuestByIdAsync(reservation.GuestId);
+                var reservedAccount = await _transactionRepository.GetBankAccountById(reservation.AccountNumber);
                 var hotel = await _hotelSettingsService.GetHotelInformation();
                 var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
 
@@ -270,7 +289,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     Discount = reservation.Discount,
                     Category = Category.Accomodation,
                     Type = TransactionType.Adjustment,
-                    BankAccount = reservation.AccountNumber,
+                    BankAccount = $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}",
                     DateAdded = DateTime.Now,
                     ApplicationUserId = AuthSession.CurrentUser?.Id,
                     TransactionId = transaction.Id!,
@@ -296,7 +315,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                     await _verificationCodeService.AddCode(verificationCode);
 
-                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, reservation.AccountNumber, reservedGuest.FullName, "Reservation", verificationCode.Code, amount, reservation.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
+                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}", reservedGuest.FullName, "Reservation", verificationCode.Code, amount, reservation.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
                     if (response.IsSuccessStatusCode)
                     {
                         var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId, amount, _applicationUserRoleRepository);
@@ -424,6 +443,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         {
             await LoadRooms();
             await LoadFinancialMetric();
+            await LoadBankAccount();
             LoadDefaultSetting();
             LoadPaymentMethod();
         }

@@ -52,7 +52,7 @@
 
                             <StackPanel Grid.Column="0" Margin="0,0,5,20">
                                 <TextBlock Text="Service Charge:" FontWeight="Bold" />
-                                <TextBox x:Name="txtServicCharge" Padding="2,5,0,5" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" LostFocus="ServiceChargeTextBox_LostFocus" GotFocus="ServiceChargeTextBox_GotFocus" />
+                                <TextBox x:Name="txtServicCharge" Padding="2,5,0,5" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Margin="0,0,5,20">
@@ -69,7 +69,7 @@
 
                             <StackPanel Grid.Column="0" Margin="0,0,5,20">
                                 <TextBlock Text="Refund Precent:" FontWeight="Bold" />
-                                <TextBox x:Name="txtRefundPercent" Padding="2,5,0,5" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" LostFocus="ServiceChargeTextBox_LostFocus" GotFocus="ServiceChargeTextBox_GotFocus" />
+                                <TextBox x:Name="txtRefundPercent" Padding="2,5,0,5" PreviewTextInput="VatTextBox_PreviewTextInput" LostFocus="VatTextBox_LostFocus" GotFocus="VatTextBox_GotFocus" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Margin="0,0,5,20">

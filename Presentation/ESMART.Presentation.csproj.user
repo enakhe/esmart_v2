@@ -163,6 +163,9 @@
     <Compile Update="Forms\Setting\FinancialSetting\GeneralPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Setting\FinancialSetting\UpdateBankAccount.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Setting\Licence\LicenceDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -50,7 +50,7 @@ namespace ESMART.Presentation.Utils
         public static async Task<HttpResponseMessage> SendEmail(string to, string subject, string templateName, ReceiptVariable variables)
         {
             var apiService = new ApiService(new HttpClient());
-            var response = await apiService.PostAsync("http://localhost:8000/api/email", new
+            var response = await apiService.PostAsync("https://esmart-api.vercel.app/api/email", new
             {
                 to,
                 subject,

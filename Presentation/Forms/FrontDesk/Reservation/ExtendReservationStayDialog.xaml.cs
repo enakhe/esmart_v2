@@ -113,6 +113,22 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             }
         }
 
+        public async Task LoadBankAccount()
+        {
+            try
+            {
+                var accountNumber = await _transactionRepository.GetAllBankAccountAsync();
+
+                cmbAccountNumber.ItemsSource = accountNumber;
+                cmbAccountNumber.DisplayMemberPath = "BankAccountNumber";
+                cmbAccountNumber.SelectedValuePath = "Id";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void LoadDefaultSetting()
         {
             dtpCheckIn.DisplayDateStart = DateTime.Today;
@@ -121,6 +137,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
             txtRoom.Text = _reservation.Room.Number;
             txtRoomRate.Text = _reservation.Room.Rate.ToString();
+            cmbAccountNumber.SelectedValue = _reservation.AccountNumber;
+            cmbPaymentMethod.SelectedValue = _reservation.PaymentMethod;
         }
 
         private async void Save_Click(object sender, RoutedEventArgs e)
@@ -182,7 +200,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             discount = decimal.Parse(txtDiscount.Text);
             vat = decimal.Parse(txtVAT.Text);
             serviceCharge = decimal.Parse(txtServiceCharge.Text);
-            accountNumber = cmbAccountNumber.Text;
+            accountNumber = ((BankAccount)cmbAccountNumber.SelectedItem).Id;
 
             return true;
         }
@@ -210,6 +228,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         {
             var reservedRoom = await _roomRepository.GetRoomById(reservation.RoomId);
             var reservedGuest = await _guestRepository.GetGuestByIdAsync(reservation.GuestId);
+            var reservedAccount = await _transactionRepository.GetBankAccountById(reservation.AccountNumber);
             var hotel = await _hotelSettingsService.GetHotelInformation();
             var transaction = await _transactionRepository.GetByInvoiceNumberAsync(reservation.ReservationId);
             var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
@@ -223,7 +242,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 Discount = reservation.Discount,
                 Category = Category.Accomodation,
                 Type = TransactionType.Adjustment,
-                BankAccount = reservation.AccountNumber,
+                BankAccount = $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}"   ,
                 DateAdded = DateTime.Now,
                 ApplicationUserId = AuthSession.CurrentUser?.Id,
                 TransactionId = transaction.Id!,
@@ -245,7 +264,19 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 
 
-                var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, reservation.AccountNumber, reservedGuest.FullName, "Reservation", verificationCode.Code, amount, reservation.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
+                var response = await SenderHelper.SendOtp(
+                    hotel.PhoneNumber, 
+                    hotel.Name, 
+                    $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}", 
+                    reservedGuest.FullName, 
+                    "Reservation", 
+                    verificationCode.Code, 
+                    amount, 
+                    reservation.PaymentMethod.ToString(), 
+                    activeUser.FullName!, 
+                    activeUser.PhoneNumber!
+                );
+
                 if (response.IsSuccessStatusCode)
                 {
                     var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId, amount, _applicationUserRoleRepository);
@@ -351,6 +382,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         private async void Window_Activated(object sender, EventArgs e)
         {
             await LoadFinancialMetric();
+            await LoadBankAccount();
             LoadPaymentMethod();
             LoadDefaultSetting();
         }

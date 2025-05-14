@@ -108,7 +108,7 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Discount:" FontWeight="Bold" />
-                                <TextBox x:Name="txtDiscount" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" LostFocus="DiscountTextBox_LostFocus" GotFocus="txtDiscount_GotFocus" TextChanged="txtDiscount_TextChanged" />
+                                <TextBox x:Name="txtDiscount" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" LostFocus="DiscountTextBox_LostFocus" GotFocus="DiscountTextBox_GotFocus" />
                             </StackPanel>
 
                             <Image Cursor="Hand" x:Name="EditButtonDiscount" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Discount is set by default. You can change it later." MouseLeftButtonDown="EditDiscountButton_MouseLeftButtonDown" />
@@ -123,7 +123,7 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="VAT:" FontWeight="Bold" />
-                                <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="VatTextBox_PreviewTextInput" LostFocus="VatTextBox_LostFocus" GotFocus="VatTextBox_GotFocus" TextChanged="txtVAT_TextChanged" />
+                                <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="VatTextBox_PreviewTextInput" LostFocus="VatTextBox_LostFocus" GotFocus="VatTextBox_GotFocus" />
                             </StackPanel>
 
                             <Image Cursor="Hand" x:Name="EditButtonVAT" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="VAT is set by default. You can change it later." MouseLeftButtonDown="EditVATButton_MouseLeftButtonDown" />
@@ -140,9 +140,7 @@
 
                         <StackPanel Grid.Column="0" Margin="0,0,2,0">
                             <TextBlock Text="Account Number:" FontWeight="Bold" />
-                            <ComboBox x:Name="cmbAccountNumber" Padding="2,5,0,5">
-                                <ComboBoxItem Content="09069477106"/>
-                            </ComboBox>
+                            <ComboBox x:Name="cmbAccountNumber" Padding="2,5,0,5" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="2,0,0,0">
@@ -167,7 +165,7 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Service Charge:" FontWeight="Bold" />
-                                <TextBox x:Name="txtServiceCharge" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" LostFocus="ServiceChargeTextBox_LostFocus" GotFocus="ServiceChargeTextBox_GotFocus" IsEnabled="False" Padding="2,5,0,5" TextChanged="txtServiceCharge_TextChanged" />
+                                <TextBox x:Name="txtServiceCharge" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" IsEnabled="False" Padding="2,5,0,5" TextChanged="txtServiceCharge_TextChanged" />
                             </StackPanel>
 
                             <Image Cursor="Hand" x:Name="EditButtonServiceCharge" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Room rate is set to room type rate by default. You can change it later." MouseLeftButtonDown="EditServiceButton_MouseLeftButtonDown" />

@@ -158,16 +158,6 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
             InputFormatter.AllowDecimalOnly(sender, e);
         }
 
-        private void ServiceChargeTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            InputFormatter.FormatAsPercentageOnLostFocus(sender, e);
-        }
-
-        private void ServiceChargeTextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            InputFormatter.StripPercentageOnGotFocus(sender, e);
-        }
-
 
         // Discount
         private void DiscountTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
