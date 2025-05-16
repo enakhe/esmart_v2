@@ -3,29 +3,17 @@
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
-using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
-using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 {
@@ -154,7 +142,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 var isRoomAvailable = await CheckIfRoomCanBeBooked(_reservation.Room.Number, checkIn, checkOut);
 
-                if(isRoomAvailable)
+                if (isRoomAvailable)
                 {
                     var booking = await UpdateReservation(ReservationStatus.Tentative, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber, amountPaid);
 
@@ -242,7 +230,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 Discount = reservation.Discount,
                 Category = Category.Accomodation,
                 Type = TransactionType.Adjustment,
-                BankAccount = $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}"   ,
+                BankAccount = $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}",
                 DateAdded = DateTime.Now,
                 ApplicationUserId = AuthSession.CurrentUser?.Id,
                 TransactionId = transaction.Id!,
@@ -262,18 +250,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 await _verificationCodeService.AddCode(verificationCode);
 
-                
+
 
                 var response = await SenderHelper.SendOtp(
-                    hotel.PhoneNumber, 
-                    hotel.Name, 
-                    $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}", 
-                    reservedGuest.FullName, 
-                    "Reservation", 
-                    verificationCode.Code, 
-                    amount, 
-                    reservation.PaymentMethod.ToString(), 
-                    activeUser.FullName!, 
+                    hotel.PhoneNumber,
+                    hotel.Name,
+                    $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}",
+                    reservedGuest.FullName,
+                    "Reservation",
+                    verificationCode.Code,
+                    amount,
+                    reservation.PaymentMethod.ToString(),
+                    activeUser.FullName!,
                     activeUser.PhoneNumber!
                 );
 

@@ -155,14 +155,15 @@ namespace ESMART.Infrastructure.Identity
             if (_roleManager.Roles.All(r => r.Name != auditorRole.Name))
                 await _roleManager.CreateAsync(auditorRole);
 
-            var administrator = new ApplicationUser { 
-                UserName = "administrator@localhost", 
-                Email = "administrator@localhost", 
-                FirstName = "Super", 
-                LastName = "Administrator", 
-                MiddleName = "User", 
-                PhoneNumber = "+2349069477106", 
-                RoleId = administratorRole.Id 
+            var administrator = new ApplicationUser
+            {
+                UserName = "administrator@localhost",
+                Email = "administrator@localhost",
+                FirstName = "Super",
+                LastName = "Administrator",
+                MiddleName = "User",
+                PhoneNumber = "+2349069477106",
+                RoleId = administratorRole.Id
             };
 
             if (_userManager.Users.All(u => u.UserName != administrator.UserName))
@@ -174,13 +175,14 @@ namespace ESMART.Infrastructure.Identity
                 }
             }
 
-            var admin = new ApplicationUser { 
-                UserName = "admin@localhost", 
-                Email = "admin@localhost", 
-                FirstName = "Hotel", 
-                LastName = "Admin", 
-                MiddleName = "User", 
-                RoleId = adminRole.Id 
+            var admin = new ApplicationUser
+            {
+                UserName = "admin@localhost",
+                Email = "admin@localhost",
+                FirstName = "Hotel",
+                LastName = "Admin",
+                MiddleName = "User",
+                RoleId = adminRole.Id
             };
 
             if (_userManager.Users.All(u => u.UserName != admin.UserName))

@@ -1,20 +1,7 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using ESMART.Application.Common.Interface;
+﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.Data;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.UserSetting.Users
 {
@@ -52,7 +39,7 @@ namespace ESMART.Presentation.Forms.UserSetting.Users
 
                 MessageBox.Show("User password updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.DialogResult = true;
-        }
+            }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);

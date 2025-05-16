@@ -1,9 +1,6 @@
 ﻿#nullable disable
 
-using ESMART.Domain.Entities.Configuration;
-using ESMART.Domain.Entities.FrontDesk;
 using System.Net.Http;
-using System.Text.Json;
 
 namespace ESMART.Presentation.Utils
 {
@@ -56,6 +53,18 @@ namespace ESMART.Presentation.Utils
                 subject,
                 templateName,
                 variables
+            });
+
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> SendFile(string fileBase64, string fileName)
+        {
+            var apiService = new ApiService(new HttpClient());
+            var response = await apiService.PostAsync("https://esmart-api.vercel.app/api/pinata", new
+            {
+                fileBase64,
+                fileName
             });
 
             return response;

@@ -2,7 +2,6 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.FrontDesk;
-using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
@@ -45,10 +44,10 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                                 .ToListAsync();
 
 
-                foreach(var overstay in overstayedBooking)
+                foreach (var overstay in overstayedBooking)
                 {
                     var booking = allBookings.FirstOrDefault(b => b.Id == overstay.Id);
-                    if(booking != null)
+                    if (booking != null)
                     {
                         booking.IsOverStay = true;
                         context.Entry(booking).State = EntityState.Modified;
@@ -322,9 +321,9 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Include(b => b.Guest)
                     .Include(b => b.ApplicationUser)
                     .Where(b =>
-                        b.CheckOut < now &&              
-                        b.CheckOut >= fromDate &&               
-                        b.CheckOut <= toDate &&                 
+                        b.CheckOut < now &&
+                        b.CheckOut >= fromDate &&
+                        b.CheckOut <= toDate &&
                         !b.IsTrashed &&
                         b.Status != BookingStatus.CheckedOut
                     )

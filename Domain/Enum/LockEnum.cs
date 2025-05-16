@@ -5,7 +5,7 @@ namespace ESMART.Domain.Enum
     [Flags]
     public enum LOCK_SETTING
     {
-        LS_REPLACE_EN = 0x01,     // Enable guest card replacement
+        LS_REPLACE_EN = 0x01,
         LS_LEAD_EN = 0x02,     // Enable lead mode
         LS_VALID_DATE_EN = 0x04,     // Enable validity period
         LS_FLOOR_RANGE_EN = 0x08,     // Check floor range

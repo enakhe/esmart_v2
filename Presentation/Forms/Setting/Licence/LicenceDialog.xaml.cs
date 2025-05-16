@@ -1,19 +1,9 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.Setting.Licence
 {
@@ -37,7 +27,7 @@ namespace ESMART.Presentation.Forms.Setting.Licence
             try
             {
                 var freeTrialSettings = await _hotelSettingsService.GetSettingAsync("FreeTrial");
-                if(freeTrialSettings != null)
+                if (freeTrialSettings != null)
                 {
                     var value = freeTrialSettings.Value;
                     if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
@@ -64,7 +54,7 @@ namespace ESMART.Presentation.Forms.Setting.Licence
         {
             string text = txtLicenceKey.Text.Replace("-", "");
 
-            if(text.Length > 24)
+            if (text.Length > 24)
             {
                 text = text.Substring(0, 24);
             }
@@ -130,7 +120,7 @@ namespace ESMART.Presentation.Forms.Setting.Licence
                     else
                     {
                         bool isValid = LicenceHelper.ValidateProductKey(txtHotelName.Text, txtLicenceKey.Text);
-                        if(isValid)
+                        if (isValid)
                         {
 
                             string expDatStr = LicenceHelper.GetExpirationDate(txtLicenceKey.Text)!;
@@ -165,15 +155,15 @@ namespace ESMART.Presentation.Forms.Setting.Licence
                                 this.DialogResult = true;
                             }
 
-                             MessageBox.Show("Product Key was successfully validated", "Success", MessageBoxButton.OK,
-                                    MessageBoxImage.Information);
+                            MessageBox.Show("Product Key was successfully validated", "Success", MessageBoxButton.OK,
+                                   MessageBoxImage.Information);
                         }
                         else
                         {
                             MessageBox.Show("Invalid product key", "Invalid product key", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
 
-                           
+
                     }
                 }
             }

@@ -3,8 +3,6 @@
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.Enum;
 using ESMART.Presentation.LockSDK;
-using ESMART.Presentation.Session;
-using OfficeOpenXml;
 using System.Windows;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
@@ -134,7 +132,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     LockSDKMethods.CheckErr(st);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }

@@ -1,23 +1,9 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
-using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Enum;
 using ESMART.Presentation.LockSDK;
-using ESMART.Presentation.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.Cards
 {
@@ -132,7 +118,7 @@ namespace ESMART.Presentation.Forms.Cards
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var st = 0; 
+                var st = 0;
 
                 char[] card_snr = new char[1000];
 
@@ -177,7 +163,7 @@ namespace ESMART.Presentation.Forms.Cards
                     MessageBox.Show($"Failed to issue card, error code: {st}", "", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "", MessageBoxButton.OK, MessageBoxImage.Error);
             }

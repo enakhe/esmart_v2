@@ -1,25 +1,12 @@
 ﻿using ESMART.Application.Common.Interface;
-using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Room
 {
@@ -77,7 +64,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
 
         private async void AddRoomButton_Click(object sender, RoutedEventArgs e)
         {
-            InitializeServices(); 
+            InitializeServices();
 
             AddRoomDialog addRoom = _serviceProvider.GetRequiredService<AddRoomDialog>();
             if (addRoom.ShowDialog() == true)

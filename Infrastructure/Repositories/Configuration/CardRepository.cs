@@ -2,15 +2,10 @@
 using ESMART.Domain.Entities.Configuration;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESMART.Infrastructure.Repositories.Configuration
 {
-    public class CardRepository(IDbContextFactory<ApplicationDbContext> contextFactory): ICardRepository
+    public class CardRepository(IDbContextFactory<ApplicationDbContext> contextFactory) : ICardRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
 
@@ -23,7 +18,7 @@ namespace ESMART.Infrastructure.Repositories.Configuration
                 await context.AuthorizationCards.AddAsync(card);
                 await context.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("An error occurred when adding auth card. " + ex.Message);
             }
@@ -34,7 +29,7 @@ namespace ESMART.Infrastructure.Repositories.Configuration
         {
             try
             {
-                using var context = _contextFactory.CreateDbContext(); 
+                using var context = _contextFactory.CreateDbContext();
                 var card = await context.AuthorizationCards.FirstOrDefaultAsync(aC => aC.ComputerName == computerName);
 
                 return card!;

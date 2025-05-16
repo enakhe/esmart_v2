@@ -2,9 +2,7 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
-using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Verification;
-using ESMART.Domain.Enum;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using System.Windows;

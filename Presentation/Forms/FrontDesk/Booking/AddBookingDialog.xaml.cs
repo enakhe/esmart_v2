@@ -1,9 +1,7 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using ESMART.Application.Common.Interface;
+﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Entities.Data;
-using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
@@ -13,7 +11,6 @@ using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -189,7 +186,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 var isBookingAllowed = await CheckIfRoomCanBeBooked(((Domain.Entities.RoomSettings.Room)cmbRoom.SelectedItem).Number, checkIn, checkOut);
 
-                if(isBookingAllowed)
+                if (isBookingAllowed)
                 {
                     var booking = await CreateBooking(guestId, roomId, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber);
 
@@ -347,23 +344,23 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
                         await _bookingRepository.UpdateBooking(booking);
 
-                       await SenderHelper.SendEmail(
-                            bookedGuest.Email,
-                            "Booking Payment Receipt",
-                            "guest_receipt",
-                            new ReceiptVariable
-                            {
-                                accountNumber = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
-                                amount = booking.TotalAmount.ToString("N2"),
-                                guestName = bookedGuest.FullName,
-                                hotelName = hotel.Name,
-                                invoiceNumber = transaction.InvoiceNumber,
-                                paymentMethod = booking.PaymentMethod.ToString(),
-                                receptionist = activeUser.FullName,
-                                receptionistContact = activeUser.PhoneNumber,
-                                service = booking.BookingId,
-                            }
-                        );
+                        await SenderHelper.SendEmail(
+                             bookedGuest.Email,
+                             "Booking Payment Receipt",
+                             "guest_receipt",
+                             new ReceiptVariable
+                             {
+                                 accountNumber = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
+                                 amount = booking.TotalAmount.ToString("N2"),
+                                 guestName = bookedGuest.FullName,
+                                 hotelName = hotel.Name,
+                                 invoiceNumber = transaction.InvoiceNumber,
+                                 paymentMethod = booking.PaymentMethod.ToString(),
+                                 receptionist = activeUser.FullName,
+                                 receptionistContact = activeUser.PhoneNumber,
+                                 service = booking.BookingId,
+                             }
+                         );
                     }
                 }
             }

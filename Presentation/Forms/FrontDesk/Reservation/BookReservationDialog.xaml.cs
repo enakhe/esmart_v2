@@ -1,26 +1,9 @@
 ﻿using ESMART.Application.Common.Interface;
-using ESMART.Domain.Entities.Configuration;
-using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Verification;
-using ESMART.Domain.Enum;
-using ESMART.Infrastructure.Repositories.FrontDesk;
-using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 {

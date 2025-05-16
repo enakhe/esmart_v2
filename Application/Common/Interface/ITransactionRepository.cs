@@ -1,6 +1,5 @@
 ﻿using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.ViewModels.Transaction;
-using System.Collections;
 
 namespace ESMART.Application.Common.Interface
 {

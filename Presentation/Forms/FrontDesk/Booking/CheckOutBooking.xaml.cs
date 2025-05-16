@@ -1,23 +1,10 @@
 ﻿using ESMART.Application.Common.Interface;
-using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
 {
@@ -78,12 +65,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
                         VerifyPaymentWindow verifyPaymentWindow = new(
-                            _verificationCodeService, 
-                            _hotelSettingsService, 
-                            _bookingRepository, 
-                            _transactionRepository, 
-                            _booking.BookingId, 
-                            _amount, 
+                            _verificationCodeService,
+                            _hotelSettingsService,
+                            _bookingRepository,
+                            _transactionRepository,
+                            _booking.BookingId,
+                            _amount,
                             _applicationUserRoleRepository
                         );
 

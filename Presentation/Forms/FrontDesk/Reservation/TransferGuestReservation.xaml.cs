@@ -1,28 +1,16 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
-using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
-using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 {
@@ -245,7 +233,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 {
                     MessageBox.Show("The selected room is not available for the selected dates.", "Room Unavailable", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
-               
+
             }
             catch (Exception ex)
             {

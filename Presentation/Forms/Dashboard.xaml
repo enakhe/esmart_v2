@@ -187,7 +187,7 @@
                         </StackPanel>
                     </Button.Content>
                 </Button>
-                
+
                 <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="BookingButton_Click">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
@@ -383,52 +383,91 @@
         </Grid>
 
         <!-- Header with Menu -->
-        <Grid Grid.Row="0" Grid.Column="1" Background="White">
+        <Grid Grid.Row="0" Grid.Column="1" Background="White" RenderTransformOrigin="0.546,0.534">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition Width="2*" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Esmart Hotel Management Software" Grid.Column="0" x:Name="txtHotelName" FontSize="24" FontWeight="Bold" Margin="20,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="#1a237e"/>
 
-            <Button Cursor="Hand" Background="Transparent" Grid.Column="1" Foreground="Black" BorderThickness="0" HorizontalAlignment="Right" Padding="5,10,0,10" Margin="20,10" FontSize="18" HorizontalContentAlignment="Right" Click="LogOutButton_Click">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}">
-                                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="Transparent"/>
-                                        </Trigger>
-                                        <Trigger Property="IsPressed" Value="True">
-                                            <Setter Property="Background" Value="Transparent"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Button.Style>
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image Source="/Forms/log-out.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Log Out" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
+            <Grid RenderTransformOrigin="0.609,0.484" Grid.ColumnSpan="2" Margin="833,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Button Cursor="Hand" Background="Transparent" Grid.Column="0" Foreground="Black" BorderThickness="0" HorizontalAlignment="Right" Padding="5,10,0,10" Margin="20,10" FontSize="18" HorizontalContentAlignment="Right" Click="BackupButton_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}">
+                                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="/Forms/backup.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Backup" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <Button Cursor="Hand" Background="Transparent" Grid.Column="1" Foreground="Black" BorderThickness="0" HorizontalAlignment="Right" Padding="5,10,0,10" Margin="20,10" FontSize="18" HorizontalContentAlignment="Right" Click="LogOutButton_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}">
+                                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="/Forms/log-out.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Log Out" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+            </Grid>
+
         </Grid>
 
         <!-- Main Content -->
         <Grid Grid.Row="1" Grid.Column="1" Margin="20">
+            <Frame x:Name="MainFrame" Margin="10,10,10,10" NavigationUIVisibility="Hidden"/>
             <Grid x:Name="LoaderGrid" Background="Gray" Opacity="0.5" Visibility="Collapsed">
                 <ProgressBar IsIndeterminate="True" Width="200" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Grid>
-            <Frame x:Name="MainFrame" Margin="10,10,10,10" NavigationUIVisibility="Hidden"/>
         </Grid>
     </Grid>
 </Window>

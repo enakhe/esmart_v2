@@ -1,5 +1,6 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.Data;
+using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.Forms.Cards;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
@@ -11,11 +12,11 @@ using ESMART.Presentation.Forms.RoomSetting;
 using ESMART.Presentation.Forms.Setting;
 using ESMART.Presentation.Forms.UserSetting;
 using ESMART.Presentation.Session;
+using ESMART.Presentation.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-using System;
 using System.Windows;
 
 namespace ESMART.Presentation.Forms
@@ -212,6 +213,47 @@ namespace ESMART.Presentation.Forms
             {
                 MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
                     MessageBoxImage.Error);
+            }
+        }
+
+        private async void BackupButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderGrid.Visibility = Visibility.Visible;
+            try
+            {
+                var response = MessageBox.Show("Are you sure you want to create a backup?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (response == MessageBoxResult.Yes)
+                {
+                    var backupFile = BackupRepository.CreateBackup();
+                    MessageBox.Show("Backup created successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    LoaderGrid.Visibility = Visibility.Visible;
+
+                    var hotel = await _hotelSettingsService.GetHotelInformation();
+                    if (hotel != null)
+                    {
+                        var zippedFile = BackupRepository.ZipFiles(backupFile);
+                        var result = await BackupRepository.UploadBackupAsync(zippedFile, hotel.Name);
+
+                        if (result.Success)
+                        {
+                            MessageBox.Show($"Backup uploaded to cloud successfully: {result.DownloadLink}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Failed to upload backup", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }                    
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderGrid.Visibility = Visibility.Collapsed;
             }
         }
 

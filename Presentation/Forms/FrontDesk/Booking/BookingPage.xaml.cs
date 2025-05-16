@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -132,7 +131,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                     await LoadBooking();
                                 }
                             }
-                        }           
+                        }
                     }
                     else
                     {
@@ -368,7 +367,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         var user = await _userService.GetUserById(userId);
                         if (user != null)
                         {
-                            bool isAdmin = await _userManager.IsInRoleAsync(user, DefaultRoles.Administrator.ToString()) || 
+                            bool isAdmin = await _userManager.IsInRoleAsync(user, DefaultRoles.Administrator.ToString()) ||
                                             await _userManager.IsInRoleAsync(user, DefaultRoles.Admin.ToString()) ||
                                             await _userManager.IsInRoleAsync(user, DefaultRoles.Manager.ToString());
                             if (!isAdmin)
@@ -461,7 +460,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private async Task<bool> VerifyPayment(Domain.Entities.FrontDesk.Booking booking, ApplicationUser activeUser)
         {
             var hotel = await _hotelSettingsService.GetHotelInformation();
-            
+
 
             if (booking.Status != Domain.Enum.BookingStatus.Completed)
             {
@@ -477,15 +476,15 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 if (hotel != null)
                 {
                     var response = await SenderHelper.SendOtp(
-                        hotel.PhoneNumber, 
-                        hotel.Name, 
-                        booking.AccountNumber, 
-                        booking.Guest.FullName, 
-                        "Booking", 
-                        verificationCode.Code, 
-                        booking.Receivables, 
-                        booking.PaymentMethod.ToString(), 
-                        activeUser.FullName!, 
+                        hotel.PhoneNumber,
+                        hotel.Name,
+                        booking.AccountNumber,
+                        booking.Guest.FullName,
+                        "Booking",
+                        verificationCode.Code,
+                        booking.Receivables,
+                        booking.PaymentMethod.ToString(),
+                        activeUser.FullName!,
                         activeUser.PhoneNumber!
                     );
 
@@ -494,12 +493,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
                         VerifyPaymentWindow verifyPaymentWindow = new(
-                            _verificationCodeService, 
-                            _hotelSettingsService, 
-                            _bookingRepository, 
-                            _transactionRepository, 
-                            booking.BookingId, 
-                            booking.Receivables, 
+                            _verificationCodeService,
+                            _hotelSettingsService,
+                            _bookingRepository,
+                            _transactionRepository,
+                            booking.BookingId,
+                            booking.Receivables,
                             _applicationUserRoleRepository
                         );
 

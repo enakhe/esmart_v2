@@ -5,7 +5,6 @@ using ESMART.Presentation.Session;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-using System;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;

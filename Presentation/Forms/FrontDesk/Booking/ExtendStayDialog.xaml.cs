@@ -2,12 +2,10 @@
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Entities.Data;
-using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
-using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
@@ -143,7 +141,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 var isRoomAvailable = await CheckIfRoomCanBeBooked(_booking.Room.Number, checkIn, checkOut);
 
-                if(isRoomAvailable)
+                if (isRoomAvailable)
                 {
                     var booking = await UpdateBooking(BookingStatus.Pending, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber);
                     await HandlePostBookingAsync(booking, totalAmount);
@@ -289,7 +287,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                          );
                     }
                 }
-                        
+
             }
         }
 
@@ -305,27 +303,27 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             await _verificationCodeService.AddCode(verificationCode);
 
             var response = await SenderHelper.SendOtp(
-                hotel.PhoneNumber, 
+                hotel.PhoneNumber,
                 hotel.Name,
-                $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}", 
-                bookedGuest.FullName, 
-                "Booking", 
-                verificationCode.Code, 
-                amount, 
-                booking.PaymentMethod.ToString(), 
-                activeUser.FullName!, 
+                $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
+                bookedGuest.FullName,
+                "Booking",
+                verificationCode.Code,
+                amount,
+                booking.PaymentMethod.ToString(),
+                activeUser.FullName!,
                 activeUser.PhoneNumber!
             );
 
             if (response.IsSuccessStatusCode)
             {
                 var verifyPaymentWindow = new VerifyPaymentWindow(
-                    _verificationCodeService, 
-                    _hotelSettingsService, 
-                    _bookingRepository, 
-                    _transactionRepository, 
-                    booking.BookingId, 
-                    amount, 
+                    _verificationCodeService,
+                    _hotelSettingsService,
+                    _bookingRepository,
+                    _transactionRepository,
+                    booking.BookingId,
+                    amount,
                     _applicationUserRoleRepository
                 );
 
@@ -368,7 +366,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 booking.Receivables += booking.TotalAmount;
                 MessageBox.Show(
                     "Booking extended successfully but could not verify payment. Payment will be flagged as pending.",
-                    "Info", 
+                    "Info",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information
                 );
@@ -547,29 +545,29 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 if (!isNull)
                 {
                     var totalPrice = Helper.GetPriceByRateAndTime(
-                        dtpCheckIn.SelectedDate.Value, 
-                        dtpCheckOut.SelectedDate.Value, 
+                        dtpCheckIn.SelectedDate.Value,
+                        dtpCheckOut.SelectedDate.Value,
                         decimal.Parse(txtRoomRate.Text));
 
                     var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
 
                     if (currencySetting != null)
                     {
-                        txtTotalAmount.Text = currencySetting.Value + " " + 
+                        txtTotalAmount.Text = currencySetting.Value + " " +
                             Helper.CalculateTotal(totalPrice,
-                            decimal.Parse(txtDiscount.Text), 
-                            decimal.Parse(txtVAT.Text), 
+                            decimal.Parse(txtDiscount.Text),
+                            decimal.Parse(txtVAT.Text),
                             decimal.Parse(txtServiceCharge.Text)).ToString("N2");
                     }
-                        
+
                     else
                     {
                         txtTotalAmount.Text = "₦" + " " +
-                            Helper.CalculateTotal(totalPrice, 
-                            decimal.Parse(txtDiscount.Text), 
-                            decimal.Parse(txtVAT.Text), 
+                            Helper.CalculateTotal(totalPrice,
+                            decimal.Parse(txtDiscount.Text),
+                            decimal.Parse(txtVAT.Text),
                             decimal.Parse(txtServiceCharge.Text)).ToString("N2");
-                    }     
+                    }
                 }
             }
         }

@@ -232,7 +232,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             {
                 using var context = _contextFactory.CreateDbContext();
                 var transactionItems = await context.TransactionItems
-                    .FirstOrDefaultAsync(ti => ti.ServiceId == serviceId && 
+                    .FirstOrDefaultAsync(ti => ti.ServiceId == serviceId &&
                     ti.Amount == amount &&
                     ti.Transaction.GuestId == guestId &&
                     ti.Status == TransactionStatus.Unpaid);

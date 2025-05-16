@@ -1,24 +1,11 @@
 ﻿#nullable disable
 
 using ESMART.Application.Common.Interface;
-using ESMART.Domain.Entities.FrontDesk;
-using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Domain.ViewModels.RoomSetting;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Room
 {
@@ -32,7 +19,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IRoomRepository _roomRepository;
         private readonly Domain.Entities.RoomSettings.Room _room;
-        public RoomDetailsDialog(IRoomRepository roomRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService,  Domain.Entities.RoomSettings.Room room)
+        public RoomDetailsDialog(IRoomRepository roomRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, Domain.Entities.RoomSettings.Room room)
         {
             _roomRepository = roomRepository;
             _transactionRepository = transactionRepository;

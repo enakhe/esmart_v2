@@ -4,7 +4,6 @@ using ESMART.Presentation.Forms.Setting.SystemSetup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-using System;
 using System.Windows;
 
 namespace ESMART.Presentation.Forms.Setting

@@ -140,6 +140,7 @@ namespace ESMART.Infrastructure.Repositories.Configuration
                 AddSettingIfNotExists("VerifyTransaction", "True", "boolean", "Verify all Transaction", category.Id);
                 AddSettingIfNotExists("LockType", "MIFI", "string", "Default Lock Type", operationCategory.Id);
                 AddSettingIfNotExists("FreeTrial", "True", "boolean", "Eligible for Free Trial", operationCategory.Id);
+                AddSettingIfNotExists("Backup", "Weekly", "string", "Scheduled Backup Time", operationCategory.Id);
 
                 if (defaultSettings.Any())
                 {

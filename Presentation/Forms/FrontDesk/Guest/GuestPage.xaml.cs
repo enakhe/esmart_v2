@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -199,7 +198,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         }
                     }
                 }
-                            
+
             }
         }
 

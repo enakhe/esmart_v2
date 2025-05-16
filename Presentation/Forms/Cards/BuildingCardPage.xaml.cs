@@ -1,22 +1,9 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.Enum;
-using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.LockSDK;
-using ESMART.Presentation.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.Cards
 {
@@ -105,7 +92,7 @@ namespace ESMART.Presentation.Forms.Cards
                 string endTime = DateTime.Now.AddHours(1).ToString("yyyy-MM-dd HH:mm:ss");
                 int cardFlg = 0;
 
-                if(cmbBuilding.SelectedValue == null)
+                if (cmbBuilding.SelectedValue == null)
                 {
                     MessageBox.Show("Failed to issue card: please select a building", "", MessageBoxButton.OK, MessageBoxImage.Error);
                 }

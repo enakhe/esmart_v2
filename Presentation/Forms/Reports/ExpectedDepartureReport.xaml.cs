@@ -1,24 +1,10 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.ViewModels.FrontDesk;
-using ESMART.Infrastructure.Repositories.Configuration;
-using ESMART.Infrastructure.Repositories.Transaction;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.Reports
 {

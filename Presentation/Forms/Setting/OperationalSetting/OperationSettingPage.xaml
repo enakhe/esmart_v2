@@ -26,12 +26,21 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Column="0" Margin="0,0,5,20">
+                        <StackPanel Grid.Row="0" Margin="0,0,5,20">
                             <TextBlock Text="Lock Type" FontWeight="Bold" />
                             <ComboBox x:Name="cmbLockType" Padding="2,5,0,5">
                                 <ComboBoxItem>MIFI</ComboBoxItem>
                                 <ComboBoxItem>RFID</ComboBoxItem>
                                 <ComboBoxItem>PULMOS</ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Margin="0,0,5,20">
+                            <TextBlock Text="Backup" FontWeight="Bold" />
+                            <ComboBox x:Name="cmbBackUp" Padding="2,5,0,5">
+                                <ComboBoxItem>Daily</ComboBoxItem>
+                                <ComboBoxItem>Weekly</ComboBoxItem>
+                                <ComboBoxItem>Monthly</ComboBoxItem>
                             </ComboBox>
                         </StackPanel>
                         

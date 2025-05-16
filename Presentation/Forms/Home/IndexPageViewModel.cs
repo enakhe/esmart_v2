@@ -1,5 +1,4 @@
-﻿using ESMART.Domain.Entities.RoomSettings;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace ESMART.Presentation.Forms.Home
 {

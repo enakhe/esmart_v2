@@ -1,28 +1,17 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
-using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 {
@@ -347,31 +336,31 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 await _verificationCodeService.AddCode(verificationCode);
 
                 var response = await SenderHelper.SendOtp(
-                    hotel.PhoneNumber, 
+                    hotel.PhoneNumber,
                     hotel.Name,
                     $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}",
-                    reservedGuest.FullName, 
-                    "Reservation", 
-                    verificationCode.Code, 
-                    reservation.AmountPaid, 
-                    reservation.PaymentMethod.ToString(), 
-                    activeUser.FullName!, 
+                    reservedGuest.FullName,
+                    "Reservation",
+                    verificationCode.Code,
+                    reservation.AmountPaid,
+                    reservation.PaymentMethod.ToString(),
+                    activeUser.FullName!,
                     activeUser.PhoneNumber!
                 );
 
                 if (response.IsSuccessStatusCode)
                 {
                     var verifyPaymentWindow = new VerifyPaymentWindow(
-                        _verificationCodeService, 
-                        _hotelSettingsService, 
-                        _bookingRepository, 
-                        _transactionRepository, 
-                        reservation.ReservationId, 
-                        reservation.AmountPaid, 
+                        _verificationCodeService,
+                        _hotelSettingsService,
+                        _bookingRepository,
+                        _transactionRepository,
+                        reservation.ReservationId,
+                        reservation.AmountPaid,
                         _applicationUserRoleRepository
                     );
 
-                    if(verifyPaymentWindow.ShowDialog() == true)
+                    if (verifyPaymentWindow.ShowDialog() == true)
                     {
                         if (reservation.AmountPaid == reservation.TotalAmount)
                         {

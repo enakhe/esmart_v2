@@ -6,11 +6,6 @@ using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ESMART.Infrastructure.Repositories.FrontDesk
 {
@@ -313,7 +308,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
 
                 return await context.Reservations
                     .Where(r => r.Room.Number == roomNo &&
-                                r.Status != ReservationStatus.Cancelled && 
+                                r.Status != ReservationStatus.Cancelled &&
                                 r.Status != ReservationStatus.CheckedIn &&
                                 r.ArrivateDate <= endDate &&
                                 r.DepartureDate >= startDate)

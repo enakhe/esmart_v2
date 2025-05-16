@@ -2,27 +2,13 @@
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Enum;
-using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.LockSDK;
-using ESMART.Presentation.Session;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.Cards
 {
@@ -372,7 +358,7 @@ namespace ESMART.Presentation.Forms.Cards
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
-            
+
         }
 
         private void BuildingCardButton_Click(object sender, RoutedEventArgs e)

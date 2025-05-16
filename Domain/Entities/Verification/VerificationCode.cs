@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using ESMART.Domain.Entities.Data;
-using ESMART.Domain.Entities.FrontDesk;
 
 namespace ESMART.Domain.Entities.Verification
 {

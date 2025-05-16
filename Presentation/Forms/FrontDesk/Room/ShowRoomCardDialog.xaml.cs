@@ -1,23 +1,9 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
-using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Enum;
 using ESMART.Presentation.LockSDK;
-using ESMART.Presentation.Session;
-using System;
-using System.Collections.Generic;
-using System.DirectoryServices.ActiveDirectory;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Room
 {

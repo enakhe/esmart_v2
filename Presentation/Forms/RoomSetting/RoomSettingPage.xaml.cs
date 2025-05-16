@@ -7,7 +7,6 @@ using ESMART.Presentation.Forms.RoomSetting.RoomType;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-using System;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
