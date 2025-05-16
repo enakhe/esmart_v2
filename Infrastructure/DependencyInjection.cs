@@ -32,6 +32,7 @@ namespace ESMART.Infrastructure
             services.AddScoped<ReservationRepository>();
             services.AddScoped<LicenceRepository>();
             services.AddScoped<CardRepository>();
+            services.AddScoped<BackupRepository>();
             return services;
         }
 
@@ -49,6 +50,7 @@ namespace ESMART.Infrastructure
             services.AddTransient<IReservationRepository, ReservationRepository>();
             services.AddTransient<ILicenceRepository, LicenceRepository>();
             services.AddTransient<ICardRepository, CardRepository>();
+            services.AddTransient<IBackupRepository, BackupRepository>();
             return services;
         }
     }

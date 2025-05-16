@@ -157,6 +157,22 @@ namespace ESMART.Infrastructure.Migrations
                     b.ToTable("SettingsCategories", "ESMART");
                 });
 
+            modelBuilder.Entity("ESMART.Domain.Entities.Configuration.UserBackupSettings", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastBackup")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BackupSettings", "ESMART");
+                });
+
             modelBuilder.Entity("ESMART.Domain.Entities.Data.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")

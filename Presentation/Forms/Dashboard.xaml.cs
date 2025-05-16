@@ -27,13 +27,15 @@ namespace ESMART.Presentation.Forms
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IApplicationUserRoleRepository _userService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IBackupRepository _backupRepository;
         private IServiceProvider _serviceProvider;
 
-        public Dashboard(IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager)
+        public Dashboard(IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager, IBackupRepository backupRepository)
         {
             _hotelSettingsService = hotelSettingsService;
             _userService = userService;
             _userManager = userManager;
+            _backupRepository = backupRepository;
             InitializeComponent();
 
             LoadHomePage();
@@ -225,6 +227,11 @@ namespace ESMART.Presentation.Forms
                 if (response == MessageBoxResult.Yes)
                 {
                     var backupFile = BackupRepository.CreateBackup();
+
+                    var userBackUp = await _backupRepository.GetBackupSettingsAsync();
+                    userBackUp.LastBackup = DateTime.Now;
+                    await _backupRepository.UpdateBackupSettingsAsync(userBackUp);
+
                     MessageBox.Show("Backup created successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     LoaderGrid.Visibility = Visibility.Visible;

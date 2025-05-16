@@ -1,4 +1,7 @@
-﻿using ESMART.Presentation.Forms.Setting.Licence;
+﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.Configuration;
+using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Presentation.Forms.Setting.Licence;
 using ESMART.Presentation.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,14 +16,19 @@ namespace ESMART.Presentation.Forms
     public partial class SplashScreen : Window
     {
         private IServiceProvider _serviceProvider;
-        public SplashScreen()
+        private readonly IBackupRepository _backupRepository;
+        private readonly IHotelSettingsService _hotelSettingsService;
+        public SplashScreen(IHotelSettingsService hotelSettingsService, IBackupRepository backupRepository)
         {
+            _hotelSettingsService = hotelSettingsService;
+            _backupRepository = backupRepository;
             InitializeComponent();
         }
 
         private async void SplashScreenForm_Loaded(object sender, RoutedEventArgs e)
         {
             await Task.Delay(10000);
+            await BackUpAsync();
             this.Hide();
 
             InitializeServices();
@@ -81,6 +89,37 @@ namespace ESMART.Presentation.Forms
 
             errorMessage = "No valid license found. Please enter a valid product key.";
             return false;
+        }
+
+        public async Task BackUpAsync()
+        {
+            UserBackupSettings settings = await _backupRepository.GetBackupSettingsAsync();
+
+            if (settings != null)
+            {
+                if (BackupRepository.IsTimeToBackup(settings))
+                {
+                    await CreateBackup();
+                }
+            }
+        }
+
+        public async Task CreateBackup()
+        {
+            var backupFile = BackupRepository.CreateBackup();
+            var hotel = await _hotelSettingsService.GetHotelInformation();
+            if (hotel != null)
+            {
+                var zippedFile = BackupRepository.ZipFiles(backupFile);
+                var result = await BackupRepository.UploadBackupAsync(zippedFile, hotel.Name);
+
+                if (result.Success)
+                {
+                    var userBackUp = await _backupRepository.GetBackupSettingsAsync();
+                    userBackUp.LastBackup = DateTime.Now;
+                    await _backupRepository.UpdateBackupSettingsAsync(userBackUp);
+                }
+            }
         }
     }
 }

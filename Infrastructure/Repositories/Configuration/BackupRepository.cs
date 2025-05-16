@@ -1,6 +1,10 @@
 ﻿#nullable disable
 
+using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.Configuration;
+using ESMART.Infrastructure.Data;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.IO.Compression;
 using System.Net.Http.Headers;
@@ -8,8 +12,33 @@ using System.Text.Json;
 
 namespace ESMART.Infrastructure.Repositories.Configuration
 {
-    public class BackupRepository
+    public class BackupRepository(IDbContextFactory<ApplicationDbContext> contextFactory) : IBackupRepository
     {
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
+
+        // Add UserBackupSettings to the database
+        public async Task AddBackupSettingsAsync(UserBackupSettings settings)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            context.BackupSettings.Add(settings);
+            await context.SaveChangesAsync();
+        }
+
+        // Update UserBackupSettings in the database
+        public async Task UpdateBackupSettingsAsync(UserBackupSettings settings)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            context.BackupSettings.Update(settings);
+            await context.SaveChangesAsync();
+        }
+
+        // Get UserBackupSettings from the database
+        public async Task<UserBackupSettings> GetBackupSettingsAsync()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.BackupSettings.FirstOrDefaultAsync();
+        }
+
         public static string CreateBackup()
         {
             try
@@ -97,6 +126,20 @@ namespace ESMART.Infrastructure.Repositories.Configuration
             }
 
             return zipFilePath;
+        }
+
+        public static bool IsTimeToBackup(UserBackupSettings settings)
+        {
+            DateTime last = settings.LastBackup;
+            DateTime now = DateTime.Now;
+
+            return settings.Frequency switch
+            {
+                BackupFrequency.Daily => now.Date > last.Date,
+                BackupFrequency.Weekly => now >= last.AddDays(7),
+                BackupFrequency.Monthly => now >= last.AddMonths(1),
+                _ => false
+            };
         }
     }
 

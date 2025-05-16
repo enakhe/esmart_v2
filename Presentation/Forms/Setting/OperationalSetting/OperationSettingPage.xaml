@@ -42,6 +42,9 @@
                                 <ComboBoxItem>Weekly</ComboBoxItem>
                                 <ComboBoxItem>Monthly</ComboBoxItem>
                             </ComboBox>
+                            <StackPanel HorizontalAlignment="Right" Margin="5">
+                                <TextBlock Text="Backup" Name="txtLastBackUp" />
+                            </StackPanel>
                         </StackPanel>
                         
                         <StackPanel Grid.Row="2" Margin="0,0,0,20">

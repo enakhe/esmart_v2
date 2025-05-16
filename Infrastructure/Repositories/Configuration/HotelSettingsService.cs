@@ -142,6 +142,20 @@ namespace ESMART.Infrastructure.Repositories.Configuration
                 AddSettingIfNotExists("FreeTrial", "True", "boolean", "Eligible for Free Trial", operationCategory.Id);
                 AddSettingIfNotExists("Backup", "Weekly", "string", "Scheduled Backup Time", operationCategory.Id);
 
+                // Check if any UserBackupSettings exist before adding a new one
+                var existingBackupSetting = await context.BackupSettings.FirstOrDefaultAsync();
+                if (existingBackupSetting == null)
+                {
+                    var userBackUpSetting = new UserBackupSettings()
+                    {
+                        Frequency = BackupFrequency.Weekly,
+                        LastBackup = DateTime.Now
+                    };
+
+                    await context.BackupSettings.AddAsync(userBackUpSetting);
+                    await context.SaveChangesAsync();
+                }
+
                 if (defaultSettings.Any())
                 {
                     await context.HotelSettings.AddRangeAsync(defaultSettings);
