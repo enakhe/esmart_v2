@@ -10,9 +10,9 @@ using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.Reports;
 using ESMART.Presentation.Forms.RoomSetting;
 using ESMART.Presentation.Forms.Setting;
+using ESMART.Presentation.Forms.StockKeeping.MenuItem;
 using ESMART.Presentation.Forms.UserSetting;
 using ESMART.Presentation.Session;
-using ESMART.Presentation.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +38,7 @@ namespace ESMART.Presentation.Forms
             _backupRepository = backupRepository;
             InitializeComponent();
 
-            LoadHomePage();
+            ShowDefaultHome();
         }
 
         private void InitializeServices()
@@ -91,6 +91,13 @@ namespace ESMART.Presentation.Forms
             IndexPage indexPage = _serviceProvider.GetRequiredService<IndexPage>();
 
             MainFrame.Navigate(indexPage);
+        }
+
+        private void LoadStockKeeperPage()
+        {
+            InitializeServices();
+            StockKeepingIndexPage storeKeepingPage = _serviceProvider.GetRequiredService<StockKeepingIndexPage>();
+            MainFrame.Navigate(storeKeepingPage);
         }
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
@@ -174,10 +181,22 @@ namespace ESMART.Presentation.Forms
             MainFrame.Navigate(roomPage);
         }
 
+        private void StockKeepingButton_Click(Object sender, RoutedEventArgs e)
+        {
+            LoadStockKeeperPage();
+        }
+
+        private void MenuItemButton_Click(Object sender, RoutedEventArgs e)
+        {
+            InitializeServices();
+            MenuItemPage menuItemPage = _serviceProvider.GetRequiredService<MenuItemPage>();
+            MainFrame.Navigate(menuItemPage);
+        }
+
         private void OpenSidebar_Click(object sender, RoutedEventArgs e)
         {
-            if (this.sideBar.Width < 250)
-                this.sideBar.Width = 250;
+            if (this.sideBar.Width < 200)
+                this.sideBar.Width = 200;
             else
                 this.sideBar.Width = 50;
         }
@@ -193,30 +212,74 @@ namespace ESMART.Presentation.Forms
             try
             {
                 var userId = AuthSession.CurrentUser?.Id;
+                if (string.IsNullOrEmpty(userId)) return;
 
-                if (userId != null)
+                var user = await _userService.GetUserById(userId);
+                if (user == null) return;
+
+                var roles = await _userManager.GetRolesAsync(user);
+                var roleSet = roles.ToHashSet();
+
+                // Define visibility logic
+                bool isSuperAdmin = roleSet.Contains(DefaultRoles.Administrator.ToString()) ||
+                                    roleSet.Contains(DefaultRoles.Admin.ToString());
+
+                bool isStoreKeeper = roleSet.Contains(DefaultRoles.StoreKeeper.ToString());
+                bool isFrontDesk = roleSet.Contains(DefaultRoles.Receptionist.ToString());
+
+                // Apply visibility
+                AdminControls.Visibility = isSuperAdmin ? Visibility.Visible : Visibility.Collapsed;
+                StoreKeepingControls.Visibility = (isSuperAdmin || isStoreKeeper) ? Visibility.Visible : Visibility.Collapsed;
+                FrontDeskControls.Visibility = (isSuperAdmin || isFrontDesk) ? Visibility.Visible : Visibility.Collapsed;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private async void ShowDefaultHome()
+        {
+            try
+            {
+                var userId = AuthSession.CurrentUser?.Id;
+                if (string.IsNullOrEmpty(userId)) return;
+
+                var user = await _userService.GetUserById(userId);
+                if (user == null) return;
+
+                var roles = await _userManager.GetRolesAsync(user);
+                var roleSet = roles.ToHashSet();
+
+                bool isSuperAdmin = roleSet.Contains(DefaultRoles.Administrator.ToString()) ||
+                                    roleSet.Contains(DefaultRoles.Admin.ToString());
+
+                bool isStoreKeeper = roleSet.Contains(DefaultRoles.StoreKeeper.ToString());
+                bool isFrontDesk = roleSet.Contains(DefaultRoles.Receptionist.ToString());
+
+                if (isFrontDesk)
                 {
-                    var user = await _userService.GetUserById(userId);
-                    if (user != null)
-                    {
-                        bool isAdmin = await _userManager.IsInRoleAsync(user, DefaultRoles.Administrator.ToString()) || await _userManager.IsInRoleAsync(user, DefaultRoles.Admin.ToString());
-                        if (isAdmin)
-                        {
-                            AdminControls.Visibility = Visibility.Visible;
-                        }
-                        else
-                        {
-                            AdminControls.Visibility = Visibility.Collapsed;
-                        }
-                    }
+                    LoadHomePage();
+                }
+                else if (isStoreKeeper)
+                {
+                    LoadStockKeeperPage();
+                }
+                else if (isSuperAdmin)
+                {
+                    LoadHomePage();
+                }
+                else
+                {
+                    MessageBox.Show("You do not have permission to access this application.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    AppSessionManager.LogoutToLogin();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         private async void BackupButton_Click(object sender, RoutedEventArgs e)
         {
@@ -250,7 +313,7 @@ namespace ESMART.Presentation.Forms
                         {
                             MessageBox.Show($"Failed to upload backup", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
-                    }                    
+                    }
                 }
             }
             catch (Exception ex)

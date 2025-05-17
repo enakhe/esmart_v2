@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:ESMART.Presentation.Forms"
         mc:Ignorable="d"
         Title="Esmart Hotel Management Software" Height="800" Width="1300"
-        WindowStartupLocation="CenterScreen" Background="#F0F4F9" Icon="/Forms/logo.png" Activated="Window_Activated">
+        WindowStartupLocation="CenterScreen" Background="#E9F0F7" Icon="/Forms/logo.png" Activated="Window_Activated">
+
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -20,366 +21,469 @@
         </Grid.RowDefinitions>
 
         <!-- Sidebar -->
-        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Background="#1a237e" Width="50" x:Name="sideBar">
+        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Background="#1a237e" Width="200" x:Name="sideBar">
             <Grid.RowDefinitions>
-                <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <StackPanel Margin="0,60,0,252" Grid.Row="0" Grid.RowSpan="2">
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="OpenSidebar_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/menu.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
+            <ScrollViewer Grid.Row="0" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto" Margin="0,60,0,0">
 
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="HomeButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/home.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Home" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
+                <StackPanel>
+                    <StackPanel Margin="0,60,0,0" Name="FrontDeskControls">
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="OpenSidebar_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/menu.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Home" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
 
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="GuestButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left"
-                              VerticalAlignment="Center"
-                              Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/passanger.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Guests" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="HomeButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/home.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Home" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
 
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="RoomButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left"
-              VerticalAlignment="Center"
-              Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/bed.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Rooms" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="GuestButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
+                  Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/passanger.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Guests" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
 
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="ReservationButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left"
-              VerticalAlignment="Center"
-              Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/reservation.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Reservations" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="RoomButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left"
+  VerticalAlignment="Center"
+  Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/bed.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Rooms" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
 
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="BookingButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left"
-                              VerticalAlignment="Center"
-                              Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/appointment.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Bookings" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="ReservationButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left"
+  VerticalAlignment="Center"
+  Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/reservation.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Reservations" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
 
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="ReportButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/report.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Reports" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="BookingButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
+                  Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/appointment.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Bookings" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
 
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="CarSettingButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/credit-card.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Card Settings" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="ReportButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/report.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Reports" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
 
-            <StackPanel Margin="0,60,0,60" Grid.Row="1" VerticalAlignment="Bottom" Name="AdminControls">
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="RoomSettingButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/workshop.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Room Settings" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="UserSettingButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left"
-                              VerticalAlignment="Center"
-                              Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/project-manager.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="User Settings" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-                <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="SettingButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ContentPresenter HorizontalAlignment="Left"
-                                              VerticalAlignment="Center"
-                                              Margin="10,0,0,0"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="Transparent"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Forms/setting.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Settings" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="CarSettingButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/credit-card.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Card Settings" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,60,0,20" Name="StoreKeepingControls">
+
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="OpenSidebar_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/menu.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="StockKeepingButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/home.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Home" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="MenuItemButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/menu-item.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Menu Item" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,60,0,20" VerticalAlignment="Bottom" Name="AdminControls">
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="RoomSettingButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/workshop.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Room Settings" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="UserSettingButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left"
+      VerticalAlignment="Center"
+      Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/project-manager.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="User Settings" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="SettingButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      Margin="10,0,0,0"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Forms/setting.png" Width="30" Height="30" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Settings" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+
+            
         </Grid>
 
         <!-- Header with Menu -->
@@ -391,7 +495,7 @@
 
             <TextBlock Text="Esmart Hotel Management Software" Grid.Column="0" x:Name="txtHotelName" FontSize="24" FontWeight="Bold" Margin="20,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="#1a237e"/>
 
-            <Grid RenderTransformOrigin="0.609,0.484" Grid.ColumnSpan="2" Margin="833,0,0,0">
+            <Grid RenderTransformOrigin="0.609,0.484" Grid.ColumnSpan="2" Margin="833,0,0,0" HorizontalAlignment="Right">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />

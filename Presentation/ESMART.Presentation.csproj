@@ -36,6 +36,7 @@
     <None Remove="Forms\home.png" />
     <None Remove="Forms\log-out.png" />
     <None Remove="Forms\logo.png" />
+    <None Remove="Forms\menu-item.png" />
     <None Remove="Forms\menu.png" />
     <None Remove="Forms\passanger.png" />
     <None Remove="Forms\project-manager.png" />
@@ -49,6 +50,7 @@
     <None Remove="Forms\Setting\Licence\logo.png" />
     <None Remove="Forms\Setting\logo.png" />
     <None Remove="Forms\splashscreen.png" />
+    <None Remove="Forms\StockKeeping\MenuItem\logo.png" />
     <None Remove="Forms\UserSetting\Roles\logo.png" />
     <None Remove="Forms\UserSetting\Users\logo.png" />
     <None Remove="Forms\Verification\logo.png" />
@@ -73,6 +75,7 @@
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.104.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="EPPlus" Version="8.0.3" />
     <PackageReference Include="itext7" Version="9.1.0" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.1.0" />
@@ -118,6 +121,7 @@
     <Resource Include="Forms\home.png" />
     <Resource Include="Forms\log-out.png" />
     <Resource Include="Forms\logo.png" />
+    <Resource Include="Forms\menu-item.png" />
     <Resource Include="Forms\menu.png" />
     <Resource Include="Forms\passanger.png" />
     <Resource Include="Forms\project-manager.png" />
@@ -131,6 +135,7 @@
     <Resource Include="Forms\Setting\Licence\logo.png" />
     <Resource Include="Forms\Setting\logo.png" />
     <Resource Include="Forms\splashscreen.png" />
+    <Resource Include="Forms\StockKeeping\MenuItem\logo.png" />
     <Resource Include="Forms\UserSetting\Roles\logo.png" />
     <Resource Include="Forms\UserSetting\Users\logo.png" />
     <Resource Include="Forms\Verification\logo.png" />

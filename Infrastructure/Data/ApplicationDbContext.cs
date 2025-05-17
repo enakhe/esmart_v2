@@ -2,6 +2,7 @@
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
+using ESMART.Domain.Entities.StoreKeeping;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
 using Microsoft.AspNetCore.Identity;
@@ -36,6 +37,11 @@ namespace ESMART.Infrastructure.Data
         public DbSet<LicenceInformation> LicenceInformation { get; set; }
         public DbSet<AuthorizationCard> AuthorizationCards { get; set; }
         public DbSet<UserBackupSettings> BackupSettings { get; set; }
+
+        public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<MenuCategory> MenuCategories { get; set; }
+        public DbSet<MenuItemRecipe> MenuItemRecipes { get; set; }
+        public DbSet<InventoryItem> InventoryItems { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

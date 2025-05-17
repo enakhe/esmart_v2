@@ -59,7 +59,7 @@ namespace ESMART.Presentation.Forms.Setting.OperationalSetting
                     cmbBackUp.Text = backupSetting.Value;
                     var userBackUpSetting = await _backupRepository.GetBackupSettingsAsync();
 
-                    if(userBackUpSetting != null)
+                    if (userBackUpSetting != null)
                     {
                         txtLastBackUp.Text = $"Last backup: {userBackUpSetting.LastBackup.ToString("dd/MM/yyyy")}";
                     }

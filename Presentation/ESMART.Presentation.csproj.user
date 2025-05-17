@@ -100,6 +100,9 @@
     <Compile Update="Forms\Home\IndexPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Home\StockKeepingIndexPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Reports\CurrentinHouseGuestReport.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -182,6 +185,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\SplashScreen.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\StockKeeping\MenuItem\AddMenuItemDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\StockKeeping\MenuItem\MenuItemPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\UserSetting\Roles\AddRoleDialog.xaml.cs">

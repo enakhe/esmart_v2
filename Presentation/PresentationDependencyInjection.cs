@@ -16,6 +16,7 @@ using ESMART.Presentation.Forms.Setting.FinancialSetting;
 using ESMART.Presentation.Forms.Setting.Licence;
 using ESMART.Presentation.Forms.Setting.OperationalSetting;
 using ESMART.Presentation.Forms.Setting.SystemSetup;
+using ESMART.Presentation.Forms.StockKeeping.MenuItem;
 using ESMART.Presentation.Forms.UserSetting;
 using ESMART.Presentation.Forms.UserSetting.Roles;
 using ESMART.Presentation.Forms.UserSetting.Users;
@@ -38,6 +39,9 @@ namespace ESMART.Presentation
         {
             services.AddScoped<Dashboard>();
             services.AddScoped<IndexPage>();
+            services.AddScoped<StockKeepingIndexPage>();
+
+            services.AddScoped<MenuItemPage>();
 
             services.AddScoped<GuestPage>();
             services.AddScoped<AddGuestDialog>();
@@ -54,7 +58,7 @@ namespace ESMART.Presentation
 
             services.AddScoped<SettingDialog>();
             services.AddScoped<HotelInformationPage>();
-            services.AddScoped<ESMART.Presentation.Forms.Setting.FinancialSetting.General>();
+            services.AddScoped<General>();
             services.AddScoped<OperationSettingPage>();
             services.AddScoped<BankAccountPage>();
 

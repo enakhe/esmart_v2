@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:ESMART.Presentation.Forms.RoomSetting"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Index" Loaded="Page_Loaded">
@@ -20,35 +21,71 @@
 
         <!-- Statistics Cards -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="0,0,0,10">
-            <Border Background="#3498db" Width="200" Height="100" CornerRadius="10" Margin="10"
+            <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10"
             Padding="10">
                 <StackPanel>
-                    <TextBlock Text="Guests" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="0" Name="txtGuestCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="Guests" Foreground="Black" FontSize="14"/>
+                    <Grid Margin="5, 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="0" Name="txtGuestCount" Grid.Column="0" Foreground="Black" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                        <materialDesign:PackIcon HorizontalAlignment="Right" VerticalAlignment="Center" Kind="User" Grid.Column="1" Width="50" Height="50" Foreground="#1a237e" />
+                    </Grid>
                 </StackPanel>
             </Border>
 
-            <Border Background="#e74c3c" Width="200" Height="100" CornerRadius="10" Margin="10"
+            <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10"
             Padding="10">
                 <StackPanel>
-                    <TextBlock Text="Rooms" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="0" Name="txtRoomCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="Rooms" Foreground="Black" FontSize="14"/>
+                    <Grid Margin="5, 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="0" Name="txtRoomCount" Grid.Column="0" Foreground="Black" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                        <materialDesign:PackIcon HorizontalAlignment="Right" VerticalAlignment="Center" Kind="GuestRoom" Grid.Column="1" Width="50" Height="50" Foreground="#1a237e" />
+                    </Grid>
                 </StackPanel>
             </Border>
 
-            <Border Background="#2ecc71" Width="200" Height="100" CornerRadius="10" Margin="10"
-            Padding="10">
+            <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                 <StackPanel>
-                    <TextBlock Text="Bookings" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="0" Name="txtBookingCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="Bookings" Foreground="Black" FontSize="14"/>
+
+                    <Grid Margin="5, 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="0" Name="txtBookingCount" Grid.Column="0" Foreground="Black" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                        <materialDesign:PackIcon HorizontalAlignment="Right" VerticalAlignment="Center" Kind="CalendarClock" Grid.Column="1" Width="50" Height="50" Foreground="#1a237e" />
+                    </Grid>
                 </StackPanel>
             </Border>
 
-            <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10"
-Padding="10">
+            <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                 <StackPanel>
-                    <TextBlock Text="In-House Guests" Foreground="White" FontSize="14"/>
-                    <TextBlock Text="0" Name="txtInHouseGuestCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="In-House Guests" Foreground="Black" FontSize="14"/>
+
+                    <Grid Margin="5, 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="0" Name="txtInHouseGuestCount" Grid.Column="0" Foreground="Black" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                        <materialDesign:PackIcon HorizontalAlignment="Right" VerticalAlignment="Center" Kind="HouseAutomation" Grid.Column="1" Width="50" Height="50" Foreground="#1a237e" />
+                    </Grid>
                 </StackPanel>
             </Border>
         </StackPanel>
@@ -114,8 +151,7 @@ Padding="10">
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Width="100" Height="100" Margin="5" CornerRadius="10"
-                Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}">
+                                    <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}">
                                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Number}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
                                             <TextBlock Text="{Binding Status}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
