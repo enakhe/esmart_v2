@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Add Menu Item" Height="360" Width="400" Icon="/Forms/StockKeeping/MenuItem/logo.png" Loaded="Window_Loaded">
+        Title="Add Menu Item" Height="470" Width="400" Icon="/Forms/StockKeeping/MenuItem/logo.png" Activated="Window_Activated">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="31*"/>
@@ -17,6 +17,7 @@
             <TextBlock Text="Menu Item Information" FontSize="25" FontWeight="Bold" Margin="0,10,0,20" />
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
@@ -37,11 +38,11 @@
 
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Text="Price:" FontWeight="Bold" />
-                            <TextBox x:Name="txtPrice" PreviewTextInput="DecimalInput_PreviewTextInput" PreviewKeyDown="DecimalInput_PreviewKeyDown" Padding="2,5,0,5" />
+                            <TextBox x:Name="txtPrice" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="DecimalInput_TextChanged" PreviewKeyDown="DecimalInput_PreviewKeyDown" Padding="2,5,0,5" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="2,0,0,0" VerticalAlignment="Center">
-                            <CheckBox IsChecked="True" Content="Toggle Availability" HorizontalAlignment="Right" />
+                            <CheckBox IsChecked="True" Name="chkIsAvailable" Content="Toggle Availability" HorizontalAlignment="Right" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -66,6 +67,11 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="3" Margin="0,0,0,20">
+                    <TextBlock Text="Description:" FontWeight="Bold" />
+                    <TextBox x:Name="txtDescription" Padding="2,5,0,5" Height="50" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Margin="0,0,0,20">
                     <Grid Margin="1,0,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />

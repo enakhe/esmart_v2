@@ -1,4 +1,5 @@
-﻿using ESMART.Infrastructure.Data;
+﻿using ESMART.Application.Common.Interface;
+using ESMART.Infrastructure.Data;
 using ESMART.Infrastructure.Identity;
 using ESMART.Infrastructure.Repositories.Configuration;
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +64,9 @@ namespace ESMART.Presentation
 
             var identityService = serviceProvider.GetRequiredService<IdentityService>();
             await identityService.TrySeedAsync();
+
+            var stockKeepingRepository = serviceProvider.GetRequiredService<IStockKeepingRepository>();
+            await stockKeepingRepository.SeedDefaultMenuItemCategoriesAsync();
 
             var hotelSettingService = serviceProvider.GetRequiredService<HotelSettingsService>();
             await hotelSettingService.SeedHotelSettingAsync();

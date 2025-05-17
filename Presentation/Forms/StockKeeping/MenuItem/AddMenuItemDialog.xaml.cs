@@ -1,7 +1,10 @@
-﻿using ESMART.Domain.Entities.StoreKeeping;
+﻿using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Utils;
+using ESMART.Domain.Entities.StoreKeeping;
 using ESMART.Domain.Enum;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,8 +25,11 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
     /// </summary>
     public partial class AddMenuItemDialog : Window
     {
-        public AddMenuItemDialog()
+        private bool _suppressTextChanged = false;
+        private readonly IStockKeepingRepository _stockKeepingRepository;
+        public AddMenuItemDialog(IStockKeepingRepository stockKeepingRepository)
         {
+            _stockKeepingRepository = stockKeepingRepository;
             InitializeComponent();
         }
 
@@ -50,13 +56,81 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+
+        private async Task LoadMenuItemCategory()
         {
-            LoadServiceArea();
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var menuCategory = await _stockKeepingRepository.GetMenuItemCategoriesAsync();
+                if (menuCategory != null)
+                {
+                    cmbCategory.ItemsSource = menuCategory;
+                    cmbCategory.DisplayMemberPath = "Name";
+                    cmbCategory.SelectedValuePath = "Id";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
+        private async void Save_Click(object sender, RoutedEventArgs e)
         {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(txtName.Text, txtPrice.Text, cmbCategory.Text, cmbServiceArea.Text);
+
+                if (areFieldsEmpty)
+                {
+                    MessageBox.Show("Please fill all fields", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (!decimal.TryParse(txtPrice.Text.Replace(",", ""), out decimal price))
+                {
+                    MessageBox.Show("Invalid price format", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (price <= 0)
+                {
+                    MessageBox.Show("Price must be greater than zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                bool isChecked = (bool)chkIsAvailable.IsChecked!;
+
+                var menuItem = new Domain.Entities.StoreKeeping.MenuItem
+                {
+                    Name = txtName.Text,
+                    Price = decimal.Parse(txtPrice.Text.Replace(",", ""), CultureInfo.InvariantCulture),
+                    MenuCategoryId = (string)cmbCategory.SelectedValue,
+                    ServiceArea = Enum.Parse<ServiceArea>(cmbServiceArea.SelectedValue.ToString()!),
+                    IsAvailable = isChecked,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                await _stockKeepingRepository.AddMenuItemAsync(menuItem);
+                MessageBox.Show("Menu item added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                this.DialogResult = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;  
+            }
         }
 
         private void DecimalInput_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -73,10 +147,31 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
                           e.Key == Key.Decimal || e.Key == Key.OemPeriod);
         }
 
+        private void DecimalInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_suppressTextChanged) return;
+
+            var textBox = sender as TextBox;
+            if (string.IsNullOrWhiteSpace(textBox?.Text)) return;
+
+            if (decimal.TryParse(textBox.Text.Replace(",", ""), out decimal value))
+            {
+                _suppressTextChanged = true;
+                textBox.Text = string.Format(CultureInfo.InvariantCulture, "{0:N}", value);
+                textBox.CaretIndex = textBox.Text.Length;
+                _suppressTextChanged = false;
+            }
+        }
+
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;
         }
 
+        private async void Window_Activated(object sender, EventArgs e)
+        {
+            LoadServiceArea();
+            await LoadMenuItemCategory();
+        }
     }
 }

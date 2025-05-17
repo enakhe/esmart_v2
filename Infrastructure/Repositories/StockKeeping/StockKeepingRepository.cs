@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ESMART.Infrastructure.Repositories.StockKeeping
 {
-    public class StockKeepingRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public class StockKeepingRepository(IDbContextFactory<ApplicationDbContext> contextFactory) : IStockKeepingRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
 
@@ -40,6 +40,7 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
 
                 var menuItems = await context.MenuItems
                     .Include(m => m.MenuItemRecipes)
+                    .OrderBy(m => m.Name)
                     .ToListAsync();
 
                 return [.. menuItems.Select(m => new MenuItemViewModel
@@ -48,7 +49,7 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                     Name = m.Name,
                     Description = m.Description,
                     Price = m.Price,
-                    IsAvailable = m.IsAvailable,
+                    IsAvailable = m.IsAvailable ? "Yes" : "No",
                     CategoryId = m.MenuCategoryId,
                     ServiceArea = m.ServiceArea.ToString(),
                     CreatedAt = m.CreatedAt,
@@ -91,7 +92,7 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                         Name = menuItem.Name,
                         Description = menuItem.Description,
                         Price = menuItem.Price,
-                        IsAvailable = menuItem.IsAvailable,
+                        IsAvailable = menuItem.IsAvailable ? "Yes" : "No",
                         CategoryId = menuItem.MenuCategoryId,
                         ServiceArea = menuItem.ServiceArea.ToString(),
                         CreatedAt = menuItem.CreatedAt,
@@ -206,6 +207,238 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
         }
 
         // Get menu item byt category id
+        public async Task<List<MenuItemViewModel>> GetMenuItemsByCategoryIdAsync(string categoryId)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                var menuItems = await context.MenuItems
+                    .Where(m => m.MenuCategoryId == categoryId)
+                    .Include(m => m.MenuItemRecipes)
+                    .ToListAsync();
+                return [.. menuItems.Select(m => new MenuItemViewModel
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Description = m.Description,
+                    Price = m.Price,
+                    IsAvailable = m.IsAvailable ? "Yes" : "No",
+                    CategoryId = m.MenuCategoryId,
+                    ServiceArea = m.ServiceArea.ToString(),
+                    CreatedAt = m.CreatedAt,
+                    UpdatedAt = m.UpdatedAt,
+                    Recipes = [.. m.MenuItemRecipes.Select(r => new MenuItemRecipe
+                        {
+                            Id = r.Id,
+                            MenuItemId = r.MenuItemId,
+                            InventoryItemId = r.InventoryItemId,
+                            CreatedAt = r.CreatedAt,
+                            UpdatedAt = r.UpdatedAt,
+                            Quantity = r.Quantity,
+                            UnitOfMeasure = r.UnitOfMeasure
+                        })]
+                })];
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving menu items by category ID.", ex);
+            }
+        }
 
+        // Get menu irem by menu category
+        public async Task<List<MenuItemViewModel>> GetMenuItemsByMenuCategoryAsync(string menuCategoryId)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                var menuItems = await context.MenuItems
+                    .Where(m => m.MenuCategoryId == menuCategoryId)
+                    .Include(m => m.MenuItemRecipes)
+                    .ToListAsync();
+                return [.. menuItems.Select(m => new MenuItemViewModel
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Description = m.Description,
+                    Price = m.Price,
+                    IsAvailable = m.IsAvailable ? "Yes" : "No",
+                    CategoryId = m.MenuCategoryId,
+                    ServiceArea = m.ServiceArea.ToString(),
+                    CreatedAt = m.CreatedAt,
+                    UpdatedAt = m.UpdatedAt,
+                    Recipes = [.. m.MenuItemRecipes.Select(r => new MenuItemRecipe
+                        {
+                            Id = r.Id,
+                            MenuItemId = r.MenuItemId,
+                            InventoryItemId = r.InventoryItemId,
+                            CreatedAt = r.CreatedAt,
+                            UpdatedAt = r.UpdatedAt,
+                            Quantity = r.Quantity,
+                            UnitOfMeasure = r.UnitOfMeasure
+                        })]
+                })];
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving menu items by menu category.", ex);
+            }
+        }
+
+        //Add menu item category
+        public async Task AddMenuItemCategoryAsync(MenuCategory menuCategory)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                await context.MenuCategories.AddAsync(menuCategory);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the menu item category.", ex);
+            }
+        }
+
+        //Get menu item category
+        public async Task<List<MenuCategory>> GetMenuItemCategoriesAsync()
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuCategories.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving menu item categories.", ex);
+            }
+        }
+
+        //Get menu item category by id
+        public async Task<MenuCategory> GetMenuItemCategoryByIdAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuCategories.FindAsync(id) ?? throw new Exception("Menu item category not found.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving the menu item category.", ex);
+            }
+        }
+
+        //Update menu item category
+        public async Task UpdateMenuItemCategoryAsync(MenuCategory menuCategory)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                context.MenuCategories.Update(menuCategory);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the menu item category.", ex);
+            }
+        }
+
+        //Delete menu item category
+        public async Task DeleteMenuItemCategoryAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                var menuCategory = await context.MenuCategories.FindAsync(id) ?? throw new Exception("Menu item category not found.");
+                context.MenuCategories.Remove(menuCategory);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the menu item category.", ex);
+            }
+        }
+
+        //Get menu item category by name
+        public async Task<MenuCategory> GetMenuItemCategoryByNameAsync(string name)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuCategories.FirstOrDefaultAsync(m => m.Name == name) ?? throw new Exception("Menu item category not found.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving the menu item category by name.", ex);
+            }
+        }
+
+        // Seed default menuitem categories to the database
+        public async Task SeedDefaultMenuItemCategoriesAsync()
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                if (!await context.MenuCategories.AnyAsync())
+                {
+                    var defaultCategories = new List<MenuCategory>
+                    {
+                        new() { 
+                            Name = "Appetizers",
+                            Description = "Starters to whet your appetite.",
+                            IsActive = true,
+                            ServiceArea = ServiceArea.Restaurant,
+                        },
+
+                        new() {
+                            Name = "Main Courses",
+                            Description = "Hearty meals to satisfy your hunger.",
+                            IsActive = true,
+                            ServiceArea = ServiceArea.Restaurant,
+                        },
+
+                        new() {
+                            Name = "Salads",
+                            Description = "Fresh and healthy salads.",
+                            IsActive = true,
+                            ServiceArea = ServiceArea.Restaurant,
+                        },
+
+                        new() {
+                            Name = "Desserts",
+                            Description = "Sweet treats to end your meal.",
+                            IsActive = true,
+                            ServiceArea = ServiceArea.Restaurant,
+                        },
+
+                        new() {
+                            Name = "Drinks",
+                            Description = "Refreshing beverages to quench your thirst.",
+                            IsActive = true,
+                            ServiceArea = ServiceArea.Shared,
+                        },
+
+                        new() {
+                            Name = "Beverages",
+                            Description = "A variety of drinks to enjoy.",
+                            IsActive = true,
+                            ServiceArea = ServiceArea.Shared,
+                        },
+
+                        new() {
+                            Name = "Soups",
+                            Description = "Warm and comforting soups.",
+                            IsActive = true,
+                            ServiceArea = ServiceArea.Restaurant,
+                        },  
+                    };
+                    await context.MenuCategories.AddRangeAsync(defaultCategories);
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while seeding default menu item categories.", ex);
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESMART.Application.Common.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,15 +21,45 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
     /// </summary>
     public partial class MenuItemPage : Page
     {
-        public MenuItemPage()
+        private readonly IStockKeepingRepository _stockKeepingRepository;
+
+        public MenuItemPage(IStockKeepingRepository stockKeepingRepository)
         {
+            _stockKeepingRepository = stockKeepingRepository;
             InitializeComponent();
         }
 
-        public void AddMenuItem_Click(object sender, RoutedEventArgs e)
+        private async Task LoadMenuItem()
         {
-            var addMenuItemDialog = new AddMenuItemDialog();
-            addMenuItemDialog.ShowDialog();
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var menuItems = await _stockKeepingRepository.GetMenuItemsAsync();
+                MenuItemDataGrid.ItemsSource = menuItems;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        public async void AddMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var addMenuItemDialog = new AddMenuItemDialog(_stockKeepingRepository);
+
+            if (addMenuItemDialog.ShowDialog() == true)
+            {
+                await LoadMenuItem();
+            }
+        }
+
+        private async void Grid_Loaded(object sender, RoutedEventArgs e)
+        {
+            await LoadMenuItem();
         }
     }
 }

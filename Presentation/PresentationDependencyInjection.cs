@@ -42,6 +42,7 @@ namespace ESMART.Presentation
             services.AddScoped<StockKeepingIndexPage>();
 
             services.AddScoped<MenuItemPage>();
+            services.AddScoped<AddMenuItemDialog>();
 
             services.AddScoped<GuestPage>();
             services.AddScoped<AddGuestDialog>();

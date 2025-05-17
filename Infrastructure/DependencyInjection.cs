@@ -3,6 +3,7 @@ using ESMART.Infrastructure.Identity;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Infrastructure.Repositories.RoomSetting;
+using ESMART.Infrastructure.Repositories.StockKeeping;
 using ESMART.Infrastructure.Repositories.Transaction;
 using ESMART.Infrastructure.Repositories.Verification;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,7 @@ namespace ESMART.Infrastructure
             services.AddScoped<LicenceRepository>();
             services.AddScoped<CardRepository>();
             services.AddScoped<BackupRepository>();
+            services.AddScoped<StockKeepingRepository>();
             return services;
         }
 
@@ -51,6 +53,7 @@ namespace ESMART.Infrastructure
             services.AddTransient<ILicenceRepository, LicenceRepository>();
             services.AddTransient<ICardRepository, CardRepository>();
             services.AddTransient<IBackupRepository, BackupRepository>();
+            services.AddTransient<IStockKeepingRepository, StockKeepingRepository>();
             return services;
         }
     }

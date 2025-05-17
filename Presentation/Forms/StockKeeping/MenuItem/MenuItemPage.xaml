@@ -76,7 +76,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid>
+    <Grid Loaded="Grid_Loaded">
         <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -155,7 +155,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <CheckBox IsChecked="{Binding IsAvailable}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsLow, Converter={StaticResource LowMenuColorConverter}}" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding IsAvailable}" Foreground="{Binding IsLow, Converter={StaticResource LowMenuColorConverter}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
