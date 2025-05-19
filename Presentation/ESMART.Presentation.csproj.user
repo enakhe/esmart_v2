@@ -187,6 +187,9 @@
     <Compile Update="Forms\SplashScreen.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\StockKeeping\Inventory\InventoryItemPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\StockKeeping\MenuItem\AddMenuItemDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -17,6 +17,8 @@ namespace ESMART.Domain.Entities.StoreKeeping
         public ServiceArea ServiceArea { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
+        public bool IsDirectStock { get; set; }
+        public string InventoryItemID { get; set; }
 
         public string MenuCategoryId { get; set; }
 

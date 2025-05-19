@@ -34,6 +34,7 @@
     <None Remove="Forms\FrontDesk\Reservation\logo.png" />
     <None Remove="Forms\FrontDesk\Room\logo.png" />
     <None Remove="Forms\home.png" />
+    <None Remove="Forms\inventory.png" />
     <None Remove="Forms\log-out.png" />
     <None Remove="Forms\logo.png" />
     <None Remove="Forms\menu-item.png" />
@@ -119,6 +120,7 @@
     <Resource Include="Forms\FrontDesk\Reservation\logo.png" />
     <Resource Include="Forms\FrontDesk\Room\logo.png" />
     <Resource Include="Forms\home.png" />
+    <Resource Include="Forms\inventory.png" />
     <Resource Include="Forms\log-out.png" />
     <Resource Include="Forms\logo.png" />
     <Resource Include="Forms\menu-item.png" />

@@ -7,6 +7,7 @@ namespace ESMART.Domain.Entities.StoreKeeping
         public InventoryItem()
         {
             MenuItemRecipes = new HashSet<MenuItemRecipe>();
+            MenuItems = new HashSet<MenuItem>();
         }
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -21,5 +22,6 @@ namespace ESMART.Domain.Entities.StoreKeeping
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         public virtual ICollection<MenuItemRecipe> MenuItemRecipes { get; set; }
+        public virtual ICollection<MenuItem> MenuItems { get; set; }
     }
 }
