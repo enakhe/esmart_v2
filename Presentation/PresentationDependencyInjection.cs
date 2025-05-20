@@ -16,6 +16,7 @@ using ESMART.Presentation.Forms.Setting.FinancialSetting;
 using ESMART.Presentation.Forms.Setting.Licence;
 using ESMART.Presentation.Forms.Setting.OperationalSetting;
 using ESMART.Presentation.Forms.Setting.SystemSetup;
+using ESMART.Presentation.Forms.StockKeeping.Inventory;
 using ESMART.Presentation.Forms.StockKeeping.MenuItem;
 using ESMART.Presentation.Forms.UserSetting;
 using ESMART.Presentation.Forms.UserSetting.Roles;
@@ -43,6 +44,7 @@ namespace ESMART.Presentation
 
             services.AddScoped<MenuItemPage>();
             services.AddScoped<AddMenuItemDialog>();
+            services.AddScoped<InventoryItemPage>();
 
             services.AddScoped<GuestPage>();
             services.AddScoped<AddGuestDialog>();

@@ -10,6 +10,7 @@ using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.Reports;
 using ESMART.Presentation.Forms.RoomSetting;
 using ESMART.Presentation.Forms.Setting;
+using ESMART.Presentation.Forms.StockKeeping.Inventory;
 using ESMART.Presentation.Forms.StockKeeping.MenuItem;
 using ESMART.Presentation.Forms.UserSetting;
 using ESMART.Presentation.Session;
@@ -191,6 +192,13 @@ namespace ESMART.Presentation.Forms
             InitializeServices();
             MenuItemPage menuItemPage = _serviceProvider.GetRequiredService<MenuItemPage>();
             MainFrame.Navigate(menuItemPage);
+        }
+
+        private void InventoryItemButton_Click(Object sender, RoutedEventArgs e)
+        {
+            InitializeServices();
+            InventoryItemPage inventoryItemPage = _serviceProvider.GetRequiredService<InventoryItemPage>();
+            MainFrame.Navigate(inventoryItemPage);
         }
 
         private void OpenSidebar_Click(object sender, RoutedEventArgs e)

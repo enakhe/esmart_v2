@@ -14,7 +14,7 @@ namespace ESMART.Domain.Entities.StoreKeeping
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Quantity { get; set; }
-        public string UnitOfMeasure { get; set; }
+        public InventoryUnit UnitOfMeasure { get; set; }
         public decimal ReorderLevel { get; set; }
         public decimal ReorderQuantity { get; set; }
         public bool IsActive { get; set; }
@@ -24,4 +24,31 @@ namespace ESMART.Domain.Entities.StoreKeeping
         public virtual ICollection<MenuItemRecipe> MenuItemRecipes { get; set; }
         public virtual ICollection<MenuItem> MenuItems { get; set; }
     }
+
+    public enum InventoryUnit
+    {
+        Gram,           
+        Kilogram,       
+        Milligram,     
+
+        Milliliter,     
+        Liter,          
+        Centiliter,     
+
+        Piece,          
+        Bottle,       
+        Can,           
+        Pack,         
+        Carton,        
+        Crate,       
+        Sachet,         
+
+        Slice,
+        Scoop,
+        Shot,           
+        Cup,
+        Bag,
+        Drop           
+    }
+
 }

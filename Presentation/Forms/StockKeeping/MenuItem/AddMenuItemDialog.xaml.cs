@@ -57,6 +57,30 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
             }
         }
 
+        // Load inventory item to cmbName Combobox
+        private async Task LoadInventoryItem()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var inventoryItems = await _stockKeepingRepository.GetAllInventoryItemsAsync();
+                if (inventoryItems != null)
+                {
+                    cmbName.ItemsSource = inventoryItems;
+                    cmbName.DisplayMemberPath = "Name";
+                    cmbName.SelectedValuePath = "Id";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async Task LoadMenuItemCategory()
         {
             LoaderOverlay.Visibility = Visibility.Visible;
@@ -85,7 +109,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(txtName.Text, txtPrice.Text, cmbCategory.Text, cmbServiceArea.Text);
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(cmbName.Text, txtPrice.Text, cmbCategory.Text, cmbServiceArea.Text);
 
                 if (areFieldsEmpty)
                 {
@@ -109,11 +133,13 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
 
                 var menuItem = new Domain.Entities.StoreKeeping.MenuItem
                 {
-                    Name = txtName.Text,
+                    Name = cmbName.Text,
                     Price = decimal.Parse(txtPrice.Text.Replace(",", ""), CultureInfo.InvariantCulture),
                     MenuCategoryId = (string)cmbCategory.SelectedValue,
                     ServiceArea = Enum.Parse<ServiceArea>(cmbServiceArea.SelectedValue.ToString()!),
                     IsAvailable = isChecked,
+                    IsDirectStock = (bool)chkIsDirectStock.IsChecked!,
+                    InventoryItemID = (string)cmbName.SelectedValue,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 };
@@ -172,6 +198,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
         {
             LoadServiceArea();
             await LoadMenuItemCategory();
+            await LoadInventoryItem();
         }
     }
 }

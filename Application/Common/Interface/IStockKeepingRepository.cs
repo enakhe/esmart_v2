@@ -27,5 +27,13 @@ namespace ESMART.Application.Common.Interface
         Task DeleteMenuItemCategoryAsync(string id);
         Task<MenuCategory> GetMenuItemCategoryByNameAsync(string name);
         Task SeedDefaultMenuItemCategoriesAsync();
+
+        Task AddInventoryItemAsync(InventoryItem inventoryItem);
+        Task<InventoryItem> GetInventoryItemByIdAsync(string id);
+        Task<InventoryItem> GetInventoryItemByNameAsync(string name);
+        Task<List<InventoryViewModel>> GetAllInventoryItemsAsync();
+        Task UpdateInventoryItemAsync(InventoryItem inventoryItem);
+        Task DeleteInventoryItemAsync(string id);
+        Task ToggleInventoryItemAvailabilityAsync(string id);
     }
 }

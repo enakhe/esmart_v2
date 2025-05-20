@@ -51,6 +51,7 @@
     <None Remove="Forms\Setting\Licence\logo.png" />
     <None Remove="Forms\Setting\logo.png" />
     <None Remove="Forms\splashscreen.png" />
+    <None Remove="Forms\StockKeeping\Inventory\logo.png" />
     <None Remove="Forms\StockKeeping\MenuItem\logo.png" />
     <None Remove="Forms\UserSetting\Roles\logo.png" />
     <None Remove="Forms\UserSetting\Users\logo.png" />
@@ -137,6 +138,7 @@
     <Resource Include="Forms\Setting\Licence\logo.png" />
     <Resource Include="Forms\Setting\logo.png" />
     <Resource Include="Forms\splashscreen.png" />
+    <Resource Include="Forms\StockKeeping\Inventory\logo.png" />
     <Resource Include="Forms\StockKeeping\MenuItem\logo.png" />
     <Resource Include="Forms\UserSetting\Roles\logo.png" />
     <Resource Include="Forms\UserSetting\Users\logo.png" />

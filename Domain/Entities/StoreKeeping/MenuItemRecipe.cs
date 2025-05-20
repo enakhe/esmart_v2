@@ -8,7 +8,6 @@ namespace ESMART.Domain.Entities.StoreKeeping
         public string MenuItemId { get; set; }
         public string InventoryItemId { get; set; }
         public decimal Quantity { get; set; }
-        public string UnitOfMeasure { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

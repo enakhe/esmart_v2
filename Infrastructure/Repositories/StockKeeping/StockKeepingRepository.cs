@@ -65,7 +65,6 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                             CreatedAt = r.CreatedAt,
                             UpdatedAt = r.UpdatedAt,
                             Quantity = r.Quantity,
-                            UnitOfMeasure = r.UnitOfMeasure
                         })]
                 })];
             }
@@ -105,7 +104,6 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                             CreatedAt = r.CreatedAt,
                             UpdatedAt = r.UpdatedAt,
                             Quantity = r.Quantity,
-                            UnitOfMeasure = r.UnitOfMeasure
                         })]
                     };
             }
@@ -235,7 +233,6 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                             CreatedAt = r.CreatedAt,
                             UpdatedAt = r.UpdatedAt,
                             Quantity = r.Quantity,
-                            UnitOfMeasure = r.UnitOfMeasure
                         })]
                 })];
             }
@@ -274,7 +271,6 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                             CreatedAt = r.CreatedAt,
                             UpdatedAt = r.UpdatedAt,
                             Quantity = r.Quantity,
-                            UnitOfMeasure = r.UnitOfMeasure
                         })]
                 })];
             }
@@ -369,6 +365,127 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while retrieving the menu item category by name.", ex);
+            }
+        }
+
+        // Add Inventory item to database
+        public async Task AddInventoryItemAsync(InventoryItem inventoryItem)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                await context.InventoryItems.AddAsync(inventoryItem);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the inventory item.", ex);
+            }
+        }
+
+        // Get Inventory item by id
+        public async Task<InventoryItem> GetInventoryItemByIdAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.InventoryItems.FindAsync(id) ?? throw new Exception("Inventory item not found.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving the inventory item.", ex);
+            }
+        }
+
+        // Get Inventory item by name
+        public async Task<InventoryItem> GetInventoryItemByNameAsync(string name)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.InventoryItems.FirstOrDefaultAsync(i => i.Name == name) ?? throw new Exception("Inventory item not found.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving the inventory item by name.", ex);
+            }
+        }
+
+        // Get all Inventory items
+        public async Task<List<InventoryViewModel>> GetAllInventoryItemsAsync()
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.InventoryItems
+                    .Select(i => new InventoryViewModel
+                    {
+                        Id = i.Id,
+                        Name = i.Name,
+                        Description = i.Description,
+                        Quantity = i.Quantity,
+                        UnitOfMeasure = i.UnitOfMeasure,
+                        ReorderLevel = i.ReorderLevel,
+                        ReorderQuantity = i.ReorderQuantity,
+                        IsLow = i.Quantity < i.ReorderQuantity,
+                        IsActive = i.IsActive ? "Yes" : "No",
+                        CreatedAt = i.CreatedAt,
+                        UpdatedAt = i.UpdatedAt
+                    })
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving all inventory items.", ex);
+            }
+        }
+
+        // Update Inventory item
+        public async Task UpdateInventoryItemAsync(InventoryItem inventoryItem)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                context.InventoryItems.Update(inventoryItem);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the inventory item.", ex);
+            }
+        }
+
+        // Delete Inventory item
+        public async Task DeleteInventoryItemAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                var inventoryItem = await context.InventoryItems.FindAsync(id) ?? throw new Exception("Inventory item not found.");
+                context.InventoryItems.Remove(inventoryItem);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the inventory item.", ex);
+            }
+        }
+
+        // Toggle Inventory item availability
+        public async Task ToggleInventoryItemAvailabilityAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                var inventoryItem = await context.InventoryItems.FindAsync(id) ?? throw new Exception("Inventory item not found.");
+                inventoryItem.IsActive = !inventoryItem.IsActive;
+                inventoryItem.UpdatedAt = DateTime.UtcNow;
+                context.InventoryItems.Update(inventoryItem);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while toggling the inventory item's availability.", ex);
             }
         }
 
