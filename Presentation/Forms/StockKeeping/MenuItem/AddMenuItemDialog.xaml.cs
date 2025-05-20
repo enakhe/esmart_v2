@@ -2,6 +2,7 @@
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.StoreKeeping;
 using ESMART.Domain.Enum;
+using ESMART.Presentation.Forms.StockKeeping.MenuItemRecipe;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -31,6 +32,8 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
         {
             _stockKeepingRepository = stockKeepingRepository;
             InitializeComponent();
+
+            stkName.Visibility = Visibility.Collapsed;
         }
 
         public void LoadServiceArea()
@@ -109,7 +112,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(cmbName.Text, txtPrice.Text, cmbCategory.Text, cmbServiceArea.Text);
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(txtPrice.Text, cmbCategory.Text, cmbServiceArea.Text);
 
                 if (areFieldsEmpty)
                 {
@@ -133,18 +136,37 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
 
                 var menuItem = new Domain.Entities.StoreKeeping.MenuItem
                 {
-                    Name = cmbName.Text,
                     Price = decimal.Parse(txtPrice.Text.Replace(",", ""), CultureInfo.InvariantCulture),
                     MenuCategoryId = (string)cmbCategory.SelectedValue,
                     ServiceArea = Enum.Parse<ServiceArea>(cmbServiceArea.SelectedValue.ToString()!),
                     IsAvailable = isChecked,
                     IsDirectStock = (bool)chkIsDirectStock.IsChecked!,
-                    InventoryItemID = (string)cmbName.SelectedValue,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 };
 
-                await _stockKeepingRepository.AddMenuItemAsync(menuItem);
+                if (menuItem.IsDirectStock)
+                {
+                    menuItem.Name = cmbName.Text;
+                    menuItem.InventoryItemID = (string)cmbName.SelectedValue;
+                }
+                else
+                {
+                    menuItem.Name = txtName.Text;
+                }
+
+                    await _stockKeepingRepository.AddMenuItemAsync(menuItem);
+
+                if(!menuItem.IsDirectStock)
+                {
+                    AddMenuItemRecipeDialog addMenuItemRecipeDialog = new(_stockKeepingRepository)
+                    {
+                        Owner = this
+                    };
+
+                    addMenuItemRecipeDialog.ShowDialog();
+                }
+
                 MessageBox.Show("Menu item added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 this.DialogResult = true;
@@ -194,7 +216,22 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
             this.DialogResult = false;
         }
 
-        private async void Window_Activated(object sender, EventArgs e)
+        private void chkIsDirectStock_Checked(object sender, RoutedEventArgs e)
+        {
+            stkCmbName.Visibility = Visibility.Visible;
+
+            if (stkName != null)
+                stkName.Visibility = Visibility.Collapsed;
+        }
+
+        private void chkIsDirectStock_Unchecked(object sender, RoutedEventArgs e)
+        {
+            stkCmbName.Visibility = Visibility.Collapsed;
+
+            stkName.Visibility = Visibility.Visible;
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadServiceArea();
             await LoadMenuItemCategory();
