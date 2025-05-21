@@ -35,5 +35,15 @@ namespace ESMART.Application.Common.Interface
         Task UpdateInventoryItemAsync(InventoryItem inventoryItem);
         Task DeleteInventoryItemAsync(string id);
         Task ToggleInventoryItemAvailabilityAsync(string id);
+
+        Task AddMenuItemRecipeAsync(MenuItemRecipe menuItemRecipe);
+        Task<MenuItemRecipe> GetMenuItemRecipeByIdAsync(string id);
+        Task<List<MenuItemRecipe>> GetAllMenuItemRecipesAsync();
+        Task UpdateMenuItemRecipeAsync(MenuItemRecipe menuItemRecipe);
+        Task DeleteMenuItemRecipeAsync(string id);
+        Task<List<MenuItemRecipe>> GetMenuItemRecipesByMenuItemIdAsync(string menuItemId);
+        Task<List<MenuItemRecipe>> GetMenuItemRecipesByInventoryItemIdAsync(string inventoryItemId);
+        Task<MenuItemRecipe> GetMenuItemRecipeByMenuItemAndInventoryItemIdAsync(string menuItemId, string inventoryItemId);
+        Task<List<MenuCategory>> GetAllMenuItemCategoriesAsync();
     }
 }

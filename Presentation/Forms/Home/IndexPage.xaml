@@ -20,9 +20,9 @@
         </Grid.RowDefinitions>
 
         <!-- Statistics Cards -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="0,0,0,10">
-            <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10"
-            Padding="10">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" Grid.Row="0" Margin="0,0,0,30">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                 <StackPanel>
                     <TextBlock Text="Guests" Foreground="Black" FontSize="14"/>
                     <Grid Margin="5, 10">
@@ -38,7 +38,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10"
+                <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10"
             Padding="10">
                 <StackPanel>
                     <TextBlock Text="Rooms" Foreground="Black" FontSize="14"/>
@@ -55,7 +55,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
+                <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                 <StackPanel>
                     <TextBlock Text="Bookings" Foreground="Black" FontSize="14"/>
 
@@ -72,7 +72,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
+                <Border Background="White" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
                 <StackPanel>
                     <TextBlock Text="In-House Guests" Foreground="Black" FontSize="14"/>
 
@@ -89,6 +89,7 @@
                 </StackPanel>
             </Border>
         </StackPanel>
+        </ScrollViewer>
 
         <Border Grid.Row="1" Background="#FAFAFA" CornerRadius="10" Padding="20">
             <Grid>

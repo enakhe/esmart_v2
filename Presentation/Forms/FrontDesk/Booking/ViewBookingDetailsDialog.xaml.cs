@@ -4,9 +4,11 @@ using ESMART.Application.Common.Interface;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Utils;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
 {
@@ -26,6 +28,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _bookingRepository = bookingRepository;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
+
+            Loaded += DisableMinimizeButton;
         }
 
         private void LoadBookinDetails()
@@ -192,5 +196,21 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             LoadBookinDetails();
             LoadDefaultSetting();
         }
+
+        private void DisableMinimizeButton(object sender, RoutedEventArgs e)
+        {
+            var hwnd = new WindowInteropHelper(this).Handle;
+            int currentStyle = GetWindowLong(hwnd, GWL_STYLE);
+            SetWindowLong(hwnd, GWL_STYLE, currentStyle & ~WS_MINIMIZEBOX);
+        }
+
+        private const int GWL_STYLE = -16;
+        private const int WS_MINIMIZEBOX = 0x00020000;
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
     }
 }

@@ -85,35 +85,37 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="0,0,0,10">
-                <Border Background="#3498db" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
-                    <StackPanel>
-                        <TextBlock Text="Building" Foreground="White" FontSize="14"/>
-                        <TextBlock Text="0" Name="txtBuildingCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                    </StackPanel>
-                </Border>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" Margin="0,0,0,30" Grid.Row="0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                    <Border Background="#3498db" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="Building" Foreground="White" FontSize="14"/>
+                            <TextBlock Text="0" Name="txtBuildingCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-                <Border Background="#e74c3c" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
-                    <StackPanel>
-                        <TextBlock Text="Floors" Foreground="White" FontSize="14"/>
-                        <TextBlock Text="0" x:Name="txtFloorCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                    </StackPanel>
-                </Border>
+                    <Border Background="#e74c3c" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="Floors" Foreground="White" FontSize="14"/>
+                            <TextBlock Text="0" x:Name="txtFloorCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-                <Border Background="#4ead16" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
-                    <StackPanel>
-                        <TextBlock Text="Areas" Foreground="White" FontSize="14"/>
-                        <TextBlock Text="0" x:Name="txtAreaCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                    </StackPanel>
-                </Border>
+                    <Border Background="#4ead16" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="Areas" Foreground="White" FontSize="14"/>
+                            <TextBlock Text="0" x:Name="txtAreaCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-                <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
-                    <StackPanel>
-                        <TextBlock Text="Rooms" Foreground="White" FontSize="14"/>
-                        <TextBlock Text="0" x:Name="txtRoomCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+                    <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="Rooms" Foreground="White" FontSize="14"/>
+                            <TextBlock Text="0" x:Name="txtRoomCount" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
 
             <Border Background="#fafafa" Grid.Row="1">
                 <Border Background="White" CornerRadius="10" Padding="20">
@@ -412,7 +414,7 @@
                                     <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
                                         <DataGrid x:Name="RoomTypeDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
                                             <DataGrid.Columns>
-                                                <DataGridTemplateColumn Header="Name" Width="*">
+                                                <DataGridTemplateColumn Header="Name" Width="2*">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -452,7 +454,7 @@
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
 
-                                                <DataGridTemplateColumn Header="Operation" Width="2*">
+                                                <DataGridTemplateColumn Header="Operation" Width="*">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

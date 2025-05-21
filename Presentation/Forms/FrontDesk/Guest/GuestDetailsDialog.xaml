@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Background="#f0f4f9"
-        ResizeMode="NoResize"
-        Title="Guest Details" Height="700" Width="1400" Icon="/Forms/FrontDesk/Guest/logo.png" Activated="Window_Activated">
+        ResizeMode="CanResize"
+        Title="Guest Details" Height="650" Width="900" Icon="/Forms/FrontDesk/Guest/logo.png" Activated="Window_Activated">
 
     <Window.Resources>
         <local:StatusToColorConverter x:Key="StatusToColorConverter" />

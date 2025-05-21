@@ -65,7 +65,10 @@ namespace ESMART.Presentation.Forms.Reports
                     else
                     {
                         // If no data, clear the series
-                        Days.Clear();
+                        if (Days != null)
+                        {
+                            Days.Clear();
+                        }
                         RevenueSeries.Clear();
                         RevenueSeries.Add(new ColumnSeries
                         {

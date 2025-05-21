@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Background="#f0f4f9"
-        ResizeMode="NoResize"
-        Title="Booking Details" Height="700" Width="1400" Activated="Window_Activated" Icon="/Forms/FrontDesk/Booking/logo.png">
+        ResizeMode="CanResize"
+        Title="Booking Details" Height="650" Width="900" Activated="Window_Activated" Icon="/Forms/FrontDesk/Booking/logo.png">
 
     <Window.Resources>
         <local:StatusToColorConverter x:Key="StatusToColorConverter" />

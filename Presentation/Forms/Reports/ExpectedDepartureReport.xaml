@@ -118,9 +118,9 @@
             </Grid>
 
 
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                    <DataGrid x:Name="BookingDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
+                    <DataGrid x:Name="BookingDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="1300">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="Guest" Width="2*">
                                 <DataGridTemplateColumn.CellTemplate>

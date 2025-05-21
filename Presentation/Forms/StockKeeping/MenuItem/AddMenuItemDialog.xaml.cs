@@ -159,7 +159,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
 
                 if(!menuItem.IsDirectStock)
                 {
-                    AddMenuItemRecipeDialog addMenuItemRecipeDialog = new(_stockKeepingRepository)
+                    AddMenuItemRecipeDialog addMenuItemRecipeDialog = new(_stockKeepingRepository, menuItem)
                     {
                         Owner = this
                     };

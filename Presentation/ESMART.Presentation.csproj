@@ -13,6 +13,7 @@
     <Configurations>Debug;Release;Migration</Configurations>
     <Platforms>AnyCPU;x86</Platforms>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>

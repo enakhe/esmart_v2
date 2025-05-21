@@ -53,8 +53,7 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                     CategoryId = m.MenuCategoryId,
                     ServiceArea = m.ServiceArea.ToString(),
                     CreatedAt = m.CreatedAt,
-                    UpdatedAt = m.UpdatedAt,
-                    IsLow = m.MenuItemRecipes.Any(r => r.InventoryItem.Quantity < r.InventoryItem.ReorderQuantity), // Example condition for low stock
+                    UpdatedAt = m.UpdatedAt, // Example condition for low stock
 
                     Categories = [.. categories],
                     Recipes = [.. m.MenuItemRecipes.Select(r => new MenuItemRecipe
@@ -486,6 +485,141 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while toggling the inventory item's availability.", ex);
+            }
+        }
+
+        // Add menu item recipe to database
+        public async Task AddMenuItemRecipeAsync(MenuItemRecipe menuItemRecipe)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                await context.MenuItemRecipes.AddAsync(menuItemRecipe);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the menu item recipe.", ex);
+            }
+        }
+
+        // Get menu item recipe by id
+        public async Task<MenuItemRecipe> GetMenuItemRecipeByIdAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuItemRecipes.FindAsync(id) ?? throw new Exception("Menu item recipe not found.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving the menu item recipe.", ex);
+            }
+        }
+
+        // Get all menu item recipes
+        public async Task<List<MenuItemRecipe>> GetAllMenuItemRecipesAsync()
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuItemRecipes.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving all menu item recipes.", ex);
+            }
+        }
+
+        // Update menu item recipe
+        public async Task UpdateMenuItemRecipeAsync(MenuItemRecipe menuItemRecipe)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                context.MenuItemRecipes.Update(menuItemRecipe);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the menu item recipe.", ex);
+            }
+        }
+
+        // Delete menu item recipe
+        public async Task DeleteMenuItemRecipeAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                var menuItemRecipe = await context.MenuItemRecipes.FindAsync(id) ?? throw new Exception("Menu item recipe not found.");
+                context.MenuItemRecipes.Remove(menuItemRecipe);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the menu item recipe.", ex);
+            }
+        }
+
+        // Get menu item recipe by menu item id
+        public async Task<List<MenuItemRecipe>> GetMenuItemRecipesByMenuItemIdAsync(string menuItemId)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuItemRecipes
+                    .Where(m => m.MenuItemId == menuItemId)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving menu item recipes by menu item ID.", ex);
+            }
+        }
+
+        // Get menu item recipe by inventory item id
+        public async Task<List<MenuItemRecipe>> GetMenuItemRecipesByInventoryItemIdAsync(string inventoryItemId)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuItemRecipes
+                    .Where(m => m.InventoryItemId == inventoryItemId)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving menu item recipes by inventory item ID.", ex);
+            }
+        }
+
+        // Get menu item recipe by menu item and inventory item id
+        public async Task<MenuItemRecipe> GetMenuItemRecipeByMenuItemAndInventoryItemIdAsync(string menuItemId, string inventoryItemId)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuItemRecipes
+                    .FirstOrDefaultAsync(m => m.MenuItemId == menuItemId && m.InventoryItemId == inventoryItemId) ?? throw new Exception("Menu item recipe not found.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving the menu item recipe by menu item and inventory item ID.", ex);
+            }
+        }
+
+        // Get all menu item categories
+        public async Task<List<MenuCategory>> GetAllMenuItemCategoriesAsync()
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuCategories.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving all menu item categories.", ex);
             }
         }
 

@@ -7,7 +7,7 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
       Background="#f0f4f9"
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" d:DesignWidth="500"
       Title="BankAccountPage" Loaded="Page_Loaded">
 
     <Page.Resources>
@@ -85,7 +85,7 @@
 
             <TextBlock Text="Bank Accounts" Grid.Row="0" FontSize="24" FontWeight="Bold" Margin="20" Foreground="#1a237e"/>
             <ScrollViewer VerticalScrollBarVisibility="Hidden" VerticalAlignment="Center" Grid.Row="1" HorizontalAlignment="Center" Grid.Column="0" Margin="0,0,0,10">
-                <Border Background="White" Width="700" CornerRadius="10" Margin="10" Padding="30">
+                <Border Background="White" Width="500" CornerRadius="10" Margin="10" Padding="10">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -106,7 +106,7 @@
 
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                                <DataGrid x:Name="BankAccountDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
+                                <DataGrid x:Name="BankAccountDataGrid" Margin="5" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
                                     <DataGrid.Columns>
                                         <DataGridTemplateColumn Header="Bank Name" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>

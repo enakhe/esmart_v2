@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Add Menu Recipe" Height="600" Width="400" Loaded="Window_Loaded">
+        Title="Add Menu Recipe" Height="570" Width="480" Loaded="Window_Loaded">
     
     <Window.Resources>
         <local:LowMenuColorConverter x:Key="LowMenuColorConverter" />
@@ -99,11 +99,12 @@
                                 <ColumnDefinition Width="2*" />
                                 <ColumnDefinition />
                                 <ColumnDefinition />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
                             <StackPanel x:Name="stkName" Grid.Column="0" Margin="0,0,5,0">
                                 <TextBlock Text="Inventory:" FontWeight="Bold" />
-                                <ComboBox x:Name="cmbInventory" Padding="2,5,0,5" />
+                                <ComboBox x:Name="cmbInventory" Padding="2,5,0,5" SelectionChanged="cmbInventory_SelectionChanged" />
                             </StackPanel>
 
                             <StackPanel x:Name="stkUnit" Grid.Column="1" Margin="5,0,5,0">
@@ -111,8 +112,15 @@
                                 <TextBox x:Name="txtUnit" Padding="2,5,0,5" IsEnabled="False" />
                             </StackPanel>
 
-                            <StackPanel Margin="0,10,0,0" x:Name="btnAddRecipe" Grid.Column="2" HorizontalAlignment="Right">
-                                <Button Width="70" Height="30" Padding="2" HorizontalAlignment="Left" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                            <StackPanel Grid.Row="1" Margin="0,0,0,20" Grid.Column="2">
+                                <StackPanel x:Name="stkQuantity" Grid.Column="0">
+                                    <TextBlock Text="Quantity:" FontWeight="Bold" />
+                                    <TextBox x:Name="txtQuantity" Padding="2,5,0,5" Width="180" HorizontalAlignment="Left" PreviewTextInput="NumberOnly_PreviewTextInput" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Margin="0,10,0,0" x:Name="btnAddRecipe" Grid.Column="3" HorizontalAlignment="Right">
+                                <Button Width="70" Height="30" Padding="2" HorizontalAlignment="Left" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="AddInvetoryToTable_Click">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -127,18 +135,11 @@
                         </Grid>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" Margin="0,0,0,20">
-                        <StackPanel x:Name="stkQuantity" Grid.Column="0">
-                            <TextBlock Text="Quantity:" FontWeight="Bold" />
-                            <TextBox x:Name="ttQuantity" Padding="2,5,0,5" Width="180" HorizontalAlignment="Left" />
-                        </StackPanel>
-                    </StackPanel>
-
                     <ScrollViewer Grid.Row="2" Margin="0,0,0,20" Height="270" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                            <DataGrid x:Name="MenuItemDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
+                            <DataGrid x:Name="MenuItemRecipeDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
                                 <DataGrid.Columns>
-                                    <DataGridTemplateColumn Header="Name" Width="2*">
+                                    <DataGridTemplateColumn Header="Name" Width="*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -162,7 +163,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                    <TextBlock Text="{Binding Unit}" Foreground="{Binding IsLow, Converter={StaticResource LowMenuColorConverter}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                                    <TextBlock Text="{Binding UnitOfMeasure}" Foreground="{Binding IsLow, Converter={StaticResource LowMenuColorConverter}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
@@ -180,7 +181,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <Button Content="Cancel" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand">
+                                <Button Content="Cancel" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand" Click="Cancel_Click">
                                     <Button.Style>
                                         <Style TargetType="Button">
                                             <Setter Property="Template">
@@ -198,7 +199,7 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">
-                                <Button Content="Save" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand">
+                                <Button Content="Save" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="SaveButton_Click">
                                     <Button.Style>
                                         <Style TargetType="Button">
                                             <Setter Property="Template">

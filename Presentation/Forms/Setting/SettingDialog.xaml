@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ESMART.Presentation.Forms.Setting"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Setting" Height="700" Width="1100" ResizeMode="NoResize" Icon="/Forms/Setting/logo.png">
+        Title="Setting" Height="700" Width="900" ResizeMode="NoResize" Icon="/Forms/Setting/logo.png">
 
     <Window.Resources>
         <!-- Main menu button style -->

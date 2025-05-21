@@ -95,7 +95,7 @@ namespace ESMART.Infrastructure.Repositories.Configuration
             var fileContent = new ByteArrayContent(fileBytes);
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
-            form.Add(fileContent, "file", Path.GetFileName(filePath)); // ✅ Field name fixed
+            form.Add(fileContent, "file", Path.GetFileName(filePath));
 
             http.DefaultRequestHeaders.Add("x-hotel-name", hotelName);
 
