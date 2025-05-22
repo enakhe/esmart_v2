@@ -1,8 +1,10 @@
 ﻿#nullable disable
 
 using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Utils;
 using ESMART.Domain.Enum;
 using ESMART.Presentation.LockSDK;
+using System.Text;
 using System.Windows;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
@@ -46,14 +48,35 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
+        private static int OpenPort(int port)
+        {
+            var st = LockSDKHeaders.LS_OpenPort(port);
+            return st;
+        }
+
+        public static int CheckEncoder(LOCK_SETTING lockSetting)
+        {
+            Int16 locktype = (short)lockSetting;
+            var st = LockSDKHeaders.TP_Configuration(locktype);
+            return st;
+        }
+
         private void RecycleCard_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var st = LockSDKMethods.RecycleCard();
+                StringBuilder card_snr = new StringBuilder();
+                CARD_INFO cardInfo = new CARD_INFO();
+                byte[] cbuf = new byte[10000];
+                cardInfo = new CARD_INFO();
+                int result = LockSDKHeaders.LS_GetCardInformation(ref cardInfo, 0, 0, IntPtr.Zero);
+
+                var cardNo = Helper.ByteArrayToString(cardInfo.CardNo);
+
+                int st = LockSDKHeaders.TP_CancelCard(card_snr);
                 if (st == 1)
                 {
-                    MessageBox.Show("Successfully recycled card", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Successfully recycled card", "", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
@@ -142,119 +165,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
-        //private async Task IssueCardForRF()
-        //{
-        //    LoaderOverlay.Visibility = Visibility.Visible;
-        //    try
-        //    {
-        //        byte[] carddata = new byte[128];
-        //        int i, st;
-        //        int dlscoid;
-        //        byte cardno;
-        //        byte dai;
-        //        byte llock;
-        //        string datastr = "";
-        //        string lockstr, EDatestr;
-        //        byte[] cardbuf = new byte[128];
-        //        char[] lockno = new char[6];
-        //        char[] EDate = new char[10];
-
-        //        lockstr = $"{_booking.Room.Building.Number.Substring(1)}0{_booking.Room.Floor.Number}{_booking.Room.Number.Substring(1)}";
-        //        for (i = 0; i < 6; i++)
-        //            lockno[i] = Convert.ToChar(lockstr.Substring(i, 1));
-
-        //        EDatestr = _booking.CheckIn.ToString("yyMMdd") + _booking.CheckOut.ToString("HHmm");
-        //        for (i = 0; i < 10; i++)
-        //            EDate[i] = Convert.ToChar(EDatestr.Substring(i, 1));
-
-        //        dlscoid = int.Parse(GetAuthCardFromDB());
-        //        cardno = 0;
-        //        dai = 1;
-        //        llock = (byte)1;
-
-        //        st = LockSDKHeaders.WriteGuestCardA(dlscoid, cardno, dai, llock, EDate, lockno, cardbuf);
-        //        Thread.Sleep(400);
-        //        if (st == 0)
-        //        {
-        //            LockSDKHeaders.Buzzer(50);
-        //            for (i = 0; i < 32; i++)
-        //            {
-        //                datastr = datastr + ((char)carddata[i]).ToString();
-        //            }
-        //            MessageBox.Show("Guest card created successfully!");
-        //        }
-        //        else
-        //        {
-        //            MessageBox.Show("Failed to create guest card, return value: " + st.ToString());
-        //        }
-
-        //        if (st == 0)
-        //        {
-        //            CARD_INFO cardInfo = new CARD_INFO();
-        //            byte[] cbuf = new byte[10000];
-        //            cardInfo = new CARD_INFO();
-        //            CompanyInformation foundCompany = _sytemSetupController.GetCompanyInfo();
-
-        //            string cardNoString = FormHelper.ByteArrayToString(cardInfo.CardNo);
-        //            MakeCardType cardType = FormHelper.GetCardType(cardInfo.CardType);
-
-        //            GuestCard guestCard = new GuestCard()
-        //            {
-        //                Id = booking.Id,
-        //                CardNo = cardNoString,
-        //                CardType = FormHelper.FormatEnumName(cardType),
-        //                IssueTime = DateTime.Now,
-        //                RefundTime = txtOutTime.Value,
-        //                IssuedBy = AuthSession.CurrentUser.Id,
-        //                ApplicationUser = _userController.GetApplicationUserById(AuthSession.CurrentUser.Id),
-        //                CanOpenDeadLocks = true,
-        //                PassageMode = false,
-        //                DateCreated = DateTime.Now,
-        //                DateModified = DateTime.Now,
-        //            };
-        //            _cardController.AddGuestCard(guestCard);
-        //            string guestCardString = $"Id = {guestCard.Id}\n" +
-        //                     $"Card No = {guestCard.CardNo}\n" +
-        //                     $"Card Type = {guestCard.CardType}\n" +
-        //                     $"Room = {booking.Room.RoomNo}\n" +
-        //                     $"Issue Time = {guestCard.IssueTime}\n" +
-        //                     $"Refund Time = {guestCard.RefundTime}\n" +
-        //                     $"Issued By = {guestCard.IssuedBy}\n" +
-        //                     $"Application User = {guestCard.ApplicationUser?.FullName}\n" +
-        //                     $"Date Created = {guestCard.DateCreated}\n" +
-        //                     $"Date Modified = {guestCard.DateModified}";
-
-        //            if (foundCompany != null)
-        //            {
-        //                if (foundCompany.Email != null)
-        //                {
-        //                    await EmailHelper.SendEmail(foundCompany.Email, "Booking Card Created", guestCardString);
-        //                }
-        //            }
-        //            this.DialogResult = DialogResult.OK;
-        //            this.Close();
-
-        //            MessageBox.Show("Successfully issued card", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //        }
-        //        else if (st == (int)ERROR_TYPE.PORT_IN_USED)
-        //        {
-        //            MessageBox.Show("Failed to issue card: Port is already in use.", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        }
-        //        else
-        //        {
-        //            MessageBox.Show($"Failed to issue card, error code: {st}", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //    }
-        //    finally
-        //    {
-        //        LoaderOverlay.Visibility = Visibility.Collapsed;
-        //    }
-        //}
-
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
@@ -263,6 +173,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private async void Window_Activated(object sender, EventArgs e)
         {
             await LoadBookingData();
+            int checkEncoder = CheckEncoder(LOCK_SETTING.LOCK_TYPE_PULMOS);
+            if (checkEncoder != 1)
+            {
+                LockSDKMethods.CheckErr(checkEncoder);
+            }
         }
     }
 }

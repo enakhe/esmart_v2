@@ -61,6 +61,9 @@
     <Compile Update="Forms\FrontDesk\Guest\GuestDetailsDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Guest\GuestFolioDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Guest\GuestPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

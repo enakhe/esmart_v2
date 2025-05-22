@@ -142,7 +142,11 @@ namespace ESMART.Presentation.Forms.Reports
         {
             // Clear existing data and refresh the chart
             RevenueSeries.Clear();
-            Days.Clear();
+
+            if(Days != null)
+            {
+                Days.Clear();
+            }
 
             await LoadData();
         }

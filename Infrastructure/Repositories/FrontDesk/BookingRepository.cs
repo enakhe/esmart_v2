@@ -523,6 +523,9 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 var booking = await context.Bookings
                     .Include(b => b.Guest)
                     .Include(b => b.Room)
+                    .Include(b => b.Room.Floor)
+                    .Include(b => b.Room.Area)
+                    .Include(b => b.Room.Building)
                     .Include(b => b.ApplicationUser)
                     .FirstOrDefaultAsync(b => b.Id == id || b.BookingId == id);
 

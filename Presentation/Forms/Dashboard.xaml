@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ESMART.Presentation.Forms"
         mc:Ignorable="d"
-        Title="Esmart Hotel Management Software" Height="800" Width="800"
+        Title="Esmart Hotel Management Software" Height="800" Width="900"
         WindowStartupLocation="CenterScreen" Background="#E9F0F7" Icon="/Forms/logo.png" Activated="Window_Activated" WindowState="Maximized">
 
     <Grid>
@@ -281,7 +281,7 @@
                         </Button>
                     </StackPanel>
 
-                    <StackPanel Margin="0,60,0,20" Name="StoreKeepingControls">
+                    <StackPanel Margin="0,60,0,20" Name="StoreKeepingControls" Visibility="Collapsed">
 
                         <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="OpenSidebar_Click">
                             <Button.Style>
@@ -471,7 +471,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="SettingButton_Click">
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" x:Name="SettingButton" Click="SettingButton_Click">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                     <Setter Property="Background" Value="Transparent"/>

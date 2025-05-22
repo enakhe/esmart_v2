@@ -98,6 +98,7 @@ namespace ESMART.Presentation.Forms.Setting.OperationalSetting
                     {
                         var userBackUp = await _backupRepository.GetBackupSettingsAsync();
                         Enum.TryParse(backupFrequency, out BackupFrequency frequency);
+
                         userBackUp.Frequency = frequency;
 
                         await _backupRepository.UpdateBackupSettingsAsync(userBackUp);
