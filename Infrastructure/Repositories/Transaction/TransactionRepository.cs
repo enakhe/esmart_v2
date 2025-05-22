@@ -148,6 +148,43 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             }
         }
 
+        public async Task<List<TransactionViewModel>> GetTransactionByGuestIdAsync(string guestId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItems = await context.Transactions
+                    .Include(t => t.TransactionItems)
+                    .Include(t => t.Guest)
+                    .Include(t => t.ApplicationUser)
+                    .Include(t => t.Booking)
+                    .Where(t => t.GuestId == guestId)
+                    .Select(t => new TransactionViewModel
+                    {
+                        TransactionId = t.TransactionId,
+                        InvoiceNumber = t.InvoiceNumber,
+                        Guest = t.Guest.FullName,
+                        GuestPhoneNo = t.Guest.PhoneNumber,
+                        Date = t.Date,
+                        TotalRevenue = t.TransactionItems.Where(ti => ti.TransactionId == t.TransactionId && ti.Status == TransactionStatus.Paid).Sum(ti => ti.Amount),
+                        TotalReceivables = t.TransactionItems.Where(ti => ti.TransactionId == t.TransactionId && ti.Status != TransactionStatus.Paid).Sum(ti => ti.Amount),
+                        Description = t.Description,
+                        IssuedBy = t.ApplicationUser.FullName,
+                        TransationItem = t.TransactionItems.OrderByDescending(ti => ti.DateAdded).ToList(),
+                        Booking = t.Booking,
+                        DateCreated = t.CreatedAt,
+                        DateUpdated = t.UpdatedAt,
+                    })
+                    .OrderByDescending(ti => ti.Date)
+                    .ToListAsync();
+                return transactionItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
+            }
+        }
+
         // Get transaction by InvoiceNumber
         public async Task<Domain.Entities.Transaction.Transaction> GetByInvoiceNumberAsync(string invoiceNumber)
         {
@@ -163,6 +200,37 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             }
         }
 
+        // Get transaction by TransactionId
+        public async Task<TransactionViewModel> GetByTransactionIdAsync(string transactionId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transaction = await context.Transactions.Where(t => t.TransactionId == transactionId)
+                    .Select(t => new TransactionViewModel
+                    {
+                        TransactionId = t.TransactionId,
+                        InvoiceNumber = t.InvoiceNumber,
+                        Guest = t.Guest.FullName,
+                        GuestPhoneNo = t.Guest.PhoneNumber,
+                        Date = t.Date,
+                        TotalRevenue = t.TransactionItems.Where(ti => ti.Status == TransactionStatus.Paid).Sum(ti => ti.Amount),
+                        TotalReceivables = t.TransactionItems.Where(ti => ti.Status != TransactionStatus.Paid).Sum(ti => ti.Amount),
+                        Description = t.Description,
+                        IssuedBy = t.ApplicationUser.FullName,
+                        TransationItem = t.TransactionItems.OrderByDescending(ti => ti.DateAdded).ToList(),
+                        Booking = t.Booking,
+                        DateCreated = t.CreatedAt,
+                        DateUpdated = t.UpdatedAt,
+                    }).FirstOrDefaultAsync();
+                return transaction;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving a transaction by invoice number" + ex.Message);
+            }
+        }
+
         // TrnsactionItem
         public async Task AddTransactionItemAsync(TransactionItem transactionItem)
         {
@@ -170,23 +238,6 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             {
                 await using var context = _contextFactory.CreateDbContext();
                 await context.TransactionItems.AddAsync(transactionItem);
-
-                var transaction = await GetByIdAsync(transactionItem.TransactionId);
-
-                if (transaction != null)
-                {
-                    if (transactionItem.Status == TransactionStatus.Paid)
-                    {
-                        transaction.TotalRevenue += transactionItem.Amount;
-                    }
-                    else if (transactionItem.Status == TransactionStatus.Unpaid)
-                    {
-                        transaction.TotalReceivables += transactionItem.Amount;
-                    }
-
-                    await UpdateTransactionAsync(transaction);
-                }
-
                 await context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -236,38 +287,6 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     ti.Amount == amount &&
                     ti.Transaction.GuestId == guestId &&
                     ti.Status == TransactionStatus.Unpaid);
-                return transactionItems;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
-            }
-        }
-
-
-        public async Task<List<TransactionItemViewModel>> GetTransactionItemsByTransactionIdAsync(string transactionId)
-        {
-            try
-            {
-                using var context = _contextFactory.CreateDbContext();
-                var transactionItems = await context.TransactionItems
-                    .Where(ti => ti.TransactionId == transactionId)
-                    .Select(ti => new TransactionItemViewModel
-                    {
-                        ServiceId = ti.ServiceId,
-                        Amount = ti.Amount.ToString("N2"),
-                        TaxAmount = ti.TaxAmount,
-                        ServiceCharge = ti.ServiceCharge,
-                        Discount = ti.Discount,
-                        Category = ti.Category.ToString(),
-                        Type = ti.Type.ToString(),
-                        Status = ti.Status,
-                        BankAccount = ti.BankAccount,
-                        DateAdded = ti.DateAdded,
-                        IssuedBy = ti.ApplicationUser.FullName,
-                    })
-                    .OrderByDescending(ti => ti.DateAdded)
-                    .ToListAsync();
                 return transactionItems;
             }
             catch (Exception ex)
@@ -382,6 +401,38 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                 using var context = _contextFactory.CreateDbContext();
                 var transactionItems = await context.TransactionItems
                     .Where(ti => ti.Transaction.GuestId == guestId)
+                    .Select(ti => new TransactionItemViewModel
+                    {
+                        ServiceId = ti.ServiceId,
+                        Amount = ti.Amount.ToString("N2"),
+                        TaxAmount = ti.TaxAmount,
+                        ServiceCharge = ti.ServiceCharge,
+                        Discount = ti.Discount,
+                        Category = ti.Category.ToString(),
+                        Type = ti.Type.ToString(),
+                        Status = ti.Status,
+                        BankAccount = ti.BankAccount,
+                        DateAdded = ti.DateAdded,
+                        IssuedBy = ti.ApplicationUser.FullName,
+                    })
+                    .OrderByDescending(ti => ti.DateAdded)
+                    .ToListAsync();
+                return transactionItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
+            }
+        }
+
+        // Get transactionitem by transaction transactionid
+        public async Task<List<TransactionItemViewModel>> GetTransactionItemsByTransactionIdAsync(string transactionId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItems = await context.TransactionItems
+                    .Where(ti => ti.Transaction.TransactionId == transactionId)
                     .Select(ti => new TransactionItemViewModel
                     {
                         ServiceId = ti.ServiceId,

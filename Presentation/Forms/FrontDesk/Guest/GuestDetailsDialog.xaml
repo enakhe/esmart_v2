@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterScreen"
         Background="#f0f4f9"
         ResizeMode="CanResize"
-        Title="Guest Details" Height="650" Width="900" Icon="/Forms/FrontDesk/Guest/logo.png" Activated="Window_Activated">
+        Title="Guest Details" Height="700" Width="900" Icon="/Forms/FrontDesk/Guest/logo.png" Activated="Window_Activated">
 
     <Window.Resources>
         <local:StatusToColorConverter x:Key="StatusToColorConverter" />
@@ -244,7 +244,7 @@
                                 </StackPanel>
                             </Grid>
 
-                            <Button Content="View Folio" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="DeleteGuest_Click">
+                            <Button Content="View Folio" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="GuestFolioButton_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">

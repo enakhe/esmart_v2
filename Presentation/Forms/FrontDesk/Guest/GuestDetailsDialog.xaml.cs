@@ -5,6 +5,7 @@ using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Utils;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -221,6 +222,30 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 {
                     await LoadGuestTransactionHistory();
                 }
+            }
+        }
+
+        private async void GuestFolioButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var guest = await _guestRepository.GetGuestByIdAsync(_id);
+
+                if(guest != null)
+                {
+                    GuestFolioDialog guestFolioDialog = new GuestFolioDialog(guest, _transactionRepository, _hotelSettingsService);
+                    guestFolioDialog.ShowDialog();
+                }   
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
 

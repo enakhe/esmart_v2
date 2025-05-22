@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Transaction;
 
 namespace ESMART.Domain.ViewModels.Transaction
@@ -18,5 +19,6 @@ namespace ESMART.Domain.ViewModels.Transaction
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
         public ICollection<TransactionItem> TransationItem { get; set; }
+        public Booking Booking { get; set; }
     }
 }
