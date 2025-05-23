@@ -101,7 +101,7 @@
                         <StackPanel Grid.Row="0">
                             <StackPanel>
                                 <StackPanel>
-                                    <Border CornerRadius="5" Padding="10,3" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}" Height="23" Width="65">
+                                    <Border CornerRadius="5" Padding="10,3" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}" Height="23" HorizontalAlignment="Stretch">
                                         <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Left"/>
                                     </Border>
                                 </StackPanel>
@@ -381,7 +381,7 @@
                                             <DataGridTemplateColumn Header="Status" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <Border CornerRadius="5" Height="23" Width="65" Padding="10,3" Background="{Binding Status, Converter={StaticResource TransactionStatusToColor}}">
+                                                        <Border CornerRadius="5" Height="23" HorizontalAlignment="Stretch" Padding="10,3" Background="{Binding Status, Converter={StaticResource TransactionStatusToColor}}">
                                                             <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </Border>
                                                     </DataTemplate>

@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Category = ESMART.Domain.Enum.Category;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
@@ -32,6 +33,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly ITransactionRepository _transactionRepository;
         private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private bool _suppressTextChanged = false;
+        private DispatcherTimer _formatTimer;
 
         public AddBookingDialog(IGuestRepository guestRepository, IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, IReservationRepository reservationRepository, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
@@ -44,6 +46,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _reservationRepository = reservationRepository;
             _applicationUserRoleRepository = applicationUserRoleRepository;
             InitializeComponent();
+
+            _formatTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
+            _formatTimer.Tick += FormatTimer_Tick;
         }
 
 
@@ -61,13 +69,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         switch (setting.Key)
                         {
                             case "VAT":
-                                txtVAT.Text = decimal.Parse(setting.Value).ToString("N0");
+                                txtVAT.Text = decimal.Parse(setting.Value).ToString("N2");
                                 break;
                             case "ServiceCharge":
-                                txtServiceCharge.Text = decimal.Parse(setting.Value).ToString("N0");
+                                txtServiceCharge.Text = decimal.Parse(setting.Value).ToString("N2");
                                 break;
                             case "Discount":
-                                txtDiscount.Text = decimal.Parse(setting.Value).ToString("N0");
+                                txtDiscount.Text = decimal.Parse(setting.Value).ToString("N2");
                                 break;
                         }
                     }
@@ -458,34 +466,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             e.Handled = !Regex.IsMatch(e.Text, @"[\d.]");
         }
 
-        private async void DecimalInput_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (_suppressTextChanged) return;
-
-            var textBox = sender as TextBox;
-            if (string.IsNullOrWhiteSpace(textBox?.Text)) return;
-
-            if (decimal.TryParse(textBox.Text.Replace(",", ""), out decimal value))
-            {
-                _suppressTextChanged = true;
-                textBox.Text = string.Format(CultureInfo.InvariantCulture, "{0:N}", value);
-                textBox.CaretIndex = textBox.Text.Length;
-                _suppressTextChanged = false;
-            }
-
-            if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
-            {
-                var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
-
-                var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                if (currencySetting != null)
-                    txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-                else
-                    txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-            }
-        }
-
         private void DecimalInput_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
@@ -769,6 +749,36 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             else
             {
                 txtVAT.Text = 0.ToString();
+            }
+        }
+
+        private void DecimalInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_suppressTextChanged) return;
+
+            _formatTimer.Stop();
+            _formatTimer.Tag = sender;
+            _formatTimer.Start();
+        }
+
+        private void FormatTimer_Tick(object sender, EventArgs e)
+        {
+            _formatTimer.Stop();
+
+            var textBox = _formatTimer.Tag as TextBox;
+            if (textBox == null || string.IsNullOrWhiteSpace(textBox.Text)) return;
+
+            int caretIndex = textBox.CaretIndex;
+            string unformatted = textBox.Text.Replace(",", "");
+
+            if (decimal.TryParse(unformatted, out decimal value))
+            {
+                _suppressTextChanged = true;
+
+                textBox.Text = string.Format(CultureInfo.InvariantCulture, "{0:N}", value);
+                textBox.CaretIndex = Math.Min(caretIndex, textBox.Text.Length);
+
+                _suppressTextChanged = false;
             }
         }
 

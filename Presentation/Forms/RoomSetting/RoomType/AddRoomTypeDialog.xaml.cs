@@ -79,13 +79,6 @@ namespace ESMART.Presentation.Forms.RoomSetting.RoomType
             this.DialogResult = false;
         }
 
-        //// Allow only numbers and one decimal point
-        //private void DecimalInput_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        //{
-        //    e.Handled = !Regex.IsMatch(e.Text, @"[\d.]");
-        //}
-
-        // Prevent user from entering multiple decimal points
         private void DecimalInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (_suppressTextChanged) return;
@@ -94,16 +87,6 @@ namespace ESMART.Presentation.Forms.RoomSetting.RoomType
             _formatTimer.Tag = sender;
             _formatTimer.Start();
         }
-
-        //// Allow navigation keys (backspace, delete, arrows)
-        //private void DecimalInput_PreviewKeyDown(object sender, KeyEventArgs e)
-        //{
-        //    e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
-        //                  e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
-        //                  e.Key == Key.Back || e.Key == Key.Delete ||
-        //                  e.Key == Key.Left || e.Key == Key.Right ||
-        //                  e.Key == Key.Decimal || e.Key == Key.OemPeriod);
-        //}
 
         private void FormatTimer_Tick(object sender, EventArgs e)
         {
@@ -120,7 +103,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.RoomType
                 _suppressTextChanged = true;
 
                 textBox.Text = string.Format(CultureInfo.InvariantCulture, "{0:N}", value);
-                textBox.CaretIndex = Math.Min(caretIndex, textBox.Text.Length); // try to keep caret in place
+                textBox.CaretIndex = Math.Min(caretIndex, textBox.Text.Length);
 
                 _suppressTextChanged = false;
             }

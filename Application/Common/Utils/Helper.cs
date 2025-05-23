@@ -28,11 +28,13 @@ namespace ESMART.Application.Common.Utils
             return timeSpan * rate;
         }
 
-        public static decimal CalculateTotal(decimal basePrice, decimal discountPercent, decimal vatPercent, decimal serviceCharge)
+        public static decimal CalculateTotal(decimal basePrice, decimal discountPercent, decimal vatPercent, decimal serviceChargePercent)
         {
             decimal vatAmount = (vatPercent / 100) * basePrice;
 
             decimal discount = (discountPercent / 100) * basePrice;
+
+            decimal serviceCharge = (serviceChargePercent / 100) * basePrice;
 
             // Step 4: Total
             decimal total = (basePrice + vatAmount + serviceCharge) - discount;

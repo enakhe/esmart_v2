@@ -34,7 +34,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             _guestRepository = guestRepository;
 
             InitializeComponent();
-            txtAmount.Text = _reservation.AmountPaid.ToString("N2");
+            txtAmount.Text = _reservation.TotalAmount.ToString("N2");
             txtPercent.Text = _refundPercentage.ToString("N2") + "%";
             txtExpectedAmount.Text = _amount.ToString("N2");
         }
@@ -44,30 +44,42 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var reservedGuest = await _guestRepository.GetGuestByIdAsync(_reservation.GuestId);
-                var hotel = await _hotelSettingsService.GetHotelInformation();
-                var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
-
-                if (hotel != null)
+                var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
+                if (isVerifyPayment != null)
                 {
-                    var verificationCode = new VerificationCode
+                    var value = isVerifyPayment.Value;
+                    if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
-                        ServiceId = _reservation.ReservationId,
-                        ApplicationUserId = AuthSession.CurrentUser?.Id
-                    };
+                        var reservedGuest = await _guestRepository.GetGuestByIdAsync(_reservation.GuestId);
+                        var hotel = await _hotelSettingsService.GetHotelInformation();
+                        var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
 
-                    await _verificationCodeService.AddCode(verificationCode);
-
-                    var response = await SenderHelper.SendRefundOtp(hotel.PhoneNumber, hotel.Name, reservedGuest.FullName, "Reservation Refund", verificationCode.Code, _amount, _reservation.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, _reservation.ReservationId, _amount, _applicationUserRoleRepository);
-                        if (verifyPaymentWindow.ShowDialog() == true)
+                        if (hotel != null)
                         {
-                            this.DialogResult = true;
+                            var verificationCode = new VerificationCode
+                            {
+                                Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                                ServiceId = _reservation.ReservationId,
+                                ApplicationUserId = AuthSession.CurrentUser?.Id
+                            };
+
+                            await _verificationCodeService.AddCode(verificationCode);
+
+                            var response = await SenderHelper.SendRefundOtp(hotel.PhoneNumber, hotel.Name, reservedGuest.FullName, "Reservation Refund", verificationCode.Code, _amount, _reservation.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, _reservation.ReservationId, _amount, _applicationUserRoleRepository);
+                                if (verifyPaymentWindow.ShowDialog() == true)
+                                {
+                                    this.DialogResult = true;
+                                }
+                            }
                         }
                     }
+                }
+                else
+                {
+                    this.DialogResult = true;
                 }
             }
             catch (Exception ex)

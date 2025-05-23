@@ -2,6 +2,8 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Domain.Entities.Configuration;
+using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
@@ -241,55 +243,40 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
             if (hotel != null)
             {
-                var verificationCode = new VerificationCode
+                var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
+                if (isVerifyPayment != null)
                 {
-                    Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
-                    ServiceId = reservation.ReservationId,
-                    ApplicationUserId = AuthSession.CurrentUser?.Id
-                };
-
-                await _verificationCodeService.AddCode(verificationCode);
-
-
-
-                var response = await SenderHelper.SendOtp(
-                    hotel.PhoneNumber,
-                    hotel.Name,
-                    $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}",
-                    reservedGuest.FullName,
-                    "Reservation",
-                    verificationCode.Code,
-                    amount,
-                    reservation.PaymentMethod.ToString(),
-                    activeUser.FullName!,
-                    activeUser.PhoneNumber!
-                );
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var verifyPaymentWindow = new VerifyPaymentWindow(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, reservation.ReservationId, amount, _applicationUserRoleRepository);
-                    if (verifyPaymentWindow.ShowDialog() == true)
+                    var value = isVerifyPayment.Value;
+                    if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        if (reservation.AmountPaid == reservation.TotalAmount)
-                        {
-                            reservation.TransactionStatus = TransactionStatus.Paid;
-                        }
-                        else if (reservation.TotalAmount > reservation.AmountPaid)
-                        {
-                            reservation.TransactionStatus = TransactionStatus.Pending;
-                        }
+                        await VerifyPayment(hotel, reservation, reservedGuest, activeUser);
                     }
                     else
                     {
-                        await _verificationCodeService.DeleteAsync(verificationCode.Id);
-                        reservation.TransactionStatus = TransactionStatus.Unpaid;
+                        reservation.Status = ReservationStatus.Confirmed;
+                        reservation.TransactionStatus = TransactionStatus.Paid;
+
+                        await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
+                        await _reservationRepository.UpdateReservationAsync(reservation);
+
+                        await SenderHelper.SendEmail(
+                             reservation.Guest.Email,
+                             "Reservation Extension Payment Receipt",
+                             "guest_receipt",
+                             new ReceiptVariable
+                             {
+                                 accountNumber = $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}",
+                                 amount = reservation.TotalAmount.ToString("N2"),
+                                 guestName = reservation.Guest.FullName,
+                                 hotelName = hotel.Name,
+                                 invoiceNumber = transaction.InvoiceNumber,
+                                 paymentMethod = reservation.PaymentMethod.ToString(),
+                                 receptionist = activeUser.FullName,
+                                 receptionistContact = activeUser.PhoneNumber,
+                                 service = reservation.ReservationId,
+                             }
+                         );
                     }
-                    await _reservationRepository.UpdateReservationAsync(reservation);
-                }
-                else
-                {
-                    MessageBox.Show("Reservation extended successfully but could not verify payment. Payment will be flagged as pending.",
-                        "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
 
@@ -299,6 +286,65 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             }
 
             await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
+        }
+
+        private async Task VerifyPayment(Hotel hotel, Domain.Entities.FrontDesk.Reservation reservation, Domain.Entities.FrontDesk.Guest bookedGuest, ApplicationUser activeUser)
+        {
+            var reservedRoom = await _roomRepository.GetRoomById(reservation.RoomId);
+            var reservedAccount = await _transactionRepository.GetBankAccountById(reservation.AccountNumber);
+            var reservedGuest = await _guestRepository.GetGuestByIdAsync(reservation.GuestId);
+
+            var verificationCode = new VerificationCode
+            {
+                Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                ServiceId = reservation.ReservationId,
+                ApplicationUserId = AuthSession.CurrentUser?.Id
+            };
+
+            await _verificationCodeService.AddCode(verificationCode);
+
+            var response = await SenderHelper.SendOtp(
+                hotel.PhoneNumber,
+                hotel.Name,
+                $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}",
+                reservedGuest.FullName,
+                "Reservation",
+                verificationCode.Code,
+                reservation.TotalAmount,
+                reservation.PaymentMethod.ToString(),
+                activeUser.FullName!,
+                activeUser.PhoneNumber!
+            );
+
+            if (response.IsSuccessStatusCode)
+            {
+                var verifyPaymentWindow = new VerifyPaymentWindow(
+                    _verificationCodeService,
+                    _hotelSettingsService,
+                    _bookingRepository,
+                    _transactionRepository,
+                    reservation.ReservationId,
+                    reservation.TotalAmount,
+                    _applicationUserRoleRepository
+                );
+
+                if (verifyPaymentWindow.ShowDialog() == true)
+                {
+                    reservation.Status = ReservationStatus.Confirmed;
+                    reservation.TransactionStatus = TransactionStatus.Paid;
+                }
+                else
+                {
+                    await _verificationCodeService.DeleteAsync(verificationCode.Id);
+                    reservation.TransactionStatus = TransactionStatus.Unpaid;
+                }
+                await _reservationRepository.UpdateReservationAsync(reservation);
+            }
+            else
+            {
+                MessageBox.Show("Reservation added successfully but could not verify payment. Payment will be flagged as pending.",
+                    "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
@@ -331,7 +377,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
             {
                 var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
-                var totalAmount = Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)) - _reservation.AmountPaid;
+                var totalAmount = Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text));
 
                 var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
 
@@ -393,7 +439,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     if (!isNull)
                     {
                         var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
-                        var totalAmount = Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)) - _reservation.AmountPaid;
+                        var totalAmount = Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text));
 
                         var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
 

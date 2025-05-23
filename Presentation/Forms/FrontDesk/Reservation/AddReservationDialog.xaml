@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Add Booking" Height="670" Width="400" Activated="Window_Activated" Icon="/Forms/FrontDesk/Reservation/logo.png">
+        Title="Add Booking" Height="600" Width="400" Icon="/Forms/FrontDesk/Reservation/logo.png" Loaded="Window_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="31*"/>
@@ -177,11 +177,6 @@
                             <TextBox x:Name="txtTotalAmount" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="DecimalInput_TextChanged" PreviewKeyDown="DecimalInput_PreviewKeyDown" IsEnabled="False" Padding="2,5,0,5" />
                         </StackPanel>
                     </Grid>
-                </StackPanel>
-
-                <StackPanel Grid.Row="8" Margin="0,0,0,20">
-                    <TextBlock Text="Amount Paid:" FontWeight="Bold" />
-                    <TextBox x:Name="txtAmountPaid" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="DecimalInput_TextChanged" PreviewKeyDown="DecimalInput_PreviewKeyDown" Padding="2,5,0,5" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="9" Margin="0,0,0,20">

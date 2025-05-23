@@ -289,6 +289,39 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
+        private async void MarkTransactionAsPaidButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedTransaction = (TransactionItemViewModel)TransactionItemDataGrid.SelectedItem;
+                    if (selectedTransaction != null)
+                    {
+                        var transactionItem = await _transactionRepository.GetTransactionItemsByIdAsync(selectedTransaction.Id);
+                        if (transactionItem != null)
+                        {
+                            await _transactionRepository.MarkTransactionItemAsPaidAsync(transactionItem.Id);
+                            MessageBox.Show("Transaction marked as paid successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            await LoadGuestDetails();
+                            LoadDefaultSetting();
+                            await LoadGuestTransactionHistory();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private void DisableMinimizeButton(object sender, RoutedEventArgs e)
         {
             var hwnd = new WindowInteropHelper(this).Handle;

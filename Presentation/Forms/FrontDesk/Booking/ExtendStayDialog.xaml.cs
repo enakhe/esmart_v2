@@ -79,13 +79,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         switch (setting.Key)
                         {
                             case "VAT":
-                                txtVAT.Text = decimal.Parse(setting.Value).ToString("N0");
+                                txtVAT.Text = decimal.Parse(setting.Value).ToString("N2");
                                 break;
                             case "ServiceCharge":
-                                txtServiceCharge.Text = decimal.Parse(setting.Value).ToString("N0");
+                                txtServiceCharge.Text = decimal.Parse(setting.Value).ToString("N2");
                                 break;
                             case "Discount":
-                                txtDiscount.Text = decimal.Parse(setting.Value).ToString("N0");
+                                txtDiscount.Text = decimal.Parse(setting.Value).ToString("N2");
                                 break;
                         }
                     }

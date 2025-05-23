@@ -48,7 +48,7 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Amount:" FontWeight="Bold" />
-                                <TextBox x:Name="txtRoomRate" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="DecimalInput_TextChanged" PreviewKeyDown="DecimalInput_PreviewKeyDown" IsEnabled="False" Padding="2,5,0,5" />
+                                <TextBox x:Name="txtRoomRate" TextChanged="DecimalInput_TextChanged" IsEnabled="False" Padding="2,5,0,5" />
                             </StackPanel>
 
                             <Image Cursor="Hand" x:Name="EditButton" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Room rate is set to room type rate by default. You can change it later." MouseLeftButtonDown="EditButton_MouseLeftButtonDown" />

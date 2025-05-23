@@ -12,6 +12,7 @@ namespace ESMART.Domain.Entities.Transaction
         public string Description { get; set; }
         public string ServiceId { get; set; }
         public decimal Amount { get; set; }
+        public decimal TotalAmount { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal ServiceCharge { get; set; }
         public decimal Discount { get; set; }

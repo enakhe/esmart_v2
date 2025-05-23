@@ -171,7 +171,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <Button Content="Save" Name="btnSave" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="Save_Click" IsEnabled="False">
+                            <Button Content="Save" Name="btnSave" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="Save_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">

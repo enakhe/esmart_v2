@@ -42,7 +42,6 @@ namespace ESMART.Domain.Entities.FrontDesk
         public decimal Discount { get; set; }
         public decimal VAT { get; set; }
         public decimal ServiceCharge { get; set; }
-        public decimal AmountPaid { get; set; }
         public decimal TotalAmount { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         public ReservationStatus Status { get; set; }

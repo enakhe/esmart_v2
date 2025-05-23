@@ -68,8 +68,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
@@ -106,8 +104,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
@@ -176,8 +172,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
@@ -212,8 +206,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
@@ -248,8 +240,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
@@ -284,8 +274,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
@@ -325,8 +313,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
@@ -386,8 +372,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
@@ -422,8 +406,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
@@ -458,8 +440,6 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         Status = r.Status.ToString(),
                         PaymentStatus = r.TransactionStatus.ToString(),
                         TotalAmount = r.TotalAmount,
-                        AmountPaid = r.AmountPaid,
-                        Receivables = r.TotalAmount - r.AmountPaid,
                         CreatedBy = r.ApplicationUser.UserName,
                         DateCreated = r.DateAdded,
                         DateModified = r.DateModified
