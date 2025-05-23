@@ -152,10 +152,10 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}">
+                                    <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding Room.Status, Converter={StaticResource RoomStatusToColorDialog}}">
                                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Number}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
-                                            <TextBlock Text="{Binding Status}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding Room.Number}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding Room.Status}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>

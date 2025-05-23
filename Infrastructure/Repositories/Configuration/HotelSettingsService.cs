@@ -134,7 +134,7 @@ namespace ESMART.Infrastructure.Repositories.Configuration
 
                 AddSettingIfNotExists("VAT", "7.5", "decimal", "VAT Rate (%)", category.Id);
                 AddSettingIfNotExists("Discount", "0.0", "decimal", "Decimal (%)", category.Id);
-                AddSettingIfNotExists("ServiceCharge", "10", "decimal", "Service Charge Rate (%)", category.Id);
+                AddSettingIfNotExists("ServiceCharge", "10.0", "decimal", "Service Charge Rate (%)", category.Id);
                 AddSettingIfNotExists("RefundPercent", "3", "decimal", "Refund policy percentage", category.Id);
                 AddSettingIfNotExists("CurrencySymbol", "NGN", "string", "Default Currency Symbol", category.Id);
                 AddSettingIfNotExists("VerifyTransaction", "True", "boolean", "Verify all Transaction", category.Id);

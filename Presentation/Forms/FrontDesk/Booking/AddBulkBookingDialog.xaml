@@ -1,0 +1,245 @@
+﻿<Window x:Class="ESMART.Presentation.Forms.FrontDesk.Booking.AddBulkBookingDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ESMART.Presentation.Forms.FrontDesk.Booking"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Title="Add Bulk Booking" Height="600" Width="800" Icon="/Forms/FrontDesk/Booking/logo.png" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <local:BoolToColorConverter x:Key="BoolToColorConverter" />
+    </Window.Resources>
+
+    <Grid>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Add Bulk Booking" FontSize="20" Grid.Row="0" FontWeight="Bold" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Border Background="White" CornerRadius="20" BorderThickness="1" BorderBrush="#e1e3ea" Margin="10" Grid.Column="0" Padding="20">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="2" Margin="0,0,0,20">
+                            <TextBlock Text="Guest:" FontWeight="Bold" />
+                            <ComboBox x:Name="cmbGuest" Padding="2,5,0,5" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="3" Margin="0,0,0,20" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition  Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Days:" FontWeight="Bold" Margin="0,5,5,0" Grid.Column="0" />
+                                <TextBox x:Name="txtDays" Padding="2,5,0,5" Grid.Column="1" Width="50" TextChanged="txtDays_TextChanged" />
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="4" Margin="0,0,0,20">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Margin="0,0,2,0">
+                                    <TextBlock Text="Check In:" FontWeight="Bold" />
+                                    <DatePicker x:Name="dtpCheckIn" Padding="2,5,0,5" IsEnabled="False" SelectedDateChanged="dtpCheckIn_SelectedDateChanged" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Margin="2,0,0,0">
+                                    <TextBlock Text="Check Out:" FontWeight="Bold" />
+                                    <DatePicker x:Name="dtpCheckOut" Padding="2,5,0,5" SelectedDateChanged="dtpCheckOut_SelectedDateChanged" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="5" Margin="0,0,0,20">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Column="0" Margin="0,0,2,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3*" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Discount (%):" FontWeight="Bold" />
+                                        <TextBox x:Name="txtDiscount" IsEnabled="False" Padding="2,5,0,5"  />
+                                    </StackPanel>
+
+                                    <Image Cursor="Hand" x:Name="EditButtonDiscount" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Discount is set by default. You can change it later." MouseLeftButtonDown="EditDiscountButton_MouseLeftButtonDown" />
+
+                                </Grid>
+
+                                <Grid Grid.Column="1" Margin="2,0,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3*" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="VAT (%):" FontWeight="Bold" />
+                                        <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" />
+                                    </StackPanel>
+
+                                    <Image Cursor="Hand" x:Name="EditButtonVAT" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="VAT is set by default. You can change it later." MouseLeftButtonDown="EditVATButton_MouseLeftButtonDown" />
+                                </Grid>
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="6" Margin="0,0,0,20">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Margin="0,0,2,0">
+                                    <TextBlock Text="Account Number:" FontWeight="Bold" />
+                                    <ComboBox x:Name="cmbAccountNumber" Padding="2,5,0,5" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Margin="2,0,0,0">
+                                    <TextBlock Text="Payment Method:" FontWeight="Bold" />
+                                    <ComboBox x:Name="cmbPaymentMethod" Padding="2,5,0,5" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="7" Margin="0,0,0,20">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Column="0" Margin="0,0,2,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3*" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Service Charge:" FontWeight="Bold" />
+                                        <TextBox x:Name="txtServiceCharge" IsEnabled="False" Padding="2,5,0,5" />
+                                    </StackPanel>
+
+                                    <Image Cursor="Hand" x:Name="EditButtonServiceCharge" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Room rate is set to room type rate by default. You can change it later." MouseLeftButtonDown="EditServiceButton_MouseLeftButtonDown" />
+                                </Grid>
+
+                                <StackPanel Grid.Column="1" Margin="2,0,0,0">
+                                    <TextBlock Text="Total Amount:" FontWeight="Bold" />
+                                    <TextBox x:Name="txtTotalAmount" IsEnabled="False" Padding="2,5,0,5" />
+                                </StackPanel>
+                            </Grid>
+
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Background="White" VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="20" BorderThickness="1" BorderBrush="#e1e3ea" Margin="10" Grid.Column="1" Padding="10">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Rooms}" Cursor="Hand">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding IsSelected, Converter={StaticResource BoolToColorConverter}}" MouseLeftButtonUp="RoomCard_MouseLeftButtonUp" Tag="{Binding}">
+                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Room.Number}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding Room.Rate,StringFormat=N2}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <StackPanel Grid.Row="2" Margin="0,0,0,20">
+                <Grid Margin="1,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <Button Content="Cancel" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <Button Content="Save" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed" Grid.ColumnSpan="2">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
+                <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

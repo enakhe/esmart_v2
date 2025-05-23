@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Add Booking" Height="605" Width="400" Icon="/Forms/FrontDesk/Booking/logo.png" Activated="Window_Activated">
+        Title="Add Booking" Height="605" Width="400" Icon="/Forms/FrontDesk/Booking/logo.png" Loaded="Window_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="31*"/>
@@ -107,8 +107,8 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Discount:" FontWeight="Bold" />
-                                <TextBox x:Name="txtDiscount" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" LostFocus="DiscountTextBox_LostFocus" GotFocus="DiscountTextBox_GotFocus" />
+                                <TextBlock Text="Discount (%):" FontWeight="Bold" />
+                                <TextBox x:Name="txtDiscount" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" TextChanged="txtDiscount_TextChanged" LostFocus="DiscountTextBox_LostFocus" GotFocus="DiscountTextBox_GotFocus" />
                             </StackPanel>
 
                             <Image Cursor="Hand" x:Name="EditButtonDiscount" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Discount is set by default. You can change it later." MouseLeftButtonDown="EditDiscountButton_MouseLeftButtonDown" />
@@ -122,8 +122,8 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="VAT:" FontWeight="Bold" />
-                                <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="VatTextBox_PreviewTextInput" LostFocus="VatTextBox_LostFocus" GotFocus="VatTextBox_GotFocus" />
+                                <TextBlock Text="VAT (%):" FontWeight="Bold" />
+                                <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="VatTextBox_PreviewTextInput" LostFocus="VatTextBox_LostFocus" GotFocus="VatTextBox_GotFocus" TextChanged="txtVAT_TextChanged" />
                             </StackPanel>
 
                             <Image Cursor="Hand" x:Name="EditButtonVAT" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="VAT is set by default. You can change it later." MouseLeftButtonDown="EditVATButton_MouseLeftButtonDown" />

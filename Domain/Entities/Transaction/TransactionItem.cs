@@ -23,6 +23,7 @@ namespace ESMART.Domain.Entities.Transaction
         public DateTime DateAdded { get; set; }
         public string ApplicationUserId { get; set; }
 
+
         [ForeignKey("Transaction")]
         public string TransactionId { get; set; }
         public virtual Transaction Transaction { get; set; }

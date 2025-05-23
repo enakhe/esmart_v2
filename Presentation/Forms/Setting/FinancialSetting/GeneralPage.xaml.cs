@@ -90,7 +90,8 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
 
                 var vat = txtVAT.Text.Replace("%", "").Trim();
                 var serviceCharge = txtServicCharge.Text.Replace("%", "").Trim();
-                var discount = txtDiscount.Text;
+                var discount = txtDiscount.Text.Replace("%", "").Trim();
+
                 var currencySymbol = cmbCurrency.SelectedValue.ToString();
                 var refundPercent = txtRefundPercent.Text.Replace("%", "").Trim();
                 var verifyTransaction = chkVerifyTransaction.IsChecked;
@@ -158,6 +159,16 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
             InputFormatter.AllowDecimalOnly(sender, e);
         }
 
+        private void ServiceChargeTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            InputFormatter.FormatAsPercentageOnLostFocus(sender, e);
+        }
+
+        private void ServiceChargeTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            InputFormatter.StripPercentageOnGotFocus(sender, e);
+        }
+
 
         // Discount
         private void DiscountTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -171,11 +182,6 @@ namespace ESMART.Presentation.Forms.Setting.FinancialSetting
         }
 
         private void DiscountTextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            InputFormatter.StripPercentageOnGotFocus(sender, e);
-        }
-
-        private void txtDiscount_GotFocus(object sender, RoutedEventArgs e)
         {
             InputFormatter.StripPercentageOnGotFocus(sender, e);
         }

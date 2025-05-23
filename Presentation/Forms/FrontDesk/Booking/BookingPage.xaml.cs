@@ -94,6 +94,17 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
+        private async void AddBulkBooking_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeServices();
+
+            AddBulkBookingDialog addBulkBookingDialog = _serviceProvider.GetRequiredService<AddBulkBookingDialog>();
+            if (addBulkBookingDialog.ShowDialog() == true)
+            {
+                await LoadBooking();
+            }
+        }
+
         private async void IssueCard_Click(object sender, RoutedEventArgs e)
         {
             LoaderOverlay.Visibility = Visibility.Visible;
@@ -460,7 +471,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private async Task<bool> VerifyPayment(Domain.Entities.FrontDesk.Booking booking, ApplicationUser activeUser)
         {
             var hotel = await _hotelSettingsService.GetHotelInformation();
-
+            var bookingAccount = await _transactionRepository.GetBankAccountById(booking.AccountNumber);
 
             if (booking.Status != Domain.Enum.BookingStatus.Completed)
             {
@@ -478,7 +489,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     var response = await SenderHelper.SendOtp(
                         hotel.PhoneNumber,
                         hotel.Name,
-                        booking.AccountNumber,
+                        $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
                         booking.Guest.FullName,
                         "Booking",
                         verificationCode.Code,
@@ -509,8 +520,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             await _bookingRepository.UpdateBooking(booking);
 
                             var transaction = await _transactionRepository.GetUnpaidTransactionItemsByServiceIdAsync(booking.BookingId, booking.GuestId, booking.Receivables);
-                            transaction.Status = Domain.Enum.TransactionStatus.Paid;
-                            await _transactionRepository.UpdateTransactionItemAsync(transaction);
+
+                            if(transaction != null)
+                            {
+                                transaction.Status = Domain.Enum.TransactionStatus.Paid;
+                                await _transactionRepository.UpdateTransactionItemAsync(transaction);
+                            }
 
                             return true;
                         }

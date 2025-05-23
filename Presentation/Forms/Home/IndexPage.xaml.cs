@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.ViewModels.RoomSetting;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -29,15 +30,18 @@ namespace ESMART.Presentation.Forms.Home
             try
             {
                 var rooms = await _roomRepository.GetAllRooms();
+
                 _viewModel.Rooms.Clear();
+
                 foreach (var room in rooms)
-                    _viewModel.Rooms.Add(room);
+                    _viewModel.Rooms.Add(new SelectableRoomViewModel(room));
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         private async Task LoadMetrics()
         {

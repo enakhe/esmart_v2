@@ -22,6 +22,15 @@ namespace ESMART.Presentation.Utils
             }
         }
 
+        public static void FormatAsPercentage(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textBox && double.TryParse(textBox.Text, out double value))
+            {
+                // Format to 2 decimal places followed by %
+                textBox.Text = $"{value:F2}%";
+            }
+        }
+
         public static void FormatAsDecimalOnLostFocus(object sender, RoutedEventArgs e)
         {
             if (sender is TextBox textBox && double.TryParse(textBox.Text, out double value))

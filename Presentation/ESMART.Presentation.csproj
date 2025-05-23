@@ -42,6 +42,7 @@
     <None Remove="Forms\menu.png" />
     <None Remove="Forms\passanger.png" />
     <None Remove="Forms\project-manager.png" />
+    <None Remove="Forms\Receipt\logo.png" />
     <None Remove="Forms\report.png" />
     <None Remove="Forms\reservation.png" />
     <None Remove="Forms\RoomSetting\logo.png" />
@@ -129,6 +130,7 @@
     <Resource Include="Forms\menu.png" />
     <Resource Include="Forms\passanger.png" />
     <Resource Include="Forms\project-manager.png" />
+    <Resource Include="Forms\Receipt\logo.png" />
     <Resource Include="Forms\report.png" />
     <Resource Include="Forms\reservation.png" />
     <Resource Include="Forms\RoomSetting\logo.png" />

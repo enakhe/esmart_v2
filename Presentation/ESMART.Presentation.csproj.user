@@ -31,7 +31,10 @@
     <Compile Update="Forms\FrontDesk\Booking\AddBookingDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Forms\FrontDesk\Booking\BookingDetailsDialog.xaml.cs">
+    <Compile Update="Forms\FrontDesk\Booking\AddBulkBookingDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\FrontDesk\Booking\BookingFolioDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\FrontDesk\Booking\BookingPage.xaml.cs">
@@ -94,6 +97,9 @@
     <Compile Update="Forms\FrontDesk\Room\RoomDetailsDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Room\RoomFolioDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Room\RoomPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -104,6 +110,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Home\StockKeepingIndexPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Receipt\ReceiptViewerDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Reports\CurrentinHouseGuestReport.xaml.cs">

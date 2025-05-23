@@ -115,6 +115,21 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             }
         }
 
+        // Get by transaction item id
+        public async Task<Domain.Entities.Transaction.Transaction> GetByTransactionItemIdAsync(string id)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transaction = await context.Transactions.FirstOrDefaultAsync(t => t.TransactionItems.Any(ti => ti.Id == id));
+                return transaction;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving a transaction by transaction item id" + ex.Message);
+            }
+        }
+
         public async Task<List<TransactionViewModel>> GetByFilterDateAsync(DateTime fromTime, DateTime endTime)
         {
             try
@@ -159,6 +174,80 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Include(t => t.ApplicationUser)
                     .Include(t => t.Booking)
                     .Where(t => t.GuestId == guestId)
+                    .Select(t => new TransactionViewModel
+                    {
+                        TransactionId = t.TransactionId,
+                        InvoiceNumber = t.InvoiceNumber,
+                        Guest = t.Guest.FullName,
+                        GuestPhoneNo = t.Guest.PhoneNumber,
+                        Date = t.Date,
+                        TotalRevenue = t.TransactionItems.Where(ti => ti.TransactionId == t.TransactionId && ti.Status == TransactionStatus.Paid).Sum(ti => ti.Amount),
+                        TotalReceivables = t.TransactionItems.Where(ti => ti.TransactionId == t.TransactionId && ti.Status != TransactionStatus.Paid).Sum(ti => ti.Amount),
+                        Description = t.Description,
+                        IssuedBy = t.ApplicationUser.FullName,
+                        TransationItem = t.TransactionItems.OrderByDescending(ti => ti.DateAdded).ToList(),
+                        Booking = t.Booking,
+                        DateCreated = t.CreatedAt,
+                        DateUpdated = t.UpdatedAt,
+                    })
+                    .OrderByDescending(ti => ti.Date)
+                    .ToListAsync();
+                return transactionItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
+            }
+        }
+
+        public async Task<List<TransactionViewModel>> GetTransactionByBookingIdAsync(string bookingId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItems = await context.Transactions
+                    .Include(t => t.TransactionItems)
+                    .Include(t => t.Guest)
+                    .Include(t => t.ApplicationUser)
+                    .Include(t => t.Booking)
+                    .Where(t => t.BookingId == bookingId)
+                    .Select(t => new TransactionViewModel
+                    {
+                        TransactionId = t.TransactionId,
+                        InvoiceNumber = t.InvoiceNumber,
+                        Guest = t.Guest.FullName,
+                        GuestPhoneNo = t.Guest.PhoneNumber,
+                        Date = t.Date,
+                        TotalRevenue = t.TransactionItems.Where(ti => ti.TransactionId == t.TransactionId && ti.Status == TransactionStatus.Paid).Sum(ti => ti.Amount),
+                        TotalReceivables = t.TransactionItems.Where(ti => ti.TransactionId == t.TransactionId && ti.Status != TransactionStatus.Paid).Sum(ti => ti.Amount),
+                        Description = t.Description,
+                        IssuedBy = t.ApplicationUser.FullName,
+                        TransationItem = t.TransactionItems.OrderByDescending(ti => ti.DateAdded).ToList(),
+                        Booking = t.Booking,
+                        DateCreated = t.CreatedAt,
+                        DateUpdated = t.UpdatedAt,
+                    })
+                    .OrderByDescending(ti => ti.Date)
+                    .ToListAsync();
+                return transactionItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
+            }
+        }
+
+        public async Task<List<TransactionViewModel>> GetTransactionByRoomNoAsync(string roomNo)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItems = await context.Transactions
+                    .Include(t => t.TransactionItems)
+                    .Include(t => t.Guest)
+                    .Include(t => t.ApplicationUser)
+                    .Include(t => t.Booking)
+                    .Where(t => t.Booking.Room.Number == roomNo)
                     .Select(t => new TransactionViewModel
                     {
                         TransactionId = t.TransactionId,
@@ -255,6 +344,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => !ti.IsTrashed)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -304,6 +394,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Transaction.BookingId == bookingId)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -339,6 +430,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Transaction.Booking.RoomId == roomId)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -372,6 +464,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     ti.DateAdded.Date <= to.Date)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -403,6 +496,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Transaction.GuestId == guestId)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -435,6 +529,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Transaction.TransactionId == transactionId)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -466,6 +561,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Transaction.GuestId == guestId && ti.Status == TransactionStatus.Unpaid)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -500,6 +596,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     ti.DateAdded <= to)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -533,6 +630,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     ti.DateAdded <= to)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -555,34 +653,39 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             }
         }
 
-        public async Task<List<TransactionItemViewModel>> GetTransactionItemsByIdAsync(string id)
+        public async Task<TransactionItem> GetTransactionItemsByIdAsync(string id)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
                 var transactionItems = await context.TransactionItems
                     .Where(ti => ti.Id == id)
-                    .Select(ti => new TransactionItemViewModel
-                    {
-                        ServiceId = ti.ServiceId,
-                        Amount = ti.Amount.ToString("N2"),
-                        TaxAmount = ti.TaxAmount,
-                        ServiceCharge = ti.ServiceCharge,
-                        Discount = ti.Discount,
-                        Category = ti.Category.ToString(),
-                        Type = ti.Type.ToString(),
-                        Status = ti.Status,
-                        BankAccount = ti.BankAccount,
-                        DateAdded = ti.DateAdded,
-                        IssuedBy = ti.ApplicationUser.FullName,
-                    })
-                    .OrderByDescending(ti => ti.DateAdded)
-                    .ToListAsync();
+                    .FirstOrDefaultAsync();
+
                 return transactionItems;
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occurred when retrieving transaction items. " + ex.Message);
+            }
+        }
+
+        // Mark transactionitem as paid
+        public async Task MarkTransactionItemAsPaidAsync(string id)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var transactionItem = await context.TransactionItems.FindAsync(id);
+                if (transactionItem != null)
+                {
+                    transactionItem.Status = TransactionStatus.Paid;
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when marking transaction item as paid. " + ex.Message);
             }
         }
 
@@ -627,6 +730,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.DateAdded >= fromTime && ti.DateAdded <= endTime)
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,
@@ -658,6 +762,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                     .Where(ti => ti.Description.Contains(filter) || ti.BankAccount.Contains(filter) || ti.ApplicationUser.FullName.Contains(filter))
                     .Select(ti => new TransactionItemViewModel
                     {
+                        Id = ti.Id,
                         ServiceId = ti.ServiceId,
                         Amount = ti.Amount.ToString("N2"),
                         TaxAmount = ti.TaxAmount,

@@ -79,13 +79,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         switch (setting.Key)
                         {
                             case "VAT":
-                                txtVAT.Text = setting.Value;
+                                txtVAT.Text = decimal.Parse(setting.Value).ToString("N0");
                                 break;
                             case "ServiceCharge":
-                                txtServiceCharge.Text = setting.Value;
+                                txtServiceCharge.Text = decimal.Parse(setting.Value).ToString("N0");
                                 break;
                             case "Discount":
-                                txtDiscount.Text = setting.Value;
+                                txtDiscount.Text = decimal.Parse(setting.Value).ToString("N0");
                                 break;
                         }
                     }
@@ -407,7 +407,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
             {
                 var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
-                var totalAmount = Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text)) - _booking.TotalAmount;
+                var totalAmount = Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text), decimal.Parse(txtVAT.Text), decimal.Parse(txtServiceCharge.Text));
 
                 var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
 
@@ -572,10 +572,38 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
+        private void EditVATButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            txtVAT.IsEnabled = true;
+        }
+
+        private void EditServiceButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            txtServiceCharge.IsEnabled = true;
+        }
+
+        private void EditDiscountButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            txtDiscount.IsEnabled = true;
+        }
+
         private void VatTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             InputFormatter.AllowDecimalOnly(sender, e);
         }
+
+        // Service charge
+        private void ServiceChargeTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            InputFormatter.AllowDecimalOnly(sender, e);
+        }
+
+        // Discount
+        private void DiscountTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            InputFormatter.AllowDecimalOnly(sender, e);
+        }
+
 
         private void VatTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -587,33 +615,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             InputFormatter.StripPercentageOnGotFocus(sender, e);
         }
 
-
-        // Service Charge
-        private void ServiceChargeTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            InputFormatter.AllowDecimalOnly(sender, e);
-        }
-
-        private void ServiceChargeTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            InputFormatter.FormatAsPercentageOnLostFocus(sender, e);
-        }
-
-        private void ServiceChargeTextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            InputFormatter.StripPercentageOnGotFocus(sender, e);
-        }
-
-
-        // Discount
-        private void DiscountTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            InputFormatter.AllowDecimalOnly(sender, e);
-        }
-
         private void DiscountTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            InputFormatter.FormatAsDecimalOnLostFocus(sender, e);
+            InputFormatter.FormatAsPercentageOnLostFocus(sender, e);
         }
 
         private void DiscountTextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -621,24 +625,73 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             InputFormatter.StripPercentageOnGotFocus(sender, e);
         }
 
-        private void txtDiscount_GotFocus(object sender, RoutedEventArgs e)
+        private async void txtServiceCharge_TextChanged(object sender, TextChangedEventArgs e)
         {
-            InputFormatter.StripPercentageOnGotFocus(sender, e);
+            bool isNull = Helper.AreAnyNullOrEmpty(txtServiceCharge.Text);
+            if(!isNull)
+            {
+                if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
+                {
+                    var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
+
+                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+
+                    if (currencySetting != null)
+                        txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                    else
+                        txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                }
+            }
+            else
+            {
+                txtServiceCharge.Text = 0.ToString("N2");
+            }
         }
 
-        private void txtDiscount_TextChanged(object sender, TextChangedEventArgs e)
+        private async void txtDiscount_TextChanged(object sender, TextChangedEventArgs e)
         {
-            InputFormatter.FormatAsDecimalOnLostFocus(sender, e);
+            bool isNull = Helper.AreAnyNullOrEmpty(txtDiscount.Text);
+            if (!isNull)
+            {
+                if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
+                {
+                    var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
+
+                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+
+                    if (currencySetting != null)
+                        txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                    else
+                        txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                }
+            }
+            else
+            {
+                txtDiscount.Text = 0.ToString();
+            }
         }
 
-        private void txtVAT_TextChanged(object sender, TextChangedEventArgs e)
+        private async void txtVAT_TextChanged(object sender, TextChangedEventArgs e)
         {
-            InputFormatter.FormatAsDecimalOnLostFocus(sender, e);
-        }
+            bool isNull = Helper.AreAnyNullOrEmpty(txtVAT.Text);
+            if(!isNull)
+            {
+                if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
+                {
+                    var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
 
-        private void txtServiceCharge_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            InputFormatter.FormatAsDecimalOnLostFocus(sender, e);
+                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+
+                    if (currencySetting != null)
+                        txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                    else
+                        txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                }
+            }
+            else
+            {
+                txtVAT.Text = 0.ToString();
+            }
         }
     }
 

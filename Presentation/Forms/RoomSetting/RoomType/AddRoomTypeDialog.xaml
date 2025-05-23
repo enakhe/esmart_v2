@@ -25,9 +25,8 @@
 
                 <StackPanel Grid.Row="1" Margin="0,0,0,20">
                     <TextBlock Text="Room Type Rate:" FontWeight="Bold" />
-                    <TextBox x:Name="txtRoomTypeRate" PreviewTextInput="DecimalInput_PreviewTextInput"
+                    <TextBox x:Name="txtRoomTypeRate"
                              TextChanged="DecimalInput_TextChanged"
-                             PreviewKeyDown="DecimalInput_PreviewKeyDown"
                              Padding="2,5,0,5" />
                 </StackPanel>
 

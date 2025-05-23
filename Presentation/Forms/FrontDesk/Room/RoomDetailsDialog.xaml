@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ESMART.Presentation.Forms.FrontDesk.Room"
         mc:Ignorable="d"
@@ -228,7 +229,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Row="1">
-                            <Button Content="View Folio" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand">
+                            <Button Content="View Folio" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="RoomFolioButton_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">
@@ -392,6 +393,22 @@
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
                                                             <TextBlock Text="{Binding DateAdded, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Operation" Width="2*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                            <Button Width="30" Height="30" Padding="2" ToolTip="Mark as Paid" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="MarkTransactionAsPaidButton_Click">
+                                                                <materialDesign:PackIcon Kind="Check" Width="20" Height="20" Foreground="Black" />
+                                                            </Button>
+
+                                                            <Button Width="30" Height="30" Padding="2" ToolTip="Print Receipt" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="PrintReceiptButton_Click">
+                                                                <materialDesign:PackIcon Kind="Receipt"  Width="20" Height="20" Foreground="Black" />
+                                                            </Button>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>

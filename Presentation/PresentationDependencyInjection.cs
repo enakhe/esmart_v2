@@ -58,6 +58,7 @@ namespace ESMART.Presentation
             services.AddScoped<AddAreaDialog>();
             services.AddScoped<AddRoomTypeDialog>();
             services.AddScoped<AddRoomDialog>();
+            services.AddScoped<AddBulkBookingDialog>();
 
             services.AddScoped<SettingDialog>();
             services.AddScoped<HotelInformationPage>();

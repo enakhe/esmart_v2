@@ -40,7 +40,7 @@
 
                             <StackPanel Grid.Column="1" Margin="0,0,5,20">
                                 <TextBlock Text="Discount:" FontWeight="Bold" />
-                                <TextBox x:Name="txtDiscount" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" LostFocus="DiscountTextBox_LostFocus" GotFocus="txtDiscount_GotFocus" />
+                                <TextBox x:Name="txtDiscount" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" LostFocus="DiscountTextBox_LostFocus" GotFocus="DiscountTextBox_GotFocus" />
                             </StackPanel>
                         </Grid>
 
@@ -52,7 +52,7 @@
 
                             <StackPanel Grid.Column="0" Margin="0,0,5,20">
                                 <TextBlock Text="Service Charge:" FontWeight="Bold" />
-                                <TextBox x:Name="txtServicCharge" Padding="2,5,0,5" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" />
+                                <TextBox x:Name="txtServicCharge" Padding="2,5,0,5" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" LostFocus="ServiceChargeTextBox_LostFocus" GotFocus="ServiceChargeTextBox_GotFocus" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Margin="0,0,5,20">

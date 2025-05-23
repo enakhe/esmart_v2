@@ -2,7 +2,9 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.ViewModels.FrontDesk;
+using ESMART.Domain.ViewModels.Transaction;
 using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Forms.Receipt;
 using ESMART.Presentation.Utils;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -237,6 +239,44 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     GuestFolioDialog guestFolioDialog = new GuestFolioDialog(guest, _transactionRepository, _hotelSettingsService);
                     guestFolioDialog.ShowDialog();
                 }   
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void PrintReceiptButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedTransaction = (TransactionItemViewModel)TransactionItemDataGrid.SelectedItem;
+                    if (selectedTransaction != null)
+                    {
+                        var transactionItem = await _transactionRepository.GetTransactionItemsByIdAsync(selectedTransaction.Id);
+
+                        var hotel = await _hotelSettingsService.GetHotelInformation();
+                        if (hotel != null)
+                        {
+                            if (transactionItem != null)
+                            {
+                                ReceiptViewerDialog receiptViewerDialog = new ReceiptViewerDialog(hotel, transactionItem);
+                                if (receiptViewerDialog.ShowDialog() == true)
+                                {
+                                    this.DialogResult = true;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {

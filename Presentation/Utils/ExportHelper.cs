@@ -162,7 +162,6 @@ namespace ESMART.Presentation.Utils
             }
         }
 
-
         private static void ExportToExcel(DataTable dt, string filePath)
         {
             using var workbook = new ClosedXML.Excel.XLWorkbook();
@@ -198,7 +197,6 @@ namespace ESMART.Presentation.Utils
                 MessageBox.Show($"Error printing PDF: {ex.Message}");
             }
         }
-
 
         private static void PrintExcel(string filePath)
         {

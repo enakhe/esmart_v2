@@ -9,6 +9,7 @@
         Background="#f0f4f9"
         WindowStartupLocation="CenterScreen"
         Title="Guest Folio" Height="650" Width="900" Icon="/Forms/FrontDesk/Guest/logo.png" Loaded="Window_Loaded">
+    
     <Window.Resources>
         <local:StatusToColorConverter x:Key="StatusToColorConverter" />
         <local:TransactionStatusToColor x:Key="TransactionStatusToColor" />
@@ -78,7 +79,6 @@
     </Window.Resources>
 
     <Grid>
-
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -249,6 +249,22 @@
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
                                                             <TextBlock Text="{Binding DateAdded, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Operation" Width="2*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                            <Button Width="30" Height="30" Padding="2" ToolTip="Mark as Paid" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="MarkTransactionAsPaidButton_Click">
+                                                                <materialDesign:PackIcon Kind="Check" Width="20" Height="20" Foreground="Black" />
+                                                            </Button>
+
+                                                            <Button Width="30" Height="30" Padding="2" ToolTip="Print Receipt" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="PrintReceiptButton_Click">
+                                                                <materialDesign:PackIcon Kind="Receipt"  Width="20" Height="20" Foreground="Black" />
+                                                            </Button>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>

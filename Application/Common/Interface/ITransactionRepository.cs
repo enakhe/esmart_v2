@@ -11,9 +11,12 @@ namespace ESMART.Application.Common.Interface
         Task<Transaction?> GetByBookingIdAsync(string serviceId);
         Task<Transaction> GetByGuestIdAsync(string id);
         Task<Transaction> GetByIdAsync(string id);
+        Task<Transaction> GetByTransactionItemIdAsync(string id);
         Task<TransactionViewModel> GetByTransactionIdAsync(string transactionId);
         Task<List<TransactionViewModel>> GetByFilterDateAsync(DateTime fromTime, DateTime endTime);
         Task<List<TransactionViewModel>> GetTransactionByGuestIdAsync(string guestId);
+        Task<List<TransactionViewModel>> GetTransactionByBookingIdAsync(string bookingId);
+        Task<List<TransactionViewModel>> GetTransactionByRoomNoAsync(string roomNo);
 
         Task AddTransactionItemAsync(TransactionItem transactionItem);
         Task UpdateTransactionItemAsync(TransactionItem transactionItem);
@@ -29,7 +32,8 @@ namespace ESMART.Application.Common.Interface
         Task<List<TransactionItemViewModel>> GetTransactionItemByRoomIdAndDate(string roomId, DateTime from, DateTime to);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByGuestIdAsync(string guestId);
         Task<List<TransactionItemViewModel>> GetUnpaidTransactionItemsByGuestIdAsync(string guestId);
-        Task<List<TransactionItemViewModel>> GetTransactionItemsByIdAsync(string id);
+        Task<TransactionItem> GetTransactionItemsByIdAsync(string id);
+        Task MarkTransactionItemAsPaidAsync(string id);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByDateAsync(DateTime fromTime, DateTime endTime);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByFilterAsync(string filter);
         Task<List<RevenueViewModel>> GetRevenueByDateRange(DateTime from, DateTime to);

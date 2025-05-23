@@ -1,6 +1,8 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Domain.ViewModels.Transaction;
 using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Forms.Receipt;
 using ESMART.Presentation.Utils;
 using LiveCharts;
 using LiveCharts.Wpf;
@@ -92,7 +94,63 @@ namespace ESMART.Presentation.Forms.Reports
         }
 
 
+        private async Task GetTransactionsData()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var fromDate = txtFrom.SelectedDate.Value;
+                var toDate = txtTo.SelectedDate.Value;
 
+                var transactions = await _transactionRepository.GetTransactionItemsByDateAsync(fromDate, toDate);
+                TransactionItemDataGrid.ItemsSource = transactions;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading transactions: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void PrintReceiptButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedTransaction = (TransactionItemViewModel)TransactionItemDataGrid.SelectedItem;
+                    if (selectedTransaction != null)
+                    {
+                        var transactionItem = await _transactionRepository.GetTransactionItemsByIdAsync(selectedTransaction.Id);
+
+                        var hotel = await _hotelSettingsService.GetHotelInformation();
+                        if (hotel != null)
+                        {
+                            if (transactionItem != null)
+                            {
+                                ReceiptViewerDialog receiptViewerDialog = new ReceiptViewerDialog(hotel, transactionItem);
+                                if (receiptViewerDialog.ShowDialog() == true)
+                                {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
 
         private async void ExportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -149,12 +207,56 @@ namespace ESMART.Presentation.Forms.Reports
             }
 
             await LoadData();
+            await GetTransactionsData();
+        }
+
+        private async void MarkTransactionAsPaidButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string Id)
+                {
+                    var selectedTransaction = (TransactionItemViewModel)TransactionItemDataGrid.SelectedItem;
+                    if (selectedTransaction != null)
+                    {
+                        var transaction = await _transactionRepository.GetByTransactionItemIdAsync(selectedTransaction.Id);
+
+                        var transactionItem = await _transactionRepository.GetTransactionItemsByIdAsync(selectedTransaction.Id);
+                        if (transactionItem != null)
+                        {
+                            await _transactionRepository.MarkTransactionItemAsPaidAsync(transactionItem.Id);
+                            MessageBox.Show("Transaction marked as paid successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                            RevenueSeries.Clear();
+
+                            if (Days != null)
+                            {
+                                Days.Clear();
+                            }
+
+                            await LoadData();
+                            await GetTransactionsData();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoadDefaultSetting();
             await LoadData();
+            await GetTransactionsData();
         }
     }
 }

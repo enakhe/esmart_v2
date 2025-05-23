@@ -219,6 +219,22 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Operation" Width="2*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Button Width="30" Height="30" Padding="2" ToolTip="Mark as Paid" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="MarkTransactionAsPaidButton_Click">
+                                                <materialDesign:PackIcon Kind="Check" Width="20" Height="20" Foreground="Black" />
+                                            </Button>
+
+                                            <Button Width="30" Height="30" Padding="2" ToolTip="Print Receipt" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="PrintReceiptButton_Click">
+                                                <materialDesign:PackIcon Kind="Receipt"  Width="20" Height="20" Foreground="Black" />
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

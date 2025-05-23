@@ -6,6 +6,7 @@ namespace ESMART.Domain.ViewModels.Transaction
 {
     public class TransactionItemViewModel
     {
+        public string Id { get; set; }
         public string ServiceId { get; set; }
         public string ReferenceNo { get; set; }
         public string Amount { get; set; }

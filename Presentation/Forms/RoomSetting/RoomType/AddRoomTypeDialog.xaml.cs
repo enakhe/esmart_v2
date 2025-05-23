@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ESMART.Presentation.Forms.RoomSetting.RoomType
 {
@@ -15,10 +16,19 @@ namespace ESMART.Presentation.Forms.RoomSetting.RoomType
     {
         private readonly IRoomRepository _roomRepository;
         private bool _suppressTextChanged = false;
+        private DispatcherTimer _formatTimer;
+
         public AddRoomTypeDialog(IRoomRepository roomRepository)
         {
             _roomRepository = roomRepository;
             InitializeComponent();
+
+            _formatTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
+            _formatTimer.Tick += FormatTimer_Tick;
+
         }
 
         private async void AddRoomType_Click(object sender, RoutedEventArgs e)
@@ -69,37 +79,52 @@ namespace ESMART.Presentation.Forms.RoomSetting.RoomType
             this.DialogResult = false;
         }
 
-        // Allow only numbers and one decimal point
-        private void DecimalInput_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = !Regex.IsMatch(e.Text, @"[\d.]");
-        }
+        //// Allow only numbers and one decimal point
+        //private void DecimalInput_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        //{
+        //    e.Handled = !Regex.IsMatch(e.Text, @"[\d.]");
+        //}
 
         // Prevent user from entering multiple decimal points
         private void DecimalInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (_suppressTextChanged) return;
 
-            var textBox = sender as TextBox;
-            if (string.IsNullOrWhiteSpace(textBox?.Text)) return;
+            _formatTimer.Stop(); // restart timer
+            _formatTimer.Tag = sender;
+            _formatTimer.Start();
+        }
 
-            if (decimal.TryParse(textBox.Text.Replace(",", ""), out decimal value))
+        //// Allow navigation keys (backspace, delete, arrows)
+        //private void DecimalInput_PreviewKeyDown(object sender, KeyEventArgs e)
+        //{
+        //    e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
+        //                  e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
+        //                  e.Key == Key.Back || e.Key == Key.Delete ||
+        //                  e.Key == Key.Left || e.Key == Key.Right ||
+        //                  e.Key == Key.Decimal || e.Key == Key.OemPeriod);
+        //}
+
+        private void FormatTimer_Tick(object sender, EventArgs e)
+        {
+            _formatTimer.Stop();
+
+            var textBox = _formatTimer.Tag as TextBox;
+            if (textBox == null || string.IsNullOrWhiteSpace(textBox.Text)) return;
+
+            int caretIndex = textBox.CaretIndex;
+            string unformatted = textBox.Text.Replace(",", "");
+
+            if (decimal.TryParse(unformatted, out decimal value))
             {
                 _suppressTextChanged = true;
+
                 textBox.Text = string.Format(CultureInfo.InvariantCulture, "{0:N}", value);
-                textBox.CaretIndex = textBox.Text.Length;
+                textBox.CaretIndex = Math.Min(caretIndex, textBox.Text.Length); // try to keep caret in place
+
                 _suppressTextChanged = false;
             }
         }
 
-        // Allow navigation keys (backspace, delete, arrows)
-        private void DecimalInput_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
-                          e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
-                          e.Key == Key.Back || e.Key == Key.Delete ||
-                          e.Key == Key.Left || e.Key == Key.Right ||
-                          e.Key == Key.Decimal || e.Key == Key.OemPeriod);
-        }
     }
 }
