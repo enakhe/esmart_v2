@@ -8,7 +8,7 @@
         Title="Add Guest"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Height="605" Width="400" Icon="/Forms/FrontDesk/Guest/logo.png">
+        Height="755" Width="450" Icon="/Forms/FrontDesk/Guest/logo.png">
     <Grid>
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <StackPanel Grid.Column="0" Margin="20">

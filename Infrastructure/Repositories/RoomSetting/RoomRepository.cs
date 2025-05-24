@@ -40,6 +40,11 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                 // Fetch all rooms
                 var allRooms = await context.Rooms
                                     .Where(r => r.IsTrashed == false)
+                                    .Include(r => r.Building)
+                                    .Include(r => r.Floor)
+                                    .Include(r => r.Area)
+                                    .Include(r => r.ApplicationUser)
+                                    .Include(r => r.RoomType)
                                     .OrderBy(r => r.Number)
                                     .ToListAsync();
 
@@ -71,6 +76,11 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             {
                 using var context = _contextFactory.CreateDbContext();
                 var allRooms = await context.Rooms
+                                .Include(r => r.Building)
+                                .Include(r => r.Floor)
+                                .Include(r => r.Area)
+                                .Include(r => r.ApplicationUser)
+                                .Include(r => r.RoomType)
                                 .Where(r => !r.IsTrashed && r.Status == RoomStatus.Vacant || r.Status == RoomStatus.Reserved || r.Status == RoomStatus.Dirty)
                                 .OrderBy(r => r.Number)
                                 .ToListAsync();
@@ -108,7 +118,7 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var room = await context.Rooms.FirstOrDefaultAsync(r => r.Number == number);
+                var room = await context.Rooms.FirstOrDefaultAsync(r => r.Number == number && !r.IsTrashed);
 
                 return room;
             }

@@ -69,12 +69,15 @@ namespace ESMART.Presentation.Forms.Home
         {
             if (sender is Border border && border.Tag is SelectableRoomViewModel room)
             {
-                var createCardDialog = new CreateCardDialog(room.Room, _hotelSettingsService)
+                if(room.Room.Status == Domain.Entities.RoomSettings.RoomStatus.Vacant)
                 {
-                    Owner = Window.GetWindow(this)
-                };
+                    var createCardDialog = new CreateCardDialog(room.Room, _hotelSettingsService)
+                    {
+                        Owner = Window.GetWindow(this)
+                    };
 
-                createCardDialog.ShowDialog();
+                    createCardDialog.ShowDialog();
+                }
             }
         }
 

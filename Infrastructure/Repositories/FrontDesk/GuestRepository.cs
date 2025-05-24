@@ -212,5 +212,110 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             using var context = _contextFactory.CreateDbContext();
             return await context.Guests.Where(b => b.IsTrashed == false && b.Status == "Active").CountAsync();
         }
+
+        // Fund guest account
+        public async Task FundAccountAsync(GuestAccounts guestAccounts)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var guestAccount = await context.GuestAccounts.FirstOrDefaultAsync(c => c.GuestId == guestAccounts.GuestId);
+
+                if (guestAccount != null)
+                {
+                    guestAccount.FundedBalance += guestAccounts.FundedBalance;
+                    guestAccount.LastFunded = DateTime.Now;
+                    context.Entry(guestAccount).State = EntityState.Modified;
+                }
+                else
+                {
+                    await context.GuestAccounts.AddAsync(guestAccounts);
+                }
+
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when adding guest. " + ex.Message);
+            }
+        }
+
+        // add guest transaction
+        public async Task AddGuestTransactionAsync(GuestTransaction guestTransaction)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                await context.GuestTransactions.AddAsync(guestTransaction);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when adding guest transaction. " + ex.Message);
+            }
+        }
+
+        // Return list of guest transactions
+        public async Task<List<GuestTransaction>> GetGuestTransactionsAsync(string guestId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var guestTransactions = await context.GuestTransactions
+                    .Where(gt => gt.GuestId == guestId)
+                    .OrderByDescending(gt => gt.Date)
+                    .ToListAsync();
+                return guestTransactions;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving guest transactions. " + ex.Message);
+            }
+        }
+
+        // Get guest account by guest ID
+        public async Task<GuestAccounts> GetGuestAccountByGuestIdAsync(string guestId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var guestAccount = await context.GuestAccounts.FirstOrDefaultAsync(c => c.GuestId == guestId);
+                return guestAccount;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving guest account by ID. " + ex.Message);
+            }
+        }
+
+        // Get guest account by ID
+        public async Task<GuestAccounts> GetGuestAccountByIdAsync(string id)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var guestAccount = await context.GuestAccounts.FirstOrDefaultAsync(c => c.Id == id);
+                return guestAccount;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving guest account by ID. " + ex.Message);
+            }
+        }
+
+        // Update guest account
+        public async Task UpdateGuestAccountAsync(GuestAccounts guestAccount)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                context.Entry(guestAccount).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when updating guest account. " + ex.Message);
+            }
+        }
     }
 }

@@ -121,8 +121,8 @@
 
                         </Grid>
 
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                            <DataGrid x:Name="GuestDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" Loaded="GuestDataGrid_Loaded" VerticalContentAlignment="Center" Grid.Row="1" MinHeight="200" Width="1300">
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <DataGrid x:Name="GuestDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" Loaded="GuestDataGrid_Loaded" VerticalContentAlignment="Center" Grid.Row="1" MinHeight="200">
                                 <DataGrid.Columns>
                                     <DataGridTemplateColumn Header="Full Name" Width="2*">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -179,6 +179,14 @@
 
                                                     <Button  Width="30"  Height="30" Padding="2" ToolTip="View Guest"  Background="#E0E7FF"  Cursor="Hand" Tag="{Binding Id}" Click="ViewGuest_Click">
                                                         <materialDesign:PackIcon Kind="EyeOutline" Width="20" Height="20" Foreground="Black" />
+                                                    </Button>
+
+                                                    <Button  Width="30"  Height="30" Padding="2" ToolTip="Fund Account"  Background="#E0E7FF"  Cursor="Hand" Tag="{Binding Id}" Click="FundAccount_Click">
+                                                        <materialDesign:PackIcon Kind="Money" Width="20" Height="20" Foreground="Black" />
+                                                    </Button>
+
+                                                    <Button  Width="30"  Height="30" Padding="2" ToolTip="Print Details"  Background="#E0E7FF"  Cursor="Hand" Tag="{Binding Id}" Click="FundAccount_Click">
+                                                        <materialDesign:PackIcon Kind="Printer" Width="20" Height="20" Foreground="Black" />
                                                     </Button>
 
                                                     <Button  Width="30"  Height="30" Padding="2"  ToolTip="Delete Guest"  Background="Red"  Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteGuest_Click">

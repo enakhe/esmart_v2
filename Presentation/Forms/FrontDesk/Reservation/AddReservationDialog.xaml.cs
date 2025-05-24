@@ -306,7 +306,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 TaxAmount = reservation.VAT,
                 ServiceCharge = reservation.ServiceCharge,
                 Discount = reservation.Discount,
-                TotalAmount = Helper.CalculateTotal(reservation.Amount, reservation.Discount, reservation.VAT, reservation.ServiceCharge),
                 Category = Category.Reservation,
                 Type = TransactionType.Charge,
                 BankAccount = $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}",

@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using ESMART.Application.Common.Interface;
+using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Domain.ViewModels.Transaction;
 using ESMART.Presentation.Forms.Export;
@@ -42,6 +43,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var guest = await _guestRepository.GetGuestByIdAsync(_id);
                 if (guest != null)
                 {
+                    var guestAccount = await _guestRepository.GetGuestTransactionsAsync(_id);
+
                     var guestViewModel = new GuestViewModel()
                     {
                         Id = guest.Id,
@@ -52,6 +55,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         Gender = guest.Gender,
                         Street = guest.Street,
                         Status = guest.Status,
+                        CurrentBalance = guestAccount.Where(g => g.TransactionType == TransactionType.Credit).Sum(g => g.Amount) - guestAccount.Where(g => g.TransactionType == TransactionType.Debit).Sum(g => g.Amount),
                         PhoneNumber = guest.PhoneNumber,
                         City = guest.City,
                         State = guest.State,
@@ -92,6 +96,32 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     this.TransactionItemDataGrid.ItemsSource = guestTransactionItem;
                 }
 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task LoadGuestAccountTransactionHistory()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var guestAccountTransaction = await _guestRepository.GetGuestTransactionsAsync(_id);
+                if (guestAccountTransaction != null)
+                {
+                    this.AccTransactionItemDataGrid.ItemsSource = guestAccountTransaction;
+                }
+
+                txtIn.Text = $"In: ₦{guestAccountTransaction.Sum(g => g.Amount).ToString("N2")}";
+                txtOut.Text = $"Out: ₦{guestAccountTransaction.Where(g => g.TransactionType == TransactionType.Debit).Sum(g => g.Amount).ToString("N2")}";
+                txtCurrent.Text = $"Current Balance: ₦{guestAccountTransaction.Where(g => g.TransactionType == TransactionType.Credit).Sum(g => g.Amount) - guestAccountTransaction.Where(g => g.TransactionType == TransactionType.Debit).Sum(g => g.Amount):N2}";
             }
             catch (Exception ex)
             {
@@ -223,6 +253,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 if (selectedTab == tbTransactionHistory)
                 {
                     await LoadGuestTransactionHistory();
+                }
+                if (selectedTab == tcAccountHistory)
+                {
+                    await LoadGuestAccountTransactionHistory();
                 }
             }
         }

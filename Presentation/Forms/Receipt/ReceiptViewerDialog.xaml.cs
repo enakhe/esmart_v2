@@ -40,9 +40,9 @@ namespace ESMART.Presentation.Forms.Receipt
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var receiptHelper = new ReceiptHelper();
-                var document = receiptHelper.GenerateTransactionItemReceiptDocument(_transactionItem, _hotel.Name, _hotel.Address, _hotel.PhoneNumber);
-                ReceiptViewer.Document = document;
+                //var receiptHelper = new ReceiptHelper();
+                //var document = receiptHelper.GeneratePreviewFlowDocument(_transactionItem, _hotel.Name, _hotel.Address, _hotel.PhoneNumber);
+                //ReceiptViewer.Document = document;
             }
             catch (Exception ex)
             {

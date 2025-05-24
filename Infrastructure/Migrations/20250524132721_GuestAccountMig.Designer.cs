@@ -4,6 +4,7 @@ using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250524132721_GuestAccountMig")]
+    partial class GuestAccountMig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -458,26 +461,14 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("DirectPayments")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("FundedBalance")
+                    b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("GuestId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("LastFunded")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("TopUps")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalCharges")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -513,41 +504,6 @@ namespace ESMART.Infrastructure.Migrations
                         .HasFilter("[GuestId] IS NOT NULL");
 
                     b.ToTable("GuestIdentities", "ESMART");
-                });
-
-            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.GuestTransaction", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GuestId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TransactionId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TransactionType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("GuestId");
-
-                    b.ToTable("GuestTransactions", "ESMART");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Reservation", b =>
@@ -1257,21 +1213,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("Guest");
                 });
 
-            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.GuestTransaction", b =>
-                {
-                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Guest", "Guest")
-                        .WithMany("GuestTransactions")
-                        .HasForeignKey("GuestId");
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Guest");
-                });
-
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Reservation", b =>
                 {
                     b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "ApplicationUser")
@@ -1487,8 +1428,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("Bookings");
 
                     b.Navigation("GuestIdentity");
-
-                    b.Navigation("GuestTransactions");
 
                     b.Navigation("Reservation");
 

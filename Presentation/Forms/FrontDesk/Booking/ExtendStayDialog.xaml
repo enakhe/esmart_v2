@@ -3,11 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:ESMART.Presentation.Forms.FrontDesk.Booking"
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Extend Stay" Height="540" Width="350" Icon="/Forms/FrontDesk/Booking/logo.png" Activated="Window_Activated">
+        Title="Extend Stay" Height="600" Width="350" Icon="/Forms/FrontDesk/Booking/logo.png" Loaded="Window_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="31*"/>
@@ -17,6 +18,7 @@
             <TextBlock Text="Extend Stay" FontSize="25" FontWeight="Bold" Margin="0,10" />
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
@@ -102,11 +104,8 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Discount (%):" FontWeight="Bold" />
-                                <TextBox x:Name="txtDiscount" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DiscountTextBox_PreviewTextInput" TextChanged="txtDiscount_TextChanged" LostFocus="DiscountTextBox_LostFocus" GotFocus="DiscountTextBox_GotFocus" />
+                                <TextBox x:Name="txtDiscount" Padding="2,5,0,5" TextChanged="txtDiscount_TextChanged" PreviewKeyDown="DecimalInput_PreviewKeyDown" />
                             </StackPanel>
-
-                            <Image Cursor="Hand" x:Name="EditButtonDiscount" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Discount is set by default. You can change it later." MouseLeftButtonDown="EditDiscountButton_MouseLeftButtonDown" />
-
                         </Grid>
 
                         <Grid Grid.Column="1" Margin="2,0,0,0">
@@ -117,10 +116,8 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="VAT (%):" FontWeight="Bold" />
-                                <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="VatTextBox_PreviewTextInput" LostFocus="VatTextBox_LostFocus" GotFocus="VatTextBox_GotFocus" TextChanged="txtVAT_TextChanged" />
+                                <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewKeyDown="DecimalInput_PreviewKeyDown" />
                             </StackPanel>
-
-                            <Image Cursor="Hand" x:Name="EditButtonVAT" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="VAT is set by default. You can change it later." MouseLeftButtonDown="EditVATButton_MouseLeftButtonDown" />
                         </Grid>
                     </Grid>
                 </StackPanel>
@@ -159,10 +156,8 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Service Charge:" FontWeight="Bold" />
-                                <TextBox x:Name="txtServiceCharge" PreviewTextInput="ServiceChargeTextBox_PreviewTextInput" IsEnabled="False" Padding="2,5,0,5" TextChanged="txtServiceCharge_TextChanged" />
+                                <TextBox x:Name="txtServiceCharge" PreviewTextInput="DecimalInput_PreviewTextInput" IsEnabled="False" Padding="2,5,0,5" TextChanged="txtServiceCharge_TextChanged" />
                             </StackPanel>
-
-                            <Image Cursor="Hand" x:Name="EditButtonServiceCharge" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Room rate is set to room type rate by default. You can change it later." MouseLeftButtonDown="EditServiceButton_MouseLeftButtonDown" />
                         </Grid>
 
                         <StackPanel Grid.Column="1" Margin="2,0,0,0">
@@ -173,7 +168,21 @@
 
                 </StackPanel>
 
-                <StackPanel Grid.Row="6" Margin="0,0,0,20">
+                <StackPanel Margin="0,10,0,20" x:Name="btnAddRecipe" Grid.Row="6" HorizontalAlignment="Center">
+                    <Button Height="30" Padding="5" x:Name="UnpaidBtn" HorizontalAlignment="Stretch" ToolTip="Edit" Background="Black" Cursor="Hand" Click="MarkAsUnPaid_Click">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <materialDesign:PackIcon Kind="Close" Width="20" Height="20" Foreground="White" Grid.Column="0" />
+                            <TextBlock Text="Mark as unpaid" Grid.Column="1" Foreground="White" />
+                        </Grid>
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Grid.Row="7" Margin="0,0,0,20">
                     <Grid Margin="1,0,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -199,7 +208,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <Button Content="Save" Name="btnSave" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="Save_Click" IsEnabled="False">
+                            <Button Content="Save" Name="btnSave" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="Save_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">

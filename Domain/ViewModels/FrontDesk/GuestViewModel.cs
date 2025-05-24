@@ -13,6 +13,7 @@ namespace ESMART.Domain.ViewModels.FrontDesk
         public string Gender { get; set; }
         public string Street { get; set; }
         public string City { get; set; }
+        public decimal CurrentBalance { get; set; }
         public string Status { get; set; }
         public string State { get; set; }
         public string Country { get; set; }

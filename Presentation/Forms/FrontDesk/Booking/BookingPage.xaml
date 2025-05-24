@@ -102,7 +102,7 @@
 
             <Border Background="#fafafa" Grid.Row="1" CornerRadius="10">
                 <Border Background="White" CornerRadius="10" Padding="20">
-                    <Grid>
+                    <Grid x:Name="RootGrid">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
@@ -241,7 +241,7 @@
                                                         </Button>
 
                                                         <Button  Width="30"  Height="30" Padding="2" ToolTip="Checkout"  Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="CancelBooking_Click">
-                                                            <materialDesign:PackIcon Kind="Receipt" Width="20" Height="20" Foreground="Black"/>
+                                                            <materialDesign:PackIcon Kind="AccountArrowRight" Width="20" Height="20" Foreground="Black"/>
                                                         </Button>
 
                                                         <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete Booking" Background="Red" Name="DeleteBtn" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteBooking_Click" FontFamily="Segoe UI Emoji">

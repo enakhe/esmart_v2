@@ -1,5 +1,6 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.Verification;
+using ESMART.Domain.ViewModels.Transaction;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
@@ -38,6 +39,24 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             InitializeComponent();
 
             txtExpectedAmount.Text = _amount.ToString("N2");
+        }
+
+        private async Task LoadTransactions()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var transaction = await _transactionRepository.GetTransactionByBookingIdAsync(_booking.Id);
+                AccountTransactionStatement.ItemsSource = transaction;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error Loading Transactions", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void VerifyButton_Click(Object sender, RoutedEventArgs e)
@@ -106,6 +125,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadTransactions();
         }
     }
 }

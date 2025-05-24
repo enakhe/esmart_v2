@@ -121,7 +121,7 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="#4EAD16" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
+                        <Border Background="#808080" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
                             <StackPanel>
                                 <TextBlock Text="Vacant" Foreground="White" FontSize="9"/>
                             </StackPanel>
@@ -132,10 +132,22 @@
                                 <TextBlock Text="Dirty" Foreground="White" FontSize="9"/>
                             </StackPanel>
                         </Border>
-                        
-                        <Border Background="#FF0000" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
+
+                        <Border Background="#00C853" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
+                            <StackPanel>
+                                <TextBlock Text="Credit" Foreground="White" FontSize="9"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#000000" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
                             <StackPanel>
                                 <TextBlock Text="Maintenance" Foreground="White" FontSize="9"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#FF0000" VerticalAlignment="Center" HorizontalAlignment="Center" Height="23" CornerRadius="5" Margin="0,10, 5, 10" Padding="4">
+                            <StackPanel>
+                                <TextBlock Text="Debit" Foreground="White" FontSize="9"/>
                             </StackPanel>
                         </Border>
 
@@ -152,10 +164,11 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding Room.Status, Converter={StaticResource RoomStatusToColorDialog}}">
+                                    <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding Room.Status, Converter={StaticResource RoomStatusToColorDialog}}" MouseLeftButtonUp="RoomCard_MouseLeftButtonUp" Tag="{Binding}">
                                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Room.Number}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
                                             <TextBlock Text="{Binding Room.Status}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding Room.RoomType.Name}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>

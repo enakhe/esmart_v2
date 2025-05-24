@@ -2,6 +2,7 @@
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Entities.Data;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
@@ -14,7 +15,9 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Category = ESMART.Domain.Enum.Category;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
@@ -262,8 +265,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
         private bool ValidateInputs(out string guestId, out string roomId, out DateTime checkIn, out DateTime checkOut, out PaymentMethod paymentMethod, out decimal totalAmount, out decimal discount, out decimal vat, out decimal serviceCharge, out string accountNumber)
         {
-            guestId = String.Empty;
-            roomId = String.Empty;
+            guestId = string.Empty;
+            roomId = string.Empty;
             checkIn = checkOut = DateTime.MinValue;
             paymentMethod = default;
             totalAmount = discount = vat = serviceCharge = 0;
@@ -309,13 +312,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
             await _transactionRepository.AddTransactionAsync(transaction);
 
+            var tax = CalculateCharges(booking.VAT, booking.Amount);
+            var serviceCharge = CalculateCharges(booking.ServiceCharge, booking.Amount);
+            var discount = CalculateCharges(booking.Discount, booking.Amount);
+
             var transactionItem = new Domain.Entities.Transaction.TransactionItem
             {
-                Amount = booking.TotalAmount,
+                Amount = booking.Amount,
                 ServiceId = booking.BookingId,
-                TaxAmount = booking.VAT,
-                ServiceCharge = booking.ServiceCharge,
-                Discount = booking.Discount,
+                TaxAmount = tax,
+                ServiceCharge = serviceCharge,
+                Discount = discount,
+                TotalAmount = booking.Amount + tax + serviceCharge - discount,
                 Category = Category.Accomodation,
                 Type = TransactionType.Charge,
                 Status = TransactionStatus.Unpaid,
@@ -348,7 +356,28 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     {
                         booking.Status = BookingStatus.Completed;
 
-                        transactionItem.Status = TransactionStatus.Paid;
+                        var isGuestAccount = await CheckIfGuestHasAccount(bookedGuest);
+
+                        if (isGuestAccount)
+                        {
+                            await ChargeGuestAccount(bookedGuest, booking.TotalAmount);
+                            await AddGuestTransaction(bookedGuest, booking.TotalAmount);
+
+                            if (await CheckIfGuestHasMoney(bookedGuest, booking.TotalAmount))
+                            {
+                                transactionItem.Status = TransactionStatus.Paid;
+                            }
+                            else
+                            {
+                                transactionItem.Status = TransactionStatus.Unpaid;
+                                MessageBox.Show("Guest does not have enough balance to pay for the booking. Payment will be flagged as pending.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
+                        }
+                        else
+                        {
+                            transactionItem.Status = TransactionStatus.Paid;
+                        }
+
                         await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
                         await _bookingRepository.UpdateBooking(booking);
 
@@ -372,6 +401,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     }
                 }
             }
+        }
+
+        private decimal CalculateCharges(decimal charge, decimal basePrice)
+        {
+            var total = basePrice + (charge / 100);
+            return total;
         }
 
         private async Task VerifyPayment(Hotel hotel, Domain.Entities.FrontDesk.Booking booking, Domain.Entities.FrontDesk.Guest bookedGuest, ApplicationUser activeUser, Transaction transaction, TransactionItem transactionItem, BankAccount bookingAccount)
@@ -490,21 +525,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             txtRoomRate.IsEnabled = true;
         }
 
-        private void EditVATButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            txtVAT.IsEnabled = true;
-        }
-
-        private void EditServiceButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            txtServiceCharge.IsEnabled = true;
-        }
-
-        private void EditDiscountButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            txtDiscount.IsEnabled = true;
-        }
-
         private async void cmbRoom_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbRoom.SelectedItem is Domain.Entities.RoomSettings.Room selectedRoom)
@@ -514,14 +534,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
                 {
-                    var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, selectedRoom.Rate);
-
-                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                    if (currencySetting != null)
-                        txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-                    else
-                        txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                    await CalculateTotalPrice(decimal.Parse(txtRoomRate.Text));
                 }
             }
         }
@@ -539,14 +552,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                     if (!isNull)
                     {
-                        var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
-
-                        var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                        if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-                        else
-                            txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                        await CalculateTotalPrice(decimal.Parse(txtRoomRate.Text));
                     }
                 }
             }
@@ -568,30 +574,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 if (!isNull)
                 {
-                    var totalPrice = Helper.GetPriceByRateAndTime(
-                        dtpCheckIn.SelectedDate.Value,
-                        dtpCheckOut.SelectedDate.Value,
-                        decimal.Parse(txtRoomRate.Text)
-                    );
-
-                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                    if (currencySetting != null)
-                    {
-                        txtTotalAmount.Text = currencySetting.Value + " " +
-                            Helper.CalculateTotal(totalPrice,
-                                decimal.Parse(txtDiscount.Text.Replace("%", "")),
-                                decimal.Parse(txtVAT.Text.Replace("%", "")),
-                                decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-                    }
-                    else
-                    {
-                        txtTotalAmount.Text = "₦" + " " +
-                            Helper.CalculateTotal(totalPrice,
-                                decimal.Parse(txtDiscount.Text.Replace("%", "")),
-                                decimal.Parse(txtVAT.Text.Replace("%", "")),
-                                decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-                    }
+                    await CalculateTotalPrice(decimal.Parse(txtRoomRate.Text));
                 }
             }
         }
@@ -614,55 +597,14 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 if (!isNull)
                 {
-                    var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, decimal.Parse(txtRoomRate.Text));
-
-                    var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                    if (currencySetting != null)
-                        txtTotalAmount.Text = currencySetting.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-                    else
-                        txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                    await CalculateTotalPrice(decimal.Parse(txtRoomRate.Text));
                 }
             }
         }
 
-
-        private void VatTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void DecimalTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             InputFormatter.AllowDecimalOnly(sender, e);
-        }
-
-        // Service charge
-        private void ServiceChargeTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            InputFormatter.AllowDecimalOnly(sender, e);
-        }
-
-        // Discount
-        private void DiscountTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            InputFormatter.AllowDecimalOnly(sender, e);
-        }
-
-
-        private void VatTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            InputFormatter.FormatAsPercentageOnLostFocus(sender, e);
-        }
-
-        private void VatTextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            InputFormatter.StripPercentageOnGotFocus(sender, e);
-        }
-
-        private void DiscountTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            InputFormatter.FormatAsPercentageOnLostFocus(sender, e);
-        }
-
-        private void DiscountTextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            InputFormatter.StripPercentageOnGotFocus(sender, e);
         }
 
         private async void txtServiceCharge_TextChanged(object sender, TextChangedEventArgs e)
@@ -677,14 +619,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                     if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
                     {
-                        var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, selectedRoom.Rate);
-
-                        var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                        if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-                        else
-                            txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                        await CalculateTotalPrice(selectedRoom.Rate);
                     }
                 }
             }
@@ -706,14 +641,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                     if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
                     {
-                        var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, selectedRoom.Rate);
-
-                        var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                        if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-                        else
-                            txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                        await CalculateTotalPrice(selectedRoom.Rate);
                     }
                 }
             }
@@ -735,14 +663,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                     if (dtpCheckIn.SelectedDate != null && dtpCheckOut.SelectedDate != null)
                     {
-                        var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value, selectedRoom.Rate);
-
-                        var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
-
-                        if (currencySetting != null)
-                            txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
-                        else
-                            txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+                        await CalculateTotalPrice(selectedRoom.Rate);
                     }
                 }
             }
@@ -792,5 +713,105 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             LoadDefaultSetting();
         }
 
+        private async Task ChargeGuestAccount(Domain.Entities.FrontDesk.Guest guest, decimal amount)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var guestAccount = await _guestRepository.GetGuestAccountByGuestIdAsync(guest.Id);
+
+                if (guestAccount != null)
+                {
+                    guestAccount.FundedBalance -= amount;
+                    guestAccount.TotalCharges += amount;
+                    guestAccount.LastFunded = DateTime.Now;
+
+                    await _guestRepository.UpdateGuestAccountAsync(guestAccount);
+                }  
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task AddGuestTransaction(Domain.Entities.FrontDesk.Guest guest, decimal amount)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var guestTransaction = new GuestTransaction
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    GuestId = guest.Id,
+                    Amount = amount,
+                    TransactionType = TransactionType.Debit,
+                    Description = "Booking Payment",
+                    Date = DateTime.Now,
+                    ApplicationUserId = AuthSession.CurrentUser?.Id
+                };
+                await _guestRepository.AddGuestTransactionAsync(guestTransaction);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task CalculateTotalPrice(decimal rate)
+        {
+            var totalPrice = Helper.GetPriceByRateAndTime(dtpCheckIn.SelectedDate!.Value, dtpCheckOut.SelectedDate!.Value, rate);
+
+            var currencySetting = await _hotelSettingsService.GetSettingAsync("CurrencySymbol");
+
+            if (currencySetting != null)
+                txtTotalAmount.Text = currencySetting?.Value + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+            else
+                txtTotalAmount.Text = "₦" + " " + Helper.CalculateTotal(totalPrice, decimal.Parse(txtDiscount.Text.Replace("%", "")), decimal.Parse(txtVAT.Text.Replace("%", "")), decimal.Parse(txtServiceCharge.Text.Replace("%", ""))).ToString("N2");
+        }
+
+        private async Task<bool> CheckIfGuestHasAccount(Domain.Entities.FrontDesk.Guest guest)
+        {
+            try
+            {
+                var guestAccount = await _guestRepository.GetGuestAccountByGuestIdAsync(guest.Id);
+                if (guestAccount != null && !guestAccount.IsClosed)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
+        private async Task<bool> CheckIfGuestHasMoney(Domain.Entities.FrontDesk.Guest guest, decimal amount)
+        {
+            try
+            {
+                var guestAccount = await _guestRepository.GetGuestAccountByGuestIdAsync(guest.Id);
+                if (guestAccount != null && guestAccount.FundedBalance > amount)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
     }
 }

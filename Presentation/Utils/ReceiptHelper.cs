@@ -16,98 +16,12 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using System.Windows.Xps.Packaging;
 using System.Windows.Xps;
+using ESMART.Application.Common.Models;
 
 namespace ESMART.Presentation.Utils
 {
     public class ReceiptHelper
     {
-        public FlowDocument GenerateTransactionItemReceiptDocument(TransactionItem transaction, string hotelName, string hotelAddress, string hotelPhoneNo)
-        {
-            var doc = new FlowDocument
-            {
-                PagePadding = new Thickness(20),
-                FontFamily = new FontFamily("Consolas"),
-                FontSize = 12
-            };
-
-            // Header
-            doc.Blocks.Add(new Paragraph(new Run(hotelName))
-            {
-                TextAlignment = TextAlignment.Center,
-                FontWeight = FontWeights.Bold,
-                FontSize = 14
-            });
-
-            doc.Blocks.Add(new Paragraph(new Run($"{hotelAddress}"))
-            {
-                TextAlignment = TextAlignment.Center,
-                FontWeight = FontWeights.Bold,
-            });
-
-            doc.Blocks.Add(new Paragraph(new Run($"{hotelPhoneNo}"))
-            {
-                TextAlignment = TextAlignment.Center,
-                FontWeight = FontWeights.Bold,
-            });
-
-            doc.Blocks.Add(new Paragraph(new Run($"Date: {transaction.DateAdded:G}"))
-            {
-                TextAlignment = TextAlignment.Left,
-                FontWeight = FontWeights.Bold,
-            });
-
-            doc.Blocks.Add(new Paragraph(new Run($"Service ID: {transaction.ServiceId}"))
-            {
-                TextAlignment = TextAlignment.Left,
-                FontWeight = FontWeights.Bold,
-            });
-
-            doc.Blocks.Add(new Paragraph(new Run(new string('-', 46))));
-
-            // Table for items
-            var table = new Table();
-            table.Columns.Add(new TableColumn { Width = new GridLength(90) }); // Name
-            table.Columns.Add(new TableColumn { Width = new GridLength(60) });  // Qty
-            table.Columns.Add(new TableColumn { Width = new GridLength(80) });  // Price
-            table.Columns.Add(new TableColumn { Width = new GridLength(80) });  // Total
-
-            var headerRow = new TableRow();
-            headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Item"))));
-            headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Type"))));
-            headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Price"))));
-            headerRow.Cells.Add(new TableCell(new Paragraph(new Run("Total"))));
-            var header = new TableRowGroup();
-            header.Rows.Add(headerRow);
-            table.RowGroups.Add(header);
-
-            var body = new TableRowGroup();
-
-            var row = new TableRow();
-            row.Cells.Add(new TableCell(new Paragraph(new Run(transaction.Category.ToString()))));
-            row.Cells.Add(new TableCell(new Paragraph(new Run(transaction.Type.ToString()))));
-            row.Cells.Add(new TableCell(new Paragraph(new Run(transaction.Amount.ToString("N2")))));
-
-            row.Cells.Add(new TableCell(new Paragraph(new Run(transaction.Amount.ToString("N2")))));
-            body.Rows.Add(row);
-
-            table.RowGroups.Add(body);
-            doc.Blocks.Add(table);
-
-            doc.Blocks.Add(new Paragraph(new Run(new string('-', 46))));
-
-            // Totals
-            doc.Blocks.Add(new Paragraph(new Run($"Total: ₦{transaction.Amount}")) { TextAlignment = TextAlignment.Right });
-
-            // Footer
-            doc.Blocks.Add(new Paragraph(new Run("Thank you for your purchase!"))
-            {
-                TextAlignment = TextAlignment.Center,
-                FontWeight = FontWeights.Bold,
-                Margin = new Thickness(0, 20, 0, 0)
-            });
-
-            return doc;
-        }
 
         public FlowDocument GeneratePreviewFlowDocument(ExportResult result, Hotel hotel, System.Windows.Controls.DataGrid dataGrid, string title)
         {
@@ -228,6 +142,45 @@ namespace ESMART.Presentation.Utils
                     row.Cells.Add(cell);
                 }
                 rowGroup.Rows.Add(row);
+            }
+
+            // check if there is a column named Amount and calculate the total and display it in the document
+            if (result.SelectedColumns.Contains("Amount"))
+            {
+                var totalRow = new TableRow();
+                totalRow.Cells.Add(new TableCell(new Paragraph(new Run("Total"))
+                {
+                    FontWeight = FontWeights.UltraBold,
+                    Margin = new Thickness(4),
+                    TextAlignment = TextAlignment.Right
+                })
+                {
+                    BorderBrush = Brushes.Black,
+                    BorderThickness = new Thickness(0.5),
+                    Background = Brushes.LightGray
+                });
+                decimal totalAmount = 0;
+                foreach (var item in dataGrid.ItemsSource)
+                {
+                    var prop = item.GetType().GetProperty("Amount");
+                    if (prop != null && prop.GetValue(item) is string amount)
+                    {
+                        totalAmount += decimal.Parse(amount);
+                    }
+                }
+                totalRow.Cells.Add(new TableCell(new Paragraph(new Run($" ₦{totalAmount.ToString("N2")}"))
+                {
+                    Margin = new Thickness(4),
+                    TextAlignment = TextAlignment.Right,
+                    FontWeight = FontWeights.UltraBold,
+
+                })
+                {
+                    BorderBrush = Brushes.Black,
+                    BorderThickness = new Thickness(0.5),
+                    Background = Brushes.LightGray
+                });
+                rowGroup.Rows.Add(totalRow);
             }
 
             table.RowGroups.Add(rowGroup);

@@ -128,6 +128,26 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
+        private void FundAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string Id)
+            {
+                var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
+                if (selectedGuest.Id != null)
+                {
+                    FundGuestAccountDialog fundGuestAccountDialog = new FundGuestAccountDialog(selectedGuest, _guestRepository);
+                    if (fundGuestAccountDialog.ShowDialog() == true)
+                    {
+                        _ = LoadGuests();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before funding their account.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
         private async void ViewGuest_Click(Object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.Tag is string Id)

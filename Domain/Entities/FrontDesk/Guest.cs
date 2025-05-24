@@ -10,6 +10,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         {
             this.Transactions = new HashSet<Entities.Transaction.Transaction>();
             this.Bookings = new HashSet<Booking>();
+            this.GuestTransactions = new HashSet<Entities.FrontDesk.GuestTransaction>();
             this.Reservation = new HashSet<Reservation>();
         }
 
@@ -42,5 +43,6 @@ namespace ESMART.Domain.Entities.FrontDesk
         public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }
         public ICollection<Booking> Bookings { get; set; }
         public ICollection<Reservation> Reservation { get; set; }
+        public ICollection<GuestTransaction> GuestTransactions { get; set; }
     }
 }

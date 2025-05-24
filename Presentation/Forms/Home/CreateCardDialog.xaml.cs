@@ -26,7 +26,7 @@ namespace ESMART.Presentation.Forms.Home
     {
         private readonly Domain.Entities.RoomSettings.Room _room;
         private readonly IHotelSettingsService _hotelSettingsService;
-        public CreateCardDialog(Domain.Entities.RoomSettings.Room room, IHotelSettingsService hotelSettingsService, IRoomRepository roomRepository)
+        public CreateCardDialog(Domain.Entities.RoomSettings.Room room, IHotelSettingsService hotelSettingsService)
         {
             _room = room;
             _hotelSettingsService = hotelSettingsService;
@@ -70,6 +70,28 @@ namespace ESMART.Presentation.Forms.Home
                 var days = (dtpCheckOut.SelectedDate.Value.Date - dtpCheckIn.SelectedDate.Value.Date).Days;
                 txtDays.Text = days.ToString();
             }
+        }
+
+        private void txtDays_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if ((int.TryParse(txtDays.Text, out int days) || days > 1) && dtpCheckIn.SelectedDate != null)
+            {
+                var checkOut = dtpCheckIn.SelectedDate.Value.AddDays(int.Parse(txtDays.Text));
+                if (checkOut > dtpCheckIn.SelectedDate)
+                {
+                    dtpCheckOut.SelectedDate = checkOut;
+                }
+            }
+        }
+
+        private bool IsTextNumeric(string text)
+        {
+            return text.All(char.IsDigit);
+        }
+
+        private void NumberOnly_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextNumeric(e.Text);
         }
 
         private static int OpenPort(int port)
@@ -192,8 +214,9 @@ namespace ESMART.Presentation.Forms.Home
             this.DialogResult = true;
         }
 
-        private void Window_Activated(object sender, EventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            LoadDefaultSetting();
             int checkEncoder = CheckEncoder(LOCK_SETTING.LOCK_TYPE_PULMOS);
             if (checkEncoder != 1)
             {

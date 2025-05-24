@@ -4,6 +4,7 @@ using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250524140956_GuestAccTransaction")]
+    partial class GuestAccTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -458,26 +461,14 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("DirectPayments")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("FundedBalance")
+                    b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("GuestId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("LastFunded")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("TopUps")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalCharges")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -523,9 +514,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -542,8 +530,6 @@ namespace ESMART.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("GuestId");
 
@@ -1259,15 +1245,9 @@ namespace ESMART.Infrastructure.Migrations
 
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.GuestTransaction", b =>
                 {
-                    b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("ESMART.Domain.Entities.FrontDesk.Guest", "Guest")
                         .WithMany("GuestTransactions")
                         .HasForeignKey("GuestId");
-
-                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Guest");
                 });

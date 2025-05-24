@@ -2,6 +2,8 @@
 {
     public enum TransactionType
     {
+        Credit,
+        Debit,
         Payment,
         Refund,
         Charge,
