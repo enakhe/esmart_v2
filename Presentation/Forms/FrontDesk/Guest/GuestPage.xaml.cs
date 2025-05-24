@@ -213,7 +213,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
                     .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames);
+                var optionsWindow = new ExportDialog(columnNames, GuestDataGrid, _hotelSettingsService);
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)

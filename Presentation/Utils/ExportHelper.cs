@@ -1,4 +1,5 @@
-﻿using iText.IO.Font.Constants;
+﻿using ESMART.Presentation.Forms.Export;
+using iText.IO.Font.Constants;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
@@ -9,46 +10,44 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using Paragraph = iText.Layout.Element.Paragraph;
+using Table = iText.Layout.Element.Table;
 
 namespace ESMART.Presentation.Utils
 {
     public static class ExportHelper
     {
-        public static void ExportAndPrint(DataGrid dataGrid, List<string> selectedColumns, string exportFormat, string fileName, byte[] logoBytes, string companyName, string email, string phone, string address)
+        public static Document ExportAndPrint(DataGrid dataGrid, List<string> selectedColumns, string exportFormat, string fileName, byte[] logoBytes, string companyName, string email, string phone, string address)
         {
+            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            var pdfPath = Path.Combine(documentsPath, $"{fileName}_{timestamp}.pdf");
+
             if (dataGrid.ItemsSource == null)
             {
                 MessageBox.Show("No data available to export.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
 
-            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                using (var writer = new PdfWriter(pdfPath))
+                {
+                    var pdf = new PdfDocument(writer);
+                    var doc = new Document(pdf);
+
+                    return new Document(pdf);
+
+                }
+            }
 
             try
             {
                 var dataTable = GetDataTableFromDataGrid(dataGrid, selectedColumns);
 
-                if (exportFormat == "PDF")
-                {
-                    var pdfPath = Path.Combine(documentsPath, $"{fileName}_{timestamp}.pdf");
-                    ExportToPdf(dataTable, pdfPath, fileName, logoBytes, companyName, email, phone, address);
-                    MessageBox.Show($"PDF saved to {pdfPath} successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else if (exportFormat == "Excel")
-                {
-                    var excelPath = Path.Combine(documentsPath, $"{fileName}_{timestamp}.xlsx");
-                    ExportToExcel(dataTable, excelPath);
-                    MessageBox.Show($"Excel saved to {excelPath} successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Invalid export format selected.");
-                }
+                var doc = ExportToPdf(dataTable, pdfPath, fileName, logoBytes, companyName, email, phone, address);
+                return doc;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Export failed: {ex.Message}");
+                throw new Exception($"Export failed: {ex.Message}");
             }
         }
 
@@ -80,7 +79,7 @@ namespace ESMART.Presentation.Utils
             return dt;
         }
 
-        private static void ExportToPdf(DataTable dt, string filePath, string documentTitle, byte[] logoBytes, string companyName, string email, string phone, string address)
+        private static Document ExportToPdf(DataTable dt, string filePath, string documentTitle, byte[] logoBytes, string companyName, string email, string phone, string address)
         {
             using (var writer = new PdfWriter(filePath))
             {
@@ -159,6 +158,8 @@ namespace ESMART.Presentation.Utils
 
                 doc.Add(table);
                 doc.Close();
+
+                return doc;
             }
         }
 

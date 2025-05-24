@@ -106,6 +106,9 @@
     <Compile Update="Forms\FrontDesk\Room\ShowRoomCardDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Home\CreateCardDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Home\IndexPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -113,6 +116,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Receipt\ReceiptViewerDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Receipt\TransactionDetailDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Reports\CurrentinHouseGuestReport.xaml.cs">

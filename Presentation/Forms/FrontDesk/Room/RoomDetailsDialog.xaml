@@ -101,7 +101,7 @@
                         <StackPanel Grid.Row="0">
                             <StackPanel>
                                 <StackPanel>
-                                    <Border CornerRadius="5" Padding="10,3" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}" Height="23" HorizontalAlignment="Stretch">
+                                    <Border CornerRadius="5" Padding="10,3" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}" Height="23">
                                         <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Left"/>
                                     </Border>
                                 </StackPanel>

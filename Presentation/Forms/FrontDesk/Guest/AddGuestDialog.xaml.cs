@@ -59,7 +59,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 string state = txtState.Text;
                 string country = txtCountry.Text;
 
-                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, middleName, lastName, phoneNumber, gender, city, state, country);
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, lastName, phoneNumber, gender, city, state, country);
                 if (!areFieldsEmpty)
                 {
                     byte[] profileImageBytes = null;

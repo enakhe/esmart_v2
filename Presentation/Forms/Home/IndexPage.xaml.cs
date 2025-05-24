@@ -2,6 +2,7 @@
 using ESMART.Domain.ViewModels.RoomSetting;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ESMART.Presentation.Forms.Home
 {
@@ -12,14 +13,16 @@ namespace ESMART.Presentation.Forms.Home
     {
         private readonly IRoomRepository _roomRepository;
         private readonly IGuestRepository _guestRepository;
+        private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IBookingRepository _bookingRepository;
         private readonly IndexPageViewModel _viewModel;
 
-        public IndexPage(IRoomRepository roomRepository, IGuestRepository guestRepository, IBookingRepository bookingRepository)
+        public IndexPage(IRoomRepository roomRepository, IGuestRepository guestRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService)
         {
             _roomRepository = roomRepository;
             _guestRepository = guestRepository;
             _bookingRepository = bookingRepository;
+            _hotelSettingsService = hotelSettingsService;
             _viewModel = new IndexPageViewModel();
             this.DataContext = _viewModel;
             InitializeComponent();
@@ -42,7 +45,6 @@ namespace ESMART.Presentation.Forms.Home
             }
         }
 
-
         private async Task LoadMetrics()
         {
             try
@@ -60,6 +62,19 @@ namespace ESMART.Presentation.Forms.Home
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RoomCard_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.Tag is SelectableRoomViewModel room)
+            {
+                var createCardDialog = new CreateCardDialog(room.Room, _hotelSettingsService)
+                {
+                    Owner = Window.GetWindow(this)
+                };
+
+                createCardDialog.ShowDialog();
             }
         }
 

@@ -338,7 +338,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                 booking.IsTrashed = true;
                                 await _bookingRepository.UpdateBooking(booking);
 
-                                booking.Room.Status = Domain.Entities.RoomSettings.RoomStatus.Vacant;
+                                booking.Room.Status = Domain.Entities.RoomSettings.RoomStatus.Dirty;
                                 await _roomRepository.UpdateRoom(booking.Room);
 
                                 MessageBox.Show("Successfully checkout guest", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -435,7 +435,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
                     .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames);
+                var optionsWindow = new ExportDialog(columnNames, BookingDataGrid, _hotelSettingsService);
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)

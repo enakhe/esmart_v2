@@ -45,6 +45,8 @@ namespace ESMART.Domain.Entities.RoomSettings
         Booked,
         Reserved,
         Dirty,
+        Debit,
+        Credit,
         Maintenance
     }
 }

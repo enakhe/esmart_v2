@@ -240,7 +240,7 @@ namespace ESMART.Presentation.Forms
                 // Apply visibility
                 AdminControls.Visibility = isSuperAdmin ? Visibility.Visible : Visibility.Collapsed;
                 SettingButton.Visibility = isAdmin ? Visibility.Collapsed : Visibility.Visible;
-                //StoreKeepingControls.Visibility = (isSuperAdmin || isStoreKeeper) ? Visibility.Visible : Visibility.Collapsed;
+                StoreKeepingControls.Visibility = (isSuperAdmin || isStoreKeeper) ? Visibility.Visible : Visibility.Collapsed;
                 FrontDeskControls.Visibility = (isSuperAdmin || isFrontDesk) ? Visibility.Visible : Visibility.Collapsed;
             }
             catch (Exception ex)
