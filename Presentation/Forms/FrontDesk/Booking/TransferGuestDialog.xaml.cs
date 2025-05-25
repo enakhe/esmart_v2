@@ -271,7 +271,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
         private decimal CalculateCharges(decimal charge, decimal basePrice)
         {
-            var total = basePrice + (charge / 100);
+            var total = basePrice * (charge / 100);
             return total;
         }
 
@@ -304,7 +304,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     Category = Category.Accomodation,
                     Type = TransactionType.Adjustment,
                     Status = TransactionStatus.Unpaid,
-                    BankAccount = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
+                    BankAccount = $"{bookingAccount.BankAccountNumber}",
                     DateAdded = DateTime.Now,
                     ApplicationUserId = AuthSession.CurrentUser?.Id,
                     TransactionId = transaction?.Id,

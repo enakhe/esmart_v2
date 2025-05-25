@@ -15,6 +15,7 @@ namespace ESMART.Application.Common.Interface
         Task<MenuItemViewModel> GetMenuItemByIdAsync(string id);
         Task UpdateMenuItemAsync(MenuItem menuItem);
         Task DeleteMenuItemAsync(string id);
+        Task<List<MenuCategoryViewModel>> GetAllMenuItemCategoriesViewModelAsync();
         Task ToggleMenuItemAvailabilityAsync(string id);
         Task AddRecipeToMenuItemAsync(string menuItemId, MenuItemRecipe recipe);
         Task RemoveRecipeFromMenuItemAsync(string recipeId);

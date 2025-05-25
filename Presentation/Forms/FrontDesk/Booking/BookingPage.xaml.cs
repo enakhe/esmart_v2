@@ -321,7 +321,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         {
                             var unPaidTransaction = await _transactionRepository.GetUnpaidTransactionItemsByGuestIdAsync(booking.GuestId);
 
-                            var totalAmount = unPaidTransaction.Sum(ut => decimal.Parse(ut.Amount));
+                            var totalAmount = unPaidTransaction.Sum(ut => ut.BillPost);
 
                             if (totalAmount > 0)
                             {

@@ -143,7 +143,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 }
 
                 var isRoomAvailable = await CheckIfRoomCanBeBooked(_booking.Room.Number, checkIn, checkOut);
-                var amount = Helper.GetPriceByRateAndTime(checkIn, checkOut, decimal.Parse(txtRoomRate.Text));
+                var amount = Helper.GetPriceByRateAndTime(checkIn, checkOut, decimal.Parse(txtRoomRate.Text)) - Helper.GetPriceByRateAndTime(_booking.CheckIn, _booking.CheckOut, _booking.Room.Rate);
 
                 if (isRoomAvailable)
                 {
@@ -205,7 +205,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             var amount = Helper.GetPriceByRateAndTime(checkIn, checkOut, decimal.Parse(txtRoomRate.Text));
 
             _booking.CheckOut = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0);
-            _booking.Amount += amount;
+            _booking.Amount = amount;
             _booking.Discount = discount;
             _booking.PaymentMethod = paymentMethod;
             _booking.TotalAmount += totalAmount;
@@ -221,7 +221,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
         private decimal CalculateCharges(decimal charge, decimal basePrice)
         {
-            var total = basePrice + (charge / 100);
+            var total = basePrice * (charge / 100);
             return total;
         }
 
@@ -235,22 +235,22 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
             var transaction = await _transactionRepository.GetByBookingIdAsync(booking.Id);
 
-            var tax = CalculateCharges(booking.VAT, booking.Amount);
-            var serviceCharge = CalculateCharges(booking.ServiceCharge, booking.Amount);
-            var discount = CalculateCharges(booking.Discount, booking.Amount);
+            var tax = CalculateCharges(booking.VAT, basePrice);
+            var serviceCharge = CalculateCharges(booking.ServiceCharge, basePrice);
+            var discount = CalculateCharges(booking.Discount, basePrice);
 
             var transactionItem = new Domain.Entities.Transaction.TransactionItem
             {
-                Amount = booking.Amount,
+                Amount = basePrice,
                 ServiceId = booking.BookingId,
                 TaxAmount = tax,
                 ServiceCharge = serviceCharge,
                 Discount = discount,
-                TotalAmount = booking.Amount + tax + serviceCharge - discount,
+                TotalAmount = basePrice + tax + serviceCharge - discount,
                 Category = Category.Accomodation,
                 Type = TransactionType.Adjustment,
                 Status = TransactionStatus.Unpaid,
-                BankAccount = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
+                BankAccount = $"{bookingAccount.BankAccountNumber}",
                 DateAdded = DateTime.Now,
                 ApplicationUserId = AuthSession.CurrentUser?.Id,
                 TransactionId = transaction?.Id,

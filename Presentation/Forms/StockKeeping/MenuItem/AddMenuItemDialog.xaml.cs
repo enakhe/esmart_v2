@@ -155,17 +155,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
                     menuItem.Name = txtName.Text;
                 }
 
-                    await _stockKeepingRepository.AddMenuItemAsync(menuItem);
-
-                if(!menuItem.IsDirectStock)
-                {
-                    AddMenuItemRecipeDialog addMenuItemRecipeDialog = new(_stockKeepingRepository, menuItem)
-                    {
-                        Owner = this
-                    };
-
-                    addMenuItemRecipeDialog.ShowDialog();
-                }
+                await _stockKeepingRepository.AddMenuItemAsync(menuItem);
 
                 MessageBox.Show("Menu item added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 

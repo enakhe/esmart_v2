@@ -623,6 +623,30 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             }
         }
 
+        // get all meny item categories view model
+        public async Task<List<MenuCategoryViewModel>> GetAllMenuItemCategoriesViewModelAsync()
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuCategories
+                    .Select(c => new MenuCategoryViewModel
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Description = c.Description,
+                        IsAvailable = c.IsActive ? "Yes" : "No",
+                        ServiceArea = c.ServiceArea.ToString(),
+                        CreatedAt = c.CreatedAt,
+                    })
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving all menu item categories view model.", ex);
+            }
+        }
+
         // Seed default menuitem categories to the database
         public async Task SeedDefaultMenuItemCategoriesAsync()
         {
@@ -643,6 +667,20 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                         new() {
                             Name = "Main Courses",
                             Description = "Hearty meals to satisfy your hunger.",
+                            IsActive = true,
+                            ServiceArea = ServiceArea.Restaurant,
+                        },
+
+                        new() {
+                            Name = "Breakfast",
+                            Description = "Hearty meals to satisfy your morning.",
+                            IsActive = true,
+                            ServiceArea = ServiceArea.Restaurant,
+                        },
+
+                        new() {
+                            Name = "Main Dish",
+                            Description = "",
                             IsActive = true,
                             ServiceArea = ServiceArea.Restaurant,
                         },

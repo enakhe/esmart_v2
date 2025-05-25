@@ -1,4 +1,7 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +25,11 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
     public partial class MenuItemPage : Page
     {
         private readonly IStockKeepingRepository _stockKeepingRepository;
-
-        public MenuItemPage(IStockKeepingRepository stockKeepingRepository)
+        private readonly IHotelSettingsService _hotelSettingsService;
+        public MenuItemPage(IStockKeepingRepository stockKeepingRepository, IHotelSettingsService hotelSettingsService)
         {
             _stockKeepingRepository = stockKeepingRepository;
+            _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
 
@@ -54,6 +58,50 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
             if (addMenuItemDialog.ShowDialog() == true)
             {
                 await LoadMenuItem();
+            }
+        }
+
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var columnNames = MenuItemDataGrid.Columns
+                    .Where(c => c.Header != null)
+                    .Select(c => c.Header.ToString())
+                .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
+                    .ToList();
+
+                var optionsWindow = new ExportDialog(columnNames, MenuItemDataGrid, _hotelSettingsService);
+                var result = optionsWindow.ShowDialog();
+
+                if (result == true)
+                {
+                    var exportResult = optionsWindow.GetResult();
+                    var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                    if (exportResult.SelectedColumns.Count == 0)
+                    {
+                        MessageBox.Show("Please select at least one column to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else
+                    {
+                        if (hotel != null)
+                        {
+                            ExportHelper.ExportAndPrint(MenuItemDataGrid, exportResult.SelectedColumns, exportResult.ExportFormat, exportResult.FileName, hotel.LogoUrl!, hotel.Name, hotel.Email, hotel.PhoneNumber, hotel.Address);
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
 

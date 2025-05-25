@@ -525,6 +525,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Include(b => b.Room)
                     .Include(b => b.Room.Floor)
                     .Include(b => b.Room.Area)
+                    .Include(b => b.Room.RoomType)
+                    .Include(b => b.Transactions)
                     .Include(b => b.Room.Building)
                     .Include(b => b.ApplicationUser)
                     .FirstOrDefaultAsync(b => b.Id == id || b.BookingId == id);

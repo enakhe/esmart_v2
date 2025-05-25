@@ -1,6 +1,8 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.ViewModels.Transaction;
+using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
@@ -46,8 +48,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var transaction = await _transactionRepository.GetTransactionByBookingIdAsync(_booking.Id);
-                AccountTransactionStatement.ItemsSource = transaction;
+                var transactions = await _transactionRepository.GetGroupedTransactionsByGuestIdAsync(_booking.GuestId);
+                AccountTransactionStatement.ItemsSource = transactions;
             }
             catch (Exception ex)
             {
@@ -58,6 +60,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
+
 
         private async void VerifyButton_Click(Object sender, RoutedEventArgs e)
         {
@@ -111,14 +114,46 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
-        private void ViewGuest_Click(Object sender, RoutedEventArgs e)
+        private async void ViewGuest_Click(Object sender, RoutedEventArgs e)
         {
-            if (_guest.Id != null)
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
             {
-                GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(_guest.Id, _guestRepository, _transactionRepository, _hotelSettingsService);
-                if (viewGuestDialog.ShowDialog() == true)
+                var columnNames = AccountTransactionStatement.Columns
+                    .Where(c => c.Header != null)
+                    .Select(c => c.Header.ToString())
+                    .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
+                    .ToList();
+
+                var transactions = await _transactionRepository.GetGroupedTransactionsByGuestIdAsync(_booking.GuestId);
+                // Flatten and bind all transaction items
+                var allTransactionItems = transactions
+                    .SelectMany(t => t.TransactionItems)
+                    .OrderByDescending(ti => ti.Date)
+                .ToList();
+
+                var optionsWindow = new ExportBillDialog(columnNames!, AccountTransactionStatement, _hotelSettingsService, _booking, allTransactionItems);
+                var result = optionsWindow.ShowDialog();
+
+                if (result == true)
                 {
+                    var exportResult = optionsWindow.GetResult();
+                    var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                    if (exportResult.SelectedColumns.Count == 0)
+                    {
+                        MessageBox.Show("Please select at least one column to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
 

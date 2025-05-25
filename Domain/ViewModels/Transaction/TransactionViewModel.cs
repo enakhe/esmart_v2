@@ -12,19 +12,18 @@ namespace ESMART.Domain.ViewModels.Transaction
         public string GuestPhoneNo { get; set; }
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
-        public decimal TotalRevenue { get; set; }
-        public decimal TotalDiscount { get; set; }
-        public decimal TotalVAT { get; set; }
-        public decimal TotalServiceCharge { get; set; }
-        public decimal TotalReceivables { get; set; }
-        public decimal TotalPaid { get; set; }
-        public decimal TotalRefund { get; set; }
-        public string InvoiceNumber { get; set; }
+        public decimal Discount { get; set; }
+        public decimal Tax { get; set; }
+        public decimal Charge { get; set; }
+        public decimal Balance { get; set; }
+        public decimal Paid { get; set; }
+        public decimal Refund { get; set; }
+        public string Invoice { get; set; }
         public string Description { get; set; }
         public string IssuedBy { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
-        public ICollection<TransactionItem> TransationItem { get; set; }
+        public List<TransactionItemViewModel> TransactionItems { get; set; }
         public Booking Booking { get; set; }
     }
 }

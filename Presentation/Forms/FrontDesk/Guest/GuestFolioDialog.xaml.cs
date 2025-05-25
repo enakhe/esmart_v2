@@ -113,8 +113,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
             TransactionItemDataGrid.ItemsSource = transactionItems;
 
-            txtReceivables.Text = $"Total Receivables: ₦{transaction.TotalReceivables:N2}";
-            txtPayables.Text = $"Total Payables: ₦{transaction.TotalRevenue:N2}";
+            txtReceivables.Text = $"Total Receivables: ₦{transaction.Balance:N2}";
+            txtPayables.Text = $"Total Payables: ₦{transaction.Paid:N2}";
         }
 
         private async void ExportButton_Click(object sender, RoutedEventArgs e)

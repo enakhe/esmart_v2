@@ -22,9 +22,11 @@
     <None Remove="Assets\haarcascades\haarcascade_frontalface_default.xml" />
     <None Remove="Assets\images\favicon.ico" />
     <None Remove="Assets\images\logo-main.png" />
+    <None Remove="Forms\add.png" />
     <None Remove="Forms\appointment.png" />
     <None Remove="Forms\backup.png" />
     <None Remove="Forms\bed.png" />
+    <None Remove="Forms\category-alt.png" />
     <None Remove="Forms\credit-card.png" />
     <None Remove="Forms\Export\excel.png" />
     <None Remove="Forms\Export\logo.png" />
@@ -55,6 +57,7 @@
     <None Remove="Forms\Setting\logo.png" />
     <None Remove="Forms\splashscreen.png" />
     <None Remove="Forms\StockKeeping\Inventory\logo.png" />
+    <None Remove="Forms\StockKeeping\MenuCategory\logo.png" />
     <None Remove="Forms\StockKeeping\MenuItem\logo.png" />
     <None Remove="Forms\UserSetting\Roles\logo.png" />
     <None Remove="Forms\UserSetting\Users\logo.png" />
@@ -111,9 +114,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Forms\add.png" />
     <Resource Include="Forms\appointment.png" />
     <Resource Include="Forms\backup.png" />
     <Resource Include="Forms\bed.png" />
+    <Resource Include="Forms\category-alt.png" />
     <Resource Include="Forms\credit-card.png" />
     <Resource Include="Forms\Export\excel.png" />
     <Resource Include="Forms\Export\logo.png" />
@@ -144,6 +149,7 @@
     <Resource Include="Forms\Setting\logo.png" />
     <Resource Include="Forms\splashscreen.png" />
     <Resource Include="Forms\StockKeeping\Inventory\logo.png" />
+    <Resource Include="Forms\StockKeeping\MenuCategory\logo.png" />
     <Resource Include="Forms\StockKeeping\MenuItem\logo.png" />
     <Resource Include="Forms\UserSetting\Roles\logo.png" />
     <Resource Include="Forms\UserSetting\Users\logo.png" />

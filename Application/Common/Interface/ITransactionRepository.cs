@@ -9,6 +9,7 @@ namespace ESMART.Application.Common.Interface
         Task<List<TransactionViewModel>> GetAllTransactionsAsync();
         Task UpdateTransactionAsync(Transaction transaction);
         Task<Transaction?> GetByBookingIdAsync(string serviceId);
+        Task<List<TransactionViewModel>> GetUnpaidTransactionByGuestIdAsync(string guestId);
         Task<Transaction> GetByGuestIdAsync(string id);
         Task<Transaction> GetByIdAsync(string id);
         Task<Transaction> GetByTransactionItemIdAsync(string id);
@@ -32,6 +33,7 @@ namespace ESMART.Application.Common.Interface
         Task<List<TransactionItemViewModel>> GetTransactionItemByRoomIdAndDate(string roomId, DateTime from, DateTime to);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByGuestIdAsync(string guestId);
         Task<List<TransactionItemViewModel>> GetUnpaidTransactionItemsByGuestIdAsync(string guestId);
+        Task<List<TransactionViewModel>> GetGroupedTransactionsByGuestIdAsync(string guestId);
         Task<TransactionItem> GetTransactionItemsByIdAsync(string id);
         Task MarkTransactionItemAsPaidAsync(string id);
         Task<List<TransactionItemViewModel>> GetTransactionItemsByDateAsync(DateTime fromTime, DateTime endTime);
