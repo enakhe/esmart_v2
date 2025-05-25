@@ -1,6 +1,8 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.ViewModels.Transaction;
 using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.Receipt;
 using ESMART.Presentation.Utils;
@@ -126,9 +128,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     .Where(c => c.Header != null)
                     .Select(c => c.Header.ToString())
                     .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
-                    .ToList();
+                .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames, TransactionItemDataGrid, _hotelSettingsService);
+                var optionsWindow = new ExportDialog(columnNames, TransactionItemDataGrid, _hotelSettingsService, $"{_guest.FullName} Folio");
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)

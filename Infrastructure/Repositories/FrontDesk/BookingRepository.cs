@@ -539,6 +539,28 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
+        // get all active booking
+        public async Task<List<Booking>> GetActiveBooking()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var bookings = await context.Bookings
+                    .Include(b => b.Guest)
+                    .Include(b => b.ApplicationUser)
+                    .Include(b => b.Room)
+                    .Where(b =>
+                        !b.IsTrashed
+                    )
+                    .ToListAsync();
+                return bookings;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to retrieve all bookings by date: " + ex.Message, ex);
+            }
+        }
+
         public async Task<BookingViewModel> GetBookingByIdViewModel(string id)
         {
             try

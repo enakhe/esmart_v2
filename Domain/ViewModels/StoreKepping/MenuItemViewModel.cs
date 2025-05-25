@@ -15,6 +15,7 @@ namespace ESMART.Domain.ViewModels.StoreKepping
         public decimal Price { get; set; }
         public string IsAvailable { get; set; }
         public string CategoryId { get; set; }
+        public byte[] Image { get; set; }
         public bool IsLow { get; set; }
         public string ServiceArea { get; set; }
         public DateTime CreatedAt { get; set; }

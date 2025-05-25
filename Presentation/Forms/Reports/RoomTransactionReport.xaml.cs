@@ -94,7 +94,7 @@ namespace ESMART.Presentation.Forms.Reports
                     .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
                     .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames, TransactionItemDataGrid, _hotelSettingsService);
+                var optionsWindow = new ExportDialog(columnNames, TransactionItemDataGrid, _hotelSettingsService, "Room Transaction Report");
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)

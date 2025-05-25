@@ -45,6 +45,8 @@ namespace ESMART.Infrastructure.Data
         public DbSet<MenuCategory> MenuCategories { get; set; }
         public DbSet<MenuItemRecipe> MenuItemRecipes { get; set; }
         public DbSet<InventoryItem> InventoryItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

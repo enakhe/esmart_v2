@@ -18,6 +18,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
 {
@@ -28,12 +29,18 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
     {
         private bool _suppressTextChanged = false;
         private readonly IStockKeepingRepository _stockKeepingRepository;
+        private DispatcherTimer _formatTimer;
         public AddMenuItemDialog(IStockKeepingRepository stockKeepingRepository)
         {
             _stockKeepingRepository = stockKeepingRepository;
             InitializeComponent();
 
             stkName.Visibility = Visibility.Collapsed;
+            _formatTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
+            _formatTimer.Tick += FormatTimer_Tick;
         }
 
         public void LoadServiceArea()
@@ -133,6 +140,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
                 }
 
                 bool isChecked = (bool)chkIsAvailable.IsChecked!;
+                var category = await _stockKeepingRepository.GetMenuItemCategoryByIdAsync((string)cmbCategory.SelectedValue);
 
                 var menuItem = new Domain.Entities.StoreKeeping.MenuItem
                 {
@@ -140,6 +148,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
                     MenuCategoryId = (string)cmbCategory.SelectedValue,
                     ServiceArea = Enum.Parse<ServiceArea>(cmbServiceArea.SelectedValue.ToString()!),
                     IsAvailable = isChecked,
+                    Image = category.Image,
                     IsDirectStock = (bool)chkIsDirectStock.IsChecked!,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
@@ -171,32 +180,32 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuItem
             }
         }
 
-        private void DecimalInput_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = !Regex.IsMatch(e.Text, @"[\d.]");
-        }
-
-        private void DecimalInput_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
-                          e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
-                          e.Key == Key.Back || e.Key == Key.Delete ||
-                          e.Key == Key.Left || e.Key == Key.Right ||
-                          e.Key == Key.Decimal || e.Key == Key.OemPeriod);
-        }
-
         private void DecimalInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (_suppressTextChanged) return;
 
-            var textBox = sender as TextBox;
-            if (string.IsNullOrWhiteSpace(textBox?.Text)) return;
+            _formatTimer.Stop(); // restart timer
+            _formatTimer.Tag = sender;
+            _formatTimer.Start();
+        }
 
-            if (decimal.TryParse(textBox.Text.Replace(",", ""), out decimal value))
+        private void FormatTimer_Tick(object sender, EventArgs e)
+        {
+            _formatTimer.Stop();
+
+            var textBox = _formatTimer.Tag as TextBox;
+            if (textBox == null || string.IsNullOrWhiteSpace(textBox.Text)) return;
+
+            int caretIndex = textBox.CaretIndex;
+            string unformatted = textBox.Text.Replace(",", "");
+
+            if (decimal.TryParse(unformatted, out decimal value))
             {
                 _suppressTextChanged = true;
+
                 textBox.Text = string.Format(CultureInfo.InvariantCulture, "{0:N}", value);
-                textBox.CaretIndex = textBox.Text.Length;
+                textBox.CaretIndex = Math.Min(caretIndex, textBox.Text.Length);
+
                 _suppressTextChanged = false;
             }
         }

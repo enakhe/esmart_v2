@@ -1,11 +1,15 @@
-﻿using ESMART.Application.Common.Interface;
+﻿#nullable disable
+
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.StoreKeeping;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,10 +28,33 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuCategory
     public partial class AddMenuCategoryDialog : Window
     {
         private readonly IStockKeepingRepository _stockKeepingRepository;
+        private string image;
         public AddMenuCategoryDialog(IStockKeepingRepository stockKeepingRepository)
         {
             _stockKeepingRepository = stockKeepingRepository;
             InitializeComponent();
+        }
+
+        private void UploadImage_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Title = "Select Image",
+                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp"
+                };
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    image = openFileDialog.FileName;
+                    imgProfileImg.Source = new BitmapImage(new Uri(image));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         public void LoadServiceArea()
@@ -68,12 +95,18 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuCategory
                 }
 
                 bool isChecked = (bool)chkIsAvailable.IsChecked!;
+                byte[] imageBytes = null;
+                if (!string.IsNullOrEmpty(image))
+                {
+                    imageBytes = File.ReadAllBytes(image);
+                }
 
                 var menyCategory = new Domain.Entities.StoreKeeping.MenuCategory
                 {
                     Name = txtName.Text,
                     ServiceArea = Enum.Parse<ServiceArea>(cmbServiceArea.SelectedValue.ToString()!),
                     IsActive = isChecked,
+                    Image = imageBytes,
                     CreatedAt = DateTime.Now,
                     Description = txtDescription.Text
                 };

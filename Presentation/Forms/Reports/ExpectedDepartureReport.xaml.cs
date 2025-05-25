@@ -64,7 +64,7 @@ namespace ESMART.Presentation.Forms.Reports
                     .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
                     .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames, BookingDataGrid, _hotelSettingsService);
+                var optionsWindow = new ExportDialog(columnNames, BookingDataGrid, _hotelSettingsService, "Expected Departure Booking");
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)

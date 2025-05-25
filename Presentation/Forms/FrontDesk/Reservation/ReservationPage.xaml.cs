@@ -88,7 +88,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
                     .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames, ReservationDataGrid, _hotelSettingsService);
+                var optionsWindow = new ExportDialog(columnNames, ReservationDataGrid, _hotelSettingsService, "All Reservations");
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)

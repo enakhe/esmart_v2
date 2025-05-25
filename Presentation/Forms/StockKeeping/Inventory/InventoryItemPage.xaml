@@ -214,11 +214,11 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditInventoryItemButton_Click">
                                                             <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                         </Button>
 
-                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji">
+                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji" Click="DeleteInventoryItemButton_Click">
                                                             <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
                                                         </Button>
                                                     </StackPanel>

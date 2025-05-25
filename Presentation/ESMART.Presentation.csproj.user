@@ -217,6 +217,9 @@
     <Compile Update="Forms\StockKeeping\Inventory\InventoryItemPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\StockKeeping\Inventory\UpdateInventoryDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\StockKeeping\MenuCategory\AddMenuCategoryDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -235,7 +238,13 @@
     <Compile Update="Forms\StockKeeping\MenuItem\MenuItemPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\StockKeeping\MenuItem\UpdateMenuItemDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\StockKeeping\Order\OrderDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\StockKeeping\Order\OrderPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\UserSetting\Roles\AddRoleDialog.xaml.cs">

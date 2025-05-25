@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Domain.ViewModels.Transaction;
@@ -209,9 +210,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     .Where(c => c.Header != null)
                     .Select(c => c.Header.ToString())
                     .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
-                    .ToList();
+                .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames, TransactionItemDataGrid, _hotelSettingsService);
+                var guest = await _guestRepository.GetGuestByIdAsync(_id);
+
+                var optionsWindow = new ExportDialog(columnNames, TransactionItemDataGrid, _hotelSettingsService, $"{guest.FullName} Transaction Detals");
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)

@@ -829,6 +829,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -853,6 +856,9 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("InventoryItemID")
                         .HasColumnType("nvarchar(450)");
@@ -914,6 +920,50 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasIndex("MenuItemId");
 
                     b.ToTable("MenuItemRecipes", "ESMART");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.StoreKeeping.Order", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BookingId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.ToTable("Orders", "ESMART");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.StoreKeeping.OrderItem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MenuItemId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("OrderId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuItemId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItems", "ESMART");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Transaction.BankAccount", b =>
@@ -1363,6 +1413,30 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("MenuItem");
                 });
 
+            modelBuilder.Entity("ESMART.Domain.Entities.StoreKeeping.Order", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId");
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.StoreKeeping.OrderItem", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.StoreKeeping.MenuItem", "MenuItem")
+                        .WithMany()
+                        .HasForeignKey("MenuItemId");
+
+                    b.HasOne("ESMART.Domain.Entities.StoreKeeping.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId");
+
+                    b.Navigation("MenuItem");
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("ESMART.Domain.Entities.Transaction.Transaction", b =>
                 {
                     b.HasOne("ESMART.Domain.Entities.Data.ApplicationUser", "ApplicationUser")
@@ -1539,6 +1613,11 @@ namespace ESMART.Infrastructure.Migrations
             modelBuilder.Entity("ESMART.Domain.Entities.StoreKeeping.MenuItem", b =>
                 {
                     b.Navigation("MenuItemRecipes");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.StoreKeeping.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.Transaction.Transaction", b =>

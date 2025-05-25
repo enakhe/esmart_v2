@@ -406,7 +406,7 @@
                             </Button.Content>
                         </Button>
 
-                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="MenuItemButton_Click">
+                        <Button Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Padding="5,10,0,10" Width="180" Margin="0,10" FontSize="18" HorizontalContentAlignment="Left" Click="OrderButton_Click">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                     <Setter Property="Background" Value="Transparent"/>

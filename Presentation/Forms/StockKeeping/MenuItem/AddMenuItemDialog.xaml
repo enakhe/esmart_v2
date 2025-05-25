@@ -48,7 +48,7 @@
 
                             <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                 <TextBlock Text="Price:" FontWeight="Bold" />
-                                <TextBox x:Name="txtPrice" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="DecimalInput_TextChanged" PreviewKeyDown="DecimalInput_PreviewKeyDown" Padding="2,5,0,5" />
+                                <TextBox x:Name="txtPrice" TextChanged="DecimalInput_TextChanged" Padding="2,5,0,5" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Margin="2,0,0,0" VerticalAlignment="Center">

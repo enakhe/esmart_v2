@@ -76,7 +76,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuCategory
                 .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
                     .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames, MenuItemDataGrid, _hotelSettingsService);
+                var optionsWindow = new ExportDialog(columnNames, MenuItemDataGrid, _hotelSettingsService, "All Menu Categories");
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)
@@ -117,7 +117,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuCategory
                 MessageBox.Show("Please select a menu category to delete.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            var selectedCategory = (Domain.Entities.StoreKeeping.MenuCategory)MenuItemDataGrid.SelectedItem;
+            var selectedCategory = (Domain.ViewModels.StoreKepping.MenuCategoryViewModel)MenuItemDataGrid.SelectedItem;
             if (MessageBox.Show($"Are you sure you want to delete the menu category '{selectedCategory.Name}'?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 LoaderOverlay.Visibility = Visibility.Visible;

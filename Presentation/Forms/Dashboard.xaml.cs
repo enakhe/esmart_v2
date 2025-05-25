@@ -13,6 +13,7 @@ using ESMART.Presentation.Forms.Setting;
 using ESMART.Presentation.Forms.StockKeeping.Inventory;
 using ESMART.Presentation.Forms.StockKeeping.MenuCategory;
 using ESMART.Presentation.Forms.StockKeeping.MenuItem;
+using ESMART.Presentation.Forms.StockKeeping.Order;
 using ESMART.Presentation.Forms.UserSetting;
 using ESMART.Presentation.Session;
 using Microsoft.AspNetCore.Identity;
@@ -209,6 +210,15 @@ namespace ESMART.Presentation.Forms
             InitializeServices();
             MenuCategoryPage menuCategoryPage = _serviceProvider.GetRequiredService<MenuCategoryPage>();
             MainFrame.Navigate(menuCategoryPage);
+        }
+
+
+        // open order page
+        private void OrderButton_Click(Object sender, RoutedEventArgs e)
+        {
+            InitializeServices();
+            OrderPage orderPage = _serviceProvider.GetRequiredService<OrderPage>();
+            MainFrame.Navigate(orderPage);
         }
 
         private void OpenSidebar_Click(object sender, RoutedEventArgs e)

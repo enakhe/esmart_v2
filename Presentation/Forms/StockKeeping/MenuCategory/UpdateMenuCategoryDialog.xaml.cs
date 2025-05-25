@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.StoreKeeping;
 using System;
 using System.Collections.Generic;
@@ -71,6 +72,42 @@ namespace ESMART.Presentation.Forms.StockKeeping.MenuCategory
                 {
                     MessageBox.Show("Category not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+
+        private async void Save_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(txtName.Text, cmbServiceArea.Text);
+
+                if (areFieldsEmpty)
+                {
+                    MessageBox.Show("Please fill all fields", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                bool isChecked = (bool)chkIsAvailable.IsChecked!;
+
+                _menuCategory.Name = txtName.Text;
+                _menuCategory.ServiceArea = Enum.Parse<ServiceArea>(cmbServiceArea.SelectedValue.ToString()!);
+                _menuCategory.IsActive = isChecked;
+                _menuCategory.Description = txtDescription.Text;
+
+                await _stockKeepingRepository.UpdateMenuItemCategoryAsync(_menuCategory);
+
+                MessageBox.Show("Menu category updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                this.DialogResult = true;
             }
             catch (Exception ex)
             {

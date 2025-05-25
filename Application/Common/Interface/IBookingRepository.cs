@@ -8,6 +8,7 @@ namespace ESMART.Application.Common.Interface
         Task<int> GetBookingNumber();
         Task AddBooking(Booking booking);
         Task<List<BookingViewModel>> GetAllBookingsAsync();
+        Task<List<Booking>> GetActiveBooking();
         Task<List<BookingViewModel>> GetBookingsByFilterAsync(string roomTypeId, DateTime fromTime, DateTime endTime, bool IsTrashed);
         Task<List<BookingViewModel>> GetBookingByDate(DateTime fromTime, DateTime endTime, bool IsTrashed);
         Task<BookingViewModel> GetBookingByIdViewModel(string id);

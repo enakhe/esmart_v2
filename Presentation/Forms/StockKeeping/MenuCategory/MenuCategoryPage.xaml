@@ -121,7 +121,7 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
                                 <Button Content="Add" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="70" Click="AddMenuCategory_Click" />
-                                <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
+                                <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="ExportButton_Click" />
                             </StackPanel>
 
                         </Grid>
@@ -160,7 +160,7 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Date Added" Width="1.5*">
+                                        <DataGridTemplateColumn Header="Created At" Width="1.5*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">

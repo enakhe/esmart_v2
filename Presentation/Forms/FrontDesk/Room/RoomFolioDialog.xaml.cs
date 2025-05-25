@@ -128,7 +128,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
                     .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
                     .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames, TransactionItemDataGrid, _hotelSettingsService);
+                var optionsWindow = new ExportDialog(columnNames, TransactionItemDataGrid, _hotelSettingsService, $"{_room.Number} Folio");
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)

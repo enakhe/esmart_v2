@@ -7,7 +7,7 @@
       xmlns:local="clr-namespace:ESMART.Presentation.Forms.StockKeeping.MenuItem"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="MenuItemPage">
+      Title="MenuItemPage" Loaded="Page_Loaded">
 
     <Page.Resources>
         <local:LowMenuColorConverter x:Key="LowMenuColorConverter"/>
@@ -76,7 +76,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid Loaded="Grid_Loaded">
+    <Grid>
         <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -122,7 +122,7 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
                                 <Button Content="Add Item" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="70" Click="AddMenuItem_Click" />
-                                <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
+                                <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="ExportButton_Click" />
                             </StackPanel>
 
                         </Grid>
@@ -131,7 +131,7 @@
                             <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
                                 <DataGrid x:Name="MenuItemDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
                                     <DataGrid.Columns>
-                                        <DataGridTemplateColumn Header="Name" Width="2*">
+                                        <DataGridTemplateColumn Header="Name" Width="3*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -171,7 +171,7 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Date Added" Width="1.5*">
+                                        <DataGridTemplateColumn Header="Created At" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -181,7 +181,7 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Date Updated" Width="1.5*">
+                                        <DataGridTemplateColumn Header="Updated At" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -191,15 +191,15 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Operation" Width="2*">
+                                        <DataGridTemplateColumn Header="Operation" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
+                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditMenuItem_Click">
                                                             <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                         </Button>
 
-                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji">
+                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji" Click="DeleteMenuItem_Click">
                                                             <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
                                                         </Button>
                                                     </StackPanel>

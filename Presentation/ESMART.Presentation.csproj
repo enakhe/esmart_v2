@@ -59,6 +59,10 @@
     <None Remove="Forms\StockKeeping\Inventory\logo.png" />
     <None Remove="Forms\StockKeeping\MenuCategory\logo.png" />
     <None Remove="Forms\StockKeeping\MenuItem\logo.png" />
+    <None Remove="Forms\StockKeeping\Order\food.jpg" />
+    <None Remove="Forms\StockKeeping\Order\logo.png" />
+    <None Remove="Forms\StockKeeping\Order\restaurant.png" />
+    <None Remove="Forms\StockKeeping\Order\soft-drink.png" />
     <None Remove="Forms\UserSetting\Roles\logo.png" />
     <None Remove="Forms\UserSetting\Users\logo.png" />
     <None Remove="Forms\Verification\logo.png" />
@@ -151,6 +155,10 @@
     <Resource Include="Forms\StockKeeping\Inventory\logo.png" />
     <Resource Include="Forms\StockKeeping\MenuCategory\logo.png" />
     <Resource Include="Forms\StockKeeping\MenuItem\logo.png" />
+    <Resource Include="Forms\StockKeeping\Order\food.jpg" />
+    <Resource Include="Forms\StockKeeping\Order\logo.png" />
+    <Resource Include="Forms\StockKeeping\Order\restaurant.png" />
+    <Resource Include="Forms\StockKeeping\Order\soft-drink.png" />
     <Resource Include="Forms\UserSetting\Roles\logo.png" />
     <Resource Include="Forms\UserSetting\Users\logo.png" />
     <Resource Include="Forms\Verification\logo.png" />

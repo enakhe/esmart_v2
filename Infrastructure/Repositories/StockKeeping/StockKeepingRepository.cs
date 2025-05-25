@@ -73,38 +73,17 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             }
         }
 
-        public async Task<MenuItemViewModel> GetMenuItemByIdAsync(string id)
+        public async Task<MenuItem?> GetMenuItemByIdAsync(string id)
         {
             try
             {
                 await using var context = await _contextFactory.CreateDbContextAsync();
                 var menuItem = await context.MenuItems
                     .Include(m => m.MenuItemRecipes)
+                    .Include(m => m.MenuCategory)
                     .FirstOrDefaultAsync(m => m.Id == id);
 
-                return menuItem == null
-                    ? throw new Exception("Menu item not found.")
-                    : new MenuItemViewModel
-                    {
-                        Id = menuItem.Id,
-                        Name = menuItem.Name,
-                        Description = menuItem.Description,
-                        Price = menuItem.Price,
-                        IsAvailable = menuItem.IsAvailable ? "Yes" : "No",
-                        CategoryId = menuItem.MenuCategoryId,
-                        ServiceArea = menuItem.ServiceArea.ToString(),
-                        CreatedAt = menuItem.CreatedAt,
-                        UpdatedAt = menuItem.UpdatedAt,
-                        Recipes = [.. menuItem.MenuItemRecipes.Select(r => new MenuItemRecipe
-                        {
-                            Id = r.Id,
-                            MenuItemId = r.MenuItemId,
-                            InventoryItemId = r.InventoryItemId,
-                            CreatedAt = r.CreatedAt,
-                            UpdatedAt = r.UpdatedAt,
-                            Quantity = r.Quantity,
-                        })]
-                    };
+                return menuItem;
             }
             catch (Exception ex)
             {
@@ -241,41 +220,60 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             }
         }
 
-        // Get menu irem by menu category
-        public async Task<List<MenuItemViewModel>> GetMenuItemsByMenuCategoryAsync(string menuCategoryId)
+        // Fix for the method GetGroupedMenuItemsAsync to resolve CS0029 error
+        public async Task<List<MenuCategoryGroup>> GetGroupedMenuItemsAsync(string category)
         {
             try
             {
                 await using var context = await _contextFactory.CreateDbContextAsync();
-                var menuItems = await context.MenuItems
-                    .Where(m => m.MenuCategoryId == menuCategoryId)
+
+                var grouped = await context.MenuItems
+                    .Include(m => m.MenuCategory)
                     .Include(m => m.MenuItemRecipes)
-                    .ToListAsync();
-                return [.. menuItems.Select(m => new MenuItemViewModel
-                {
-                    Id = m.Id,
-                    Name = m.Name,
-                    Description = m.Description,
-                    Price = m.Price,
-                    IsAvailable = m.IsAvailable ? "Yes" : "No",
-                    CategoryId = m.MenuCategoryId,
-                    ServiceArea = m.ServiceArea.ToString(),
-                    CreatedAt = m.CreatedAt,
-                    UpdatedAt = m.UpdatedAt,
-                    Recipes = [.. m.MenuItemRecipes.Select(r => new MenuItemRecipe
+                    .Where(i => i.MenuCategory.Name == category && i.IsAvailable )
+                    .GroupBy(m => m.MenuCategory)
+                    .Select(g => new MenuCategoryGroup
+                    {
+                        CategoryName = g.Key.Name,
+                        Image = g.Key.Image,
+                        Items = g.Select(m => new MenuItemViewModel
                         {
-                            Id = r.Id,
-                            MenuItemId = r.MenuItemId,
-                            InventoryItemId = r.InventoryItemId,
-                            CreatedAt = r.CreatedAt,
-                            UpdatedAt = r.UpdatedAt,
-                            Quantity = r.Quantity,
-                        })]
-                })];
+                            Id = m.Id,
+                            Name = m.Name,
+                            Description = m.Description,
+                            Price = m.Price,
+                            Image = m.Image,
+                            IsAvailable = m.IsAvailable ? "Yes" : "No",
+                            CategoryId = m.MenuCategoryId,
+                            ServiceArea = m.ServiceArea.ToString(),
+                            CreatedAt = m.CreatedAt,
+                            UpdatedAt = m.UpdatedAt,
+                        }).ToList()
+                    })
+
+                    .ToListAsync();
+
+                return grouped;
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving menu items by menu category.", ex);
+                throw new Exception("An error occurred while retrieving grouped menu items.", ex);
+            }
+        }
+
+        // get menu category by service area
+        public async Task<List<MenuCategory>> GetMenuCategoriesByServiceAreaAsync(ServiceArea serviceArea)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.MenuCategories
+                    .Where(c => c.ServiceArea == serviceArea || c.ServiceArea == ServiceArea.Shared)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving menu categories by service area.", ex);
             }
         }
 
@@ -647,6 +645,104 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             }
         }
 
+        // Add a order to database
+        public async Task AddOrderAsync(Order order)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                await context.Orders.AddAsync(order);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the menu order.", ex);
+            }
+        }
+
+        // Delete order
+        public async Task DeleteOrderAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                var order = await context.Orders.FindAsync(id) ?? throw new Exception("Order not found.");
+                context.Orders.Remove(order);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the order.", ex);
+            }
+        }
+
+        // Update order
+        public async Task UpdateOrderAsync(Order order)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                context.Orders.Update(order);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the order.", ex);
+            }
+        }
+
+        // Get order by id
+        public async Task<Order?> GetOrderByIdAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.Orders
+                    .Include(o => o.OrderItems)
+                    .FirstOrDefaultAsync(o => o.Id == id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving the order.", ex);
+            }
+        }
+
+        // Get all orders
+        public async Task<List<Order>> GetAllOrdersAsync()
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.Orders
+                    .Include(o => o.OrderItems)
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving all orders.", ex);
+            }
+        }
+
+        // Get orders by booking id
+        public async Task<List<Order>> GetOrdersByBookingIdAsync(string bookingId)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.Orders
+                    .Where(o => o.BookingId == bookingId)
+                    .Include(o => o.OrderItems)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving orders by booking ID.", ex);
+            }
+        }
+
+
+
         // Seed default menuitem categories to the database
         public async Task SeedDefaultMenuItemCategoriesAsync()
         {
@@ -720,8 +816,8 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                             ServiceArea = ServiceArea.Restaurant,
                         },  
                     };
-                    await context.MenuCategories.AddRangeAsync(defaultCategories);
-                    await context.SaveChangesAsync();
+                    //await context.MenuCategories.AddRangeAsync(defaultCategories);
+                    //await context.SaveChangesAsync();
                 }
             }
             catch (Exception ex)

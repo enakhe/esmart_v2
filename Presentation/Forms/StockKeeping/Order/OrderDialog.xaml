@@ -4,9 +4,178 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ESMART.Presentation.Forms.StockKeeping.Order"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Order" Height="650" Width="900">
+        WindowStartupLocation="CenterScreen"
+        Background="#f0f4f9"
+        ResizeMode="CanResize"
+        Title="Order" Height="800" Width="1200" Icon="/Forms/StockKeeping/Order/logo.png" Loaded="Window_Loaded">
     <Grid>
-        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Background="White" CornerRadius="10" Margin="30" Padding="20" Grid.Column="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="1" Margin="40">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            
+                            <StackPanel Grid.Column="0" Margin="20,0,5,0">
+                                <TextBlock Text="Searvice Area:" FontWeight="Bold" />
+                                <ComboBox x:Name="cmbServiceArea" Padding="2,5,0,5" Width="300" HorizontalAlignment="Left" SelectionChanged="cmbServiceArea_SelectionChanged" />
+                            </StackPanel>
+
+                            <StackPanel x:Name="stkName" Grid.Column="1" Margin="20,0,5,0">
+                                <TextBlock Text="Category:" FontWeight="Bold" />
+                                <ComboBox x:Name="cmbCategory" Padding="2,5,0,5" Width="300" HorizontalAlignment="Left" SelectionChanged="cmbCategory_SelectionChanged" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Margin="0,20">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <ItemsControl ItemsSource="{Binding GroupedMenuItems}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,20">
+                                                <TextBlock Text="{Binding CategoryName}" FontSize="18" FontWeight="Bold" Margin="10,0" />
+                                                <ItemsControl ItemsSource="{Binding Items}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border Width="180" Height="280" Padding="10" Margin="5" CornerRadius="10" Background="Black" Tag="{Binding}">
+                                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                    <StackPanel Margin="0,0,0,10">
+                                                                        <Ellipse Width="100" Height="100">
+                                                                            <Ellipse.Fill>
+                                                                                <ImageBrush ImageSource="{Binding Image}" Stretch="UniformToFill"/>
+                                                                            </Ellipse.Fill>
+                                                                        </Ellipse>
+                                                                    </StackPanel>
+                                                                    <TextBlock Text="{Binding Name}"  TextWrapping="Wrap"
+                                                                        TextTrimming="CharacterEllipsis"
+                                                                        MaxWidth="150"
+                                                                        MaxHeight="40"
+                                                                        FontSize="14"
+                                                                        Foreground="White"
+                                                                        HorizontalAlignment="Center"
+                                                                        TextAlignment="Center"/>
+                                                                    <TextBlock FontSize="14" Foreground="White" Margin="0,10" HorizontalAlignment="Center">
+                                                                        <Run Text="₦" />
+                                                                        <Run Text="{Binding Price, StringFormat=N2}" />
+                                                                    </TextBlock>
+                                                                    <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="White" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji" Click="AddMenuItemToCart_Click">
+                                                                        <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" Foreground="Black"/>
+                                                                    </Button>
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Background="White" CornerRadius="10" Margin="30" Padding="20" Grid.Column="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Margin="20,0,5,0">
+                        <TextBlock Text="Active Booking:" FontWeight="Bold" />
+                        <ComboBox x:Name="cmbActiveBooking" Padding="2,5,0,5" SelectionChanged="cmbActiveBooking_SelectionChanged" />
+                    </StackPanel>
+
+                    <StackPanel Margin="20" Grid.Row="1">
+                        <TextBlock Text="Cart" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <ItemsControl ItemsSource="{Binding CartItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                        <TextBlock Text="{Binding Name}" Width="100"/>
+                                        <TextBlock Text="{Binding Quantity}" Width="30"/>
+                                        <TextBlock Text="{Binding TotalPrice, StringFormat=N2}" Width="60"/>
+                                        <Button  Width="30" HorizontalAlignment="Center" Height="30" Padding="2" ToolTip="Delete" Background="White" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji" Click="RemoveCartItem_Click">
+                                            <materialDesign:PackIcon Kind="Minus" Width="20" Height="20" Foreground="Black"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="Total:" FontWeight="Bold" Margin="0,20,0,5"/>
+                        <TextBlock Text="{Binding DataContext.TotalAmount, 
+                          RelativeSource={RelativeSource AncestorType=Window}, 
+                          StringFormat=₦{0:N2}}" 
+                            FontSize="16" FontWeight="Bold"/>
+
+                        <StackPanel Margin="0,10,0,20" x:Name="btnAddRecipe" Grid.Row="7" HorizontalAlignment="Right">
+                            <Button Height="30" Padding="5" x:Name="UnpaidBtn" HorizontalAlignment="Stretch" ToolTip="Edit" Background="Black" Cursor="Hand" Click="MarkAsUnPaid_Click">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <materialDesign:PackIcon Kind="Close" Width="20" Height="20" Foreground="White" Grid.Column="0" />
+                                    <TextBlock Text="Mark as unpaid" Grid.Column="1" Foreground="White" />
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2">
+                        <Button Content="Order" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="btnCreateOrder_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed" Grid.ColumnSpan="2">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
+                <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
@@ -57,9 +58,9 @@ namespace ESMART.Presentation.Forms.Reports
                     .Where(c => c.Header != null)
                     .Select(c => c.Header.ToString())
                     .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
-                    .ToList();
+                .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames, BookingDataGrid, _hotelSettingsService);
+                var optionsWindow = new ExportDialog(columnNames, BookingDataGrid, _hotelSettingsService, $"Current In House Guests");
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)

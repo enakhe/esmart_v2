@@ -829,12 +829,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             await LoadBankAccount();
             LoadDefaultSetting();
             LoadPaymentMethod();
-
-            if (await CheckIfGuestHasAccount(_booking.Guest))
-            {
-                btnAddRecipe.Visibility = Visibility.Collapsed;
-                this.Height = 550;
-            }
         }
     }
 }

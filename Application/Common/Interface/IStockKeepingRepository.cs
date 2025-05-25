@@ -12,7 +12,8 @@ namespace ESMART.Application.Common.Interface
     {
         Task AddMenuItemAsync(MenuItem menuItem);
         Task<List<MenuItemViewModel>> GetMenuItemsAsync();
-        Task<MenuItemViewModel> GetMenuItemByIdAsync(string id);
+        Task<MenuItem?> GetMenuItemByIdAsync(string id);
+        Task<List<MenuCategoryGroup>> GetGroupedMenuItemsAsync(string category);
         Task UpdateMenuItemAsync(MenuItem menuItem);
         Task DeleteMenuItemAsync(string id);
         Task<List<MenuCategoryViewModel>> GetAllMenuItemCategoriesViewModelAsync();
@@ -20,7 +21,8 @@ namespace ESMART.Application.Common.Interface
         Task AddRecipeToMenuItemAsync(string menuItemId, MenuItemRecipe recipe);
         Task RemoveRecipeFromMenuItemAsync(string recipeId);
         Task<List<MenuItemViewModel>> GetMenuItemsByCategoryIdAsync(string categoryId);
-        Task<List<MenuItemViewModel>> GetMenuItemsByMenuCategoryAsync(string menuCategoryId);
+        Task<List<MenuCategory>> GetMenuCategoriesByServiceAreaAsync(ServiceArea serviceArea);
+        //Task<List<MenuItemViewModel>> GetMenuItemsByMenuCategoryAsync(string menuCategoryId);
         Task AddMenuItemCategoryAsync(MenuCategory menuCategory);
         Task<List<MenuCategory>> GetMenuItemCategoriesAsync();
         Task<MenuCategory> GetMenuItemCategoryByIdAsync(string id);
@@ -46,5 +48,13 @@ namespace ESMART.Application.Common.Interface
         Task<List<MenuItemRecipe>> GetMenuItemRecipesByInventoryItemIdAsync(string inventoryItemId);
         Task<MenuItemRecipe> GetMenuItemRecipeByMenuItemAndInventoryItemIdAsync(string menuItemId, string inventoryItemId);
         Task<List<MenuCategory>> GetAllMenuItemCategoriesAsync();
+
+        Task AddOrderAsync(Order order);
+        Task DeleteOrderAsync(string id);
+        Task UpdateOrderAsync(Order order);
+        Task<Order?> GetOrderByIdAsync(string id);
+        Task<List<Order>> GetAllOrdersAsync();
+        Task<List<Order>> GetOrdersByBookingIdAsync(string bookingId);
+
     }
 }

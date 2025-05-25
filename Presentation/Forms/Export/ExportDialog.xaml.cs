@@ -20,17 +20,21 @@ namespace ESMART.Presentation.Forms.Export
         public bool IsExcel { get; set; }
         public ObservableCollection<ColumnOption> ColumnOptions { get; set; }
         private readonly DataGrid _dataGrid;
+        private string _title;
         private readonly IHotelSettingsService _hotelSettingsService;
 
-        public ExportDialog(IEnumerable<string> columnNames, DataGrid dataGrid, IHotelSettingsService hotelSettingsService)
+        public ExportDialog(IEnumerable<string> columnNames, DataGrid dataGrid, IHotelSettingsService hotelSettingsService, string title)
         {
             InitializeComponent();
+
             ColumnOptions = [.. columnNames.Select(c => new ColumnOption { ColumnName = c, IsSelected = true })];
             _dataGrid = dataGrid;
             _hotelSettingsService = hotelSettingsService;
+            _title = title;
             DataContext = this;
 
             Loaded += DisableMinimizeButton;
+            txtFileName.Text = _title;
         }
 
         public ExportResult GetResult()
