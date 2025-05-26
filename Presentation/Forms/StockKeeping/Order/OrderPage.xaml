@@ -7,7 +7,7 @@
       xmlns:local="clr-namespace:ESMART.Presentation.Forms.StockKeeping.Order"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Order Page">
+      Title="Order Page" Loaded="Page_Loaded">
 
     <Page.Resources>
         <Style x:Key="ActionBarButtonStyle" TargetType="Button">
@@ -121,20 +121,40 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
                                 <Button Content="Add Item" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="70" Click="AddOrderButton_Click" />
-                                <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" />
+                                <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="ExportButton_Click" />
                             </StackPanel>
 
                         </Grid>
 
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                                <DataGrid x:Name="InventoryItemDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
+                                <DataGrid x:Name="OrderListView" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" RowDetailsVisibilityMode="VisibleWhenSelected">
                                     <DataGrid.Columns>
-                                        <DataGridTemplateColumn Header="Name" Width="2*">
+                                        <DataGridTemplateColumn Header="Guest" Width="2*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding Guest}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+
+                                        <DataGridTemplateColumn Header="Room" Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                        <TextBlock Text="{Binding Room, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+
+                                        <DataGridTemplateColumn Header="Total Amount" Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                        <TextBlock Text="{Binding TotalAmount}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -144,53 +164,13 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Quantity, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding Quantity}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Measurement" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding UnitOfMeasure}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Reorder Level" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding ReorderLevel}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Reorder Quantity" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding ReorderQuantity}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Is Available" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding IsActive}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Date Added" Width="1.5*">
+                                        <DataGridTemplateColumn Header="Created At" Width="1.5*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -199,33 +179,21 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Date Updated" Width="1.5*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding UpdatedAt, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Operation" Width="2*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}">
-                                                            <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
-                                                        </Button>
-
-                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji">
-                                                            <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
-                                                        </Button>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
                                     </DataGrid.Columns>
+
+                                    <DataGrid.RowDetailsTemplate>
+                                        <DataTemplate>
+                                            <DataGrid ItemsSource="{Binding OrderItems}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Margin="20,5,20,10">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Order Id" Binding="{Binding OrderId}" />
+                                                    <DataGridTextColumn Header="Menu Name" Binding="{Binding MenuItemName}" />
+                                                    <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" />
+                                                    <DataGridTextColumn Header="Unit Price" Binding="{Binding UnitPrice, StringFormat=N2}" />
+                                                    <DataGridTextColumn Header="Total Price" Binding="{Binding TotalPrice, StringFormat=N2}" />
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </DataTemplate>
+                                    </DataGrid.RowDetailsTemplate>
                                 </DataGrid>
                             </Border>
                         </ScrollViewer>

@@ -14,6 +14,7 @@ using Org.BouncyCastle.Crypto.Modes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +22,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -46,6 +48,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             _transactionRepository = transactionRepository;
 
             _viewModel = new OrderViewModel();
+            Loaded += DisableMinimizeButton;
             this.DataContext = _viewModel;
             InitializeComponent();
         }
@@ -283,7 +286,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                     GuestId = guest.Id,
                     Amount = amount,
                     TransactionType = TransactionType.Debit,
-                    Description = "Booking Payment",
+                    Description = "Order Payment",
                     Date = DateTime.Now,
                     ApplicationUserId = AuthSession.CurrentUser?.Id
                 };
@@ -317,7 +320,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             }
         }
 
-        private async Task CreateTransactionItem(string guestId, bool isUnPaid)
+        private async Task CreateTransactionItem(string guestId, bool isUnPaid, string serviceId)
         {
             try
             {
@@ -333,7 +336,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                         DateAdded = DateTime.Now,
                         BankAccount = "",
                         Category = Category.FoodAndBeverage,
-                        ServiceId = transaction.InvoiceNumber,
+                        ServiceId = serviceId,
                         Type = TransactionType.Charge,
                         Status = TransactionStatus.Unpaid,
                         Discount = 0,
@@ -369,7 +372,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                     CreatedAt = DateTime.UtcNow,
                     OrderItems = _viewModel.CartItems.Select(ci => new OrderItem
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        OrderId = $"Or{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}",
                         MenuItemId = ci.Id,
                         Quantity = ci.Quantity,
                         UnitPrice = ci.Price
@@ -394,7 +397,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                     }
                 }
 
-                await CreateTransactionItem(guest.Id, _isUnpaid);
+                await CreateTransactionItem(guest.Id, _isUnpaid, order.OrderItems.First().OrderId);
 
                 MessageBox.Show("Order created successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -446,6 +449,22 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                 MessageBox.Show("Please select a booking.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
+
+        private void DisableMinimizeButton(object sender, RoutedEventArgs e)
+        {
+            var hwnd = new WindowInteropHelper(this).Handle;
+            int currentStyle = GetWindowLong(hwnd, GWL_STYLE);
+            SetWindowLong(hwnd, GWL_STYLE, currentStyle & ~WS_MINIMIZEBOX);
+        }
+
+        private const int GWL_STYLE = -16;
+        private const int WS_MINIMIZEBOX = 0x00020000;
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
     }
     public class BookingDisplayItem
     {

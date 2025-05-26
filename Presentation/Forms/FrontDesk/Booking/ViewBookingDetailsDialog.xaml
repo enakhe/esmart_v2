@@ -379,11 +379,11 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Amount" Width="*">
+                                            <DataGridTemplateColumn Header="Bill Post" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding TotalAmount, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            <TextBlock Text="{Binding BillPost, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -409,11 +409,11 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Bank Account" Width="*">
+                                            <DataGridTemplateColumn Header="Account" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding BankAccount}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            <TextBlock Text="{Binding Account}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -439,11 +439,11 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Date Added" Width="*">
+                                            <DataGridTemplateColumn Header="Date" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding DateAdded, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            <TextBlock Text="{Binding Date, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>

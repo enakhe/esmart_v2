@@ -140,7 +140,7 @@
                 <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
                     <DataGrid x:Name="TransactionItemDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="1300">
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="Service Id" Width="0.7*">
+                            <DataGridTemplateColumn Header="Service Id" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -150,11 +150,11 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Amount" Width="0.7*">
+                            <DataGridTemplateColumn Header="Bill Post" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                            <TextBlock Text="{Binding Amount}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            <TextBlock Text="{Binding BillPost, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -170,7 +170,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Type" Width="0.6*">
+                            <DataGridTemplateColumn Header="Type" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -180,11 +180,11 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Bank Account" Width="*">
+                            <DataGridTemplateColumn Header="Account" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                            <TextBlock Text="{Binding BankAccount}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            <TextBlock Text="{Binding Account}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -203,18 +203,18 @@
                             <DataGridTemplateColumn Header="Status" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Border CornerRadius="5" Height="23" Width="65" Padding="10,3" Background="{Binding Status, Converter={StaticResource TransactionStatusToColor}}">
+                                        <Border CornerRadius="5" Height="23" HorizontalAlignment="Stretch" Padding="10,3" Background="{Binding Status, Converter={StaticResource TransactionStatusToColor}}">
                                             <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Date Added" Width="*">
+                            <DataGridTemplateColumn Header="Date" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                            <TextBlock Text="{Binding DateAdded, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            <TextBlock Text="{Binding Date, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

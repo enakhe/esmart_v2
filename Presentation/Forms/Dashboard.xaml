@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
 
         <!-- Sidebar -->
-        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Background="#1a237e" Width="200" x:Name="sideBar">
+        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Background="#1a237e" Width="230" x:Name="sideBar">
             <Grid.RowDefinitions>
                 <RowDefinition />
             </Grid.RowDefinitions>

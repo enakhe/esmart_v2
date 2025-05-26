@@ -53,7 +53,7 @@ namespace ESMART.Application.Common.Interface
         Task DeleteOrderAsync(string id);
         Task UpdateOrderAsync(Order order);
         Task<Order?> GetOrderByIdAsync(string id);
-        Task<List<Order>> GetAllOrdersAsync();
+        Task<List<MenuOrderViewModel>> GetAllOrdersAsync();
         Task<List<Order>> GetOrdersByBookingIdAsync(string bookingId);
 
     }

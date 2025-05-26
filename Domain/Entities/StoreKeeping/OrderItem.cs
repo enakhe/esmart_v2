@@ -21,4 +21,14 @@ namespace ESMART.Domain.Entities.StoreKeeping
         public decimal UnitPrice { get; set; }
     }
 
+    public class OrderItemViewModel
+    {
+        public string Id { get; set; }
+        public string OrderId { get; set; }
+        public string MenuItemId { get; set; }
+        public string MenuItemName { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TotalPrice => Quantity * UnitPrice;
+    }
 }

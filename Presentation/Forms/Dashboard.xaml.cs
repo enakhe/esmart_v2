@@ -223,8 +223,8 @@ namespace ESMART.Presentation.Forms
 
         private void OpenSidebar_Click(object sender, RoutedEventArgs e)
         {
-            if (this.sideBar.Width < 200)
-                this.sideBar.Width = 200;
+            if (this.sideBar.Width < 230)
+                this.sideBar.Width = 230;
             else
                 this.sideBar.Width = 50;
         }
