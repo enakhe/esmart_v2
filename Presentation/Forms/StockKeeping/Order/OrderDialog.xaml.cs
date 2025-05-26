@@ -372,7 +372,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                     CreatedAt = DateTime.UtcNow,
                     OrderItems = _viewModel.CartItems.Select(ci => new OrderItem
                     {
-                        OrderId = $"Or{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}",
+                        OrderId = $"OR{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}",
                         MenuItemId = ci.Id,
                         Quantity = ci.Quantity,
                         UnitPrice = ci.Price
@@ -397,8 +397,8 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                     }
                 }
 
-                await CreateTransactionItem(guest.Id, _isUnpaid, order.OrderItems.First().OrderId);
-
+                await CreateTransactionItem(guest.Id, _isUnpaid, $"OR{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}");
+                this.DialogResult = true;
                 MessageBox.Show("Order created successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -437,7 +437,23 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
 
                 if (guest != null && _viewModel.CartItems.Any())
                 {
-                    await CreateOrder(selectedBooking.BookingId, guest);
+                    var guestAccount = await _guestRepository.GetGuestAccountByGuestIdAsync(guest.Id);
+                    if (guestAccount != null)
+                    {
+                        if (guestAccount.AllowBarAndRes)
+                        {
+                            await CreateOrder(selectedBooking.BookingId, guest);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Guest account is either closed or does not allow bar and restaurant charges.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                    else
+                    {
+                        await CreateOrder(selectedBooking.BookingId, guest);
+                    }
+                    
                 }
                 else
                 {

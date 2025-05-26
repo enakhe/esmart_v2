@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Fund Account" Height="300" Width="400" Loaded="Window_Loaded" Icon="/Forms/FrontDesk/Guest/logo.png">
+        Title="Fund Account" Height="340" Width="400" Loaded="Window_Loaded" Icon="/Forms/FrontDesk/Guest/logo.png">
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -18,6 +18,7 @@
                 <TextBlock Text="Fund Account" FontSize="25" FontWeight="Bold" Margin="0,10" />
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
@@ -33,7 +34,19 @@
                         <TextBox x:Name="txtAmount" Padding="2,5,0,5" TextChanged="DecimalInput_TextChanged" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="5" Margin="0,0,0,20">
+                    <StackPanel Grid.Row="2" Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <CheckBox Content="Allow Restaurant and Bar" Name="chkResBar" IsChecked="True" Grid.Column="0" />
+                            <CheckBox Content="Allow Laundry" IsChecked="True" Name="chkLaundry" Grid.Column="1" HorizontalAlignment="Right" />
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="3" Margin="0,0,0,20">
                         <Grid Margin="1,0,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -59,7 +72,7 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">
-                                <Button Content="Fund" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="FundAccount_Click">
+                                <Button Content="Save" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="FundAccount_Click">
                                     <Button.Style>
                                         <Style TargetType="Button">
                                             <Setter Property="Template">

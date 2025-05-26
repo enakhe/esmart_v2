@@ -763,6 +763,87 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             }
         }
 
+        // get orders by search
+        public async Task<List<MenuOrderViewModel>> GetOrdersBySearchAsync(string searchTerm)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.Orders
+                    .Include(o => o.OrderItems)
+                    .Include(o => o.Booking)
+                    .Include(o => o.Booking.Guest)
+                    .Include(o => o.Booking.Room)
+                    .Where(o => (o.Booking.Guest.FirstName+o.Booking.Guest.LastName+o.Booking.Guest.MiddleName).Contains(searchTerm) ||
+                                o.Booking.Room.Number.Contains(searchTerm) ||
+                                o.OrderItems.Any(oi => oi.MenuItem.Name.Contains(searchTerm)))
+                    .Select(o => new MenuOrderViewModel
+                    {
+                        Id = o.Id,
+                        BookingId = o.BookingId,
+                        Guest = o.Booking.Guest.FullName,
+                        Room = o.Booking.Room.Number,
+                        TotalAmount = o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity).ToString("N2"),
+                        Quantity = o.OrderItems.Sum(oi => oi.Quantity).ToString(),
+                        OrderItems = o.OrderItems.Select(oi => new OrderItemViewModel
+                        {
+                            Id = oi.Id,
+                            OrderId = oi.OrderId,
+                            MenuItemId = oi.MenuItemId,
+                            MenuItemName = oi.MenuItem.Name,
+                            Quantity = oi.Quantity,
+                            UnitPrice = oi.UnitPrice,
+                        }).ToList(),
+                        CreatedAt = o.CreatedAt
+                    })
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while searching for orders.", ex);
+            }
+        }
+
+        // filter our order bt from and to date
+        public async Task<List<MenuOrderViewModel>> GetOrdersByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.Orders
+                    .Include(o => o.OrderItems)
+                    .Include(o => o.Booking)
+                    .Include(o => o.Booking.Guest)
+                    .Include(o => o.Booking.Room)
+                    .Where(o => o.CreatedAt >= fromDate && o.CreatedAt <= toDate)
+                    .Select(o => new MenuOrderViewModel
+                    {
+                        Id = o.Id,
+                        BookingId = o.BookingId,
+                        Guest = o.Booking.Guest.FullName,
+                        Room = o.Booking.Room.Number,
+                        TotalAmount = o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity).ToString("N2"),
+                        Quantity = o.OrderItems.Sum(oi => oi.Quantity).ToString(),
+                        OrderItems = o.OrderItems.Select(oi => new OrderItemViewModel
+                        {
+                            Id = oi.Id,
+                            OrderId = oi.OrderId,
+                            MenuItemId = oi.MenuItemId,
+                            MenuItemName = oi.MenuItem.Name,
+                            Quantity = oi.Quantity,
+                            UnitPrice = oi.UnitPrice,
+                        }).ToList(),
+                        CreatedAt = o.CreatedAt
+                    })
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving orders by date range.", ex);
+            }
+        }
 
 
         // Seed default menuitem categories to the database

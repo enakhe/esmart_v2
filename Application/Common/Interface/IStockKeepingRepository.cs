@@ -55,6 +55,8 @@ namespace ESMART.Application.Common.Interface
         Task<Order?> GetOrderByIdAsync(string id);
         Task<List<MenuOrderViewModel>> GetAllOrdersAsync();
         Task<List<Order>> GetOrdersByBookingIdAsync(string bookingId);
+        Task<List<MenuOrderViewModel>> GetOrdersBySearchAsync(string searchTerm);
+        Task<List<MenuOrderViewModel>> GetOrdersByDateRangeAsync(DateTime fromDate, DateTime toDate);
 
     }
 }

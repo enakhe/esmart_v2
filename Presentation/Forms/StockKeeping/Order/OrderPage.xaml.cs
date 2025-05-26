@@ -37,6 +37,9 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             _transactionRepository = transactionRepository;
             _guestRepository = guestRepository;
             InitializeComponent();
+
+            txtFrom.SelectedDate = DateTime.Now.AddDays(-7);
+            txtTo.SelectedDate = DateTime.Now;
         }
 
         private async Task LoadOrder()
@@ -44,7 +47,10 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var orders = await _stockKeepingRepository.GetAllOrdersAsync();
+                var from = txtFrom.SelectedDate ?? DateTime.Now.AddDays(-7);
+                var to = txtTo.SelectedDate ?? DateTime.Now;
+
+                var orders = await _stockKeepingRepository.GetOrdersByDateRangeAsync(from, to);
                 OrderListView.ItemsSource = orders;
 
                 txtMenuItemCount.Text = orders.Count.ToString();
@@ -60,14 +66,17 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
         }
 
         // Add order
-        private void AddOrderButton_Click(object sender, RoutedEventArgs e)
+        private async void AddOrderButton_Click(object sender, RoutedEventArgs e)
         {
             OrderDialog orderDialog = new OrderDialog(_stockKeepingRepository, _bookingRepository, _guestRepository, _transactionRepository)
             {
                 Owner = Window.GetWindow(this)
             };
-            orderDialog.ShowDialog();
-            MessageBox.Show("Add Order button clicked!");
+
+            if(orderDialog.ShowDialog() == true)
+            {
+                await LoadOrder();
+            }
         }
 
         private async void ExportButton_Click(object sender, RoutedEventArgs e)
@@ -119,6 +128,46 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadOrder();
+        }
+
+        private async void txtSearchBuilding_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            bool isNull = string.IsNullOrWhiteSpace(txtSearchBuilding.Text);
+            if (!isNull)
+            {
+                var searchTerm = txtSearchBuilding.Text.ToLower();
+                var filteredOrders = await _stockKeepingRepository.GetOrdersBySearchAsync(searchTerm);
+                if (filteredOrders == null || filteredOrders.Count == 0)
+                {
+                    await LoadOrder();
+                }
+                else
+                {
+                    txtMenuItemCount.Text = filteredOrders.Count.ToString();
+                }
+                OrderListView.ItemsSource = filteredOrders;
+            }
+            else
+            {
+                await LoadOrder();
+            }
+        }
+
+        private async void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                await LoadOrder();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while filtering orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

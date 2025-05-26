@@ -41,6 +41,40 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             _formatTimer.Tick += FormatTimer_Tick;
 
             _guest = guest;
+
+            txtAmount.Text = "0.00"; // Initialize with a default value
+        }
+
+        private async Task LoadGuestAccount()
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var guestAccount = await _guestRepository.GetGuestAccountByGuestIdAsync(_guest.Id);
+                if (guestAccount != null)
+                {
+                    txtAmount.Text = guestAccount.FundedBalance.ToString("N", CultureInfo.InvariantCulture);
+                    txtAmount.CaretIndex = txtAmount.Text.Length; // Set caret to the end of the text
+                    txtAmount.SelectionStart = txtAmount.Text.Length; // Ensure caret is at the end
+                    txtAmount.SelectionLength = 0; // Clear any selection
+
+                    chkResBar.IsChecked = guestAccount.AllowBarAndRes;
+                    chkLaundry.IsChecked = guestAccount.AllowLaundry;
+
+                }
+                else
+                {
+                    txtAmount.Text = "0.00"; // Default value if no account found
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while loading the guest account: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void DecimalInput_TextChanged(object sender, TextChangedEventArgs e)
@@ -92,28 +126,49 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
                 LoaderOverlay.Visibility = Visibility.Visible;
 
-                var guestAccount = new GuestAccounts
+                // save the guest account if the amount is higher then current amount and alo create one if the guest has no account
+                var existingAccount = await _guestRepository.GetGuestAccountByGuestIdAsync(_guest.Id);
+
+                // Create or update the guest account
+                if (existingAccount != null)
                 {
-                    GuestId = _guest.Id,
-                    FundedBalance = amount,
-                    LastFunded = DateTime.Now
-                };
+                    if (amount > existingAccount.FundedBalance)
+                    {
+                        existingAccount.FundedBalance += amount;
+                        existingAccount.LastFunded = DateTime.Now;
+                    }
 
-                await _guestRepository.FundAccountAsync(guestAccount);
-
-                var guestTransaction = new GuestTransaction
+                    existingAccount.AllowBarAndRes = chkResBar.IsChecked ?? true;
+                    existingAccount.AllowLaundry = chkLaundry.IsChecked ?? true;
+                    await _guestRepository.UpdateGuestAccountAsync(existingAccount);
+                }
+                else
                 {
-                    GuestId = _guest.Id,
-                    Amount = amount,
-                    TransactionType = TransactionType.Credit,
-                    Description = $"Account funded with ₦{amount}",
-                    Date = DateTime.Now
-                };
+                    existingAccount = new GuestAccounts
+                    {
+                        GuestId = _guest.Id,
+                        FundedBalance = amount,
+                        LastFunded = DateTime.Now,
+                        AllowBarAndRes = chkResBar.IsChecked ?? true,
+                        AllowLaundry = chkLaundry.IsChecked ?? true
+                    };
 
-                await _guestRepository.AddGuestTransactionAsync(guestTransaction);
+                    await _guestRepository.FundAccountAsync(existingAccount);
+
+                    var guestTransaction = new GuestTransaction
+                    {
+                        GuestId = _guest.Id,
+                        Amount = amount,
+                        TransactionType = TransactionType.Credit,
+                        Description = $"Account funded with ₦{amount:N2}",
+                        Date = DateTime.Now
+                    };
+
+                    await _guestRepository.AddGuestTransactionAsync(guestTransaction);
+                }
 
                 LoaderOverlay.Visibility = Visibility.Collapsed;
-                MessageBox.Show("Account funded successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Account saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.DialogResult = true;
             }
             catch (Exception ex)
@@ -128,9 +183,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             this.DialogResult = false;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             txtGuest.Text = _guest.FullName;
+            await LoadGuestAccount();
         }
     }
 }

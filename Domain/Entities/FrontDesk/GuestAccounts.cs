@@ -13,14 +13,17 @@ namespace ESMART.Domain.Entities.FrontDesk
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string GuestId { get; set; }
-        public decimal FundedBalance { get; set; } = 0;     // Always zero
-        public decimal TotalCharges { get; set; } = 0;      // All costs tracked
-        public decimal TopUps { get; set; } = 0;            // None
-        public decimal DirectPayments { get; set; } = 0;    // Paid at checkout
+        public decimal FundedBalance { get; set; }
+        public decimal TotalCharges { get; set; }
+        public decimal TopUps { get; set; }
+        public decimal DirectPayments { get; set; }
         public decimal TotalPayments => TopUps + DirectPayments;
         public decimal OutstandingBalance => TotalCharges - TotalPayments;
         public bool IsClosed { get; set; } = false;
         public DateTime LastFunded { get; set; }
+
+        public bool AllowBarAndRes { get; set; } = true;
+        public bool AllowLaundry { get; set; } = true;
 
         public virtual Guest Guest { get; set; }
     }

@@ -219,19 +219,8 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var guestAccount = await context.GuestAccounts.FirstOrDefaultAsync(c => c.GuestId == guestAccounts.GuestId);
 
-                if (guestAccount != null)
-                {
-                    guestAccount.FundedBalance += guestAccounts.FundedBalance;
-                    guestAccount.LastFunded = DateTime.Now;
-                    context.Entry(guestAccount).State = EntityState.Modified;
-                }
-                else
-                {
-                    await context.GuestAccounts.AddAsync(guestAccounts);
-                }
-
+                await context.GuestAccounts.AddAsync(guestAccounts);
                 await context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -279,7 +268,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var guestAccount = await context.GuestAccounts.FirstOrDefaultAsync(c => c.GuestId == guestId);
+                var guestAccount = await context.GuestAccounts.FirstOrDefaultAsync(c => c.GuestId == guestId && !c.IsClosed);
                 return guestAccount;
             }
             catch (Exception ex)
