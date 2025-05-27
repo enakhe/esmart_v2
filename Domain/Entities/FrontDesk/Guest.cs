@@ -12,6 +12,7 @@ namespace ESMART.Domain.Entities.FrontDesk
             this.Bookings = new HashSet<Booking>();
             this.GuestTransactions = new HashSet<Entities.FrontDesk.GuestTransaction>();
             this.Reservation = new HashSet<Reservation>();
+            this.GuestAccount = new HashSet<GuestAccount>();
         }
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -40,6 +41,7 @@ namespace ESMART.Domain.Entities.FrontDesk
 
         public virtual ApplicationUser ApplicationUser { get; set; }
         public GuestIdentity GuestIdentity { get; set; }
+        public ICollection<GuestAccount> GuestAccount { get; set; }
         public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }
         public ICollection<Booking> Bookings { get; set; }
         public ICollection<Reservation> Reservation { get; set; }

@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using ESMART.Application.Common.Interface;
+﻿using ESMART.Application.Common.Interface;
 using ESMART.Presentation.Utils;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
@@ -20,16 +18,20 @@ namespace ESMART.Presentation.Forms.Export
         public bool IsExcel { get; set; }
         public ObservableCollection<ColumnOption> ColumnOptions { get; set; }
         private readonly DataGrid _dataGrid;
+        private readonly System.Printing.PageOrientation _orientation;
         private string _title;
+        private readonly string? _extraTable;
         private readonly IHotelSettingsService _hotelSettingsService;
 
-        public ExportDialog(IEnumerable<string> columnNames, DataGrid dataGrid, IHotelSettingsService hotelSettingsService, string title)
+        public ExportDialog(IEnumerable<string> columnNames, DataGrid dataGrid, IHotelSettingsService hotelSettingsService, string title, string? extraTable = null, System.Printing.PageOrientation orientation = default)
         {
             InitializeComponent();
 
             ColumnOptions = [.. columnNames.Select(c => new ColumnOption { ColumnName = c, IsSelected = true })];
             _dataGrid = dataGrid;
+            _extraTable = extraTable;
             _hotelSettingsService = hotelSettingsService;
+            _orientation = orientation;
             _title = title;
             DataContext = this;
 
@@ -41,7 +43,7 @@ namespace ESMART.Presentation.Forms.Export
         {
             return new ExportResult
             {
-                SelectedColumns = [.. ColumnOptions.Where(c => c.IsSelected).Select(c => c.ColumnName.Replace(" ", ""))],
+                SelectedColumns = [.. ColumnOptions.Where(c => (bool)c.IsSelected!).Select(c => c.ColumnName?.Replace(" ", ""))],
                 ExportFormat = IsPdf ? "PDF" : "Excel",
                 FileName = txtFileName.Text.Trim()
             };
@@ -59,7 +61,7 @@ namespace ESMART.Presentation.Forms.Export
                 {
                     var printer = new ReceiptHelper();
 
-                    var doc = printer.GeneratePreviewFlowDocument(result, hotel, _dataGrid, txtFileName.Text);
+                    var doc = printer.GeneratePreviewFlowDocument(result, hotel, _dataGrid, txtFileName.Text, _extraTable);
                     docViewer.Document = doc;
 
                     return doc;
@@ -90,7 +92,7 @@ namespace ESMART.Presentation.Forms.Export
             }
 
             var doc = await LoadPreview();
-            PrintAndSave(doc, txtFileName.Text);
+            PrintAndSave(doc, txtFileName.Text, _orientation);
 
             DialogResult = true;
         }
@@ -126,9 +128,9 @@ namespace ESMART.Presentation.Forms.Export
             await LoadPreview();
         }
 
-        public void PrintAndSave(FlowDocument document, string fileName)
+        public void PrintAndSave(FlowDocument document, string fileName, System.Printing.PageOrientation pageOrientation)
         {
-            ReceiptHelper.PrintFlowDocument(document);
+            ReceiptHelper.PrintFlowDocument(document, pageOrientation);
             ReceiptHelper.SaveFlowDocumentToFile(document, fileName);
         }
 
@@ -136,14 +138,14 @@ namespace ESMART.Presentation.Forms.Export
 
     public class ColumnOption
     {
-        public string ColumnName { get; set; }
-        public bool IsSelected { get; set; } = true;
+        public string? ColumnName { get; set; }
+        public bool? IsSelected { get; set; } = true;
     }
 
     public class ExportResult
     {
-        public List<string> SelectedColumns { get; set; }
-        public string ExportFormat { get; set; }
-        public string FileName { get; set; }
+        public List<string>? SelectedColumns { get; set; }
+        public string? ExportFormat { get; set; }
+        public string? FileName { get; set; }
     }
 }

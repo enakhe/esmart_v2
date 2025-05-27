@@ -1,7 +1,6 @@
-﻿#nullable disable
-
-using ESMART.Application.Common.Interface;
+﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.ViewModels.Transaction;
+using ESMART.Presentation.Forms.Receipt;
 using ESMART.Presentation.Utils;
 using System;
 using System.Collections.Generic;
@@ -30,32 +29,57 @@ namespace ESMART.Presentation.Forms.Export
         public bool IsPdf { get; set; } = true;
         public bool IsExcel { get; set; }
         public ObservableCollection<ColumnOption> ColumnOptions { get; set; }
-        public ObservableCollection<ColumnOption> ColumnOptions2 { get; set; }
 
         private readonly DataGrid _dataGrid;
+        private readonly DataGrid? _serviceTable;
+        private readonly DataGrid? _paymentTable;
+        private readonly string? _extraTable;
+        private readonly string? _title;
+        private readonly decimal? _totalAmount;
+        private readonly decimal? _totalServiceCharge;
+        private readonly decimal? _totalVAT;
+        private readonly decimal? _totalService;
+        private readonly decimal? _totalDiscount;
+        private readonly decimal? _totalTAmount;
+        private readonly decimal? _amountPaid;
+        private readonly List<string>? _nestedSelectedColumns;
         private readonly Domain.Entities.FrontDesk.Booking _booking;
-        private readonly List<TransactionItemViewModel> _transactionItemViewModels;
+        private readonly ReceiptExport? _receiptExport;
+        private readonly System.Printing.PageOrientation _pageOrientation;
         private readonly IHotelSettingsService _hotelSettingsService;
 
-        public ExportBillDialog(IEnumerable<string> columnNames, DataGrid dataGrid, IHotelSettingsService hotelSettingsService, Domain.Entities.FrontDesk.Booking booking, List<TransactionItemViewModel> transactionItemViewModels)
+        public ExportBillDialog(IEnumerable<string> columnNames, DataGrid dataGrid, IHotelSettingsService hotelSettingsService, Domain.Entities.FrontDesk.Booking booking, string? extraTable, List<string>? nestedSelectedColumns = null, string? title = null, decimal? totalAmount = null, ReceiptExport? receiptExport = null, System.Printing.PageOrientation pageOrientation = default, decimal? totalVAT = null, decimal? totalService = null, decimal? totalDiscount = null, decimal? totalTAmount = null, DataGrid? serviceTable = null, decimal? totalServiceCharge = null, decimal? amountPaid = null, DataGrid? paymentTable = null)
         {
             InitializeComponent();
 
             ColumnOptions = [.. columnNames.Select(c => new ColumnOption { ColumnName = c, IsSelected = true })];
             _dataGrid = dataGrid;
             _booking = booking;
+            _extraTable = extraTable;
+            _totalAmount = totalAmount;
+            _title = title;
+            _pageOrientation = pageOrientation;
+            _totalVAT = totalVAT;
+            _receiptExport = receiptExport;
+            _nestedSelectedColumns = nestedSelectedColumns;
             _hotelSettingsService = hotelSettingsService;
-            _transactionItemViewModels = transactionItemViewModels;
             DataContext = this;
 
             Loaded += DisableMinimizeButton;
+            _totalService = totalService;
+            _totalDiscount = totalDiscount;
+            _totalTAmount = totalTAmount;
+            _serviceTable = serviceTable;
+            _totalServiceCharge = totalServiceCharge;
+            _amountPaid = amountPaid;
+            _paymentTable = paymentTable;
         }
 
         public ExportResult GetResult()
         {
             return new ExportResult
             {
-                SelectedColumns = [.. ColumnOptions.Where(c => c.IsSelected).Select(c => c.ColumnName.Replace(" ", ""))],
+                SelectedColumns = [.. ColumnOptions.Where(c => (bool)c.IsSelected!).Select(c => c.ColumnName?.Replace(" ", ""))],
                 ExportFormat = IsPdf ? "PDF" : "Excel",
                 FileName = txtFileName.Text.Trim()
             };
@@ -73,7 +97,7 @@ namespace ESMART.Presentation.Forms.Export
                 {
                     var printer = new ReceiptHelper();
 
-                    var doc = printer.GenerateBillFlowDoc(result, hotel, _booking, _dataGrid, _transactionItemViewModels);
+                    var doc = printer.GenerateBillFlowDoc(result, hotel, _booking, _dataGrid, _extraTable, _nestedSelectedColumns, _title, _totalAmount, _totalVAT, _totalDiscount, _totalService, _totalTAmount, _totalServiceCharge, _amountPaid, _receiptExport, _serviceTable, _paymentTable);
                     docViewer.Document = doc;
 
                     return doc;
@@ -104,7 +128,7 @@ namespace ESMART.Presentation.Forms.Export
             }
 
             var doc = await LoadPreview();
-            PrintAndSave(doc, txtFileName.Text);
+            PrintAndSave(doc, txtFileName.Text, _pageOrientation);
 
             DialogResult = true;
         }
@@ -140,18 +164,18 @@ namespace ESMART.Presentation.Forms.Export
             await LoadPreview();
         }
 
-        public void PrintAndSave(FlowDocument document, string fileName)
+        public void PrintAndSave(FlowDocument document, string fileName, System.Printing.PageOrientation orientation)
         {
-            ReceiptHelper.PrintFlowDocument(document);
+            ReceiptHelper.PrintFlowDocument(document, orientation);
             ReceiptHelper.SaveFlowDocumentToFile(document, fileName);
         }
     }
 
     public class ExportResult2
     {
-        public List<string> SelectedColumns { get; set; }
-        public List<string> SelectedColumns2 { get; set; }
-        public string ExportFormat { get; set; }
-        public string FileName { get; set; }
+        public List<string>? SelectedColumns { get; set; }
+        public List<string>? SelectedColumns2 { get; set; }
+        public string? ExportFormat { get; set; }
+        public string? FileName { get; set; }
     }
 }

@@ -56,7 +56,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 if (hotel != null)
                 {
-                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, _booking.AccountNumber, _guest, "Booking", verificationCode.Code, _booking.Receivables, _booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
+                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, _booking.AccountNumber, _guest, "Booking", verificationCode.Code, _booking.Balance, _booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -65,7 +65,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                         if (verifyPaymentWindow.ShowDialog() == true)
                         {
                             _booking.Status = Domain.Enum.BookingStatus.Completed;
-                            _booking.Receivables = 0;
+                            _booking.Balance = 0;
                             await _bookingRepository.AddBooking(_booking);
 
                             _transaction.BookingId = _booking.Id;

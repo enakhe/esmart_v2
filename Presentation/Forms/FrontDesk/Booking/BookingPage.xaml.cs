@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.ViewModels.FrontDesk;
@@ -325,12 +326,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                             if (totalAmount > 0)
                             {
-                                var checkOutBooking = new CheckOutBooking(booking, booking.Guest, totalAmount, _reservationRepository, _transactionRepository, _hotelSettingsService, _verificationCodeService, _applicationUserRoleRepository, _bookingRepository, _guestRepository);
+                                var checkOutBooking = new CheckOutBooking(booking, booking.Guest, totalAmount, _reservationRepository, _transactionRepository, _hotelSettingsService, _verificationCodeService, _applicationUserRoleRepository, _bookingRepository, _guestRepository, _roomRepository);
                                 if (checkOutBooking.ShowDialog() == true)
                                 {
                                     MessageBox.Show("Successfully checkout guest", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                                    await LoadBooking();
                                 }
+                                
+                                await LoadBooking();
                             }
                             else
                             {
@@ -493,7 +495,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         booking.Guest.FullName,
                         "Booking",
                         verificationCode.Code,
-                        booking.Receivables,
+                        booking.Balance,
                         booking.PaymentMethod.ToString(),
                         activeUser.FullName!,
                         activeUser.PhoneNumber!
@@ -509,17 +511,17 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             _bookingRepository,
                             _transactionRepository,
                             booking.BookingId,
-                            booking.Receivables,
+                            booking.Balance,
                             _applicationUserRoleRepository
                         );
 
                         if (verifyPaymentWindow.ShowDialog() == true)
                         {
                             booking.Status = Domain.Enum.BookingStatus.Completed;
-                            booking.Receivables = 0;
+                            booking.Balance = 0;
                             await _bookingRepository.UpdateBooking(booking);
 
-                            var transaction = await _transactionRepository.GetUnpaidTransactionItemsByServiceIdAsync(booking.BookingId, booking.GuestId, booking.Receivables);
+                            var transaction = await _transactionRepository.GetUnpaidTransactionItemsByServiceIdAsync(booking.BookingId, booking.GuestId, booking.Balance);
 
                             if(transaction != null)
                             {
@@ -551,6 +553,35 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadBooking();
+        }
+
+        private async void txtSearchBuilding_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            bool isNull = Helper.AreAnyNullOrEmpty(txtSearchBuilding.Text);
+            if (isNull)
+            {
+                await LoadBooking();
+            }
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            bool isNull = Helper.AreAnyNullOrEmpty(txtSearchBuilding.Text);
+            if (isNull)
+            {
+                await LoadBooking();
+            }
+            else
+            {
+                var searchText = txtSearchBuilding.Text.ToLower();
+                var filteredBookings = await _bookingRepository.SearchBooking(searchText);
+
+                if (filteredBookings == null || filteredBookings.Count == 0)
+                {
+                    await LoadBooking();
+                }
+                BookingDataGrid.ItemsSource = filteredBookings;
+            }
         }
     }
 }

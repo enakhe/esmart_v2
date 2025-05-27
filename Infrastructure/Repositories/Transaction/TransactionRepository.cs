@@ -46,23 +46,29 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                                           Invoice = t.InvoiceNumber,
                                           Description = t.Description,
                                           IssuedBy = t.ApplicationUser.FullName,
-                                          TransactionItems = t.TransactionItems.Select(ti => new TransactionItemViewModel
-                                          {
-                                              Id = ti.Id,
-                                              ServiceId = ti.ServiceId,
-                                              Amount = ti.Amount.ToString("N2"),
-                                              Tax = ti.TaxAmount,
-                                              Service = ti.ServiceCharge,
-                                              Discount = ti.Discount,
-                                              BillPost = ti.TotalAmount,
-                                              Description = ti.Description,
-                                              Category = ti.Category.ToString(),
-                                              Type = ti.Type.ToString(),
-                                              Status = ti.Status,
-                                              Account = ti.BankAccount,
-                                              Date = ti.DateAdded,
-                                              IssuedBy = ti.ApplicationUser.FullName
-                                          }).OrderByDescending(ti => ti.Date).ToList(),
+                                          GroupedTransactionItems = t.TransactionItems
+                                                .Where(ti => ti.Category.ToString() == "Accommodation")
+                                                .GroupBy(ti => ti.Category.ToString())
+                                                .ToDictionary(
+                                                    g => g.Key,
+                                                    g => g.Select(ti => new TransactionItemViewModel
+                                                    {
+                                                        Id = ti.Id,
+                                                        ServiceId = ti.ServiceId,
+                                                        Amount = ti.Amount.ToString("N2"),
+                                                        Tax = ti.TaxAmount,
+                                                        Service = ti.ServiceCharge,
+                                                        Discount = ti.Discount,
+                                                        BillPost = ti.TotalAmount,
+                                                        Description = ti.Description,
+                                                        Category = ti.Category.ToString(),
+                                                        Type = ti.Type.ToString(),
+                                                        Status = ti.Status,
+                                                        Account = ti.BankAccount,
+                                                        Date = ti.DateAdded,
+                                                        IssuedBy = ti.ApplicationUser.FullName
+                                                    }).OrderByDescending(ti => ti.Date).ToList()
+                                                ),
                                           DateCreated = t.CreatedAt,
                                           DateUpdated = t.UpdatedAt,
                                       })
@@ -167,28 +173,33 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                                               Balance = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Unpaid).Sum(ti => ti.TotalAmount),
                                               Discount = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.Discount),
                                               Tax = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.TaxAmount),
-                                              Charge = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.ServiceCharge),
+                                              OtherCharges = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.ServiceCharge),
                                               Paid = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Paid).Sum(ti => ti.TotalAmount),
                                               Refund = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Refunded).Sum(ti => ti.TotalAmount),
                                               Description = t.Description,
                                               IssuedBy = t.ApplicationUser.FullName,
-                                              TransactionItems = t.TransactionItems.Select(ti => new TransactionItemViewModel
-                                              {
-                                                  Id = ti.Id,
-                                                  ServiceId = ti.ServiceId,
-                                                  Amount = ti.Amount.ToString("N2"),
-                                                  Tax = ti.TaxAmount,
-                                                  Service = ti.ServiceCharge,
-                                                  Discount = ti.Discount,
-                                                  BillPost = ti.TotalAmount,
-                                                  Description = ti.Description,
-                                                  Category = ti.Category.ToString(),
-                                                  Type = ti.Type.ToString(),
-                                                  Status = ti.Status,
-                                                  Account = ti.BankAccount,
-                                                  Date = ti.DateAdded,
-                                                  IssuedBy = ti.ApplicationUser.FullName
-                                              }).OrderByDescending(ti => ti.Date).ToList(),
+                                              GroupedTransactionItems = t.TransactionItems
+                                                    .GroupBy(ti => ti.Category.ToString())
+                                                    .ToDictionary(
+                                                        g => g.Key,
+                                                        g => g.Select(ti => new TransactionItemViewModel
+                                                        {
+                                                            Id = ti.Id,
+                                                            ServiceId = ti.ServiceId,
+                                                            Amount = ti.Amount.ToString("N2"),
+                                                            Tax = ti.TaxAmount,
+                                                            Service = ti.ServiceCharge,
+                                                            Discount = ti.Discount,
+                                                            BillPost = ti.TotalAmount,
+                                                            Description = ti.Description,
+                                                            Category = ti.Category.ToString(),
+                                                            Type = ti.Type.ToString(),
+                                                            Status = ti.Status,
+                                                            Account = ti.BankAccount,
+                                                            Date = ti.DateAdded,
+                                                            IssuedBy = ti.ApplicationUser.FullName
+                                                        }).OrderByDescending(ti => ti.Date).ToList()
+                                                    ),
                                               Booking = t.Booking,
                                               DateCreated = t.CreatedAt,
                                               DateUpdated = t.UpdatedAt,
@@ -224,28 +235,33 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                         Balance = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Unpaid).Sum(ti => ti.TotalAmount),
                         Discount = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.Discount),
                         Tax = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.TaxAmount),
-                        Charge = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.ServiceCharge),
+                        OtherCharges = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.ServiceCharge),
                         Paid = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Paid).Sum(ti => ti.TotalAmount),
                         Refund = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Refunded).Sum(ti => ti.TotalAmount),
                         Description = t.Description,
                         IssuedBy = t.ApplicationUser.FullName,
-                        TransactionItems = t.TransactionItems.Select(ti => new TransactionItemViewModel
-                        {
-                            Id = ti.Id,
-                            ServiceId = ti.ServiceId,
-                            Amount = ti.Amount.ToString("N2"),
-                            Tax = ti.TaxAmount,
-                            Service = ti.ServiceCharge,
-                            Discount = ti.Discount,
-                            BillPost = ti.TotalAmount,
-                            Description = ti.Description,
-                            Category = ti.Category.ToString(),
-                            Type = ti.Type.ToString(),
-                            Status = ti.Status,
-                            Account = ti.BankAccount,
-                            Date = ti.DateAdded,
-                            IssuedBy = ti.ApplicationUser.FullName
-                        }).OrderByDescending(ti => ti.Date).ToList(),
+                        GroupedTransactionItems = t.TransactionItems
+                         .GroupBy(ti => ti.Category.ToString())
+                         .ToDictionary(
+                             g => g.Key,
+                             g => g.Select(ti => new TransactionItemViewModel
+                             {
+                                 Id = ti.Id,
+                                 ServiceId = ti.ServiceId,
+                                 Amount = ti.Amount.ToString("N2"),
+                                 Tax = ti.TaxAmount,
+                                 Service = ti.ServiceCharge,
+                                 Discount = ti.Discount,
+                                 BillPost = ti.TotalAmount,
+                                 Description = ti.Description,
+                                 Category = ti.Category.ToString(),
+                                 Type = ti.Type.ToString(),
+                                 Status = ti.Status,
+                                 Account = ti.BankAccount,
+                                 Date = ti.DateAdded,
+                                 IssuedBy = ti.ApplicationUser.FullName
+                             }).OrderByDescending(ti => ti.Date).ToList()
+                         ),
                         Booking = t.Booking,
                         DateCreated = t.CreatedAt,
                         DateUpdated = t.UpdatedAt,
@@ -282,28 +298,33 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                         Balance = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Unpaid).Sum(ti => ti.TotalAmount),
                         Discount = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.Discount),
                         Tax = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.TaxAmount),
-                        Charge = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.ServiceCharge),
+                        OtherCharges = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.ServiceCharge),
                         Paid = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Paid).Sum(ti => ti.TotalAmount),
                         Refund = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Refunded).Sum(ti => ti.TotalAmount),
                         Description = t.Description,
                         IssuedBy = t.ApplicationUser.FullName,
-                        TransactionItems = t.TransactionItems.Select(ti => new TransactionItemViewModel
-                        {
-                            Id = ti.Id,
-                            ServiceId = ti.ServiceId,
-                            Amount = ti.Amount.ToString("N2"),
-                            Tax = ti.TaxAmount,
-                            Service = ti.ServiceCharge,
-                            Discount = ti.Discount,
-                            BillPost = ti.TotalAmount,
-                            Description = ti.Description,
-                            Category = ti.Category.ToString(),
-                            Type = ti.Type.ToString(),
-                            Status = ti.Status,
-                            Account = ti.BankAccount,
-                            Date = ti.DateAdded,
-                            IssuedBy = ti.ApplicationUser.FullName
-                        }).OrderByDescending(ti => ti.Date).ToList(),
+                        GroupedTransactionItems = t.TransactionItems
+                         .GroupBy(ti => ti.Category.ToString())
+                         .ToDictionary(
+                             g => g.Key,
+                             g => g.Select(ti => new TransactionItemViewModel
+                             {
+                                 Id = ti.Id,
+                                 ServiceId = ti.ServiceId,
+                                 Amount = ti.Amount.ToString("N2"),
+                                 Tax = ti.TaxAmount,
+                                 Service = ti.ServiceCharge,
+                                 Discount = ti.Discount,
+                                 BillPost = ti.TotalAmount,
+                                 Description = ti.Description,
+                                 Category = ti.Category.ToString(),
+                                 Type = ti.Type.ToString(),
+                                 Status = ti.Status,
+                                 Account = ti.BankAccount,
+                                 Date = ti.DateAdded,
+                                 IssuedBy = ti.ApplicationUser.FullName
+                             }).OrderBy(ti => ti.Date).ToList()
+                         ),
                         Booking = t.Booking,
                         DateCreated = t.CreatedAt,
                         DateUpdated = t.UpdatedAt,
@@ -341,28 +362,33 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                         Balance = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Unpaid).Sum(ti => ti.TotalAmount),
                         Discount = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.Discount),
                         Tax = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.TaxAmount),
-                        Charge = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.ServiceCharge),
+                        OtherCharges = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.ServiceCharge),
                         Paid = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Paid).Sum(ti => ti.TotalAmount),
                         Refund = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Refunded).Sum(ti => ti.TotalAmount),
                         Description = t.Description,
                         IssuedBy = t.ApplicationUser.FullName,
-                        TransactionItems = t.TransactionItems.Select(ti => new TransactionItemViewModel
-                        {
-                            Id = ti.Id,
-                            ServiceId = ti.ServiceId,
-                            Amount = ti.Amount.ToString("N2"),
-                            Tax = ti.TaxAmount,
-                            Service = ti.ServiceCharge,
-                            Discount = ti.Discount,
-                            BillPost = ti.TotalAmount,
-                            Description = ti.Description,
-                            Category = ti.Category.ToString(),
-                            Type = ti.Type.ToString(),
-                            Status = ti.Status,
-                            Account = ti.BankAccount,
-                            Date = ti.DateAdded,
-                            IssuedBy = ti.ApplicationUser.FullName
-                        }).OrderByDescending(ti => ti.Date).ToList(),
+                        GroupedTransactionItems = t.TransactionItems
+                         .GroupBy(ti => ti.Category.ToString())
+                         .ToDictionary(
+                             g => g.Key,
+                             g => g.Select(ti => new TransactionItemViewModel
+                             {
+                                 Id = ti.Id,
+                                 ServiceId = ti.ServiceId,
+                                 Amount = ti.Amount.ToString("N2"),
+                                 Tax = ti.TaxAmount,
+                                 Service = ti.ServiceCharge,
+                                 Discount = ti.Discount,
+                                 BillPost = ti.TotalAmount,
+                                 Description = ti.Description,
+                                 Category = ti.Category.ToString(),
+                                 Type = ti.Type.ToString(),
+                                 Status = ti.Status,
+                                 Account = ti.BankAccount,
+                                 Date = ti.DateAdded,
+                                 IssuedBy = ti.ApplicationUser.FullName
+                             }).OrderByDescending(ti => ti.Date).ToList()
+                         ),
                         Booking = t.Booking,
                         DateCreated = t.CreatedAt,
                         DateUpdated = t.UpdatedAt,
@@ -399,23 +425,28 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                         Balance = t.TransactionItems.Where(ti => ti.TransactionId == t.TransactionId && ti.Status != TransactionStatus.Paid).Sum(ti => ti.Amount),
                         Description = t.Description,
                         IssuedBy = t.ApplicationUser.FullName,
-                        TransactionItems = t.TransactionItems.Select(ti => new TransactionItemViewModel
-                        {
-                            Id = ti.Id,
-                            ServiceId = ti.ServiceId,
-                            Amount = ti.Amount.ToString("N2"),
-                            Tax = ti.TaxAmount,
-                            Service = ti.ServiceCharge,
-                            Discount = ti.Discount,
-                            BillPost = ti.TotalAmount,
-                            Description = ti.Description,
-                            Category = ti.Category.ToString(),
-                            Type = ti.Type.ToString(),
-                            Status = ti.Status,
-                            Account = ti.BankAccount,
-                            Date = ti.DateAdded,
-                            IssuedBy = ti.ApplicationUser.FullName
-                        }).OrderByDescending(ti => ti.Date).ToList(),
+                        GroupedTransactionItems = t.TransactionItems
+                         .GroupBy(ti => ti.Category.ToString())
+                         .ToDictionary(
+                             g => g.Key,
+                             g => g.Select(ti => new TransactionItemViewModel
+                             {
+                                 Id = ti.Id,
+                                 ServiceId = ti.ServiceId,
+                                 Amount = ti.Amount.ToString("N2"),
+                                 Tax = ti.TaxAmount,
+                                 Service = ti.ServiceCharge,
+                                 Discount = ti.Discount,
+                                 BillPost = ti.TotalAmount,
+                                 Description = ti.Description,
+                                 Category = ti.Category.ToString(),
+                                 Type = ti.Type.ToString(),
+                                 Status = ti.Status,
+                                 Account = ti.BankAccount,
+                                 Date = ti.DateAdded,
+                                 IssuedBy = ti.ApplicationUser.FullName
+                             }).OrderByDescending(ti => ti.Date).ToList()
+                         ),
                         Booking = t.Booking,
                         DateCreated = t.CreatedAt,
                         DateUpdated = t.UpdatedAt,
@@ -463,23 +494,28 @@ namespace ESMART.Infrastructure.Repositories.Transaction
                         Balance = t.TransactionItems.Where(ti => ti.Status != TransactionStatus.Paid).Sum(ti => ti.Amount),
                         Description = t.Description,
                         IssuedBy = t.ApplicationUser.FullName,
-                        TransactionItems = t.TransactionItems.Select(ti => new TransactionItemViewModel
-                        {
-                            Id = ti.Id,
-                            ServiceId = ti.ServiceId,
-                            Amount = ti.Amount.ToString("N2"),
-                            Tax = ti.TaxAmount,
-                            Service = ti.ServiceCharge,
-                            Discount = ti.Discount,
-                            BillPost = ti.TotalAmount,
-                            Description = ti.Description,
-                            Category = ti.Category.ToString(),
-                            Type = ti.Type.ToString(),
-                            Status = ti.Status,
-                            Account = ti.BankAccount,
-                            Date = ti.DateAdded,
-                            IssuedBy = ti.ApplicationUser.FullName
-                        }).OrderByDescending(ti => ti.Date).ToList(),
+                        GroupedTransactionItems = t.TransactionItems
+                         .GroupBy(ti => ti.Category.ToString())
+                         .ToDictionary(
+                             g => g.Key,
+                             g => g.Select(ti => new TransactionItemViewModel
+                             {
+                                 Id = ti.Id,
+                                 ServiceId = ti.ServiceId,
+                                 Amount = ti.Amount.ToString("N2"),
+                                 Tax = ti.TaxAmount,
+                                 Service = ti.ServiceCharge,
+                                 Discount = ti.Discount,
+                                 BillPost = ti.TotalAmount,
+                                 Description = ti.Description,
+                                 Category = ti.Category.ToString(),
+                                 Type = ti.Type.ToString(),
+                                 Status = ti.Status,
+                                 Account = ti.BankAccount,
+                                 Date = ti.DateAdded,
+                                 IssuedBy = ti.ApplicationUser.FullName
+                             }).OrderByDescending(ti => ti.Date).ToList()
+                         ),
                         Booking = t.Booking,
                         DateCreated = t.CreatedAt,
                         DateUpdated = t.UpdatedAt,
@@ -849,6 +885,7 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             {
                 using var context = _contextFactory.CreateDbContext();
                 var transactionItems = await context.TransactionItems
+                    .Include(t => t.ApplicationUser)
                     .Where(ti => ti.Id == id)
                     .FirstOrDefaultAsync();
 
@@ -985,51 +1022,75 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             {
                 using var context = _contextFactory.CreateDbContext();
 
+                // Fetch all transactions for the guest, including items and users
                 var transactions = await context.Transactions
-                    .Where(t => t.GuestId == guestId && t.TransactionItems.Any(ti => ti.Status == TransactionStatus.Unpaid))
+                    .Where(t => t.Booking.Id == guestId)
+                    .Include(t => t.Booking)
                     .Include(t => t.TransactionItems)
+                        .ThenInclude(ti => ti.Booking)
+                        .ThenInclude(ti => ti.Guest)
                         .ThenInclude(ti => ti.ApplicationUser)
-                    .OrderByDescending(t => t.Date)
-                    .Select(t => new TransactionViewModel
-                    {
-                        TransactionId = t.TransactionId,
-                        Invoice = t.InvoiceNumber,
-                        Guest = t.Guest.FullName,
-                        GuestPhoneNo = t.Guest.PhoneNumber,
-                        Date = t.Date,
-                        Amount = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Paid).Sum(ti => ti.Amount),
-                        Balance = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Unpaid).Sum(ti => ti.TotalAmount),
-                        Discount = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.Discount),
-                        Tax = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.TaxAmount),
-                        Charge = t.TransactionItems.Where(ti => ti.TransactionId == t.Id).Sum(ti => ti.ServiceCharge),
-                        Paid = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Paid).Sum(ti => ti.TotalAmount),
-                        Refund = t.TransactionItems.Where(ti => ti.TransactionId == t.Id && ti.Status == TransactionStatus.Refunded).Sum(ti => ti.TotalAmount),
-                        Description = t.Description,
-                        IssuedBy = t.ApplicationUser.FullName,
-                        TransactionItems = t.TransactionItems.Select(ti => new TransactionItemViewModel
-                        {
-                            Id = ti.Id,
-                            ServiceId = ti.ServiceId,
-                            Amount = ti.Amount.ToString("N2"),
-                            Tax = ti.TaxAmount,
-                            Service = ti.ServiceCharge,
-                            Discount = ti.Discount,
-                            BillPost = ti.TotalAmount,
-                            Description = ti.Description,
-                            Category = ti.Category.ToString(),
-                            Type = ti.Type.ToString(),
-                            Status = ti.Status,
-                            Account = ti.BankAccount,
-                            Date = ti.DateAdded,
-                            IssuedBy = ti.ApplicationUser.FullName
-                        }).OrderByDescending(ti => ti.Date).ToList(),
-                        Booking = t.Booking,
-                        DateCreated = t.CreatedAt,
-                        DateUpdated = t.UpdatedAt,
-                    })
+                    .OrderBy(t => t.Date)
                     .ToListAsync();
 
-                return transactions;
+                var result = new List<TransactionViewModel>();
+
+                foreach (var transaction in transactions)
+                {
+                    var grouped = transaction.TransactionItems
+                        .GroupBy(ti => ti.Category.ToString())
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(ti => new TransactionItemViewModel
+                            {
+                                Id = ti.Id,
+                                ServiceId = ti.ServiceId,
+                                Amount = ti.Amount.ToString("N2"),
+                                Tax = ti.TaxAmount,
+                                Service = ti.ServiceCharge,
+                                Discount = ti.Discount,
+                                BillPost = ti.Amount,
+                                Invoice = ti.Invoice,
+                                Description = ti.Description,
+                                Category = ti.Category.ToString(),
+                                Type = ti.Type.ToString(),
+                                Status = ti.Status,
+                                Account = ti.BankAccount,
+                                Date = ti.DateAdded,
+                                IssuedBy = ti.ApplicationUser.FullName
+                            }).OrderBy(ti => ti.Date).ToList()
+                        );
+
+                    var amount = transaction.Booking.Amount;
+                    var tax = transaction.TransactionItems.Sum(ti => ti.TaxAmount) + transaction.TransactionItems.Sum(ti => ti.ServiceCharge);
+                    var paid = transaction.TransactionItems.Where(ti => ti.Status == TransactionStatus.Paid).Sum(ti => ti.TotalAmount);
+                    var refund = paid > (amount + tax) ? paid - (amount + tax) : 0;
+
+                    result.Add(new TransactionViewModel
+                    {
+                        TransactionId = transaction.TransactionId,
+                        Invoice = transaction.InvoiceNumber,
+                        Guest = transaction.Booking.Guest.FullName,
+                        GuestPhoneNo = transaction.Guest?.PhoneNumber,
+                        Date = transaction.Date,
+                        Amount = amount,
+                        Balance = transaction.TransactionItems.Where(ti => ti.Status != TransactionStatus.Unpaid).Sum(ti => ti.TotalAmount),
+                        Discount = transaction.TransactionItems.Sum(ti => ti.Discount),
+                        Tax = tax,
+                        OtherCharges = transaction.TransactionItems.Where(ti => ti.Category != Category.Accomodation && ti.Category != Category.Deposit).Sum(ti => ti.Amount),
+                        Paid = paid,
+                        Refund = refund,
+                        Description = transaction.Description,
+                        IssuedBy = transaction.ApplicationUser?.FullName,
+                        GroupedTransactionItems = grouped,
+                        Booking = transaction.Booking,
+                        DateCreated = transaction.CreatedAt,
+                        DateUpdated = transaction.UpdatedAt
+                    });
+
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -1038,6 +1099,24 @@ namespace ESMART.Infrastructure.Repositories.Transaction
         }
 
 
+        // Get rooms where the transacton item is unpaid
+        public async Task<List<string>> GetRoomsWithUnpaidTransactionItemsAsync()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var rooms = await context.TransactionItems
+                    .Where(ti => ti.Status == TransactionStatus.Unpaid)
+                    .Select(ti => ti.Transaction.Booking.Room.Number)
+                    .Distinct()
+                    .ToListAsync();
+                return rooms;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving rooms with unpaid transaction items. " + ex.Message);
+            }
+        }
 
         public async Task<List<RevenueViewModel>> GetRevenueByDateRange(DateTime from, DateTime to)
         {

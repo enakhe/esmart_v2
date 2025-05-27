@@ -2,11 +2,13 @@
 {
     public enum TransactionType
     {
-        Credit,
-        Debit,
+        RoomCharge,
+        BarOrder,
+        RestaurantOrder,
+        Laundry,
+        TopUp,
         Payment,
         Refund,
-        Charge,
         Adjustment
     }
 
@@ -25,6 +27,7 @@
         FoodAndBeverage,
         Spa,
         Laundry,
+        Deposit,
         Transportation,
         Other
     }

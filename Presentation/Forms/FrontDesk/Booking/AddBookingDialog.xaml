@@ -42,20 +42,10 @@
                             <ComboBox x:Name="cmbRoom" Padding="2,5,0,5" SelectionChanged="cmbRoom_SelectionChanged" />
                         </StackPanel>
 
-                        <Grid Grid.Column="1" Margin="2,0,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Amount:" FontWeight="Bold" />
-                                <TextBox x:Name="txtRoomRate" TextChanged="DecimalInput_TextChanged" IsEnabled="False" Padding="2,5,0,5" />
-                            </StackPanel>
-
-                            <Image Cursor="Hand" x:Name="EditButton" Grid.Column="1" Source="/Forms/RoomSetting/Room/editing.png" Width="20" Height="20" Margin="2,14,0,0" ToolTipService.ToolTip="Room rate is set to room type rate by default. You can change it later." MouseLeftButtonDown="EditButton_MouseLeftButtonDown" />
-                        </Grid>
-
+                        <StackPanel Grid.Column="1" Margin="2,0,2,0">
+                            <TextBlock Text="Amount:" FontWeight="Bold" />
+                            <TextBox x:Name="txtRoomRate" TextChanged="DecimalInput_TextChanged" IsEnabled="False" Padding="2,5,0,5" />
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
 
@@ -102,29 +92,15 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <Grid Grid.Column="0" Margin="0,0,2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,2,0">
+                            <TextBlock Text="Discount (%):" FontWeight="Bold" />
+                            <TextBox x:Name="txtDiscount" Padding="2,5,0,5" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="txtDiscount_TextChanged" />
+                        </StackPanel>
 
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Discount (%):" FontWeight="Bold" />
-                                <TextBox x:Name="txtDiscount" Padding="2,5,0,5" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="txtDiscount_TextChanged" />
-                            </StackPanel>
-                        </Grid>
-
-                        <Grid Grid.Column="1" Margin="2,0,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="VAT (%):" FontWeight="Bold" />
-                                <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="txtVAT_TextChanged" />
-                            </StackPanel>
-                        </Grid>
+                        <StackPanel Grid.Column="1" Margin="2,0,0,0">
+                            <TextBlock Text="VAT (%):" FontWeight="Bold" />
+                            <TextBox x:Name="txtVAT" IsEnabled="False" Padding="2,5,0,5" PreviewTextInput="DecimalInput_PreviewTextInput" TextChanged="txtVAT_TextChanged" />
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
 

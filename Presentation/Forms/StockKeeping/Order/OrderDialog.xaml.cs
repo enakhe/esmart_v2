@@ -320,11 +320,11 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             }
         }
 
-        private async Task CreateTransactionItem(string guestId, bool isUnPaid, string serviceId)
+        private async Task CreateTransactionItem(Guest guest, bool isUnPaid, string serviceId, string invoiceId)
         {
             try
             {
-                var transaction = await _transactionRepository.GetByGuestIdAsync(guestId);
+                var transaction = await _transactionRepository.GetByGuestIdAsync(guest.Id);
                 if (transaction != null)
                 {
                     var transactionItem = new TransactionItem()
@@ -332,9 +332,12 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                         Id = Guid.NewGuid().ToString(),
                         TransactionId = transaction.Id,
                         Amount = _viewModel.TotalAmount,
-                        Description = "Order Payment",
+
+                        // give me a better descrtption more detaled the the guest ordered from bar or restaurant
+                        Description = "Order from " + (cmbServiceArea.SelectedItem as dynamic).Name + " for guest " + guest.Id,
                         DateAdded = DateTime.Now,
                         BankAccount = "",
+                        Invoice = invoiceId,
                         Category = Category.FoodAndBeverage,
                         ServiceId = serviceId,
                         Type = TransactionType.Charge,
@@ -365,6 +368,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
         {
             try
             {
+                var transaction = await _transactionRepository.GetByBookingIdAsync(bookingId);
                 var order = new Domain.Entities.StoreKeeping.Order
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -397,7 +401,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                     }
                 }
 
-                await CreateTransactionItem(guest.Id, _isUnpaid, $"OR{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}");
+                await CreateTransactionItem(guest, _isUnpaid, $"OR{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}", transaction.InvoiceNumber);
                 this.DialogResult = true;
                 MessageBox.Show("Order created successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }

@@ -45,5 +45,7 @@ namespace ESMART.Application.Common.Interface
         Task<List<BankAccount>> GetAllBankAccountAsync();
         Task UpdateBankAccountAsync(BankAccount bankAccount);
         Task DeleteBankAccountAsync(BankAccount bankAccount);
+
+        Task<List<string>> GetRoomsWithUnpaidTransactionItemsAsync();
     }
 }

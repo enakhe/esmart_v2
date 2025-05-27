@@ -8,6 +8,8 @@ using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
 {
@@ -22,11 +24,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private readonly IBookingRepository _bookingRepository;
         private readonly IGuestRepository _guestRepository;
+        private readonly IRoomRepository _roomRepository;
         private readonly Domain.Entities.FrontDesk.Booking _booking;
         private readonly Domain.Entities.FrontDesk.Guest _guest;
         private readonly decimal _amount;
 
-        public CheckOutBooking(Domain.Entities.FrontDesk.Booking booking, Domain.Entities.FrontDesk.Guest guest, decimal amount, IReservationRepository reservationRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IVerificationCodeService verificationCodeService, IApplicationUserRoleRepository applicationUserRoleRepository, IBookingRepository bookingRepository, IGuestRepository guestRepository)
+        public CheckOutBooking(Domain.Entities.FrontDesk.Booking booking, Domain.Entities.FrontDesk.Guest guest, decimal amount, IReservationRepository reservationRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IVerificationCodeService verificationCodeService, IApplicationUserRoleRepository applicationUserRoleRepository, IBookingRepository bookingRepository, IGuestRepository guestRepository, IRoomRepository roomRepository)
         {
             _amount = amount;
             _booking = booking;
@@ -35,6 +38,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _guestRepository = guestRepository;
             _transactionRepository = transactionRepository;
             _transactionRepository = transactionRepository;
+            _roomRepository = roomRepository;
             _hotelSettingsService = hotelSettingsService;
             _verificationCodeService = verificationCodeService;
             _applicationUserRoleRepository = applicationUserRoleRepository;
@@ -48,7 +52,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var transactions = await _transactionRepository.GetGroupedTransactionsByGuestIdAsync(_booking.GuestId);
+                var transactions = await _transactionRepository.GetGroupedTransactionsByGuestIdAsync(_booking.Id);
                 AccountTransactionStatement.ItemsSource = transactions;
             }
             catch (Exception ex)
@@ -67,41 +71,48 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var hotel = await _hotelSettingsService.GetHotelInformation();
-                var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
+                var unpaidTransaction = await _transactionRepository.GetGroupedTransactionsByGuestIdAsync(_booking.Id);
+                var unpaidTransactionitem = unpaidTransaction
+                    .SelectMany(t => t.GroupedTransactionItems)
+                    .Where(ti => ti.Value.Any(ti => ti.Status == Domain.Enum.TransactionStatus.Unpaid))
+                    .ToList();
 
-                var verificationCode = new VerificationCode()
+                foreach (var transactionViewModel in unpaidTransactionitem)
                 {
-                    Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
-                    ServiceId = _booking.BookingId,
-                    ApplicationUserId = AuthSession.CurrentUser?.Id
-                };
+                    var transaction = await _transactionRepository.GetTransactionItemsByIdAsync("");
 
-                await _verificationCodeService.AddCode(verificationCode);
-
-                if (hotel != null)
-                {
-                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, _booking.AccountNumber, _booking.Guest.FullName, "Booking", verificationCode.Code, _amount, _booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                        VerifyPaymentWindow verifyPaymentWindow = new(
-                            _verificationCodeService,
-                            _hotelSettingsService,
-                            _bookingRepository,
-                            _transactionRepository,
-                            _booking.BookingId,
-                            _amount,
-                            _applicationUserRoleRepository
-                        );
-
-                        if (verifyPaymentWindow.ShowDialog() == true)
-                        {
-                            this.DialogResult = true;
-                        }
-                    }
+                    transaction.Status = Domain.Enum.TransactionStatus.Paid;
+                    transaction.ApplicationUserId = AuthSession.CurrentUser?.Id;
+                    
+                    await _transactionRepository.UpdateTransactionItemAsync(transaction);
                 }
+
+                _booking.Status = Domain.Enum.BookingStatus.CheckedOut;
+                _booking.IsTrashed = true;
+                _booking.UpdatedBy = AuthSession.CurrentUser?.Id;
+
+                await _bookingRepository.UpdateBooking(_booking);
+
+                _booking.Room.Status = Domain.Entities.RoomSettings.RoomStatus.Dirty;
+                await _roomRepository.UpdateRoom(_booking.Room);
+
+                var guest = await _guestRepository.GetGuestByIdAsync(_booking.GuestId);
+                var guestAccount = await _guestRepository.GetGuestAccountByGuestIdAsync(_booking.GuestId);
+
+                if (guest != null)
+                {
+                    guest.Status = "Inactive";
+                    await _guestRepository.UpdateGuestAsync(guest);
+                }
+
+                if (guestAccount != null)
+                {
+                    guestAccount.IsClosed = true;
+                    await _guestRepository.UpdateGuestAccountAsync(guestAccount);
+                }
+
+                this.DialogResult = true;
+                MessageBox.Show("Booking checked out successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -119,20 +130,85 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var columnNames = AccountTransactionStatement.Columns
-                    .Where(c => c.Header != null)
-                    .Select(c => c.Header.ToString())
-                    .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
+                var selectedColumns = AccountTransactionStatement.Columns
+                    .OfType<DataGridTextColumn>()
+                    .Select(c => (c.Binding as Binding)?.Path?.Path ?? c.Header.ToString())
                     .ToList();
 
-                var transactions = await _transactionRepository.GetGroupedTransactionsByGuestIdAsync(_booking.GuestId);
-                // Flatten and bind all transaction items
-                var allTransactionItems = transactions
-                    .SelectMany(t => t.TransactionItems)
-                    .OrderByDescending(ti => ti.Date)
-                .ToList();
+                // For nested columns from TransactionItem
+                var nestedColumns = new List<string>
+                {
+                    "Date",
+                    "Description",
+                    "Invoice",
+                    "Discount",
+                    "BillPost",
+                    "Amount",
+                    "Payment"
+                };
 
-                var optionsWindow = new ExportBillDialog(columnNames!, AccountTransactionStatement, _hotelSettingsService, _booking, allTransactionItems);
+                // Flatten the grouped transaction items
+                foreach (var tx in AccountTransactionStatement.ItemsSource.Cast<TransactionViewModel>())
+                {
+                    // Combine all grouped items into a single list for export
+                    tx.FlatTransactionItems = tx.GroupedTransactionItems?
+                        .SelectMany(kvp => kvp.Value)
+                        .Where(kvp => kvp.Category.ToString() == "Accomodation")
+                        .ToList();
+                }
+
+                // get all transaction that are not under the category of accomodation
+                var nonAccommodationTransactions = AccountTransactionStatement.ItemsSource.Cast<TransactionViewModel>()
+                    .SelectMany(tx => tx.GroupedTransactionItems)
+                    .SelectMany(kvp => kvp.Value)
+                    .Where(item => item.Category.ToString() != "Accomodation" && item.Category.ToString() != "Deposit")
+                    .ToList();
+
+                // create a new datagrid with nonAccommodationTransactions
+                var nonAccommodationDataGrid = new DataGrid
+                {
+                    AutoGenerateColumns = false,
+                    ItemsSource = nonAccommodationTransactions
+                };
+
+                var depositTransaction = AccountTransactionStatement.ItemsSource.Cast<TransactionViewModel>()
+                    .SelectMany(tx => tx.GroupedTransactionItems)
+                    .SelectMany(kvp => kvp.Value)
+                    .Where(item => item.Category.ToString() == "Deposit")
+                    .ToList();
+
+                var depositTransactionDataGrid = new DataGrid
+                {
+                    AutoGenerateColumns = false,
+                    ItemsSource = depositTransaction
+                };
+
+                var transactions = await _transactionRepository.GetGroupedTransactionsByGuestIdAsync(_booking.Id);
+
+                var totalVAT = transactions.Sum(t => t.GroupedTransactionItems
+                    .SelectMany(g => g.Value)
+                    .Sum(v => v.Tax));
+
+                //calculate total service
+                var totalServiceCharge = transactions.Sum(t => t.GroupedTransactionItems
+                    .SelectMany(g => g.Value)
+                    .Sum(v => v.Service)) + totalVAT;
+
+                //calculate total discount
+                var totalDiscount = transactions.Sum(t => t.GroupedTransactionItems
+                    .SelectMany(g => g.Value)
+                    .Sum(v => v.Discount));
+
+                var totalAmount = transactions.Sum(t => t.Booking.Amount);
+                var amountPaid = transactions.Sum(t => t.Paid);
+
+                // sum the total amount for nonAccomodation
+                var totalNonAccommodationAmount = nonAccommodationTransactions.Sum(item => item.BillPost);
+
+                //calculate total amount totalamount + totalServiceCharge - totalDiscount
+                var totalTAmount = totalAmount + totalServiceCharge - totalDiscount + totalNonAccommodationAmount;
+
+                var optionsWindow = new ExportBillDialog(selectedColumns!, AccountTransactionStatement, _hotelSettingsService, _booking, "FlatTransactionItems", nestedColumns, "Booking Bill List (Invoices Settled)", totalAmount, totalVAT:totalVAT, totalDiscount:totalDiscount, totalTAmount:totalTAmount, totalService:totalServiceCharge, serviceTable:nonAccommodationDataGrid, totalServiceCharge: totalNonAccommodationAmount, amountPaid:amountPaid, paymentTable: depositTransactionDataGrid);
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)
@@ -140,7 +216,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     var exportResult = optionsWindow.GetResult();
                     var hotel = await _hotelSettingsService.GetHotelInformation();
 
-                    if (exportResult.SelectedColumns.Count == 0)
+                    if (exportResult.SelectedColumns?.Count == 0)
                     {
                         MessageBox.Show("Please select at least one column to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
@@ -162,9 +238,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             this.DialogResult = false;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadTransactions();
+            await LoadTransactions();
         }
     }
 }

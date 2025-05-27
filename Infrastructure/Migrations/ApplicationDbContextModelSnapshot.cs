@@ -532,6 +532,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("BankAccountId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -540,6 +543,9 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<string>("GuestId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
 
                     b.Property<string>("TransactionId")
                         .HasColumnType("nvarchar(max)");
@@ -550,6 +556,8 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("BankAccountId");
 
                     b.HasIndex("GuestId");
 
@@ -1060,6 +1068,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("BankAccount")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BookingId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("Category")
                         .HasColumnType("int");
 
@@ -1071,6 +1082,9 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Invoice")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsTrashed")
                         .HasColumnType("bit");
@@ -1099,6 +1113,8 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("BookingId");
 
                     b.HasIndex("TransactionId");
 
@@ -1298,7 +1314,7 @@ namespace ESMART.Infrastructure.Migrations
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.GuestAccounts", b =>
                 {
                     b.HasOne("ESMART.Domain.Entities.FrontDesk.Guest", "Guest")
-                        .WithMany()
+                        .WithMany("GuestAccount")
                         .HasForeignKey("GuestId");
 
                     b.Navigation("Guest");
@@ -1319,11 +1335,17 @@ namespace ESMART.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ApplicationUserId");
 
+                    b.HasOne("ESMART.Domain.Entities.Transaction.BankAccount", "BankAccount")
+                        .WithMany()
+                        .HasForeignKey("BankAccountId");
+
                     b.HasOne("ESMART.Domain.Entities.FrontDesk.Guest", "Guest")
                         .WithMany("GuestTransactions")
                         .HasForeignKey("GuestId");
 
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("BankAccount");
 
                     b.Navigation("Guest");
                 });
@@ -1470,11 +1492,17 @@ namespace ESMART.Infrastructure.Migrations
                         .WithMany("TransactionItems")
                         .HasForeignKey("ApplicationUserId");
 
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Booking", "Booking")
+                        .WithMany("TransactionItems")
+                        .HasForeignKey("BookingId");
+
                     b.HasOne("ESMART.Domain.Entities.Transaction.Transaction", "Transaction")
                         .WithMany("TransactionItems")
                         .HasForeignKey("TransactionId");
 
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("Booking");
 
                     b.Navigation("Transaction");
                 });
@@ -1559,12 +1587,16 @@ namespace ESMART.Infrastructure.Migrations
                 {
                     b.Navigation("Codes");
 
+                    b.Navigation("TransactionItems");
+
                     b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.Guest", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("GuestAccount");
 
                     b.Navigation("GuestIdentity");
 

@@ -9,6 +9,6 @@ namespace ESMART.Application.Common.Interface
         Task<bool> UpdateSettingAsync(HotelSetting setting);
         Task<bool> UpdateHotelInformation(Hotel hotel);
         Task SeedHotelInformation();
-        Task<Hotel?> GetHotelInformation();
+        Task<Hotel> GetHotelInformation();
     }
 }

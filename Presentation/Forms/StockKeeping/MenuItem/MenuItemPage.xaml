@@ -116,9 +116,16 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Margin="20" Grid.Column="0">
-                                <TextBox Name="txtSearchBuilding" HorizontalAlignment="Left" Width="170" Padding="2,2,0,2" FontSize="18" Foreground="Gray" Text="Search"/>
-                            </StackPanel>
+                            <Grid Grid.Column="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox Name="txtSearchBuilding" HorizontalAlignment="Left" KeyDown="txtSearchBuilding_KeyDown" Width="200" Padding="2,2,0,2" FontSize="18" Foreground="Gray" Grid.Column="0" />
+                                <Button Content="Search" Style="{StaticResource ActionBarButtonStyle}" Height="27" Grid.Column="1" Width="100" Click="Button_Click" />
+
+                            </Grid>
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
                                 <Button Content="Add Item" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="70" Click="AddMenuItem_Click" />

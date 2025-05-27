@@ -19,16 +19,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private readonly IGuestRepository _guestRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
+        private readonly IBookingRepository _bookingRepository;
         private readonly IApplicationUserRoleRepository _userService;
         private readonly UserManager<ApplicationUser> _userManager;
         private IServiceProvider _serviceProvider;
 
-        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager)
+        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager, IBookingRepository bookingRepository)
         {
             _guestRepository = guestRepository;
             _transactionRepository = transactionRepository;
             _userService = userService;
             _userManager = userManager;
+            _bookingRepository = bookingRepository;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
@@ -135,7 +137,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
                 if (selectedGuest.Id != null)
                 {
-                    FundGuestAccountDialog fundGuestAccountDialog = new FundGuestAccountDialog(selectedGuest, _guestRepository);
+                    FundGuestAccountDialog fundGuestAccountDialog = new FundGuestAccountDialog(selectedGuest, _guestRepository, _bookingRepository, _transactionRepository);
                     if (fundGuestAccountDialog.ShowDialog() == true)
                     {
                         _ = LoadGuests();
@@ -155,7 +157,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
                 if (selectedGuest.Id != null)
                 {
-                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository, _transactionRepository, _hotelSettingsService);
+                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository, _transactionRepository, _hotelSettingsService, _bookingRepository);
                     if (viewGuestDialog.ShowDialog() == true)
                     {
                         await LoadGuests();

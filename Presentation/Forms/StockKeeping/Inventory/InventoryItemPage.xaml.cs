@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Utils;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Utils;
@@ -147,6 +148,35 @@ namespace ESMART.Presentation.Forms.StockKeeping.Inventory
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadInventoryItem();
+        }
+
+        private async void txtSearchBuilding_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            bool isNull = Helper.AreAnyNullOrEmpty(txtSearchBuilding.Text);
+            if (isNull)
+            {
+                await LoadInventoryItem();
+            }
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            bool isNull = Helper.AreAnyNullOrEmpty(txtSearchBuilding.Text);
+            if (isNull)
+            {
+                await LoadInventoryItem();
+            }
+            else
+            {
+                var searchText = txtSearchBuilding.Text.ToLower();
+                var filteredBookings = await _stockKeepingRepository.SearchInventoryItemsAsync(searchText);
+
+                if (filteredBookings == null || filteredBookings.Count == 0)
+                {
+                    await LoadInventoryItem();
+                }
+                InventoryItemDataGrid.ItemsSource = filteredBookings;
+            }
         }
     }
 }

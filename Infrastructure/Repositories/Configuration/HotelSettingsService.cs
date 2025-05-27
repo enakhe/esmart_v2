@@ -208,12 +208,14 @@ namespace ESMART.Infrastructure.Repositories.Configuration
             }
         }
 
-        public async Task<Hotel?> GetHotelInformation()
+        public async Task<Hotel> GetHotelInformation()
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                return await context.Hotels.FirstOrDefaultAsync();
+                var hotel = await context.Hotels.FirstOrDefaultAsync();
+
+                return hotel ?? throw new Exception("Hotel information not found.");
             }
             catch (Exception ex)
             {

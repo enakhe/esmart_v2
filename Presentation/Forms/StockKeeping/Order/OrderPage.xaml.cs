@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Utils;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Utils;
@@ -39,7 +40,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             InitializeComponent();
 
             txtFrom.SelectedDate = DateTime.Now.AddDays(-7);
-            txtTo.SelectedDate = DateTime.Now;
+            txtTo.SelectedDate = DateTime.Now.AddDays(1);
         }
 
         private async Task LoadOrder()
@@ -92,7 +93,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                 .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
                 .ToList();
 
-                var optionsWindow = new ExportDialog(columnNames, OrderListView, _hotelSettingsService, "All Menu Orders");
+                var optionsWindow = new ExportDialog(columnNames, OrderListView, _hotelSettingsService, "All Menu Orders", "OrderItems");
                 var result = optionsWindow.ShowDialog();
 
                 if (result == true)
@@ -130,24 +131,10 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             await LoadOrder();
         }
 
-        private async void txtSearchBuilding_TextChanged(object sender, TextChangedEventArgs e)
+        private async void txtSearchBuilding_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            bool isNull = string.IsNullOrWhiteSpace(txtSearchBuilding.Text);
-            if (!isNull)
-            {
-                var searchTerm = txtSearchBuilding.Text.ToLower();
-                var filteredOrders = await _stockKeepingRepository.GetOrdersBySearchAsync(searchTerm);
-                if (filteredOrders == null || filteredOrders.Count == 0)
-                {
-                    await LoadOrder();
-                }
-                else
-                {
-                    txtMenuItemCount.Text = filteredOrders.Count.ToString();
-                }
-                OrderListView.ItemsSource = filteredOrders;
-            }
-            else
+            bool isNull = Helper.AreAnyNullOrEmpty(txtSearchBuilding.Text);
+            if (isNull)
             {
                 await LoadOrder();
             }
@@ -167,6 +154,26 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             finally
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            bool isNull = Helper.AreAnyNullOrEmpty(txtSearchBuilding.Text);
+            if (isNull)
+            {
+                await LoadOrder();
+            }
+            else
+            {
+                var searchText = txtSearchBuilding.Text.ToLower();
+                var filteredBookings = await _stockKeepingRepository.GetOrdersBySearchAsync(searchText);
+
+                if (filteredBookings == null || filteredBookings.Count == 0)
+                {
+                    await LoadOrder();
+                }
+                OrderListView.ItemsSource = filteredBookings;
             }
         }
     }

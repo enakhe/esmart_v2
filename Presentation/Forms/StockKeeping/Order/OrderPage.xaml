@@ -120,10 +120,19 @@
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    
-                                    <TextBox Name="txtSearchBuilding" HorizontalAlignment="Left" Width="170" Padding="2,2,0,2" FontSize="18" Foreground="Gray" Text="Search" Grid.Column="0" VerticalAlignment="Bottom" TextChanged="txtSearchBuilding_TextChanged"/>
+
+                                    <Grid Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBox Name="txtSearchBuilding" HorizontalAlignment="Left" KeyDown="txtSearchBuilding_KeyDown" Width="200" Padding="2,2,0,2" FontSize="18" Foreground="Gray" Grid.Column="0" />
+                                        <Button Content="Search" Style="{StaticResource ActionBarButtonStyle}" Height="27" Grid.Column="1" Width="100" Click="Button_Click" />
+
+                                    </Grid>
 
                                     <StackPanel Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center">
                                         <Grid>
@@ -222,7 +231,7 @@
                                             <DataGrid ItemsSource="{Binding OrderItems}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Margin="20,5,20,10">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Order Id" Binding="{Binding OrderId}" />
-                                                    <DataGridTextColumn Header="Menu Name" Binding="{Binding MenuItemName}" />
+                                                    <DataGridTextColumn Header="Item" Binding="{Binding Item}" />
                                                     <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" />
                                                     <DataGridTextColumn Header="Unit Price" Binding="{Binding UnitPrice, StringFormat=N2}" />
                                                     <DataGridTextColumn Header="Total Price" Binding="{Binding TotalPrice, StringFormat=N2}" />

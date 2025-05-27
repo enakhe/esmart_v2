@@ -9,6 +9,7 @@ namespace ESMART.Application.Common.Interface
         Task AddBooking(Booking booking);
         Task<List<BookingViewModel>> GetAllBookingsAsync();
         Task<List<Booking>> GetActiveBooking();
+        Task<Booking> GetBookingByGuestId(string guestId);
         Task<List<BookingViewModel>> GetBookingsByFilterAsync(string roomTypeId, DateTime fromTime, DateTime endTime, bool IsTrashed);
         Task<List<BookingViewModel>> GetBookingByDate(DateTime fromTime, DateTime endTime, bool IsTrashed);
         Task<BookingViewModel> GetBookingByIdViewModel(string id);
@@ -19,6 +20,7 @@ namespace ESMART.Application.Common.Interface
         Task<List<BookingViewModel>> GetCheckedOutBookingByDate(DateTime fromTime, DateTime endTime);
         Task<List<BookingViewModel>> GetRoomTypeBookingByFilter(string roomTypeId, DateTime fromTime, DateTime endTime);
         Task UpdateBooking(Booking booking);
+        Task<List<string>> GetCreditedRooms();
         Task DeleteBooking(string id);
         Task<List<BookingViewModel>> GetRecycledBookings();
         Task<List<BookingViewModel>> SearchBooking(string keyword);

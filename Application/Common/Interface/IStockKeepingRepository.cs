@@ -24,6 +24,8 @@ namespace ESMART.Application.Common.Interface
         Task<List<MenuCategory>> GetMenuCategoriesByServiceAreaAsync(ServiceArea serviceArea);
         //Task<List<MenuItemViewModel>> GetMenuItemsByMenuCategoryAsync(string menuCategoryId);
         Task AddMenuItemCategoryAsync(MenuCategory menuCategory);
+        Task<List<MenuItemViewModel>> SearchMenuItemsAsync(string searchTerm);
+        Task<List<InventoryViewModel>> SearchInventoryItemsAsync(string searchTerm);
         Task<List<MenuCategory>> GetMenuItemCategoriesAsync();
         Task<MenuCategory> GetMenuItemCategoryByIdAsync(string id);
         Task UpdateMenuItemCategoryAsync(MenuCategory menuCategory);

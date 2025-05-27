@@ -64,7 +64,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var guest = await context.Guests.Include(g => g.ApplicationUser).FirstOrDefaultAsync(g => g.Id == id);
+                var guest = await context.Guests.Include(g => g.ApplicationUser).Include(g => g.GuestAccount).FirstOrDefaultAsync(g => g.Id == id);
 
                 return guest;
             }
@@ -214,7 +214,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         }
 
         // Fund guest account
-        public async Task FundAccountAsync(GuestAccounts guestAccounts)
+        public async Task FundAccountAsync(GuestAccount guestAccounts)
         {
             try
             {
@@ -263,7 +263,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         }
 
         // Get guest account by guest ID
-        public async Task<GuestAccounts> GetGuestAccountByGuestIdAsync(string guestId)
+        public async Task<GuestAccount> GetGuestAccountByGuestIdAsync(string guestId)
         {
             try
             {
@@ -278,7 +278,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         }
 
         // Get guest account by ID
-        public async Task<GuestAccounts> GetGuestAccountByIdAsync(string id)
+        public async Task<GuestAccount> GetGuestAccountByIdAsync(string id)
         {
             try
             {
@@ -293,7 +293,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
         }
 
         // Update guest account
-        public async Task UpdateGuestAccountAsync(GuestAccounts guestAccount)
+        public async Task UpdateGuestAccountAsync(GuestAccount guestAccount)
         {
             try
             {

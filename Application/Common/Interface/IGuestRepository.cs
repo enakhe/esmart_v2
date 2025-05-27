@@ -8,12 +8,12 @@ namespace ESMART.Application.Common.Interface
         Task<int> GetGuestNumber();
         Task<int> GetInHouseGuestNumber();
         Task AddGuestAsync(Guest guest);
-        Task FundAccountAsync(GuestAccounts guestAccounts);
-        Task UpdateGuestAccountAsync(GuestAccounts guestAccount);
+        Task FundAccountAsync(GuestAccount guestAccounts);
+        Task UpdateGuestAccountAsync(GuestAccount guestAccount);
         Task AddGuestTransactionAsync(GuestTransaction guestTransaction);
         Task<List<GuestTransaction>> GetGuestTransactionsAsync(string guestId);
-        Task<GuestAccounts> GetGuestAccountByGuestIdAsync(string guestId);
-        Task<GuestAccounts> GetGuestAccountByIdAsync(string id);
+        Task<GuestAccount> GetGuestAccountByGuestIdAsync(string guestId);
+        Task<GuestAccount> GetGuestAccountByIdAsync(string id);
         Task<List<Guest>> GetAllGuestsAsync();
         Task<Guest> GetGuestByIdAsync(string id);
         Task UpdateGuestAsync(Guest guest);

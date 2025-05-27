@@ -1,6 +1,8 @@
 ﻿#nullable disable
 
 using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.Configuration;
+using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Domain.ViewModels.Transaction;
 using ESMART.Infrastructure.Repositories.FrontDesk;
@@ -232,16 +234,37 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     {
                         var transactionItem = await _transactionRepository.GetTransactionItemsByIdAsync(selectedTransaction.Id);
 
-                        var hotel = await _hotelSettingsService.GetHotelInformation();
-                        if (hotel != null)
+                        List<TransactionItemViewModel> transactionItems = new List<TransactionItemViewModel>();
+
+                        if (transactionItem != null)
                         {
-                            if (transactionItem != null)
+                            var transactionItemViewModel = new TransactionItemViewModel()
                             {
-                                ReceiptViewerDialog receiptViewerDialog = new ReceiptViewerDialog(hotel, transactionItem);
-                                if (receiptViewerDialog.ShowDialog() == true)
-                                {
-                                    this.DialogResult = true;
-                                }
+                                Id = transactionItem.Id,
+                                ServiceId = transactionItem.ServiceId,
+                                Amount = transactionItem.Amount.ToString("N2"),
+                                Tax = transactionItem.TaxAmount,
+                                Service = transactionItem.ServiceCharge,
+                                Discount = transactionItem.Discount,
+                                BillPost = transactionItem.TotalAmount,
+                                Description = transactionItem.Description,
+                                Category = transactionItem.Category.ToString(),
+                                Type = transactionItem.Type.ToString(),
+                                Status = transactionItem.Status,
+                                Account = transactionItem.BankAccount,
+                                Date = transactionItem.DateAdded,
+                                IssuedBy = transactionItem.ApplicationUser.FullName,
+                            };
+
+                            transactionItems.Add(transactionItemViewModel);
+                        }
+
+                        if (transactionItems != null)
+                        {
+                            ReceiptViewerDialog receiptViewerDialog = new ReceiptViewerDialog(transactionItems, _hotelSettingsService, _booking, transactionItem.TotalAmount);
+                            if (receiptViewerDialog.ShowDialog() == true)
+                            {
+                                this.DialogResult = true;
                             }
                         }
                     }

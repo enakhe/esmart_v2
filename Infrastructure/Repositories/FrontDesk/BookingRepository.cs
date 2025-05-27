@@ -67,12 +67,10 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         PaymentMethod = b.PaymentMethod.ToString(),
                         Duration = b.Duration.ToString(),
                         Status = b.Status.ToString(),
-                        TotalAmount = b.TotalAmount.ToString("N2"),
                         CreatedBy = b.ApplicationUser.FullName,
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
                         IsOverStayed = b.IsOverStay,
-                        Receivables = b.Receivables,
                         Room = b.Room.Number
                     })];
             }
@@ -112,6 +110,23 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             catch (Exception ex)
             {
                 throw new Exception("An error occurred when retrieving today's reservations. " + ex.Message);
+            }
+        }
+
+        // Get booking by guest id
+        public async Task<Booking> GetBookingByGuestId(string guestId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                return await context.Bookings
+                    .Include(b => b.Guest)
+                    .Include(b => b.Room)
+                    .FirstOrDefaultAsync(b => b.GuestId == guestId && !b.IsTrashed && b.Status != BookingStatus.CheckedOut);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred when retrieving bookings by guest ID. " + ex.Message);
             }
         }
 
@@ -396,6 +411,31 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             }
         }
 
+        // return rooms of bookings where the booked guest has a guest account and the balance is positive
+        public async Task<List<string>> GetCreditedRooms()
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var rooms = await context.Bookings
+                    .Include(b => b.Room)
+                    .Include(b => b.Guest)
+                    .Include(b => b.Guest.GuestAccount)
+                    .Where(b =>
+                        b.Guest.GuestAccount.Sum(gA => gA.FundedBalance) > 0 &&
+                        !b.IsTrashed
+                    )
+                    .Select(b => b.Room.Number)
+                    .Distinct()
+                    .ToListAsync();
+                return rooms;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to retrieve credited rooms: " + ex.Message, ex);
+            }
+        }
+
         public async Task<List<BookingViewModel>> GetAllBookingByDate(DateTime fromTime, DateTime endTime)
         {
             try
@@ -670,8 +710,11 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Include(b => b.Room).Include(b => b.Guest)
                     .Where(b =>
                         !b.IsTrashed &&
+                        b.Status != BookingStatus.CheckedOut &&
                         b.Room.Number.Contains(keyword) ||
-                        b.Guest.FullName.Contains(keyword) ||
+                        b.Guest.FirstName.Contains(keyword) ||
+                        b.Guest.LastName.Contains(keyword) ||
+                        b.Guest.MiddleName.Contains(keyword) ||
                         b.Room.RoomType.Name.Contains(keyword)
                     )
                     .Select(b => new BookingViewModel

@@ -1,8 +1,11 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.Configuration;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Domain.ViewModels.Transaction;
+using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using System;
@@ -26,13 +29,19 @@ namespace ESMART.Presentation.Forms.Receipt
     /// </summary>
     public partial class ReceiptViewerDialog : Window
     {
-        private readonly Hotel _hotel;
-        private readonly TransactionItem _transactionItem;
-        public ReceiptViewerDialog(Hotel hotel, TransactionItem transactionItem)
+        private readonly List<TransactionItemViewModel> _transactionItem;
+        private readonly IHotelSettingsService _hotelSettingsService;
+        private readonly Domain.Entities.FrontDesk.Booking _booking;
+        private readonly decimal _amount = 0;
+        public ReceiptViewerDialog(List<TransactionItemViewModel> transactionItem, IHotelSettingsService hotelSettingsService, Booking booking, decimal amount)
         {
-            _hotel = hotel;
             _transactionItem = transactionItem;
+            _hotelSettingsService = hotelSettingsService;
+            _booking = booking;
+            _amount = amount;
             InitializeComponent();
+
+            txtExpectedAmount.Text = "₦ " + _amount.ToString("N2");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -40,9 +49,7 @@ namespace ESMART.Presentation.Forms.Receipt
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                //var receiptHelper = new ReceiptHelper();
-                //var document = receiptHelper.GeneratePreviewFlowDocument(_transactionItem, _hotel.Name, _hotel.Address, _hotel.PhoneNumber);
-                //ReceiptViewer.Document = document;
+                Transaction.ItemsSource = _transactionItem;
             }
             catch (Exception ex)
             {
@@ -54,12 +61,49 @@ namespace ESMART.Presentation.Forms.Receipt
             }
         }
 
-        private void PrintButton_Click(object sender, RoutedEventArgs e)
+        private async void PrintButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                ReceiptViewer.Print();
-                this.DialogResult = true;
+                LoaderOverlay.Visibility = Visibility.Visible;
+                try
+                {
+                    var columnNames = Transaction.Columns
+                        .Where(c => c.Header != null)
+                        .Select(c => c.Header.ToString())
+                        .Where(name => !string.IsNullOrWhiteSpace(name) && name != "Operation")
+                        .ToList();
+
+                    var receiptExport = new ReceiptExport()
+                    {
+                        ReceiptNo = _booking.BookingId,
+                        Cashier = AuthSession.CurrentUser?.FullName ?? "Unknown Cashier"
+                    };
+
+                    var optionsWindow = new ExportBillDialog(columnNames!, Transaction, _hotelSettingsService, _booking, null, null, $"Receipt {_booking.Guest.FullName}", _amount, receiptExport, System.Printing.PageOrientation.Portrait);
+                    var result = optionsWindow.ShowDialog();
+
+                    if (result == true)
+                    {
+                        this.DialogResult = true;
+                        var exportResult = optionsWindow.GetResult();
+                        var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                        if (exportResult.SelectedColumns.Count == 0)
+                        {
+                            MessageBox.Show("Please select at least one column to export.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+                finally
+                {
+                    LoaderOverlay.Visibility = Visibility.Collapsed;
+                }
             }
             catch (Exception ex)
             {
@@ -71,5 +115,11 @@ namespace ESMART.Presentation.Forms.Receipt
         {
             this.DialogResult = false;
         }
+    }
+
+    public class ReceiptExport
+    {
+        public string ReceiptNo { get; set; }
+        public string Cashier { get; set; }
     }
 }

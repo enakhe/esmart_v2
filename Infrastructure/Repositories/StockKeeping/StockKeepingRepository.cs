@@ -182,6 +182,44 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             }
         }
 
+        // Search menu item
+        public async Task<List<MenuItemViewModel>> SearchMenuItemsAsync(string searchTerm)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                var menuItems = await context.MenuItems
+                    .Where(m => m.Name.Contains(searchTerm) || m.Description.Contains(searchTerm))
+                    .Include(m => m.MenuItemRecipes)
+                    .ToListAsync();
+                return [.. menuItems.Select(m => new MenuItemViewModel
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Description = m.Description,
+                    Price = m.Price,
+                    IsAvailable = m.IsAvailable ? "Yes" : "No",
+                    CategoryId = m.MenuCategoryId,
+                    ServiceArea = m.ServiceArea.ToString(),
+                    CreatedAt = m.CreatedAt,
+                    UpdatedAt = m.UpdatedAt,
+                    Recipes = [.. m.MenuItemRecipes.Select(r => new MenuItemRecipe
+                        {
+                            Id = r.Id,
+                            MenuItemId = r.MenuItemId,
+                            InventoryItemId = r.InventoryItemId,
+                            CreatedAt = r.CreatedAt,
+                            UpdatedAt = r.UpdatedAt,
+                            Quantity = r.Quantity,
+                        })]
+                })];
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while searching for menu items.", ex);
+            }
+        }
+
         // Get menu item byt category id
         public async Task<List<MenuItemViewModel>> GetMenuItemsByCategoryIdAsync(string categoryId)
         {
@@ -348,6 +386,36 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while deleting the menu item category.", ex);
+            }
+        }
+
+        // search inventory items
+        public async Task<List<InventoryViewModel>> SearchInventoryItemsAsync(string searchTerm)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.InventoryItems
+                    .Where(i => i.Name.Contains(searchTerm) || i.Description.Contains(searchTerm))
+                    .Select(i => new InventoryViewModel
+                    {
+                        Id = i.Id,
+                        Name = i.Name,
+                        Description = i.Description,
+                        Quantity = i.Quantity,
+                        UnitOfMeasure = i.UnitOfMeasure,
+                        ReorderLevel = i.ReorderLevel,
+                        ReorderQuantity = i.ReorderQuantity,
+                        IsLow = i.Quantity < i.ReorderQuantity,
+                        IsActive = i.IsActive ? "Yes" : "No",
+                        CreatedAt = i.CreatedAt,
+                        UpdatedAt = i.UpdatedAt
+                    })
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while searching for inventory items.", ex);
             }
         }
 
@@ -728,10 +796,8 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                         Quantity = o.OrderItems.Sum(oi => oi.Quantity).ToString(),
                         OrderItems = o.OrderItems.Select(oi => new OrderItemViewModel
                         {
-                            Id = oi.Id,
                             OrderId = oi.OrderId,
-                            MenuItemId = oi.MenuItemId,
-                            MenuItemName = oi.MenuItem.Name,
+                            Item = oi.MenuItem.Name,
                             Quantity = oi.Quantity,
                             UnitPrice = oi.UnitPrice,
                         }).ToList(),
@@ -787,10 +853,8 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                         Quantity = o.OrderItems.Sum(oi => oi.Quantity).ToString(),
                         OrderItems = o.OrderItems.Select(oi => new OrderItemViewModel
                         {
-                            Id = oi.Id,
                             OrderId = oi.OrderId,
-                            MenuItemId = oi.MenuItemId,
-                            MenuItemName = oi.MenuItem.Name,
+                            Item = oi.MenuItem.Name,
                             Quantity = oi.Quantity,
                             UnitPrice = oi.UnitPrice,
                         }).ToList(),
@@ -827,10 +891,8 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                         Quantity = o.OrderItems.Sum(oi => oi.Quantity).ToString(),
                         OrderItems = o.OrderItems.Select(oi => new OrderItemViewModel
                         {
-                            Id = oi.Id,
                             OrderId = oi.OrderId,
-                            MenuItemId = oi.MenuItemId,
-                            MenuItemName = oi.MenuItem.Name,
+                            Item = oi.MenuItem.Name,
                             Quantity = oi.Quantity,
                             UnitPrice = oi.UnitPrice,
                         }).ToList(),

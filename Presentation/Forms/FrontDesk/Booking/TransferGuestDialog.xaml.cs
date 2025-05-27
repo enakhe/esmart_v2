@@ -345,7 +345,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                             if (_isUnpaid)
                             {
-                                booking.Receivables += amount;
+                                booking.Balance += amount;
                                 transactionItem.Status = TransactionStatus.Unpaid;
                             }
                             else
@@ -443,7 +443,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 else
                 {
                     booking.Status = BookingStatus.Pending;
-                    booking.Receivables += amount;
+                    booking.Balance += amount;
 
                     await _verificationCodeService.DeleteAsync(verificationCode.Id);
                 }
@@ -451,7 +451,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
             else
             {
-                booking.Receivables += booking.TotalAmount;
+                booking.Balance += booking.TotalAmount;
                 MessageBox.Show(
                     "Booking extended successfully but could not verify payment. Payment will be flagged as pending.",
                     "Info",

@@ -7,69 +7,178 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Receipt Viewer" Height="560" Width="460" Icon="/Forms/Receipt/logo.png" Loaded="Window_Loaded">
+        Title="Receipt Viewer" Height="440" Width="400" Icon="/Forms/Receipt/logo.png" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <Style x:Key="ActionBarButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Background" Value="#4ead16"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#4ead16"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="3"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#4ead16"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#4ead16"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DataGridColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#1a237e"/>
+            <Setter Property="Padding" Value="10,5"/>
+        </Style>
+
+        <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="CanUserResizeColumns" Value="False" />
+            <Setter Property="RowHeight" Value="50"/>
+            <Setter Property="ColumnWidth" Value="*" />
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource DataGridColumnHeaderStyle}"/>
+            <Setter Property="CellStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="20,0"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Grid>
-        <Grid Margin="20,20,20,20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+        <Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-            <TextBlock Text="Receipt" FontSize="25" FontWeight="Bold" Margin="0,10" Grid.Row="0" />
-
-            <Border Background="White" Height="Auto" CornerRadius="20" BorderThickness="1" BorderBrush="#e1e3ea" Margin="10" Grid.Row="1" Padding="10">
-                <FlowDocumentScrollViewer x:Name="ReceiptViewer" />
-            </Border>
-
-            <Grid Margin="1,0,0,0" Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0">
-                    <Button Content="Cancel" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand" Click="Cancel_Click">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                <StackPanel Grid.Row="0" Margin="20" Grid.ColumnSpan="2">
+                    <TextBlock Text="Print Receipt" FontSize="25" FontWeight="Bold" Margin="0,10" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="1">
-                    <Button Content="Print" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="PrintButton_Click">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                <Border Grid.Row="1" Margin="20" Padding="20" CornerRadius="20" BorderThickness="1" BorderBrush="#e1e3ea">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0" BorderThickness="1">
+                                    <TextBlock Text="AMT" Padding="10" FontSize="15" Background="#e1e3ea" Height="40" />
+                                </Border>
+
+                                <TextBox x:Name="txtExpectedAmount" Height="40" Width="150" FontSize="15" Padding="2,10,0,10" Grid.Column="1" IsEnabled="False" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Row="2" Margin="20, 20, 20, 20">
+
+                    <Grid Margin="1,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <Button Content="Cancel" Height="34" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand" Click="Cancel_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <Button Content="Print" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="PrintButton_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+
+                <DataGrid x:Name="Transaction" Style="{StaticResource ModernDataGridStyle}" AutoGenerateColumns="False" IsReadOnly="True" Visibility="Collapsed" RowDetailsVisibilityMode="Visible">
+
+                    <!-- PARENT COLUMNS: Transaction -->
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Discount" Binding="{Binding Discount, StringFormat=N2}" />
+                        <DataGridTextColumn Header="Bill Post" Binding="{Binding BillPost, StringFormat=N2}" />
+                        <DataGridTextColumn Header="Category" Binding="{Binding Category}" />
+                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" />
+                        <DataGridTextColumn Header="Account" Binding="{Binding Account}" />
+                        <DataGridTextColumn Header="Issued By" Binding="{Binding IssuedBy}" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" />
+                        <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+            <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed" Grid.ColumnSpan="2">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
+                    <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
                 </StackPanel>
             </Grid>
-        </Grid>
-        <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed" Grid.ColumnSpan="2">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
-                <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
-            </StackPanel>
         </Grid>
     </Grid>
 </Window>

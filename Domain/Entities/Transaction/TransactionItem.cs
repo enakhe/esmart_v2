@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using ESMART.Domain.Entities.Data;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Enum;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,12 +13,12 @@ namespace ESMART.Domain.Entities.Transaction
         public string Description { get; set; }
         public string ServiceId { get; set; }
         public decimal Amount { get; set; }
-
         public decimal TotalAmount { get; set; }
 
         public decimal TaxAmount { get; set; }
         public decimal ServiceCharge { get; set; }
         public decimal Discount { get; set; }
+        public string Invoice { get; set; }
         public Category Category { get; set; }
         public TransactionType Type { get; set; }
         public TransactionStatus Status { get; set; }
@@ -29,7 +30,12 @@ namespace ESMART.Domain.Entities.Transaction
 
         [ForeignKey("Transaction")]
         public string TransactionId { get; set; }
+        [ForeignKey("Booking")]
+        public string BookingId { get; set; }
+
+
         public virtual Transaction Transaction { get; set; }
+        public virtual Booking Booking { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

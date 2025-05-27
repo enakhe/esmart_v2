@@ -9,10 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ESMART.Infrastructure.Repositories.RoomSetting
 {
-    public class RoomRepository(IDbContextFactory<ApplicationDbContext> contextFactory, IReservationRepository reservationRepository) : IRoomRepository
+    public class RoomRepository(IDbContextFactory<ApplicationDbContext> contextFactory, IReservationRepository reservationRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository) : IRoomRepository
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
         private readonly IReservationRepository _reservationRepository = reservationRepository;
+        private readonly ITransactionRepository _transactionRepository = transactionRepository;
+        private readonly IBookingRepository _bookingRepository = bookingRepository; 
 
         public async Task AddRoom(Room room)
         {
@@ -35,6 +37,11 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                 // Get today's reservations
                 var reservations = await _reservationRepository.GetTodayReservationsAsync();
 
+                // Debit
+                var debitRooms = await _transactionRepository.GetRoomsWithUnpaidTransactionItemsAsync();
+
+                var creditRooms = await _bookingRepository.GetCreditedRooms();
+
                 using var context = _contextFactory.CreateDbContext();
 
                 // Fetch all rooms
@@ -56,6 +63,26 @@ namespace ESMART.Infrastructure.Repositories.RoomSetting
                     {
                         room.Status = RoomStatus.Reserved;
                         context.Entry(room).State = EntityState.Modified;
+                    }
+                }
+
+                foreach(var room in debitRooms)
+                {
+                    var existingRoom = allRooms.FirstOrDefault(r => r.Number == room);
+                    if (existingRoom != null && existingRoom.Status != RoomStatus.Debit)
+                    {
+                        existingRoom.Status = RoomStatus.Debit;
+                        context.Entry(existingRoom).State = EntityState.Modified;
+                    }
+                }
+
+                foreach (var room in creditRooms)
+                {
+                    var existingRoom = allRooms.FirstOrDefault(r => r.Number == room);
+                    if (existingRoom != null && existingRoom.Status != RoomStatus.Credit)
+                    {
+                        existingRoom.Status = RoomStatus.Credit;
+                        context.Entry(existingRoom).State = EntityState.Modified;
                     }
                 }
 

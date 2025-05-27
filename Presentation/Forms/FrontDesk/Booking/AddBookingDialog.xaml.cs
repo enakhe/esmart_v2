@@ -239,7 +239,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 VAT = vat,
                 ServiceCharge = serviceCharge,
                 TotalAmount = totalAmount,
-                Receivables = 0,
+                Balance = 0,
                 PaymentMethod = paymentMethod,
                 GuestId = guestId,
                 RoomId = roomId,
@@ -300,41 +300,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             var hotel = await _hotelSettingsService.GetHotelInformation();
             var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
 
-            var transaction = new Domain.Entities.Transaction.Transaction
-            {
-                TransactionId = $"TR{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}",
-                GuestId = booking.GuestId,
-                BookingId = booking.Id,
-                Date = DateTime.Now,
-                InvoiceNumber = booking.BookingId,
-                ApplicationUserId = AuthSession.CurrentUser?.Id,
-            };
-
-            await _transactionRepository.AddTransactionAsync(transaction);
-
-            var tax = CalculateCharges(booking.VAT, booking.Amount);
-            var serviceCharge = CalculateCharges(booking.ServiceCharge, booking.Amount);
-            var discount = CalculateCharges(booking.Discount, booking.Amount);
-
-            var transactionItem = new Domain.Entities.Transaction.TransactionItem
-            {
-                Amount = booking.Amount,
-                ServiceId = booking.BookingId,
-                TaxAmount = tax,
-                ServiceCharge = serviceCharge,
-                Discount = discount,
-                TotalAmount = booking.Amount + tax + serviceCharge - discount,
-                Category = Category.Accomodation,
-                Type = TransactionType.Charge,
-                Status = TransactionStatus.Unpaid,
-                BankAccount = $"{bookingAccount.BankAccountNumber}",
-                DateAdded = DateTime.Now,
-                ApplicationUserId = AuthSession.CurrentUser?.Id,
-                TransactionId = transaction.Id,
-                Description = $"Booking for {bookedGuest.FullName} in {bookedRoom?.Number} from {booking.CheckIn.ToShortDateString()} to {booking.CheckOut.ToShortDateString()}",
-            };
-
-            await _transactionRepository.AddTransactionItemAsync(transactionItem);
+            var result = CreateTransaction(
+                booking, 
+                decimal.Parse(txtRoomRate.Text), 
+                decimal.Parse(txtVAT.Text), 
+                decimal.Parse(txtServiceCharge.Text), 
+                decimal.Parse(txtDiscount.Text), 
+                bookingAccount.BankAccountNumber);
 
             if (bookedRoom != null)
             {
@@ -342,71 +314,44 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 await _roomRepository.UpdateRoom(bookedRoom);
             }
 
-            if (hotel != null)
+            var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
+            if (isVerifyPayment != null)
             {
-                var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
-                if (isVerifyPayment != null)
+                var value = isVerifyPayment.Value;
+                if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    var value = isVerifyPayment.Value;
-                    if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        await VerifyPayment(hotel, booking, bookedGuest, activeUser, transaction, transactionItem, bookingAccount);
-                    }
-                    else
-                    {
-                        booking.Status = BookingStatus.Completed;
+                    await VerifyPayment(hotel, booking, bookedGuest, activeUser, result.Result.Item1, result.Result.Item2, bookingAccount);
+                }
+                else
+                {
+                    booking.Status = BookingStatus.Completed;
 
-                        var isGuestAccount = await CheckIfGuestHasAccount(bookedGuest);
+                    var isGuestAccount = await CheckIfGuestHasAccount(bookedGuest);
 
-                        if (isGuestAccount)
+                    if (isGuestAccount)
+                    {
+                        await ChargeGuestAccount(bookedGuest, booking.TotalAmount);
+                        await AddGuestTransaction(bookedGuest, booking.TotalAmount);
+
+                        if (await CheckIfGuestHasMoney(bookedGuest, booking.TotalAmount))
                         {
-                            await ChargeGuestAccount(bookedGuest, booking.TotalAmount);
-                            await AddGuestTransaction(bookedGuest, booking.TotalAmount);
-
-                            if (await CheckIfGuestHasMoney(bookedGuest, booking.TotalAmount))
-                            {
-                                transactionItem.Status = TransactionStatus.Paid;
-                            }
-                            else
-                            {
-                                transactionItem.Status = TransactionStatus.Unpaid;
-                                MessageBox.Show("Guest does not have enough balance to pay for the booking. Payment will be flagged as pending.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
+                            result.Result.Item2.Status = TransactionStatus.Paid;
                         }
                         else
                         {
-                            transactionItem.Status = TransactionStatus.Paid;
+                            result.Result.Item2.Status = TransactionStatus.Unpaid;
+                            MessageBox.Show("Guest does not have enough balance to pay for the booking. Payment will be flagged as pending.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
-
-                        await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
-                        await _bookingRepository.UpdateBooking(booking);
-
-                        await SenderHelper.SendEmail(
-                             bookedGuest.Email,
-                             "Booking Payment Receipt",
-                             "guest_receipt",
-                             new ReceiptVariable
-                             {
-                                 accountNumber = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
-                                 amount = booking.TotalAmount.ToString("N2"),
-                                 guestName = bookedGuest.FullName,
-                                 hotelName = hotel.Name,
-                                 invoiceNumber = transaction.InvoiceNumber,
-                                 paymentMethod = booking.PaymentMethod.ToString(),
-                                 receptionist = activeUser.FullName,
-                                 receptionistContact = activeUser.PhoneNumber,
-                                 service = booking.BookingId,
-                             }
-                         );
                     }
+                    else
+                    {
+                        result.Result.Item2.Status = TransactionStatus.Paid;
+                    }
+
+                    await _transactionRepository.UpdateTransactionItemAsync(result.Result.Item2);
+                    await _bookingRepository.UpdateBooking(booking);
                 }
             }
-        }
-
-        private decimal CalculateCharges(decimal charge, decimal basePrice)
-        {
-            var total = basePrice * (charge / 100);
-            return total;
         }
 
         private async Task VerifyPayment(Hotel hotel, Domain.Entities.FrontDesk.Booking booking, Domain.Entities.FrontDesk.Guest bookedGuest, ApplicationUser activeUser, Transaction transaction, TransactionItem transactionItem, BankAccount bookingAccount)
@@ -472,13 +417,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 }
                 else
                 {
-                    booking.Receivables += booking.TotalAmount;
+                    booking.Balance += booking.TotalAmount;
                     await _verificationCodeService.DeleteAsync(verificationCode.Id);
                 }
             }
             else
             {
-                booking.Receivables += booking.TotalAmount;
+                booking.Balance += booking.TotalAmount;
                 MessageBox.Show(
                     "Booking added successfully but could not verify payment. Payment will be flagged as pending.",
                     "Info",
@@ -488,6 +433,73 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
 
             await _bookingRepository.UpdateBooking(booking);
+        }
+
+        private async Task<(Transaction, TransactionItem)> CreateTransaction(
+            Domain.Entities.FrontDesk.Booking booking,
+            decimal roomRate,
+            decimal vat,
+            decimal serviceCharge,
+            decimal discount,
+            string account)
+        {
+            var transactionId = $"TR{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}";
+            var transaction = new Domain.Entities.Transaction.Transaction
+            {
+                TransactionId = transactionId,
+                GuestId = booking.GuestId,
+                BookingId = booking.Id,
+                Date = DateTime.Now,
+                InvoiceNumber = transactionId,
+                ApplicationUserId = AuthSession.CurrentUser?.Id,
+            };
+
+            await _transactionRepository.AddTransactionAsync(transaction);
+
+            var transactionItem = await CreateTransactionItem(booking, transaction, roomRate, vat, serviceCharge, discount, account);
+
+            return (transaction, transactionItem);
+        }
+
+        private async Task<TransactionItem> CreateTransactionItem(
+            Domain.Entities.FrontDesk.Booking booking, 
+            Transaction transaction, 
+            decimal roomRate, 
+            decimal vat, 
+            decimal serviceCharge, 
+            decimal discount,
+            string account)
+        {
+            var (RackRate, FinalTotal) = Helper.CalculateRackAndDiscountedTotal(
+                roomRate,
+                vat,
+                serviceCharge,
+                discount
+            );
+
+            var transactionItem = new TransactionItem
+            {
+                Amount = RackRate,
+                ServiceId = booking.BookingId,
+                TaxAmount = vat,
+                ServiceCharge = serviceCharge,
+                Discount = discount,
+                BookingId = booking.Id,
+                TotalAmount = FinalTotal,
+                Category = Category.Accomodation,
+                Invoice = transaction.InvoiceNumber,
+                Type = TransactionType.Charge,
+                Status = TransactionStatus.Unpaid,
+                BankAccount = account,
+                DateAdded = DateTime.Now,
+                ApplicationUserId = AuthSession.CurrentUser?.Id,
+                TransactionId = transaction.Id,
+                Description = $"Room Charge (Inclusive of Inclusion)",
+            };
+
+            await _transactionRepository.AddTransactionItemAsync(transactionItem);
+
+            return transactionItem;
         }
 
 
@@ -501,15 +513,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             e.Handled = !Regex.IsMatch(e.Text, @"[\d.]");
         }
 
-        private void DecimalInput_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
-                          e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
-                          e.Key == Key.Back || e.Key == Key.Delete ||
-                          e.Key == Key.Left || e.Key == Key.Right ||
-                          e.Key == Key.Decimal || e.Key == Key.OemPeriod);
-        }
-
         private void NumberOnly_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsTextNumeric(e.Text);
@@ -518,11 +521,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private bool IsTextNumeric(string text)
         {
             return text.All(char.IsDigit);
-        }
-
-        private void EditButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            txtRoomRate.IsEnabled = true;
         }
 
         private async void cmbRoom_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -600,11 +598,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     await CalculateTotalPrice(decimal.Parse(txtRoomRate.Text));
                 }
             }
-        }
-
-        private void DecimalTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            InputFormatter.AllowDecimalOnly(sender, e);
         }
 
         private async void txtServiceCharge_TextChanged(object sender, TextChangedEventArgs e)

@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:ESMART.Presentation.Forms.FrontDesk.Booking"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" d:DesignWidth="1600"
       Title="Booking" Loaded="Page_Loaded">
 
     <Page.Resources>
@@ -115,7 +115,17 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Margin="20" Grid.Column="0">
-                                <TextBox Name="txtSearchBuilding" HorizontalAlignment="Left" Width="200" Padding="2,2,0,2" FontSize="18" Foreground="Gray" Text="Search"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBox Name="txtSearchBuilding" HorizontalAlignment="Left" KeyDown="txtSearchBuilding_KeyDown" Width="200" Padding="2,2,0,2" FontSize="18" Foreground="Gray" Grid.Column="0" />
+                                    <Button Content="Search" Style="{StaticResource ActionBarButtonStyle}" Height="27" Grid.Column="1" Width="100" Click="Button_Click" />
+
+                                </Grid>
+                                
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
@@ -200,21 +210,11 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Receivables" Width="*">
+                                        <DataGridTemplateColumn Header="Balance" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
                                                         <TextBlock Text="{Binding Receivables, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Status" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Status}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>

@@ -13,6 +13,8 @@ namespace ESMART.Domain.Entities.FrontDesk
         {
             this.Codes = new HashSet<VerificationCode>();
             this.Transactions = new HashSet<Entities.Transaction.Transaction>();
+            this.TransactionItems = new HashSet<Entities.Transaction.TransactionItem>();
+            this.RoomBookings = new HashSet<RoomBooking>();
         }
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -48,13 +50,12 @@ namespace ESMART.Domain.Entities.FrontDesk
         public decimal Discount { get; set; }
         public decimal VAT { get; set; }
         public decimal ServiceCharge { get; set; }
-        public decimal TotalAmount { get; set; }
-        public decimal Receivables { get; set; }
         public bool IsOverStay { get; set; } = false;
         public PaymentMethod PaymentMethod { get; set; }
 
         public string GuestId { get; set; }
         public string RoomId { get; set; }
+        public string GuestAccountId { get; set; }
         public string ApplicationUserId { get; set; }
         public string UpdatedBy { get; set; }
 
@@ -65,8 +66,11 @@ namespace ESMART.Domain.Entities.FrontDesk
         public virtual Guest Guest { get; set; }
         public virtual Room Room { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
+        public virtual GuestAccount GuestAccount { get; set; }
 
         public ICollection<VerificationCode> Codes { get; set; }
         public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }
+        public ICollection<Entities.Transaction.TransactionItem> TransactionItems { get; set; }
+        public ICollection<RoomBooking> RoomBookings { get; set; }
     }
 }
