@@ -27,7 +27,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public decimal FundedBalance { get; set; }
         public decimal Paid => TopUps + DirectPayments;
         public decimal Refunds { get; set; }
-        public decimal Balance => FundedBalance - OutstandingBalance;
+        public decimal Balance => Paid - Amount;
         public decimal TopUps { get; set; }
         public decimal DirectPayments { get; set; }
         public decimal OutstandingBalance => OtherCharges - Paid;

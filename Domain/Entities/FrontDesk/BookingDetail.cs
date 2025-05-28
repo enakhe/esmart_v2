@@ -11,6 +11,7 @@ namespace ESMART.Domain.Entities.FrontDesk
 {
     public class BookingDetail
     {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string GuestAccountId { get; set; }
         public string RoomId { get; set; }
         public string InvoiceId { get; set; }

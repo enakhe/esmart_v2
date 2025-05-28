@@ -1,9 +1,11 @@
-﻿using ESMART.Domain.Entities.Data;
+﻿#nullable disable
+
+using ESMART.Domain.Entities.Data;
 
 namespace ESMART.Presentation.Session
 {
     public class AuthSession
     {
-        public static ApplicationUser? CurrentUser { get; set; }
+        public static ApplicationUser CurrentUser { get; set; }
     }
 }

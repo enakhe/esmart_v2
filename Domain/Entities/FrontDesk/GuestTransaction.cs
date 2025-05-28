@@ -14,8 +14,8 @@ namespace ESMART.Domain.Entities.FrontDesk
     public class GuestTransaction
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string GuestTraId { get; set; } = $"TRP-{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}";
         public string GuestId { get; set; }
-        public string TransactionId { get; set; }
         public string ApplicationUserId { get; set; }
         public string Invoice { get; set; }
         public decimal Discount { get; set; }
@@ -25,6 +25,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public decimal Payment { get; set; }
         public string Description { get; set; }
         public string BankAccountId { get; set; }
+        public string Consumer { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         public TransactionType TransactionType { get; set; }
         public DateTime Date { get; set; }

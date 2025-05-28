@@ -137,7 +137,7 @@
 
                         <StackPanel Grid.Column="1" Margin="2,0,0,0">
                             <TextBlock Text="Total Amount:" FontWeight="Bold" />
-                            <TextBox x:Name="txtTotalAmount" PreviewTextInput="DecimalInput_PreviewTextInput" PreviewKeyDown="DecimalInput_PreviewKeyDown" IsEnabled="False" Padding="2,5,0,5" />
+                            <TextBox x:Name="txtTotalAmount" IsEnabled="False" Padding="2,5,0,5" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>

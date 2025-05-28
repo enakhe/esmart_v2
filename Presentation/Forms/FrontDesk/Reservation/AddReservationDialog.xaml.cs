@@ -307,7 +307,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                 ServiceCharge = reservation.ServiceCharge,
                 Discount = reservation.Discount,
                 Category = Category.Reservation,
-                Type = TransactionType.Charge,
+                //Type = TransactionType.Charge,
                 BankAccount = $"{reservedAccount.BankAccountNumber} ({reservedAccount.BankName}) | {reservedAccount.BankAccountName}",
                 Status = TransactionStatus.Paid,
                 DateAdded = DateTime.Now,

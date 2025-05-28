@@ -27,4 +27,28 @@ namespace ESMART.Application.Common.Models
             return new Result(false, errors, null);
         }
     }
+
+    public class GuestServiceResult
+    {
+        internal GuestServiceResult(bool succeeded, IEnumerable<string> errors, string data)
+        {
+            Succeeded = succeeded;
+            Errors = [.. errors];
+            Response = data;
+        }
+
+        public bool Succeeded { get; init; }
+        public string[] Errors { get; init; }
+        public string Response { get; set; }
+
+        public static GuestServiceResult Success(string data)
+        {
+            return new GuestServiceResult(true, [], data);
+        }
+
+        public static GuestServiceResult Failure(IEnumerable<string> errors)
+        {
+            return new GuestServiceResult(false, errors, null);
+        }
+    }
 }

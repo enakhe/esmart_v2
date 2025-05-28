@@ -4,10 +4,14 @@ using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Enum;
 using ESMART.Infrastructure.Repositories.Transaction;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Session;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,12 +37,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private Domain.Entities.FrontDesk.Guest _guest;
         private readonly IGuestRepository _guestRepository;
         private readonly IBookingRepository _bookingRepository;
+        private readonly GuestAccountService _guestAccountService;
         private readonly ITransactionRepository _transactionRepository;
-        public FundGuestAccountDialog(Domain.Entities.FrontDesk.Guest guest, IGuestRepository guestRepository, IBookingRepository bookingRepository, ITransactionRepository transactionRepository)
+        private IServiceProvider _serviceProvider;
+        public FundGuestAccountDialog(Domain.Entities.FrontDesk.Guest guest, IGuestRepository guestRepository, IBookingRepository bookingRepository, ITransactionRepository transactionRepository, GuestAccountService gustAccountService)
         {
             InitializeComponent();
+            InitializeServices();
             _guestRepository = guestRepository;
             _bookingRepository = bookingRepository;
+            _guestAccountService = gustAccountService;
 
             _formatTimer = new DispatcherTimer
             {
@@ -52,12 +60,24 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             _transactionRepository = transactionRepository;
         }
 
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
+        }
+
         private async Task LoadGuestAccount()
         {
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var guestAccount = await _guestRepository.GetGuestAccountByGuestIdAsync(_guest.Id);
+                var guestAccount = await _guestAccountService.GetAccountAsync(_guest.Id);
                 if (guestAccount != null)
                 {
                     txtAmount.Text = guestAccount.FundedBalance.ToString("N", CultureInfo.InvariantCulture);
@@ -153,10 +173,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         {
             try
             {
-                bool isNull = Helper.AreAnyNullOrEmpty(txtAmount.Text);
+                bool isNull = Helper.AreAnyNullOrEmpty(txtAmount.Text, ((BankAccount)cmbAccountNumber.SelectedItem).Id, cmbPaymentMethod.SelectedValue.ToString()!);
                 if (isNull)
                 {
-                    MessageBox.Show("Please enter an amount to fund.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Please fill n all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -168,50 +188,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
                 LoaderOverlay.Visibility = Visibility.Visible;
 
-                // save the guest account if the amount is higher then current amount and alo create one if the guest has no account
-                var existingAccount = await _guestRepository.GetGuestAccountByGuestIdAsync(_guest.Id);
-                var activeBooking = await _bookingRepository.GetBookingByGuestId(_guest.Id);
+                var paymentMethod = Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!);
+                var bankAccountId = cmbAccountNumber.SelectedValue.ToString();
+                var userId = AuthSession.CurrentUser?.Id;
 
-                // Create or update the guest account
-                if (existingAccount != null)
-                {
-                    if (amount > existingAccount.FundedBalance)
-                    {
-                        existingAccount.FundedBalance += amount;
-                        existingAccount.LastFunded = DateTime.Now;
-                    }
-
-                    existingAccount.AllowBarAndRes = chkResBar.IsChecked ?? true;
-                    existingAccount.AllowLaundry = chkLaundry.IsChecked ?? true;
-                    await _guestRepository.UpdateGuestAccountAsync(existingAccount);
-                }
-                else
-                {
-                    existingAccount = new GuestAccount
-                    {
-                        GuestId = _guest.Id,
-                        FundedBalance = amount,
-                        LastFunded = DateTime.Now,
-                        AllowBarAndRes = chkResBar.IsChecked ?? true,
-                        AllowLaundry = chkLaundry.IsChecked ?? true
-                    };
-
-                    await _guestRepository.FundAccountAsync(existingAccount);
-                }
-
-                var guestTransaction = new GuestTransaction
-                {
-                    GuestId = _guest.Id,
-                    Amount = amount,
-                    PaymentMethod = (PaymentMethod)cmbPaymentMethod.SelectedValue,
-                    BankAccountId = cmbAccountNumber.SelectedValue?.ToString(),
-                    TransactionType = TransactionType.Credit,
-                    Description = $"Account funded with ₦{amount:N2}",
-                    Date = DateTime.Now
-                };
-                await _guestRepository.AddGuestTransactionAsync(guestTransaction);
-
-                await CreateTransactionItem(activeBooking?.BookingId!, amount, false);
+                await _guestAccountService.ToUpAsync(_guest.Id, amount, paymentMethod, bankAccountId!, userId!);
 
                 LoaderOverlay.Visibility = Visibility.Collapsed;
                 MessageBox.Show("Account saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -221,47 +202,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
                 MessageBox.Show($"An error occurred while funding the account: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private async Task CreateTransactionItem(string bookingId, decimal amount, bool isUnPaid)
-        {
-            try
-            {
-                var transaction = await _transactionRepository.GetByBookingIdAsync(bookingId);
-                if (transaction != null)
-                {
-                    var transactionItem = new TransactionItem()
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        TransactionId = transaction.Id,
-                        Amount = amount,
-                        Description = $"Advance payment is {amount} {cmbPaymentMethod.Text}",
-                        DateAdded = DateTime.Now,
-                        BankAccount = ((BankAccount)cmbAccountNumber.SelectedItem).BankAccountNumber,
-                        Invoice = transaction.InvoiceNumber,
-                        Category = Category.Deposit,
-                        ServiceId = transaction.BookingId,
-                        Type = TransactionType.Payment,
-                        Status = TransactionStatus.Paid,
-                        Discount = 0,
-                        TaxAmount = 0,
-                        ServiceCharge = 0,
-                        TotalAmount = amount,
-                        ApplicationUserId = AuthSession.CurrentUser?.Id
-                    };
-
-                    if (!isUnPaid)
-                    {
-                        transactionItem.Status = TransactionStatus.Paid;
-                    }
-
-                    await _transactionRepository.AddTransactionItemAsync(transactionItem);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

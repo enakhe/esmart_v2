@@ -55,7 +55,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     PaymentMethod = _booking.PaymentMethod.ToString(),
                     Duration = _booking.Duration.ToString(),
                     Status = _booking.Status.ToString(),
-                    TotalAmount = _booking.TotalAmount.ToString("N2"),
+                    //TotalAmount = _booking.TotalAmount.ToString("N2"),
                     CreatedBy = _booking.ApplicationUser?.FullName,
                     DateCreated = _booking.DateCreated,
                     DateModified = _booking.DateModified

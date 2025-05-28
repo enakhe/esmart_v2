@@ -1,5 +1,7 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.Data;
+using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 
@@ -21,16 +24,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IBookingRepository _bookingRepository;
         private readonly IApplicationUserRoleRepository _userService;
+        private readonly GuestAccountService _guestAccountService;
         private readonly UserManager<ApplicationUser> _userManager;
         private IServiceProvider _serviceProvider;
 
-        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager, IBookingRepository bookingRepository)
+        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager, IBookingRepository bookingRepository, GuestAccountService guestAccountService)
         {
             _guestRepository = guestRepository;
             _transactionRepository = transactionRepository;
             _userService = userService;
             _userManager = userManager;
             _bookingRepository = bookingRepository;
+            _guestAccountService = guestAccountService;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
@@ -137,7 +142,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
                 if (selectedGuest.Id != null)
                 {
-                    FundGuestAccountDialog fundGuestAccountDialog = new FundGuestAccountDialog(selectedGuest, _guestRepository, _bookingRepository, _transactionRepository);
+                    FundGuestAccountDialog fundGuestAccountDialog = new FundGuestAccountDialog(selectedGuest, _guestRepository, _bookingRepository, _transactionRepository, _guestAccountService);
                     if (fundGuestAccountDialog.ShowDialog() == true)
                     {
                         _ = LoadGuests();
@@ -157,7 +162,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var selectedGuest = (Domain.Entities.FrontDesk.Guest)GuestDataGrid.SelectedItem;
                 if (selectedGuest.Id != null)
                 {
-                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository, _transactionRepository, _hotelSettingsService, _bookingRepository);
+                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(selectedGuest.Id, _guestRepository, _transactionRepository, _hotelSettingsService, _bookingRepository, _guestAccountService);
                     if (viewGuestDialog.ShowDialog() == true)
                     {
                         await LoadGuests();
@@ -283,6 +288,25 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             {
                 txtSearch.Text = "Search";
                 txtSearch.Foreground = Brushes.Gray;
+            }
+        }
+
+        private async void GuestDataGridRow_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DataGridRow row && row.Item is Domain.Entities.FrontDesk.Guest guest)
+            {
+                if (guest != null)
+                {
+                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(guest.Id, _guestRepository, _transactionRepository, _hotelSettingsService, _bookingRepository, _guestAccountService);
+                    if (viewGuestDialog.ShowDialog() == true)
+                    {
+                        await LoadGuests();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before viewing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
     }

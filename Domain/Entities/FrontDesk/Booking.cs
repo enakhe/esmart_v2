@@ -2,6 +2,7 @@
 
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.RoomSettings;
+using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
 
@@ -46,7 +47,7 @@ namespace ESMART.Domain.Entities.FrontDesk
 
         public decimal Amount { get; set; }
         public BookingStatus Status { get; set; }
-        public string AccountNumber { get; set; }
+        public string BankAccountId { get; set; }
         public decimal Discount { get; set; }
         public decimal VAT { get; set; }
         public decimal ServiceCharge { get; set; }
@@ -67,6 +68,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public virtual Room Room { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual GuestAccount GuestAccount { get; set; }
+        public virtual BankAccount BankAccount { get; set; }
 
         public ICollection<VerificationCode> Codes { get; set; }
         public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }

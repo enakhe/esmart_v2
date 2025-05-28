@@ -234,12 +234,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 CheckOut = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0),
                 Amount = amount,
                 Status = BookingStatus.Pending,
-                AccountNumber = accountNumber,
+                BankAccountId = accountNumber,
                 Discount = discount,
                 VAT = vat,
                 ServiceCharge = serviceCharge,
-                TotalAmount = totalAmount,
-                Balance = 0,
                 PaymentMethod = paymentMethod,
                 GuestId = guestId,
                 RoomId = roomId,
@@ -296,7 +294,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         {
             var bookedRoom = await _roomRepository.GetRoomById(booking.RoomId);
             var bookedGuest = await _guestRepository.GetGuestByIdAsync(booking.GuestId);
-            var bookingAccount = await _transactionRepository.GetBankAccountById(booking.AccountNumber);
+            var bookingAccount = await _transactionRepository.GetBankAccountById(booking.BankAccountId);
             var hotel = await _hotelSettingsService.GetHotelInformation();
             var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
 
@@ -330,18 +328,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                     if (isGuestAccount)
                     {
-                        await ChargeGuestAccount(bookedGuest, booking.TotalAmount);
-                        await AddGuestTransaction(bookedGuest, booking.TotalAmount);
+                        //await ChargeGuestAccount(bookedGuest, booking.TotalAmount);
+                        //await AddGuestTransaction(bookedGuest, booking.TotalAmount);
 
-                        if (await CheckIfGuestHasMoney(bookedGuest, booking.TotalAmount))
-                        {
-                            result.Result.Item2.Status = TransactionStatus.Paid;
-                        }
-                        else
-                        {
-                            result.Result.Item2.Status = TransactionStatus.Unpaid;
-                            MessageBox.Show("Guest does not have enough balance to pay for the booking. Payment will be flagged as pending.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
+                        //if (await CheckIfGuestHasMoney(bookedGuest, booking.TotalAmount))
+                        //{
+                        //    result.Result.Item2.Status = TransactionStatus.Paid;
+                        //}
+                        //else
+                        //{
+                        //    result.Result.Item2.Status = TransactionStatus.Unpaid;
+                        //    MessageBox.Show("Guest does not have enough balance to pay for the booking. Payment will be flagged as pending.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                        //}
                     }
                     else
                     {
@@ -372,7 +370,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 bookedGuest.FullName,
                 "Booking",
                 verificationCode.Code,
-                booking.TotalAmount,
+                booking.Amount,
                 booking.PaymentMethod.ToString(),
                 activeUser.FullName!,
                 activeUser.PhoneNumber!
@@ -386,7 +384,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     _bookingRepository,
                     _transactionRepository,
                     booking.BookingId,
-                    booking.TotalAmount,
+                    booking.Amount,
                     _applicationUserRoleRepository
                 );
 
@@ -404,7 +402,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         new ReceiptVariable
                         {
                             accountNumber = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
-                            amount = booking.TotalAmount.ToString("N2"),
+                            amount = booking.Amount.ToString("N2"),
                             guestName = bookedGuest.FullName,
                             hotelName = hotel.Name,
                             invoiceNumber = transaction.InvoiceNumber,
@@ -417,13 +415,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 }
                 else
                 {
-                    booking.Balance += booking.TotalAmount;
                     await _verificationCodeService.DeleteAsync(verificationCode.Id);
                 }
             }
             else
             {
-                booking.Balance += booking.TotalAmount;
                 MessageBox.Show(
                     "Booking added successfully but could not verify payment. Payment will be flagged as pending.",
                     "Info",
@@ -470,7 +466,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             decimal discount,
             string account)
         {
-            var (RackRate, FinalTotal) = Helper.CalculateRackAndDiscountedTotal(
+            var (RackRate, DiscountRate, TaxRate, FinalTotal) = Helper.CalculateRackAndDiscountedTotal(
                 roomRate,
                 vat,
                 serviceCharge,
@@ -488,7 +484,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 TotalAmount = FinalTotal,
                 Category = Category.Accomodation,
                 Invoice = transaction.InvoiceNumber,
-                Type = TransactionType.Charge,
+                Type = TransactionType.RoomCharge,
                 Status = TransactionStatus.Unpaid,
                 BankAccount = account,
                 DateAdded = DateTime.Now,
@@ -716,7 +712,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 if (guestAccount != null)
                 {
                     guestAccount.FundedBalance -= amount;
-                    guestAccount.TotalCharges += amount;
+                    //guestAccount.TotalCharges += amount;
                     guestAccount.LastFunded = DateTime.Now;
 
                     await _guestRepository.UpdateGuestAccountAsync(guestAccount);
@@ -742,7 +738,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     Id = Guid.NewGuid().ToString(),
                     GuestId = guest.Id,
                     Amount = amount,
-                    TransactionType = TransactionType.Debit,
+                    //TransactionType = TransactionType.Debit,
                     Description = "Booking Payment",
                     Date = DateTime.Now,
                     ApplicationUserId = AuthSession.CurrentUser?.Id

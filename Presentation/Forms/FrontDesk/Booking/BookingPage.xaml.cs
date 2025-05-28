@@ -119,30 +119,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     {
                         var booking = await _bookingRepository.GetBookingById(selectedBooking.Id);
 
-                        var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
-                        if (isVerifyPayment != null)
+                        var issueCard = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
+                        if (issueCard.ShowDialog() == true)
                         {
-                            var value = isVerifyPayment.Value;
-                            if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                bool result = await VerifyPayment(booking, activeUser);
-                                if (result)
-                                {
-                                    var issueCard = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
-                                    if (issueCard.ShowDialog() == true)
-                                    {
-                                        await LoadBooking();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                var issueCard = new IssueCardDialog(_bookingRepository, _guestRepository, booking, _hotelSettingsService);
-                                if (issueCard.ShowDialog() == true)
-                                {
-                                    await LoadBooking();
-                                }
-                            }
+                            await LoadBooking();
                         }
                     }
                     else
@@ -174,30 +154,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     {
                         var booking = await _bookingRepository.GetBookingById(selectedBooking.Id);
 
-                        var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
-                        if (isVerifyPayment != null)
+                        var extendStaayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
+                        if (extendStaayDialog.ShowDialog() == true)
                         {
-                            var value = isVerifyPayment.Value;
-                            if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                bool result = await VerifyPayment(booking, activeUser);
-                                if (result)
-                                {
-                                    var extendStaayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
-                                    if (extendStaayDialog.ShowDialog() == true)
-                                    {
-                                        await LoadBooking();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                var extendStaayDialog = new ExtendStayDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
-                                if (extendStaayDialog.ShowDialog() == true)
-                                {
-                                    await LoadBooking();
-                                }
-                            }
+                            await LoadBooking();
                         }
                     }
                     else
@@ -228,32 +188,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     if (selectedBooking.Id != null)
                     {
                         var booking = await _bookingRepository.GetBookingById(selectedBooking.Id);
-                        var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
-                        if (isVerifyPayment != null)
+                        var transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
+                        if (transferGuestDialog.ShowDialog() == true)
                         {
-                            var value = isVerifyPayment.Value;
-                            if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                bool result = await VerifyPayment(booking, activeUser);
-                                if (result)
-                                {
-                                    var transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
-                                    if (transferGuestDialog.ShowDialog() == true)
-                                    {
-                                        await LoadBooking();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                var transferGuestDialog = new TransferGuestDialog(_guestRepository, _roomRepository, _hotelSettingsService, _bookingRepository, _verificationCodeService, _transactionRepository, booking, _reservationRepository, _applicationUserRoleRepository);
-                                if (transferGuestDialog.ShowDialog() == true)
-                                {
-                                    await LoadBooking();
-                                }
-                            }
+                            await LoadBooking();
                         }
-
                     }
                     else
                     {
@@ -470,85 +409,85 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
-        private async Task<bool> VerifyPayment(Domain.Entities.FrontDesk.Booking booking, ApplicationUser activeUser)
-        {
-            var hotel = await _hotelSettingsService.GetHotelInformation();
-            var bookingAccount = await _transactionRepository.GetBankAccountById(booking.AccountNumber);
+        //private async Task<bool> VerifyPayment(Domain.Entities.FrontDesk.Booking booking, ApplicationUser activeUser)
+        //{
+        //    var hotel = await _hotelSettingsService.GetHotelInformation();
+        //    var bookingAccount = await _transactionRepository.GetBankAccountById(booking.AccountNumber);
 
-            if (booking.Status != Domain.Enum.BookingStatus.Completed)
-            {
-                var verificationCode = new VerificationCode()
-                {
-                    Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
-                    ServiceId = booking.BookingId,
-                    ApplicationUserId = AuthSession.CurrentUser?.Id
-                };
+        //    if (booking.Status != Domain.Enum.BookingStatus.Completed)
+        //    {
+        //        var verificationCode = new VerificationCode()
+        //        {
+        //            Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+        //            ServiceId = booking.BookingId,
+        //            ApplicationUserId = AuthSession.CurrentUser?.Id
+        //        };
 
-                await _verificationCodeService.AddCode(verificationCode);
+        //        await _verificationCodeService.AddCode(verificationCode);
 
-                if (hotel != null)
-                {
-                    var response = await SenderHelper.SendOtp(
-                        hotel.PhoneNumber,
-                        hotel.Name,
-                        $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
-                        booking.Guest.FullName,
-                        "Booking",
-                        verificationCode.Code,
-                        booking.Balance,
-                        booking.PaymentMethod.ToString(),
-                        activeUser.FullName!,
-                        activeUser.PhoneNumber!
-                    );
+        //        if (hotel != null)
+        //        {
+        //            var response = await SenderHelper.SendOtp(
+        //                hotel.PhoneNumber,
+        //                hotel.Name,
+        //                $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
+        //                booking.Guest.FullName,
+        //                "Booking",
+        //                verificationCode.Code,
+        //                booking.Balance,
+        //                booking.PaymentMethod.ToString(),
+        //                activeUser.FullName!,
+        //                activeUser.PhoneNumber!
+        //            );
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
+        //            if (response.IsSuccessStatusCode)
+        //            {
+        //                MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        VerifyPaymentWindow verifyPaymentWindow = new(
-                            _verificationCodeService,
-                            _hotelSettingsService,
-                            _bookingRepository,
-                            _transactionRepository,
-                            booking.BookingId,
-                            booking.Balance,
-                            _applicationUserRoleRepository
-                        );
+        //                VerifyPaymentWindow verifyPaymentWindow = new(
+        //                    _verificationCodeService,
+        //                    _hotelSettingsService,
+        //                    _bookingRepository,
+        //                    _transactionRepository,
+        //                    booking.BookingId,
+        //                    booking.Balance,
+        //                    _applicationUserRoleRepository
+        //                );
 
-                        if (verifyPaymentWindow.ShowDialog() == true)
-                        {
-                            booking.Status = Domain.Enum.BookingStatus.Completed;
-                            booking.Balance = 0;
-                            await _bookingRepository.UpdateBooking(booking);
+        //                if (verifyPaymentWindow.ShowDialog() == true)
+        //                {
+        //                    booking.Status = Domain.Enum.BookingStatus.Completed;
+        //                    booking.Balance = 0;
+        //                    await _bookingRepository.UpdateBooking(booking);
 
-                            var transaction = await _transactionRepository.GetUnpaidTransactionItemsByServiceIdAsync(booking.BookingId, booking.GuestId, booking.Balance);
+        //                    var transaction = await _transactionRepository.GetUnpaidTransactionItemsByServiceIdAsync(booking.BookingId, booking.GuestId, booking.Balance);
 
-                            if(transaction != null)
-                            {
-                                transaction.Status = Domain.Enum.TransactionStatus.Paid;
-                                await _transactionRepository.UpdateTransactionItemAsync(transaction);
-                            }
+        //                    if(transaction != null)
+        //                    {
+        //                        transaction.Status = Domain.Enum.TransactionStatus.Paid;
+        //                        await _transactionRepository.UpdateTransactionItemAsync(transaction);
+        //                    }
 
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            $"An error ocurred when sending code. This might be caused by network related issues or otp sender service.",
-                            "Error",
-                            MessageBoxButton.OKCancel,
-                            MessageBoxImage.Error
-                        );
+        //                    return true;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                MessageBox.Show(
+        //                    $"An error ocurred when sending code. This might be caused by network related issues or otp sender service.",
+        //                    "Error",
+        //                    MessageBoxButton.OKCancel,
+        //                    MessageBoxImage.Error
+        //                );
 
-                        return false;
-                    }
-                }
-            }
+        //                return false;
+        //            }
+        //        }
+        //    }
 
-            return true;
+        //    return true;
 
-        }
+        //}
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {

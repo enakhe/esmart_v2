@@ -6,6 +6,7 @@ using ESMART.Infrastructure.Repositories.RoomSetting;
 using ESMART.Infrastructure.Repositories.StockKeeping;
 using ESMART.Infrastructure.Repositories.Transaction;
 using ESMART.Infrastructure.Repositories.Verification;
+using ESMART.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ESMART.Infrastructure
@@ -35,6 +36,7 @@ namespace ESMART.Infrastructure
             services.AddScoped<CardRepository>();
             services.AddScoped<BackupRepository>();
             services.AddScoped<StockKeepingRepository>();
+            services.AddScoped<GuestAccountService>();
             return services;
         }
 

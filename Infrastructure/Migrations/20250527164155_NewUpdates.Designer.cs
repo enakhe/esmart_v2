@@ -4,6 +4,7 @@ using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250527164155_NewUpdates")]
+    partial class NewUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -316,13 +319,13 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AccountNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("BankAccountId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BookingId")
@@ -376,8 +379,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("BankAccountId");
 
                     b.HasIndex("GuestAccountId");
 
@@ -583,9 +584,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<decimal>("BillPosts")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Consumer")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -601,9 +599,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("GuestId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("GuestTraId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Invoice")
                         .HasColumnType("nvarchar(max)");
 
@@ -615,6 +610,9 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<decimal>("Tax")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TransactionType")
                         .HasColumnType("int");
@@ -719,9 +717,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("OccupantName")
                         .HasColumnType("nvarchar(max)");
 
@@ -730,9 +725,6 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<string>("RoomId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Tax")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -1396,10 +1388,6 @@ namespace ESMART.Infrastructure.Migrations
                         .WithMany("Bookings")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("ESMART.Domain.Entities.Transaction.BankAccount", "BankAccount")
-                        .WithMany()
-                        .HasForeignKey("BankAccountId");
-
                     b.HasOne("ESMART.Domain.Entities.FrontDesk.GuestAccount", "GuestAccount")
                         .WithMany()
                         .HasForeignKey("GuestAccountId");
@@ -1413,8 +1401,6 @@ namespace ESMART.Infrastructure.Migrations
                         .HasForeignKey("RoomId");
 
                     b.Navigation("ApplicationUser");
-
-                    b.Navigation("BankAccount");
 
                     b.Navigation("Guest");
 

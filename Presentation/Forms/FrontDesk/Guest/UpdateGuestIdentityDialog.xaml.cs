@@ -73,7 +73,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 if (openFileDialog.ShowDialog() == true)
                 {
                     backDocument = openFileDialog.FileName;
-                    backImg.Source = new BitmapImage(new Uri(backDocument));
                 }
             }
             catch (Exception ex)
@@ -93,9 +92,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 {
                     cbIdType.Text = guestIdentity.IdType;
                     txtIdNumber.Text = guestIdentity.IdNumber;
-                    if (guestIdentity.IdentificationDocumentFront != null && guestIdentity.IdentificationDocumentFront.Length > 0)
+                    if (guestIdentity.Document != null && guestIdentity.Document.Length > 0)
                     {
-                        using (var ms = new MemoryStream(guestIdentity.IdentificationDocumentFront))
+                        using (var ms = new MemoryStream(guestIdentity.Document))
                         {
                             BitmapImage bitmap = new BitmapImage();
                             bitmap.BeginInit();
@@ -103,19 +102,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                             bitmap.StreamSource = ms;
                             bitmap.EndInit();
                             frontImg.Source = bitmap;
-                        }
-                    }
-
-                    if (guestIdentity.IdentificationDocumentBack != null && guestIdentity.IdentificationDocumentBack.Length > 0)
-                    {
-                        using (var ms = new MemoryStream(guestIdentity.IdentificationDocumentBack))
-                        {
-                            BitmapImage bitmap = new BitmapImage();
-                            bitmap.BeginInit();
-                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                            bitmap.StreamSource = ms;
-                            bitmap.EndInit();
-                            backImg.Source = bitmap;
                         }
                     }
                 }
@@ -156,8 +142,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     {
                         guestIdentity.IdType = idType;
                         guestIdentity.IdNumber = idNumber;
-                        guestIdentity.IdentificationDocumentFront = ImageSourceToByteArray(frontImg.Source);
-                        guestIdentity.IdentificationDocumentBack = ImageSourceToByteArray(backImg.Source);
+                        guestIdentity.Document = ImageSourceToByteArray(frontImg.Source);
 
                         await _guestRepository.UpdateGuestIdentityAsync(guestIdentity);
                         MessageBox.Show("Guest identity information updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

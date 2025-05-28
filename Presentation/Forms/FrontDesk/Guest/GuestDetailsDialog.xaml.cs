@@ -1,11 +1,13 @@
 ﻿#nullable disable
 
+using ESMART.Application.Common.Dtos;
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Domain.ViewModels.Transaction;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.Receipt;
 using ESMART.Presentation.Utils;
@@ -27,13 +29,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private readonly ITransactionRepository _transactionRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IBookingRepository _bookingRepository;
-        public GuestDetailsDialog(string id, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository)
+        private readonly GuestAccountService _guestAccountService;
+
+        public GuestDetailsDialog(string id, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IBookingRepository bookingRepository, GuestAccountService guestAccountService)
         {
             _id = id;
             _guestRepository = guestRepository;
             _transactionRepository = transactionRepository;
             _hotelSettingsService = hotelSettingsService;
             _bookingRepository = bookingRepository;
+            _guestAccountService = guestAccountService;
             InitializeComponent();
 
             Loaded += DisableMinimizeButton;
@@ -47,7 +52,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var guest = await _guestRepository.GetGuestByIdAsync(_id);
                 if (guest != null)
                 {
-                    var guestAccount = await _guestRepository.GetGuestTransactionsAsync(_id);
+                    var guestAccount = await _guestAccountService.GetAccountAsync(_id);
 
                     var guestViewModel = new GuestViewModel()
                     {
@@ -59,7 +64,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         Gender = guest.Gender,
                         Street = guest.Street,
                         Status = guest.Status,
-                        CurrentBalance = guestAccount.Where(g => g.TransactionType == TransactionType.Credit).Sum(g => g.Amount) - guestAccount.Where(g => g.TransactionType == TransactionType.Debit).Sum(g => g.Amount),
+                        CurrentBalance = guestAccount.Balance,
                         PhoneNumber = guest.PhoneNumber,
                         City = guest.City,
                         State = guest.State,
@@ -94,38 +99,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var guestTransactionItem = await _transactionRepository.GetTransactionItemsByGuestIdAsync(_id);
+                var guestTransactionItem = await _guestAccountService.GetGuestAccountSummaryAsync(_id);
                 if (guestTransactionItem != null)
                 {
-                    this.TransactionItemDataGrid.ItemsSource = guestTransactionItem;
+                    TransactionItemDataGrid.ItemsSource = new List<GuestAccountSummaryDto> { guestTransactionItem };
                 }
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-            finally
-            {
-                LoaderOverlay.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private async Task LoadGuestAccountTransactionHistory()
-        {
-            LoaderOverlay.Visibility = Visibility.Visible;
-            try
-            {
-                var guestAccountTransaction = await _guestRepository.GetGuestTransactionsAsync(_id);
-                if (guestAccountTransaction != null)
-                {
-                    this.AccTransactionItemDataGrid.ItemsSource = guestAccountTransaction;
-                }
-
-                txtIn.Text = $"In: ₦{guestAccountTransaction.Sum(g => g.Amount).ToString("N2")}";
-                txtOut.Text = $"Out: ₦{guestAccountTransaction.Where(g => g.TransactionType == TransactionType.Debit).Sum(g => g.Amount).ToString("N2")}";
-                txtCurrent.Text = $"Current Balance: ₦{guestAccountTransaction.Where(g => g.TransactionType == TransactionType.Credit).Sum(g => g.Amount) - guestAccountTransaction.Where(g => g.TransactionType == TransactionType.Debit).Sum(g => g.Amount):N2}";
             }
             catch (Exception ex)
             {
@@ -259,10 +237,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 if (selectedTab == tbTransactionHistory)
                 {
                     await LoadGuestTransactionHistory();
-                }
-                if (selectedTab == tcAccountHistory)
-                {
-                    await LoadGuestAccountTransactionHistory();
                 }
             }
         }
@@ -402,5 +376,26 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var guest = await _guestRepository.GetGuestByIdAsync(_id);
+            FundGuestAccountDialog fundGuestAccountDialog = new FundGuestAccountDialog(guest, _guestRepository, _bookingRepository, _transactionRepository, _guestAccountService);
+            if (fundGuestAccountDialog.ShowDialog() == true)
+            {
+                await LoadGuestDetails();
+            }
+        }
+
+        private async void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            var guest = await _guestRepository.GetGuestByIdAsync(_id);
+
+            UpdateGuestDialog updateGuestDialog = new UpdateGuestDialog(guest.Id, _guestRepository);
+            if (updateGuestDialog.ShowDialog() == true)
+            {
+                await LoadGuestDetails();
+            }
+        }
     }
 }

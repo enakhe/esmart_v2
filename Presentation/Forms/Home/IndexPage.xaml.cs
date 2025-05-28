@@ -86,5 +86,10 @@ namespace ESMART.Presentation.Forms.Home
             await LoadRoom();
             await LoadMetrics();
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

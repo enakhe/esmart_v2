@@ -259,7 +259,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                 if (guestAccount != null)
                 {
                     guestAccount.FundedBalance -= amount;
-                    guestAccount.TotalCharges += amount;
+                    //guestAccount.TotalCharges += amount;
                     guestAccount.LastFunded = DateTime.Now;
 
                     await _guestRepository.UpdateGuestAccountAsync(guestAccount);
@@ -285,7 +285,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                     Id = Guid.NewGuid().ToString(),
                     GuestId = guest.Id,
                     Amount = amount,
-                    TransactionType = TransactionType.Debit,
+                    //TransactionType = TransactionType.Debit,
                     Description = "Order Payment",
                     Date = DateTime.Now,
                     ApplicationUserId = AuthSession.CurrentUser?.Id
@@ -340,7 +340,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                         Invoice = invoiceId,
                         Category = Category.FoodAndBeverage,
                         ServiceId = serviceId,
-                        Type = TransactionType.Charge,
+                        //Type = TransactionType.Charge,
                         Status = TransactionStatus.Unpaid,
                         Discount = 0,
                         TaxAmount = 0,

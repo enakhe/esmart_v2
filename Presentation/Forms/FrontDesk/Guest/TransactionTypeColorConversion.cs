@@ -19,8 +19,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
             return status switch
             {
-                TransactionType.Credit => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4EAD16")),
-                TransactionType.Debit => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000")),
+                //TransactionType.Credit => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4EAD16")),
+                //TransactionType.Debit => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000")),
                 TransactionType.Adjustment => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1a237e")),
                 TransactionType.Refund => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#fbbc04")),
                 _ => new SolidColorBrush(Colors.LightGray),

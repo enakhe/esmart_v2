@@ -1,7 +1,9 @@
 ﻿#nullable disable
 
+using ESMART.Application.Common.Dtos;
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Session;
 using Microsoft.Win32;
 using System.IO;
@@ -14,9 +16,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
     {
         private string profilePictureImage;
         private readonly IGuestRepository _guestRepository;
-        public AddGuestDialog(IGuestRepository guestRepository)
+        private readonly GuestAccountService _guestAccountService;
+        public AddGuestDialog(IGuestRepository guestRepository, GuestAccountService guestAccountService)
         {
             _guestRepository = guestRepository;
+            _guestAccountService = guestAccountService;
             InitializeComponent();
         }
 
@@ -59,7 +63,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 string state = txtState.Text;
                 string country = txtCountry.Text;
 
-                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, lastName, phoneNumber, gender, city, state, country);
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, lastName, phoneNumber, gender);
                 if (!areFieldsEmpty)
                 {
                     byte[] profileImageBytes = null;
@@ -68,9 +72,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         profileImageBytes = File.ReadAllBytes(profilePictureImage);
                     }
 
-                    var guest = new Domain.Entities.FrontDesk.Guest
+                    var guest = new CreateGuestDto
                     {
-                        GuestId = "GU" + Guid.NewGuid().ToString().Split("-")[0].ToUpper().Substring(0, 3),
                         FirstName = firstName.ToUpper(),
                         MiddleName = middleName.ToUpper(),
                         LastName = lastName.ToUpper(),
@@ -81,16 +84,14 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         City = city,
                         State = state,
                         Country = country,
-                        Status = "Inactive",
                         GuestImage = profileImageBytes,
-                        IsTrashed = false,
                         ApplicationUserId = AuthSession.CurrentUser?.Id
                     };
 
-                    await _guestRepository.AddGuestAsync(guest);
+                    var guestId = await _guestAccountService.CreateGuestAsync(guest);
 
                     MessageBox.Show("Guest added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    AddGuestIdentityDialog addGuestIdentityDialog = new AddGuestIdentityDialog(guest, _guestRepository);
+                    AddGuestIdentityDialog addGuestIdentityDialog = new AddGuestIdentityDialog(guestId, _guestRepository);
                     addGuestIdentityDialog.ShowDialog();
                     this.DialogResult = true;
                 }

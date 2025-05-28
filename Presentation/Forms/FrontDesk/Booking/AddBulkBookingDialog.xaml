@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Add Bulk Booking" Height="640" Width="800" Icon="/Forms/FrontDesk/Booking/logo.png" Loaded="Window_Loaded">
+        Title="Add Bulk Booking" Height="750" Width="1000" Icon="/Forms/FrontDesk/Booking/logo.png" Loaded="Window_Loaded">
 
     <Window.Resources>
         <local:BoolToColorConverter x:Key="BoolToColorConverter" />
@@ -22,12 +22,12 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Add Bulk Booking" FontSize="20" Grid.Row="0" FontWeight="Bold" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBlock Text="Add Booking" FontSize="20" Grid.Row="0" FontWeight="Bold" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
                 <Border Background="White" CornerRadius="20" BorderThickness="1" BorderBrush="#e1e3ea" Margin="10" Grid.Column="0" Padding="20">
@@ -46,7 +46,8 @@
 
                         <StackPanel Grid.Row="2" Margin="0,0,0,20">
                             <TextBlock Text="Guest:" FontWeight="Bold" />
-                            <ComboBox x:Name="cmbGuest" Padding="2,5,0,5" SelectionChanged="cmbGuest_SelectionChanged" />
+                            <ComboBox SelectedItem="{Binding SelectedGuest, Mode=TwoWay}" x:Name="cmbGuest"  DisplayMemberPath="FullName" />
+
                         </StackPanel>
 
                         <StackPanel Grid.Row="3" Margin="0,0,0,20" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -158,44 +159,66 @@
                             </Grid>
 
                         </StackPanel>
-
-                        <StackPanel Margin="0,10,0,20" x:Name="btnAddRecipe" Grid.Row="8" HorizontalAlignment="Right">
-                            <Button Height="30" Padding="5" x:Name="UnpaidBtn" HorizontalAlignment="Stretch" ToolTip="Edit" Background="Black" Cursor="Hand" Click="MarkAsUnPaid_Click">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <materialDesign:PackIcon Kind="Close" Width="20" Height="20" Foreground="White" Grid.Column="0" />
-                                    <TextBlock Text="Mark as unpaid" Grid.Column="1" Foreground="White" />
-                                </Grid>
-                            </Button>
-                        </StackPanel>
                     </Grid>
                 </Border>
 
-                <Border Background="White" VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="20" BorderThickness="1" BorderBrush="#e1e3ea" Margin="10" Grid.Column="1" Padding="10">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding Rooms}" Cursor="Hand">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel IsItemsHost="True" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding IsSelected, Converter={StaticResource BoolToColorConverter}}" MouseLeftButtonUp="RoomCard_MouseLeftButtonUp" Tag="{Binding}">
-                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Room.Number}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
-                                            <TextBlock Text="{Binding Room.Rate,StringFormat=N2}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                <Border Background="White" CornerRadius="20" BorderThickness="1" BorderBrush="#e1e3ea" Margin="10" Grid.Column="1" Padding="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                    </ScrollViewer>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0">
+                            <ItemsControl ItemsSource="{Binding Rooms}" Cursor="Hand">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel IsItemsHost="True" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="80" Height="80" Margin="5" CornerRadius="10" Background="{Binding IsSelected, Converter={StaticResource BoolToColorConverter}}" MouseLeftButtonUp="RoomCard_MouseLeftButtonUp" Tag="{Binding}">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Room.Number}" FontSize="15" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding Room.RoomType.Name}" FontSize="11" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding Room.Rate,StringFormat=N2}" FontSize="11" Foreground="White" HorizontalAlignment="Center" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <DataGrid ItemsSource="{Binding SelectedRooms}" AutoGenerateColumns="False" CanUserAddRows="False" Grid.Row="1">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Room Number" Binding="{Binding Room.Number}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="Room Type" Binding="{Binding Room.RoomType.Name}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="Occupant Name" Binding="{Binding Occupant.OccupantName, UpdateSourceTrigger=PropertyChanged}" />
+                                <DataGridTextColumn Header="Phone Number" Binding="{Binding Occupant.PhoneNumber, UpdateSourceTrigger=PropertyChanged}" />
+                                <DataGridTemplateColumn Header="Checkout Time">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <DatePicker SelectedDate="{Binding CheckoutTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay }" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <CheckBox Content="Copy main guest name to all rooms" Grid.Column="0" HorizontalAlignment="Left"  Margin="10" IsChecked="{Binding CopyMainGuestToAll}" />
+                            <CheckBox x:Name="chkUseSameCheckout" Grid.Column="1" HorizontalAlignment="Right" Content="Use same checkout time for all" Checked="chkUseSameCheckout_Checked" Unchecked="chkUseSameCheckout_Unchecked" />
+                        </Grid>
+                            
+
+                    </Grid>
                 </Border>
             </Grid>
 

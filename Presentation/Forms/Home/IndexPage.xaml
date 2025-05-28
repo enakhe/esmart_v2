@@ -11,6 +11,7 @@
 
     <Page.Resources>
         <local:RoomStatusToColorDialog x:Key="RoomStatusToColorDialog"/>
+        <local:StatusToForegroundConverter x:Key="StatusToForegroundConverter" />
     </Page.Resources>
 
     <Grid Grid.Row="1" Grid.Column="1" Margin="20">
@@ -168,10 +169,18 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding Room.Status, Converter={StaticResource RoomStatusToColorDialog}}" MouseLeftButtonUp="RoomCard_MouseLeftButtonUp" Tag="{Binding}">
+                                            <Border.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Book Room" />
+                                                    <MenuItem Header="View Bill" />
+                                                    <Separator />
+                                                    <MenuItem Header="Mark as Dirty" />
+                                                </ContextMenu>
+                                            </Border.ContextMenu>
                                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Room.Number}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
-                                                <TextBlock Text="{Binding Room.Status}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
-                                                <TextBlock Text="{Binding Room.RoomType.Name}" FontSize="12" Foreground="White" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding Room.Number}" FontSize="16" FontWeight="Bold" Foreground="{Binding Room.Status, Converter={StaticResource StatusToForegroundConverter}}" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding Room.Status}" FontSize="12" Foreground="{Binding Room.Status, Converter={StaticResource StatusToForegroundConverter}}" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding Room.RoomType.Name}" FontSize="12" Foreground="{Binding Room.Status, Converter={StaticResource StatusToForegroundConverter}}" HorizontalAlignment="Center" />
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>

@@ -11,14 +11,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 {
     public partial class AddGuestIdentityDialog : Window
     {
-        private Domain.Entities.FrontDesk.Guest _guest;
+        private readonly string _guestId;
         private readonly IGuestRepository _guestRepository;
         private string frontDocument;
-        private string backDocument;
 
-        public AddGuestIdentityDialog(Domain.Entities.FrontDesk.Guest guest, IGuestRepository guestRepository)
+        public AddGuestIdentityDialog(string guestId, IGuestRepository guestRepository)
         {
-            _guest = guest;
+            _guestId = guestId;
             _guestRepository = guestRepository;
             InitializeComponent();
         }
@@ -45,28 +44,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
-        private void UploadBack_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                OpenFileDialog openFileDialog = new OpenFileDialog
-                {
-                    Title = "Select Image",
-                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp"
-                };
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    backDocument = openFileDialog.FileName;
-                    backImg.Source = new BitmapImage(new Uri(backDocument));
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-        }
-
         private async void SaveRecord_Click(object sender, RoutedEventArgs e)
         {
             LoaderOverlay.Visibility = Visibility.Visible;
@@ -84,19 +61,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         idDocumentFront = File.ReadAllBytes(frontDocument);
                     }
 
-                    byte[] idDocumentBack = null;
-                    if (!string.IsNullOrEmpty(backDocument))
-                    {
-                        idDocumentBack = File.ReadAllBytes(backDocument);
-                    }
-
                     var guestIdentity = new Domain.Entities.FrontDesk.GuestIdentity
                     {
-                        IdentificationDocumentBack = idDocumentBack,
-                        IdentificationDocumentFront = idDocumentFront,
+                        Document = idDocumentFront,
                         IdNumber = idNumber,
                         IdType = idType,
-                        GuestId = _guest.Id
+                        GuestId = _guestId
                     };
 
                     await _guestRepository.AddGuestIdentityAsync(guestIdentity);

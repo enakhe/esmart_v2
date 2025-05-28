@@ -62,26 +62,32 @@ namespace ESMART.Application.Common.Utils
             }
         }
 
-        public static (decimal RackRate, decimal FinalTotal) CalculateRackAndDiscountedTotal(
-        decimal roomRate, decimal vat, decimal serviceCharge, decimal discount)
+        public static (decimal RackRate, decimal DiscountAmount, decimal TaxAmount, decimal FinalTotal) CalculateRackAndDiscountedTotal(
+            decimal roomRate, decimal vat, decimal serviceCharge, decimal discount)
         {
             var vatRate = vat / 100m;
             var serviceChargeRate = serviceCharge / 100m;
             var discountRate = discount / 100m;
 
             var markupMultiplier = 1 + vatRate + serviceChargeRate;
-            var discountMultiplier = 1 - discountRate;
 
             // Step 1: Get rack rate before VAT and service charge
             var rackRate = roomRate / markupMultiplier;
 
-            // Step 2: Apply discount to the rack rate
-            var discountedRackRate = rackRate * discountMultiplier;
+            // Step 2: Calculate the discount amount off the rack rate
+            var discountAmount = rackRate * discountRate;
 
-            // Step 3: Calculate final amount after reapplying VAT and service charge
-            var finalTotal = discountedRackRate * markupMultiplier;
+            // Step 3: Get the discounted rack rate
+            var discountedRackRate = rackRate - discountAmount;
 
-            return (rackRate, finalTotal);
+            // Step 4: Calculate tax based on discounted rack rate
+            var taxAmount = discountedRackRate * (vatRate + serviceChargeRate);
+
+            // Step 5: Final total (discounted rack + tax)
+            var finalTotal = discountedRackRate + taxAmount;
+
+            return (rackRate, discountAmount, taxAmount, finalTotal);
         }
+
     }
 }

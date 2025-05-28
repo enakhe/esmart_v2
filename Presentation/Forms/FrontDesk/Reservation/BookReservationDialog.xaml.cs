@@ -56,28 +56,28 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 if (hotel != null)
                 {
-                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, _booking.AccountNumber, _guest, "Booking", verificationCode.Code, _booking.Balance, _booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, _booking.AccountNumber, _guest, "Booking", verificationCode.Code, _booking.Balance, _booking.PaymentMethod.ToString(), activeUser.FullName!, activeUser.PhoneNumber!);
+                    //if (response.IsSuccessStatusCode)
+                    //{
+                    //    MessageBox.Show("Kindly verify booking payment", "Code resent", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, _booking.BookingId, _amount, _applicationUserRoleRepository);
-                        if (verifyPaymentWindow.ShowDialog() == true)
-                        {
-                            _booking.Status = Domain.Enum.BookingStatus.Completed;
-                            _booking.Balance = 0;
-                            await _bookingRepository.AddBooking(_booking);
+                    //    VerifyPaymentWindow verifyPaymentWindow = new(_verificationCodeService, _hotelSettingsService, _bookingRepository, _transactionRepository, _booking.BookingId, _amount, _applicationUserRoleRepository);
+                    //    if (verifyPaymentWindow.ShowDialog() == true)
+                    //    {
+                    //        _booking.Status = Domain.Enum.BookingStatus.Completed;
+                    //        //_booking.Balance = 0;
+                    //        await _bookingRepository.AddBooking(_booking);
 
-                            _transaction.BookingId = _booking.Id;
-                            await _transactionRepository.UpdateTransactionAsync(_transaction);
+                    //        _transaction.BookingId = _booking.Id;
+                    //        await _transactionRepository.UpdateTransactionAsync(_transaction);
 
-                            this.DialogResult = true;
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show($"An error ocurred when sending code. This might be caused by network related issues or otp sender service.", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error);
-                    }
+                    //        this.DialogResult = true;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    MessageBox.Show($"An error ocurred when sending code. This might be caused by network related issues or otp sender service.", "Error", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+                    //}
                 }
             }
             catch (Exception ex)

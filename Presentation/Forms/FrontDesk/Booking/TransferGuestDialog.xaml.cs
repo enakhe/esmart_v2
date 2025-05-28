@@ -160,7 +160,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 txtDiscount.Text = _booking.Discount.ToString();
                 txtVAT.Text = _booking.VAT.ToString();
                 txtServiceCharge.Text = _booking.ServiceCharge.ToString();
-                cmbAccountNumber.SelectedValue = _booking.AccountNumber;
+                cmbAccountNumber.SelectedValue = _booking.BankAccountId;
                 cmbPaymentMethod.SelectedValue = _booking.PaymentMethod;
             }
             catch (Exception ex)
@@ -222,12 +222,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 _booking.RoomId = selectedRoom.Id;
                 _booking.Room = selectedRoom;
                 _booking.Amount += amount;
-                _booking.AccountNumber = accountNumber;
+                _booking.BankAccountId = accountNumber;
                 _booking.PaymentMethod = paymentMethod;
 
                 if (differencePerDay != 0)
                 {
-                    _booking.TotalAmount += totalAmount;
+                    _booking.Amount += totalAmount;
                 }
 
                 var isRoomAvailable = await CheckIfRoomCanBeBooked(selectedRoom.Number, dtpCheckIn.SelectedDate.Value, dtpCheckOut.SelectedDate.Value);
@@ -281,7 +281,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             if (differencePerDay != 0)
             {
                 var bookedRoom = await _roomRepository.GetRoomById(booking.RoomId);
-                var bookingAccount = await _transactionRepository.GetBankAccountById(booking.AccountNumber);
+                var bookingAccount = await _transactionRepository.GetBankAccountById(booking.BankAccountId);
                 var bookedGuest = await _guestRepository.GetGuestByIdAsync(booking.GuestId);
                 var hotel = await _hotelSettingsService.GetHotelInformation();
                 var activeUser = await _applicationUserRoleRepository.GetUserById(AuthSession.CurrentUser!.Id);
@@ -345,7 +345,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                             if (_isUnpaid)
                             {
-                                booking.Balance += amount;
                                 transactionItem.Status = TransactionStatus.Unpaid;
                             }
                             else
@@ -363,7 +362,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                                  new ReceiptVariable
                                  {
                                      accountNumber = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
-                                     amount = booking.TotalAmount.ToString("N2"),
+                                     amount = booking.Amount.ToString("N2"),
                                      guestName = bookedGuest.FullName,
                                      hotelName = hotel.Name,
                                      invoiceNumber = transaction!.InvoiceNumber,
@@ -429,7 +428,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                         new ReceiptVariable
                         {
                             accountNumber = $"{bookingAccount.BankAccountNumber} ({bookingAccount.BankName}) | {bookingAccount.BankAccountName}",
-                            amount = booking.TotalAmount.ToString("N2"),
+                            amount = booking.Amount.ToString("N2"),
                             guestName = bookedGuest.FullName,
                             hotelName = hotel.Name,
                             invoiceNumber = transaction.InvoiceNumber,
@@ -443,7 +442,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 else
                 {
                     booking.Status = BookingStatus.Pending;
-                    booking.Balance += amount;
 
                     await _verificationCodeService.DeleteAsync(verificationCode.Id);
                 }
@@ -451,7 +449,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
             else
             {
-                booking.Balance += booking.TotalAmount;
                 MessageBox.Show(
                     "Booking extended successfully but could not verify payment. Payment will be flagged as pending.",
                     "Info",
@@ -512,7 +509,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 }
                 else if (decimal.Parse(txtRoomRate.Text) > _booking.Room.Rate)
                 {
-                    amountToDisplay = newTotalAmount - _booking.TotalAmount;
+                    amountToDisplay = newTotalAmount - _booking.Amount;
                 }
                 else
                 {
@@ -709,7 +706,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
             else if (decimal.Parse(txtRoomRate.Text) > _booking.Room.Rate)
             {
-                amountToDisplay = newTotalAmount - _booking.TotalAmount;
+                amountToDisplay = newTotalAmount - _booking.Amount;
             }
             else
             {
@@ -753,7 +750,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 if (guestAccount != null)
                 {
                     guestAccount.FundedBalance -= amount;
-                    guestAccount.TotalCharges += amount;
                     guestAccount.LastFunded = DateTime.Now;
 
                     await _guestRepository.UpdateGuestAccountAsync(guestAccount);
@@ -779,7 +775,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     Id = Guid.NewGuid().ToString(),
                     GuestId = guest.Id,
                     Amount = amount,
-                    TransactionType = TransactionType.Debit,
+                    //TransactionType = TransactionType.Debit,
                     Description = "Booking Payment",
                     Date = DateTime.Now,
                     ApplicationUserId = AuthSession.CurrentUser?.Id
