@@ -82,11 +82,12 @@ namespace ESMART.Presentation.Forms.Home
             foreach (var room in SelectedRooms)
             {
                 decimal rate = Helper.GetPriceByRateAndTime(checkIn, checkOut, room.Room.Rate);
-                var (rack, discountPrce, tax, final) = Helper.CalculateRackAndDiscountedTotal(rate, vat, serviceCharge, discount);
+                var (rack, discountPrce, serviceFeeAmount, tax, final) = Helper.CalculateRackAndDiscountedTotal(rate, vat, serviceCharge, discount);
                 room.RackRate = rack;
                 room.FinalRate = final;
                 room.DiscountRate = discountPrce;
-                room.Tax = tax;
+                room.TaxRate = tax;
+                room.ServiceChargeRate = serviceFeeAmount;
             }
 
             TotalAmount = SelectedRooms.Sum(r => r.FinalRate);

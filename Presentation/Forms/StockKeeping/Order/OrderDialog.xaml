@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:ESMART.Presentation.Forms.StockKeeping.Order"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
+        WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
         Background="#f0f4f9"
         ResizeMode="CanResize"
@@ -109,46 +110,57 @@
 
                     <StackPanel Grid.Row="0" Margin="20,0,5,0">
                         <TextBlock Text="Active Booking:" FontWeight="Bold" />
-                        <ComboBox x:Name="cmbActiveBooking" Padding="2,5,0,5" SelectionChanged="cmbActiveBooking_SelectionChanged" />
+                        <ComboBox x:Name="cmbActiveBooking" Padding="2,5,0,5" />
                     </StackPanel>
 
                     <StackPanel Margin="20" Grid.Row="1">
                         <TextBlock Text="Cart" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-                        <ItemsControl ItemsSource="{Binding CartItems}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                        <TextBlock Text="{Binding Name}" Width="100"/>
-                                        <TextBlock Text="{Binding Quantity}" Width="30"/>
-                                        <TextBlock Text="{Binding TotalPrice, StringFormat=N2}" Width="60"/>
-                                        <Button  Width="30" HorizontalAlignment="Center" Height="30" Padding="2" ToolTip="Delete" Background="White" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji" Click="RemoveCartItem_Click">
-                                            <materialDesign:PackIcon Kind="Minus" Width="20" Height="20" Foreground="Black"/>
-                                        </Button>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                        <TextBlock Text="Total:" FontWeight="Bold" Margin="0,20,0,5"/>
-                        <TextBlock Text="{Binding DataContext.TotalAmount, 
-                          RelativeSource={RelativeSource AncestorType=Window}, 
-                          StringFormat=₦{0:N2}}" 
-                            FontSize="16" FontWeight="Bold"/>
+                            <ItemsControl ItemsSource="{Binding CartItems}" Grid.Row="0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <TextBlock Text="{Binding Name}" Width="200" Margin="0,0,20,0" HorizontalAlignment="Left"/>
+                                            <TextBlock Text="{Binding Quantity}" Width="30"/>
+                                            <TextBlock Text="{Binding TotalPrice, StringFormat=N2}" Width="60"/>
+                                            <Button  Width="30" HorizontalAlignment="Center" Height="30" Padding="2" ToolTip="Delete" Background="White" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji" Click="RemoveCartItem_Click" VerticalAlignment="Center">
+                                                <materialDesign:PackIcon Kind="Minus" Width="20" Height="20" Foreground="Black"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
 
-                        <StackPanel Margin="0,10,0,20" x:Name="btnAddRecipe" Grid.Row="7" HorizontalAlignment="Right">
-                            <Button Height="30" Padding="5" x:Name="UnpaidBtn" HorizontalAlignment="Stretch" ToolTip="Edit" Background="Black" Cursor="Hand" Click="MarkAsUnPaid_Click">
+                            <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                                <TextBlock Text="Total:" FontWeight="Bold" Margin="0,20,0,5"/>
+                                <TextBlock Text="{Binding DataContext.TotalAmount, RelativeSource={RelativeSource AncestorType=Window},  StringFormat=₦{0:N2}}" FontSize="16" FontWeight="Bold"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2" Margin="0,0,0,20">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
 
-                                    <materialDesign:PackIcon Kind="Close" Width="20" Height="20" Foreground="White" Grid.Column="0" />
-                                    <TextBlock Text="Mark as unpaid" Grid.Column="1" Foreground="White" />
-                                </Grid>
-                            </Button>
-                        </StackPanel>
+                                    <StackPanel Grid.Column="0" Margin="0,0,2,0">
+                                        <TextBlock Text="Account Number:" FontWeight="Bold" />
+                                        <ComboBox x:Name="cmbAccountNumber" Padding="2,5,0,5" />
+                                    </StackPanel>
 
+                                    <StackPanel Grid.Column="1" Margin="2,0,0,0">
+                                        <TextBlock Text="Payment Method:" FontWeight="Bold" />
+                                        <ComboBox x:Name="cmbPaymentMethod" Padding="2,5,0,5" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
 
                     <StackPanel Grid.Row="2">

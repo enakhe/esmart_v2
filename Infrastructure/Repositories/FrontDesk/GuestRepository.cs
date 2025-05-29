@@ -64,7 +64,12 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var guest = await context.Guests.Include(g => g.ApplicationUser).Include(g => g.GuestAccount).FirstOrDefaultAsync(g => g.Id == id);
+                var guest = await context.Guests
+                    .Include(g => g.ApplicationUser)
+                    .Include(g => g.GuestAccount)
+                    .Include(g => g.GuestIdentity)
+                    .Include(g => g.Bookings)
+                    .FirstOrDefaultAsync(g => g.Id == id);
 
                 return guest;
             }

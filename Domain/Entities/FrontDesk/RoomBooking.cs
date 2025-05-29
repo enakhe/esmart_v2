@@ -16,11 +16,13 @@ namespace ESMART.Domain.Entities.FrontDesk
         public string RoomId { get; set; }
 
         public string OccupantName { get; set; }
+        public string OccupantPhoneNumber { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut {  get; set; }
         public DateTime Date {  get; set; }
         public decimal Rate { get; set; }
         public decimal Discount { get; set; }
+        public decimal ServiceCharge { get; set; }
         public decimal Tax { get; set; }
 
         public virtual Booking Booking { get; set; }

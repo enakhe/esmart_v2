@@ -38,34 +38,29 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
     public partial class AddBulkBookingDialog : Window
     {
         private readonly IRoomRepository _roomRepository;
-        private DispatcherTimer _formatTimer;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IGuestRepository _guestRepository;
-        private readonly IBookingRepository _bookingRepository;
-        private bool _suppressTextChanged = false;
         private readonly ITransactionRepository _transactionRepository;
-        private readonly IReservationRepository _reservationRepository;
         private readonly GuestAccountService _guestAccountService;
         private readonly IndexPageViewModel _viewModel;
-        private bool _isUnpaid = false;
-        private Dictionary<string, DateTime> _originalCheckoutTimes = new();
-        public AddBulkBookingDialog(IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, IBookingRepository bookingRepository, ITransactionRepository transactionRepository, IReservationRepository reservationRepository, GuestAccountService guestAccountService)
+        private bool _suppressTextChanged = false;
+        private readonly DispatcherTimer _formatTimer;
+        public AddBulkBookingDialog(IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, ITransactionRepository transactionRepository, GuestAccountService guestAccountService, IndexPageViewModel indexPageViewModel)
         {
             _roomRepository = roomRepository;
             _hotelSettingsService = hotelSettingsService;
             _viewModel = new IndexPageViewModel();
             _guestRepository = guestRepository;
-            _bookingRepository = bookingRepository;
             _transactionRepository = transactionRepository;
-            _reservationRepository = reservationRepository;
             _guestAccountService = guestAccountService;
+            _viewModel = indexPageViewModel;
             this.DataContext = _viewModel;
 
             _formatTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromMilliseconds(500)
             };
-            _formatTimer.Tick += FormatTimer_Tick;
+            _formatTimer.Tick += FormatTimer_Tick!;
 
             InitializeComponent();
         }
@@ -153,12 +148,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         {
             try
             {
-                var rooms = await _roomRepository.GetAvailableRooms();
+                var allVacantRooms = await _roomRepository.GetAvailableRooms();
 
-                _viewModel.Rooms.Clear();
+                var alreadySelectedIds = _viewModel.SelectedRooms.Select(r => r.Room.Id).ToHashSet();
 
-                foreach (var room in rooms)
-                    _viewModel.Rooms.Add(new SelectableRoomViewModel(room));
+                var selectable = allVacantRooms
+                    .Where(r => !alreadySelectedIds.Contains(r.Id))
+                    .Select(r => new SelectableRoomViewModel(r));
+
+                foreach (var item in selectable)
+                {
+                    _viewModel.Rooms.Add(item);
+                }
             }
             catch (Exception ex)
             {
@@ -173,6 +174,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _formatTimer.Stop(); // restart timer
             _formatTimer.Tag = sender;
             _formatTimer.Start();
+
+            if (dtpCheckIn.SelectedDate.HasValue && dtpCheckOut.SelectedDate.HasValue)
+            {
+                _viewModel.CalculateTotalAmount(
+                    dtpCheckIn.SelectedDate.Value,
+                    dtpCheckOut.SelectedDate.Value,
+                    ParseDecimal(txtDiscount.Text),
+                    ParseDecimal(txtVAT.Text),
+                    ParseDecimal(txtServiceCharge.Text));
+            }
+
+            txtTotalAmount.Text = _viewModel.TotalAmount.ToString("N2");
         }
 
         private void FormatTimer_Tick(object sender, EventArgs e)
@@ -444,6 +457,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 {
                     RoomId = roomVm.Room.Id,
                     OccupantName = roomVm.Occupant.OccupantName,
+                    OccupantPhoneNumber = roomVm.Occupant.PhoneNumber,
                     CheckIn = checkIn,
                     CheckOut = (DateTime)roomVm.CheckoutTime!,
                     Rate = roomVm.RackRate,
@@ -451,6 +465,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     BookingId = bookingId,
                     Tax = roomVm.TaxRate,
                     Discount = roomVm.DiscountRate,
+                    ServiceCharge = roomVm.ServiceChargeRate
                 }).ToList();
 
                 await _guestAccountService.AssignRoomsToBookingAsync(bookingId, activeUser, roomBookings);

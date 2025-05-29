@@ -883,6 +883,179 @@ namespace ESMART.Presentation.Utils
             return doc;
         }
 
+        public FlowDocument PrintGuestInformation(Domain.Entities.FrontDesk.Guest guest, Hotel hotel)
+        {
+            const double A4PortraitWidth = 793.7;
+            const double A4PortraitHeight = 1122.5;
+
+            var doc = new FlowDocument
+            {
+                PageWidth = A4PortraitHeight, // Landscape width
+                PageHeight = A4PortraitWidth, // Landscape height
+                PagePadding = new Thickness(50),
+                ColumnWidth = double.PositiveInfinity,
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 11,
+                TextAlignment = TextAlignment.Left
+            };
+
+            // ======= HOTEL LOGO ==========
+            if (hotel.LogoUrl != null && hotel.LogoUrl.Length > 0)
+            {
+                var image = new Image
+                {
+                    Width = 110, // Adjust size as needed
+                    Height = 110,
+                    Stretch = Stretch.Uniform,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Source = LoadImage(hotel.LogoUrl)
+                };
+
+                var logoContainer = new BlockUIContainer(image)
+                {
+                    Margin = new Thickness(0, 0, 0, 11),
+                    TextAlignment = TextAlignment.Center
+                };
+
+                doc.Blocks.Add(logoContainer);
+            }
+
+            doc.Blocks.Add(new Paragraph(new Run(hotel.Name))
+            {
+                FontSize = 20,
+                FontWeight = FontWeights.Bold,
+                TextAlignment = TextAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 11)
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"Address: {hotel.Address}"))
+            {
+                FontSize = 11,
+                TextAlignment = TextAlignment.Center
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"Email: {hotel.Email} | Phone: {hotel.PhoneNumber}"))
+            {
+                FontSize = 11,
+                TextAlignment = TextAlignment.Center
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run("")));
+
+            if (guest.GuestImage != null && guest.GuestImage.Length > 0)
+            {
+                var image = new Image
+                {
+                    Width = 150, // Adjust size as needed
+                    Height = 150,
+                    Stretch = Stretch.Uniform,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Source = LoadImage(guest.GuestImage)
+                };
+
+                var guestImageContaner = new BlockUIContainer(image)
+                {
+                    Margin = new Thickness(0, 0, 0, 11),
+                    TextAlignment = TextAlignment.Center
+                };
+
+                doc.Blocks.Add(guestImageContaner);
+            }
+
+            doc.Blocks.Add(new Paragraph(new Run($"Personal Information"))
+            {
+                FontSize = 14,
+                FontWeight = FontWeights.Bold,
+                TextAlignment = TextAlignment.Left
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"Name: {guest.FullName} "))
+            {
+                FontSize = 12,
+                TextAlignment = TextAlignment.Left
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"Email: {guest.Email} "))
+            {
+                FontSize = 12,
+                TextAlignment = TextAlignment.Left
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"Phone Number: {guest.PhoneNumber} "))
+            {
+                FontSize = 12,
+                TextAlignment = TextAlignment.Left
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"Gender: {guest.Gender} "))
+            {
+                FontSize = 12,
+                TextAlignment = TextAlignment.Left
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"Address: {guest.Street} {guest.City} {guest.Country}"))
+            {
+                FontSize = 12,
+                TextAlignment = TextAlignment.Left
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"No of Bookings: {guest.Bookings.Count:N0}"))
+            {
+                FontSize = 12,
+                TextAlignment = TextAlignment.Left
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"Account created by: {guest.ApplicationUser.FullName}"))
+            {
+                FontSize = 12,
+                TextAlignment = TextAlignment.Left
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run("")));
+
+            doc.Blocks.Add(new Paragraph(new Run($"Means of Identification"))
+            {
+                FontSize = 14,
+                FontWeight = FontWeights.Bold,
+                TextAlignment = TextAlignment.Left
+            });
+
+
+            doc.Blocks.Add(new Paragraph(new Run($"ID Type: {guest.GuestIdentity.IdType}"))
+            {
+                FontSize = 12,
+                TextAlignment = TextAlignment.Left
+            });
+
+            doc.Blocks.Add(new Paragraph(new Run($"ID Number: {guest.GuestIdentity.IdNumber}"))
+            {
+                FontSize = 12,
+                TextAlignment = TextAlignment.Left
+            });
+
+            if (guest.GuestIdentity.Document != null && guest.GuestIdentity.Document.Length > 0)
+            {
+                var image = new Image
+                {
+                    Width = 200, // Adjust size as needed
+                    Height = 200,
+                    Stretch = Stretch.Uniform,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Source = LoadImage(guest.GuestIdentity.Document)
+                };
+
+                var idContainer = new BlockUIContainer(image)
+                {
+                    Margin = new Thickness(0, 0, 0, 11),
+                    TextAlignment = TextAlignment.Center
+                };
+
+                doc.Blocks.Add(idContainer);
+            }
+
+            return doc;
+        }
+
         public static void PrintReceipt(FlowDocument doc)
         {
             PrintDialog pd = new PrintDialog();

@@ -15,6 +15,7 @@ namespace ESMART.Domain.ViewModels.StoreKepping
         public string BookingId { get; set; }
         public string Guest { get; set; }
         public string Room { get; set; }
+        public string Invoice { get; set; }
         public string TotalAmount { get; set; }
         public string Quantity { get; set; }
         public ICollection<OrderItemViewModel> OrderItems { get; set; } = new List<OrderItemViewModel>();

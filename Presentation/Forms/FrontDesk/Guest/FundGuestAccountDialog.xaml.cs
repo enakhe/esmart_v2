@@ -80,7 +80,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var guestAccount = await _guestAccountService.GetAccountAsync(_guest.Id);
                 if (guestAccount != null)
                 {
-                    txtAmount.Text = guestAccount.FundedBalance.ToString("N", CultureInfo.InvariantCulture);
+                    //txtAmount.Text = guestAccount.FundedBalance.ToString("N", CultureInfo.InvariantCulture);
                     txtAmount.CaretIndex = txtAmount.Text.Length; // Set caret to the end of the text
                     txtAmount.SelectionStart = txtAmount.Text.Length; // Ensure caret is at the end
                     txtAmount.SelectionLength = 0; // Clear any selection

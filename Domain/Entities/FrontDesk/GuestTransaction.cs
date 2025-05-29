@@ -26,12 +26,16 @@ namespace ESMART.Domain.Entities.FrontDesk
         public string Description { get; set; }
         public string BankAccountId { get; set; }
         public string Consumer { get; set; }
+        public string RoomId { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         public TransactionType TransactionType { get; set; }
         public DateTime Date { get; set; }
+        public string GuestAccountId { get; set; }
 
         public Guest Guest { get; set; }
+        public Domain.Entities.RoomSettings.Room Room {get; set;}
         public ApplicationUser ApplicationUser { get; set; }
         public virtual BankAccount BankAccount { get; set; }
+        public virtual GuestAccount GuestAccount { get; set; }
     }
 }

@@ -309,5 +309,25 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 }
             }
         }
+
+        private async void InHouseGuest_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var guests = await _guestAccountService.GetInHouseGuestAsync();
+                GuestDataGrid.ItemsSource = guests;
+                txtGuestCount.Text = guests.Count.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 }

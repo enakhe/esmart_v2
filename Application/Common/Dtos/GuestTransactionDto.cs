@@ -15,6 +15,7 @@ namespace ESMART.Application.Common.Dtos
         public PaymentMethod PaymentMethod { get; set; }
         public decimal Amount { get; set; }
         public string GuestAccountId { get; set; }
+        public string RoomId { get; set; }
         public decimal Discount { get; set; }
         public decimal Tax { get; set; }
         public string Consumer { get; set; }

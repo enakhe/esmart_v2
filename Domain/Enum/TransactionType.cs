@@ -3,8 +3,7 @@
     public enum TransactionType
     {
         RoomCharge,
-        BarOrder,
-        RestaurantOrder,
+        BarRestaurantOrder,
         Laundry,
         TopUp,
         Payment,

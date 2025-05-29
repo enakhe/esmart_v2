@@ -466,7 +466,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             decimal discount,
             string account)
         {
-            var (RackRate, DiscountRate, TaxRate, FinalTotal) = Helper.CalculateRackAndDiscountedTotal(
+            var (RackRate, DiscountRate,  serviceFeeAmount, TaxRate, FinalTotal) = Helper.CalculateRackAndDiscountedTotal(
                 roomRate,
                 vat,
                 serviceCharge,

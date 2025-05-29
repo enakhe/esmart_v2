@@ -62,7 +62,7 @@ namespace ESMART.Application.Common.Utils
             }
         }
 
-        public static (decimal RackRate, decimal DiscountAmount, decimal TaxAmount, decimal FinalTotal) CalculateRackAndDiscountedTotal(
+        public static (decimal RackRate, decimal DiscountAmount, decimal ServiceAmount, decimal TaxAmount, decimal FinalTotal) CalculateRackAndDiscountedTotal(
             decimal roomRate, decimal vat, decimal serviceCharge, decimal discount)
         {
             var vatRate = vat / 100m;
@@ -81,12 +81,39 @@ namespace ESMART.Application.Common.Utils
             var discountedRackRate = rackRate - discountAmount;
 
             // Step 4: Calculate tax based on discounted rack rate
-            var taxAmount = discountedRackRate * (vatRate + serviceChargeRate);
+            var taxAmount = discountedRackRate * (vatRate);
+
+            var serviceFeeAmount = discountedRackRate * (serviceChargeRate);
 
             // Step 5: Final total (discounted rack + tax)
-            var finalTotal = discountedRackRate + taxAmount;
+            var finalTotal = CalculateTotal(roomRate, discount, vat, serviceCharge);
 
-            return (rackRate, discountAmount, taxAmount, finalTotal);
+            return (discountedRackRate, discountAmount, serviceFeeAmount, taxAmount, finalTotal);
+        }
+
+        // Generate a unique invoice number for guest accounts
+        public static string GenerateInvoiceNumber(string prefix)
+        {
+            return $"{prefix}-{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}";
+        }
+
+
+        public static string GetFirstWord(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            return input.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? string.Empty;
+        }
+
+
+        public static string GetLastWord(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            var words = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return words.Length > 0 ? words[^1] : string.Empty; // ^1 is C# 8.0 syntax for last item
         }
 
     }

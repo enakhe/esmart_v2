@@ -877,21 +877,22 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                 await using var context = await _contextFactory.CreateDbContextAsync();
                 return await context.Orders
                     .Include(o => o.OrderItems)
-                    .Include(o => o.Booking)
-                    .Include(o => o.Booking.Guest)
-                    .Include(o => o.Booking.Room)
+                    .Include(o => o.RoomBooking.Booking)
+                    .Include(o => o.RoomBooking.Booking.Guest)
+                    .Include(o => o.RoomBooking.Room)
                     .Where(o => o.CreatedAt >= fromDate && o.CreatedAt <= toDate)
                     .Select(o => new MenuOrderViewModel
                     {
                         Id = o.Id,
                         BookingId = o.BookingId,
-                        Guest = o.Booking.Guest.FullName,
-                        Room = o.Booking.Room.Number,
+                        Guest = o.RoomBooking.Booking.Guest.FullName,
+                        Room = o.RoomBooking.Room.Number,
+                        Invoice = o.Invoice,
                         TotalAmount = o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity).ToString("N2"),
                         Quantity = o.OrderItems.Sum(oi => oi.Quantity).ToString(),
                         OrderItems = o.OrderItems.Select(oi => new OrderItemViewModel
                         {
-                            OrderId = oi.OrderId,
+                            OrderId = oi.OrderItemId,
                             Item = oi.MenuItem.Name,
                             Quantity = oi.Quantity,
                             UnitPrice = oi.UnitPrice,

@@ -129,8 +129,8 @@
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                                <Button Content="Add Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="100" Click="AddSingleBooking_Click" />
-                                <Button Content="Bulk Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="100" Click="AddBulkBooking_Click" />
+                                <Button Content="Add Booking" Visibility="Collapsed" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="100" Click="AddSingleBooking_Click" />
+                                <Button Content="Add Booking" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="100" Click="AddBulkBooking_Click" />
                                 <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="ExportButton_Click" />
                             </StackPanel>
 

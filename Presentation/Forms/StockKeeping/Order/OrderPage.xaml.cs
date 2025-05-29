@@ -1,6 +1,7 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Utils;
 using System;
@@ -30,13 +31,15 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
         private readonly IGuestRepository _guestRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
-        public OrderPage(IStockKeepingRepository stockKeepingRepository, IBookingRepository bookingRepository, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService)
+        private readonly GuestAccountService _guestAccountService;
+        public OrderPage(IStockKeepingRepository stockKeepingRepository, IBookingRepository bookingRepository, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, GuestAccountService guestAccountService)
         {
             _stockKeepingRepository = stockKeepingRepository;
             _bookingRepository = bookingRepository;
             _hotelSettingsService = hotelSettingsService;
             _transactionRepository = transactionRepository;
             _guestRepository = guestRepository;
+            _guestAccountService = guestAccountService;
             InitializeComponent();
 
             txtFrom.SelectedDate = DateTime.Now.AddDays(-7);
@@ -69,7 +72,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
         // Add order
         private async void AddOrderButton_Click(object sender, RoutedEventArgs e)
         {
-            OrderDialog orderDialog = new OrderDialog(_stockKeepingRepository, _bookingRepository, _guestRepository, _transactionRepository)
+            OrderDialog orderDialog = new OrderDialog(_stockKeepingRepository, _bookingRepository, _guestRepository, _transactionRepository, _guestAccountService)
             {
                 Owner = Window.GetWindow(this)
             };

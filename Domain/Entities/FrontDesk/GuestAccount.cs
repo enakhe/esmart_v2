@@ -23,11 +23,13 @@ namespace ESMART.Domain.Entities.FrontDesk
         public decimal Amount { get; set; }
         public decimal Discount { get; set; }
         public decimal Tax { get; set; }
+        public decimal ServiceCharge { get; set; } 
         public decimal OtherCharges { get; set; }
         public decimal FundedBalance { get; set; }
         public decimal Paid => TopUps + DirectPayments;
-        public decimal Refunds { get; set; }
-        public decimal Balance => Paid - Amount;
+        public decimal TotalConsumptions => Amount + Tax + ServiceCharge + OtherCharges;
+        public decimal Refunds => Math.Max(0, Paid - TotalConsumptions);
+        public decimal Balance => Paid - (Amount + Tax + ServiceCharge + OtherCharges);
         public decimal TopUps { get; set; }
         public decimal DirectPayments { get; set; }
         public decimal OutstandingBalance => OtherCharges - Paid;

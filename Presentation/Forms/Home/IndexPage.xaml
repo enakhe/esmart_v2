@@ -168,13 +168,12 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding Room.Status, Converter={StaticResource RoomStatusToColorDialog}}" MouseLeftButtonUp="RoomCard_MouseLeftButtonUp" Tag="{Binding}">
+                                        <Border Width="100" Height="100" Margin="5" CornerRadius="10" Background="{Binding Room.Status, Converter={StaticResource RoomStatusToColorDialog}}" MouseLeftButtonUp="RoomCard_MouseLeftButtonUp" Tag="{Binding}" ContextMenuOpening="Border_ContextMenuOpening">
                                             <Border.ContextMenu>
                                                 <ContextMenu>
-                                                    <MenuItem Header="Book Room" />
+                                                    <MenuItem x:Name="BookRoom" Header="Book Room" Click="BookRoom_Click" Tag="{Binding}" />
                                                     <MenuItem Header="View Bill" />
-                                                    <Separator />
-                                                    <MenuItem Header="Mark as Dirty" />
+                                                    <MenuItem Header="Show Room Card" />
                                                 </ContextMenu>
                                             </Border.ContextMenu>
                                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">

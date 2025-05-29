@@ -4,6 +4,7 @@ using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250529082850_OrderGuestAccount")]
+    partial class OrderGuestAccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -522,6 +525,9 @@ namespace ESMART.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("OtherCharges")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Refunds")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ServiceCharge")
@@ -1070,13 +1076,13 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("GuestAccountId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Invoice")
+                    b.Property<string>("GuestAccount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OrderId")
+                    b.Property<string>("GuestAccountId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Invoice")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoomBookingId")
@@ -1085,8 +1091,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BookingId");
-
-                    b.HasIndex("GuestAccountId");
 
                     b.HasIndex("RoomBookingId");
 
@@ -1103,9 +1107,6 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<string>("OrderId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("OrderItemId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -1641,17 +1642,11 @@ namespace ESMART.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("BookingId");
 
-                    b.HasOne("ESMART.Domain.Entities.FrontDesk.GuestAccount", "GuestAccount")
-                        .WithMany()
-                        .HasForeignKey("GuestAccountId");
-
                     b.HasOne("ESMART.Domain.Entities.FrontDesk.RoomBooking", "RoomBooking")
                         .WithMany()
                         .HasForeignKey("RoomBookingId");
 
                     b.Navigation("Booking");
-
-                    b.Navigation("GuestAccount");
 
                     b.Navigation("RoomBooking");
                 });

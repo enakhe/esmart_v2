@@ -185,11 +185,21 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
+                                        <DataGridTemplateColumn Header="Invoice" Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                        <TextBlock Text="{Binding Invoice}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+
                                         <DataGridTemplateColumn Header="Room" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Room, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding Room}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -199,7 +209,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding TotalAmount}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding TotalAmount, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -233,8 +243,8 @@
                                                     <DataGridTextColumn Header="Order Id" Binding="{Binding OrderId}" />
                                                     <DataGridTextColumn Header="Item" Binding="{Binding Item}" />
                                                     <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" />
-                                                    <DataGridTextColumn Header="Unit Price" Binding="{Binding UnitPrice, StringFormat=N2}" />
-                                                    <DataGridTextColumn Header="Total Price" Binding="{Binding TotalPrice, StringFormat=N2}" />
+                                                    <DataGridTextColumn Header="Unit Price" Binding="{Binding UnitPrice, StringFormat=₦ {0:N2}}" />
+                                                    <DataGridTextColumn Header="Total Price" Binding="{Binding TotalPrice, StringFormat=₦ {0:N2}}" />
                                                 </DataGrid.Columns>
                                             </DataGrid>
                                         </DataTemplate>

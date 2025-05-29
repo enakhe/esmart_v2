@@ -75,6 +75,17 @@ namespace ESMART.Domain.ViewModels.RoomSetting
             }
         }
 
+        private decimal _serviceCharge;
+        public decimal ServceCharge
+        {
+            get => _rack;
+            set
+            {
+                _rack = value;
+                OnPropertyChanged(nameof(ServceCharge));
+            }
+        }
+
         private RoomOccupantViewModel _occupant = new();
         public RoomOccupantViewModel Occupant
         {
@@ -86,10 +97,11 @@ namespace ESMART.Domain.ViewModels.RoomSetting
             }
         }
 
-        public decimal FinalRate { get; set; }  // Rate shown to user
+        public decimal FinalRate { get; set; }
         public decimal RackRate { get; set; }
         public decimal DiscountRate { get; set; }
         public decimal TaxRate { get; set; }
+        public decimal ServiceChargeRate { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name) =>

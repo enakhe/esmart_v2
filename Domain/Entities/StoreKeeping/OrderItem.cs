@@ -11,8 +11,9 @@ namespace ESMART.Domain.Entities.StoreKeeping
     public class OrderItem
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string OrderId { get; set; } = $"OR{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}";
+        public string OrderId { get; set; }
         public Order Order { get; set; }
+        public string OrderItemId { get; set; }
 
         public string MenuItemId { get; set; }
         public MenuItem MenuItem { get; set; }

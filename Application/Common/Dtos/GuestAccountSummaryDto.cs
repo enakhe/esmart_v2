@@ -17,7 +17,11 @@ namespace ESMART.Application.Common.Dtos
         public string GuestName { get; set; }
         public string Invoice { get; set; }
         public decimal Amount { get; set; }
+        public decimal ServiceCharge { get; set; }
         public decimal Discount { get; set; }
+        public DateTime CheckIn { get; set; }
+        public DateTime CheckOut { get; set; }
+        public decimal VAT { get; set; }
         public decimal Tax { get; set; }
         public decimal OtherCharges { get; set; }
         public decimal Paid { get; set; }
@@ -36,6 +40,8 @@ namespace ESMART.Application.Common.Dtos
     {
         public string Guest { get; set; }
         public string BookingId { get; set; }
+        public string BookingBookingId { get; set; }
+        public string RoomId { get; set; }
         public string Invoice { get; set; }
         public string RoomNumber { get; set; }
         public string RoomType { get; set; }
@@ -47,6 +53,7 @@ namespace ESMART.Application.Common.Dtos
     public class TransactionSummaryDto
     {
         public string TransactionId { get; set; }
+        public string RoomId { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }
         public string Consumer { get; set; }
@@ -63,6 +70,7 @@ namespace ESMART.Application.Common.Dtos
         public string BookingId { get; set; }
         public string GuestName { get; set; }
         public string RoomNumber { get; set; }
+        public string Summary { get; set; }
         public string RoomType { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }

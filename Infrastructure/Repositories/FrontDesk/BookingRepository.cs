@@ -35,12 +35,11 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
 
                 using var context = _contextFactory.CreateDbContext();
 
-                var allBookings = await context.Bookings
-                                .Include(b => b.Guest)
-                                .Include(b => b.ApplicationUser)
+                var allBookings = await context.RoomBookings
+                                .Include(b => b.Booking)
                                 .Include(b => b.Room)
-                                .Where(r => r.IsTrashed == false)
-                                .OrderByDescending(r => r.DateCreated)
+                                .Where(r => r.Booking.IsTrashed == false)
+                                .OrderByDescending(r => r.Date)
                                 .ToListAsync();
 
 
@@ -49,7 +48,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     var booking = allBookings.FirstOrDefault(b => b.Id == overstay.Id);
                     if (booking != null)
                     {
-                        booking.IsOverStay = true;
+                        booking.Booking.IsOverStay = true;
                         context.Entry(booking).State = EntityState.Modified;
                     }
                 }
@@ -60,18 +59,16 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Select(b => new BookingViewModel
                     {
                         Id = b.Id,
-                        Guest = b.Guest.FullName,
-                        PhoneNumber = b.Guest.PhoneNumber,
+                        Guest = b.OccupantName,
+                        PhoneNumber = b.OccupantPhoneNumber,
                         CheckIn = b.CheckIn,
                         CheckOut = b.CheckOut,
-                        PaymentMethod = b.PaymentMethod.ToString(),
-                        Duration = b.Duration.ToString(),
-                        Status = b.Status.ToString(),
-                        CreatedBy = b.ApplicationUser.FullName,
-                        DateCreated = b.DateCreated,
-                        DateModified = b.DateModified,
-                        IsOverStayed = b.IsOverStay,
-                        //Room = b.Ro.Room.Number
+                        Status = b.Booking.Status.ToString(),
+                        CreatedBy = b.Booking.ApplicationUser.FullName,
+                        DateCreated = b.Date,
+                        DateModified = b.Booking.DateModified,
+                        IsOverStayed = b.Booking.IsOverStay,
+                        Room = b.Room.Number
                     })];
             }
             catch (Exception ex)
