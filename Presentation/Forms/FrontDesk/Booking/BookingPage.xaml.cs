@@ -275,7 +275,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                             }
                             else
                             {
-                                booking.Status = Domain.Enum.BookingStatus.CheckedOut;
+                                booking.Status = Domain.Enum.BookingStatus.Completed;
                                 booking.IsTrashed = true;
                                 await _bookingRepository.UpdateBooking(booking);
 

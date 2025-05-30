@@ -21,10 +21,12 @@ using ESMART.Presentation.Forms.Receipt;
 using DocumentFormat.OpenXml.Office2016.Excel;
 using ESMART.Domain.Entities.FrontDesk;
 using System.Text.RegularExpressions;
+using ESMART.Application.Common.Dtos;
+using ESMART.Application.Common.Utils;
 
 namespace ESMART.Presentation.Utils
 {
-    public class ReceiptHelper
+    public class PrintHelper
     {
 
         public FlowDocument GeneratePreviewFlowDocument(ExportResult result, Hotel hotel, DataGrid dataGrid, string title, string? nestedCollectionPropertyName = null)
@@ -177,7 +179,6 @@ namespace ESMART.Presentation.Utils
             return doc;
         }
 
-
         public FlowDocument GenerateBillFlowDoc(ExportResult result, Hotel hotel, Domain.Entities.FrontDesk.Booking booking, DataGrid dataGrid, string? nestedCollectionPropertyName = null, List<string>? nestedSelectedColumns = null, string? title = null, decimal? totalAmount = 0, decimal? totalTax = 0, decimal? totalDiscount = 0, decimal? totalCharge = 0, decimal? totalTAmount = 0, decimal? totalServiceCharge = 0, decimal? amountPaid = 0, ReceiptExport? receiptExport = null, DataGrid? serVicdFeeDataGrid = null, DataGrid? paymentDataGrid = null)
         {
             const double A4PortraitWidth = 793.7;
@@ -312,14 +313,6 @@ namespace ESMART.Presentation.Utils
                 TextAlignment = TextAlignment.Left
             });
 
-            if (totalAmount != null)
-            {
-                row5.Cells.Add(new TableCell(new Paragraph(new Run($"Total Amount: ₦ {totalAmount:N2} + Tax ₦ {totalCharge:N2} {(totalServiceCharge != 0 ? $"+ ₦{(totalServiceCharge):N2}" : "")}")))
-                {
-                    FontSize = 11,
-                    TextAlignment = TextAlignment.Left
-                });
-            }
 
             // Add rows to table
             TableRowGroup rowGroup = new TableRowGroup();
@@ -1055,6 +1048,438 @@ namespace ESMART.Presentation.Utils
 
             return doc;
         }
+
+        public FlowDocument GenerateGuestAccountFlowDocument(GuestAccountSummaryDto data, Booking booking, Hotel hotel)
+        {
+            const double A4PortraitWidth = 793.7;
+
+            FlowDocument doc = new FlowDocument
+            {
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 11,
+                PagePadding = new Thickness(40)
+            };
+
+            AddHotelHeader(doc, hotel);
+
+            AddBookingSummaryTable(doc, data, booking, A4PortraitWidth);
+
+            doc.Blocks.Add(new Paragraph(new Run("")));
+
+            doc.Blocks.Add(new Paragraph(new Run("Booking Invoice List (Invoices Settled)")) 
+            { 
+                FontWeight = FontWeights.SemiBold, 
+                TextAlignment = TextAlignment.Center, 
+                FontSize = 13 
+            });
+
+            doc.Blocks.Add(CreateGuestAccountSummaryTable(data));
+
+            doc.Blocks.Add(new Paragraph(new Run("Account Statement")) { FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, FontSize = 13 });
+
+            // Booking Details
+            if (data.BookingGroups.Count != 0)
+            {
+                foreach (var group in data.BookingGroups)
+                {
+                    doc.Blocks.Add(new Paragraph(new Run($"- {group.GuestName}")) { FontStyle = FontStyles.Italic });
+
+                    Table bookingTable = CreateTransactionTable(group.RecentTransactions, summarizeBillPostsIntoAmount: true); ;
+                    doc.Blocks.Add(bookingTable);
+                    doc.Blocks.Add(new Paragraph(new Run($"{group.RoomId} Arri: {group.CheckIn:MM/dd/yy} to Dept: {group.CheckOut:MM/dd/yy}")) 
+                    { 
+                        FontWeight = FontWeights.SemiBold, 
+                        TextAlignment = TextAlignment.Right,
+                        FontStyle = FontStyles.Italic
+                    });
+                }
+            }
+
+            // Service Consumptions
+            if (data.ServiceConsumptions.Count != 0)
+            {
+                doc.Blocks.Add(new Paragraph(new Run("Service Consumptions")) { FontWeight = FontWeights.SemiBold });
+                Table servicesTable = CreateTransactionTable(data.ServiceConsumptions, summarizeBillPostsIntoAmount: true);
+                doc.Blocks.Add(servicesTable);
+            }
+
+            // Payments
+            if (data.Payments.Count != 0)
+            {
+                doc.Blocks.Add(new Paragraph(new Run("Payments")) { FontWeight = FontWeights.SemiBold });
+                Table paymentTable = CreateTransactionTable(data.Payments,
+                            totalBillPosts: (data.Amount),
+                            totalAmount: (data.Amount + data.OtherCharges),
+                            totalPayment: data.Paid);
+                doc.Blocks.Add(paymentTable);
+            }
+
+            doc.Blocks.Add(new Paragraph(new Run(" ")));// Spacer
+
+            var (bookingAmount, discount, serviceCharge, vat, totalAmount, totalPaid, toReceive, toRefund) = Helper.CalculateSummary(data);
+
+            AddBookingFinancialSummaryTable(doc, booking, A4PortraitWidth,
+                bookingAmount, discount, serviceCharge, vat,
+                data.OtherCharges, totalAmount,
+                totalPaid, toReceive, toRefund,
+                data.CheckIn, data.CheckOut);
+
+            return doc;
+        }
+
+        private void AddHotelHeader(FlowDocument doc, Hotel hotel)
+        {
+            // Add hotel logo if available
+            if (hotel.LogoUrl != null && hotel.LogoUrl.Length > 0)
+            {
+                var image = new Image
+                {
+                    Width = 110,
+                    Height = 110,
+                    Stretch = Stretch.Uniform,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Source = LoadImage(hotel.LogoUrl)
+                };
+
+                var logoContainer = new BlockUIContainer(image)
+                {
+                    Margin = new Thickness(0, 0, 0, 11),
+                    TextAlignment = TextAlignment.Center
+                };
+
+                doc.Blocks.Add(logoContainer);
+            }
+
+            // Hotel name
+            doc.Blocks.Add(new Paragraph(new Run(hotel.Name))
+            {
+                FontSize = 20,
+                FontWeight = FontWeights.Bold,
+                TextAlignment = TextAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 11)
+            });
+
+            // Hotel address
+            doc.Blocks.Add(new Paragraph(new Run($"Address: {hotel.Address}"))
+            {
+                FontSize = 11,
+                TextAlignment = TextAlignment.Center
+            });
+
+            // Contact details
+            doc.Blocks.Add(new Paragraph(new Run($"Email: {hotel.Email} | Phone: {hotel.PhoneNumber}"))
+            {
+                FontSize = 11,
+                TextAlignment = TextAlignment.Center
+            });
+
+            // Spacer
+            doc.Blocks.Add(new Paragraph(new Run(" ")));
+        }
+
+        private static void AddBookingSummaryTable(FlowDocument doc, GuestAccountSummaryDto data,  Booking booking, double A4PortraitWidth)
+        {
+            var infoTable = new Table();
+            infoTable.Columns.Add(new TableColumn());
+            infoTable.Columns.Add(new TableColumn());
+
+            infoTable.Columns[0].Width = new GridLength((A4PortraitWidth / 2) + 70);
+            infoTable.Columns[1].Width = new GridLength((A4PortraitWidth / 2) + 70);
+
+            var rowGroup = new TableRowGroup();
+            infoTable.RowGroups.Add(rowGroup);
+
+            void AddRow(string leftText, string rightText)
+            {
+                var row = new TableRow();
+                row.Cells.Add(new TableCell(new Paragraph(new Run(leftText)))
+                {
+                    FontSize = 11,
+                    TextAlignment = TextAlignment.Left
+                });
+                row.Cells.Add(new TableCell(new Paragraph(new Run(rightText)))
+                {
+                    FontSize = 11,
+                    TextAlignment = TextAlignment.Left
+                });
+                rowGroup.Rows.Add(row);
+            }
+
+            // Row 1
+            AddRow("Check In", $"Check-in: {booking.CheckIn:dd/MM/yy hh:mm tt}");
+
+            // Row 2
+            AddRow($"Booking Number: {booking.BookingId}", $"Check-out: {booking.CheckOut:dd/MM/yy hh:mm tt}");
+
+            // Row 3
+            AddRow($"Guest Name: {booking.Guest.FullName}", $"No of Rooms: {booking.RoomBookings.Count}");
+
+            // Row 4
+            AddRow($"Phone Number: {booking.Guest.PhoneNumber}", $"Email: {booking.Guest.Email}");
+
+            // Row 5
+            AddRow($"Address: {booking.Guest.Street}, {booking.Guest.City}, {booking.Guest.State}, {booking.Guest.Country}", $"Total Amount: ₦ {data.Amount:N2} + Tax: ₦ {(data.Tax):N2}");
+
+            // Optional spacing after table
+            infoTable.Margin = new Thickness(0, 0, 0, 16);
+            doc.Blocks.Add(infoTable);
+        }
+
+        private static Table CreateTransactionTable(
+            IEnumerable<TransactionSummaryDto> transactions,
+            bool summarizeBillPostsIntoAmount = false,
+            decimal? totalBillPosts = null,
+            decimal? totalAmount = null,
+            decimal? totalPayment = null)
+        {
+            var table = new Table
+            {
+                CellSpacing = 0
+            };
+
+            string[] headers = { "Date", "Description", "Invoice", "Discount", "BillPosts", "Amount", "Payment" };
+
+            foreach (var _ in headers)
+                table.Columns.Add(new TableColumn());
+
+            var headerRow = new TableRow();
+            foreach (var h in headers)
+            {
+                var paragraph = new Paragraph(new Run(h))
+                {
+                    Margin = new Thickness(0),
+                    TextAlignment = TextAlignment.Center
+                };
+
+                headerRow.Cells.Add(new TableCell(paragraph)
+                {
+                    FontWeight = FontWeights.Bold,
+                    BorderBrush = Brushes.Black,
+                    BorderThickness = new Thickness(0.5),
+                    Padding = new Thickness(2)
+                });
+            }
+
+            var rg = new TableRowGroup();
+            rg.Rows.Add(headerRow);
+
+            decimal localBillPostSum = 0;
+
+            foreach (var tx in transactions)
+            {
+                var row = new TableRow();
+
+                void AddCell(string text)
+                {
+                    if (text.Replace("₦ ", "") == "0.00")
+                        text = "";
+
+                    var paragraph = new Paragraph(new Run(text))
+                    {
+                        Margin = new Thickness(0),
+                        TextAlignment = TextAlignment.Center
+                    };
+
+                    row.Cells.Add(new TableCell(paragraph)
+                    {
+                        BorderBrush = Brushes.Black,
+                        BorderThickness = new Thickness(0.5),
+                        Padding = new Thickness(2)
+                    });
+                }
+
+                AddCell(tx.Date.ToString("dd-MMM-yyyy"));
+                AddCell(tx.Description);
+                AddCell(tx.Invoice);
+                AddCell("₦ " + tx.Discount.ToString("N2"));
+                AddCell("₦ " + tx.BillPosts.ToString("N2"));
+                AddCell("₦ " + tx.Amount.ToString("N2"));
+                AddCell("₦ " + tx.Payment.ToString("N2"));
+
+                localBillPostSum += tx.BillPosts;
+                rg.Rows.Add(row);
+            }
+
+            // Summary row for Room Charge and Service Consumption tables (BillPost → Amount)
+            if (summarizeBillPostsIntoAmount)
+            {
+                var summaryRow = new TableRow { FontWeight = FontWeights.Bold };
+
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    string text = i switch
+                    {
+                        1 => "Total", // Description cell
+                        5 => "₦ " + localBillPostSum.ToString("N2"), // Amount column
+                        _ => ""
+                    };
+
+                    var paragraph = new Paragraph(new Run(text))
+                    {
+                        Margin = new Thickness(0),
+                        TextAlignment = TextAlignment.Center
+                    };
+
+                    summaryRow.Cells.Add(new TableCell(paragraph)
+                    {
+                        BorderBrush = Brushes.Black,
+                        BorderThickness = new Thickness(0.5),
+                        Padding = new Thickness(2)
+                    });
+                }
+
+                rg.Rows.Add(summaryRow);
+            }
+
+            // Summary row for Payments table (BillPost, Amount, Payment)
+            if (totalBillPosts.HasValue || totalAmount.HasValue || totalPayment.HasValue)
+            {
+                var summaryRow = new TableRow { FontWeight = FontWeights.Bold };
+
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    string text = i switch
+                    {
+                        1 => "Totals", // Description cell
+                        4 => totalBillPosts.HasValue ? "₦ " + totalBillPosts.Value.ToString("N2") : "",
+                        5 => totalAmount.HasValue ? "₦ " + totalAmount.Value.ToString("N2") : "",
+                        6 => totalPayment.HasValue ? "₦ " + totalPayment.Value.ToString("N2") : "",
+                        _ => ""
+                    };
+
+                    var paragraph = new Paragraph(new Run(text))
+                    {
+                        Margin = new Thickness(0),
+                        TextAlignment = TextAlignment.Center
+                    };
+
+                    summaryRow.Cells.Add(new TableCell(paragraph)
+                    {
+                        BorderBrush = Brushes.Black,
+                        BorderThickness = new Thickness(0.5),
+                        Padding = new Thickness(2)
+                    });
+                }
+
+                rg.Rows.Add(summaryRow);
+            }
+
+            table.RowGroups.Add(rg);
+            return table;
+        }
+
+
+        private static Table CreateGuestAccountSummaryTable(GuestAccountSummaryDto data)
+        {
+            string[] headers = { "Guest Name", "Invoice #", "Amount", "Discount", "Tax", "Other Charges", "Paid", "Refunds", "Balance" };
+
+            string[] values =
+            {
+                data.GuestName,
+                data.Invoice,
+                $"₦ {data.Amount:N2}",
+                $"₦ {data.Discount:N2}",
+                $"₦ {data.Tax:N2}",
+                $"₦ {data.OtherCharges:N2}",
+                $"₦ {data.Paid:N2}",
+                $"₦ {data.Refunds:N2}",
+                $"₦ {data.Balance:N2}"
+            };
+
+            var table = new Table
+            {
+                CellSpacing = 0
+            };
+
+            foreach (var _ in headers)
+                table.Columns.Add(new TableColumn());
+
+            var rowGroup = new TableRowGroup();
+            table.RowGroups.Add(rowGroup);
+
+            // Header row
+            var headerRow = new TableRow();
+            foreach (var header in headers)
+            {
+                headerRow.Cells.Add(new TableCell(new Paragraph(new Run(header)))
+                {
+                    FontWeight = FontWeights.Bold,
+                    BorderBrush = Brushes.Black,
+                    BorderThickness = new Thickness(0.5),
+                    Padding = new Thickness(2),
+                    TextAlignment = TextAlignment.Center
+                });
+            }
+            rowGroup.Rows.Add(headerRow);
+
+            // Value row
+            var valueRow = new TableRow();
+            foreach (var value in values)
+            {
+                valueRow.Cells.Add(new TableCell(new Paragraph(new Run(value.Replace("₦ ", "") == "0.00" ? "" : value)))
+                {
+                    BorderBrush = Brushes.Black,
+                    BorderThickness = new Thickness(0.5),
+                    Padding = new Thickness(2),
+                    TextAlignment = TextAlignment.Center
+                });
+            }
+            rowGroup.Rows.Add(valueRow);
+
+            return table;
+        }
+
+        private void AddBookingFinancialSummaryTable(
+            FlowDocument doc,
+            Booking booking,
+            double A4PortraitWidth,
+            decimal bookingAmount,
+            decimal discount,
+            decimal serviceCharge,
+            decimal vat,
+            decimal otherCharges,
+            decimal totalAmount,
+            decimal totalPaid,
+            decimal amountToReceive,
+            decimal amountToRefund,
+            DateTime periodStart,
+            DateTime periodEnd)
+        {
+            var summaryParagraph = new Paragraph
+            {
+                TextAlignment = TextAlignment.Right,
+                FontSize = 12,
+                FontWeight = FontWeights.SemiBold,
+                Margin = new Thickness(0, 20, 0, 0)
+            };
+
+            // Summary header
+            summaryParagraph.Inlines.Add(new Run($"Total for the period {periodStart:MM/dd/yy} to {periodEnd:MM/dd/yy}: ₦ {(bookingAmount + otherCharges):N2}\n"));
+
+            void AddLine(string label, decimal value)
+            {
+                summaryParagraph.Inlines.Add(new Run($"{label}: ₦ {value:N2}\n"));
+            }
+
+            AddLine("Total Discount", discount);
+            AddLine("Service Charge", serviceCharge);
+            AddLine("VAT", vat);
+            AddLine("Total Amount", totalAmount);
+            AddLine("Amount Paid", totalPaid);
+
+            if (amountToReceive > 0)
+                AddLine("Amount to be received", amountToReceive);
+
+            if (amountToRefund > 0)
+                AddLine("Amount to be refunded", amountToRefund);
+
+            if (amountToReceive == 0 && amountToRefund == 0)
+                summaryParagraph.Inlines.Add(new Run("Account Balanced\n") { Foreground = Brushes.Green });
+
+            doc.Blocks.Add(summaryParagraph);
+        }
+
+
 
         public static void PrintReceipt(FlowDocument doc)
         {

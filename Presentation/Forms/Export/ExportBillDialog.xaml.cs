@@ -95,7 +95,7 @@ namespace ESMART.Presentation.Forms.Export
 
                 if (hotel != null)
                 {
-                    var printer = new ReceiptHelper();
+                    var printer = new PrintHelper();
 
                     var doc = printer.GenerateBillFlowDoc(result, hotel, _booking, _dataGrid, _extraTable, _nestedSelectedColumns, _title, _totalAmount, _totalVAT, _totalDiscount, _totalService, _totalTAmount, _totalServiceCharge, _amountPaid, _receiptExport, _serviceTable, _paymentTable);
                     docViewer.Document = doc;
@@ -166,8 +166,8 @@ namespace ESMART.Presentation.Forms.Export
 
         public void PrintAndSave(FlowDocument document, string fileName, System.Printing.PageOrientation orientation)
         {
-            ReceiptHelper.PrintFlowDocument(document, orientation);
-            ReceiptHelper.SaveFlowDocumentToFile(document, fileName);
+            PrintHelper.PrintFlowDocument(document, orientation);
+            PrintHelper.SaveFlowDocumentToFile(document, fileName);
         }
     }
 

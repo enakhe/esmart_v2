@@ -307,7 +307,7 @@
                             </Button.Style>
                         </Button>
 
-                        <Button Content="Print Folio" Height="34" Margin="5" Foreground="#1E3A8A" Padding="0,5,0,5" Background="#F1F5F9" Cursor="Hand" Click="GuestFolioButton_Click">
+                        <Button Content="Print Folio" Height="34" x:Name="PrintButton" Margin="5" Foreground="#1E3A8A" Padding="0,5,0,5" Background="#F1F5F9" Cursor="Hand" Click="PrintButton_Click">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="Template">
@@ -568,7 +568,7 @@
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
                                         
-                                        <TextBlock Grid.Column="0" FontWeight="SemiBold" FontSize="15" Text="Total Discount" />
+                                        <TextBlock Grid.Column="0" FontWeight="SemiBold" FontSize="15" Text="Discount" />
                                         <TextBlock Grid.Column="1" x:Name="txtDiscount" HorizontalAlignment="Right" FontWeight="SemiBold" FontSize="15" Text="₦ 0.00" />
                                     </Grid>
 
@@ -578,7 +578,7 @@
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Column="0" FontWeight="SemiBold" FontSize="15" Text="Total Service Charge (10%)" />
+                                        <TextBlock Grid.Column="0" FontWeight="SemiBold" FontSize="15" Text="Service Charge" />
                                         <TextBlock Grid.Column="1" x:Name="txtServiceCharge" HorizontalAlignment="Right" FontWeight="SemiBold" FontSize="15" Text="₦ 0.00" />
                                     </Grid>
 
@@ -588,18 +588,8 @@
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Column="0" FontWeight="SemiBold" FontSize="15" Text="Total VAT (7.5%)" />
+                                        <TextBlock Grid.Column="0" FontWeight="SemiBold" FontSize="15" Text="VAT" />
                                         <TextBlock Grid.Column="1" x:Name="txtVAT" HorizontalAlignment="Right" FontWeight="SemiBold" FontSize="15" Text="₦ 0.00" />
-                                    </Grid>
-
-                                    <Grid Margin="5">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBlock Grid.Column="0" FontWeight="SemiBold" FontSize="15" Text="Other Charges" />
-                                        <TextBlock Grid.Column="1" x:Name="txtOtherCharges" HorizontalAlignment="Right" FontWeight="SemiBold" FontSize="15" Text="₦ 0.00" />
                                     </Grid>
 
                                     <Grid Margin="5">

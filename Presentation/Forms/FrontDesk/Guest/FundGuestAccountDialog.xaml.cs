@@ -1,4 +1,5 @@
-﻿using ESMART.Application.Common.Interface;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Transaction;
@@ -80,18 +81,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var guestAccount = await _guestAccountService.GetAccountAsync(_guest.Id);
                 if (guestAccount != null)
                 {
-                    //txtAmount.Text = guestAccount.FundedBalance.ToString("N", CultureInfo.InvariantCulture);
-                    txtAmount.CaretIndex = txtAmount.Text.Length; // Set caret to the end of the text
-                    txtAmount.SelectionStart = txtAmount.Text.Length; // Ensure caret is at the end
-                    txtAmount.SelectionLength = 0; // Clear any selection
+                    txtAmount.CaretIndex = txtAmount.Text.Length; 
+                    txtAmount.SelectionStart = txtAmount.Text.Length;
+                    txtAmount.SelectionLength = 0;
 
                     chkResBar.IsChecked = guestAccount.AllowBarAndRes;
                     chkLaundry.IsChecked = guestAccount.AllowLaundry;
-
                 }
                 else
                 {
-                    txtAmount.Text = "0.00"; // Default value if no account found
+                    txtAmount.Text = "0.00";
                 }
             }
             catch (Exception ex)
@@ -153,6 +152,25 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
+        public void LoadPaymentType()
+        {
+            try
+            {
+                var method = Enum.GetValues<PaymentType>()
+                    .Cast<PaymentType>()
+                    .Select(e => new { Id = (int)e, Name = e.ToString() })
+                    .ToList();
+
+                cmbPaymentMethod.ItemsSource = method;
+                cmbPaymentMethod.DisplayMemberPath = "Name";
+                cmbPaymentMethod.SelectedValuePath = "Name";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         public async Task LoadBankAccount()
         {
             try
@@ -173,10 +191,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         {
             try
             {
-                bool isNull = Helper.AreAnyNullOrEmpty(txtAmount.Text, ((BankAccount)cmbAccountNumber.SelectedItem).Id, cmbPaymentMethod.SelectedValue.ToString()!);
+                bool isNull = Helper.AreAnyNullOrEmpty(txtAmount.Text, ((BankAccount)cmbAccountNumber.SelectedItem).Id, cmbPaymentMethod.SelectedValue.ToString()!, cmbTopUpType.SelectedValue.ToString()!);
                 if (isNull)
                 {
-                    MessageBox.Show("Please fill n all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -190,9 +208,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
                 var paymentMethod = Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!);
                 var bankAccountId = cmbAccountNumber.SelectedValue.ToString();
-                var userId = AuthSession.CurrentUser?.Id;
+                var paymentType = Enum.Parse<PaymentType>(cmbTopUpType.SelectedValue.ToString()!);
+                var userId = AuthSession.CurrentUser.Id;
 
-                await _guestAccountService.ToUpAsync(_guest.Id, amount, paymentMethod, bankAccountId!, userId!);
+                await _guestAccountService.ToUpAsync(_guest.Id, amount, paymentMethod, bankAccountId!, userId, paymentType);
 
                 LoaderOverlay.Visibility = Visibility.Collapsed;
                 MessageBox.Show("Account saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

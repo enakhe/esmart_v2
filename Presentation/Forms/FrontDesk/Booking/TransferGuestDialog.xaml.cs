@@ -441,7 +441,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 }
                 else
                 {
-                    booking.Status = BookingStatus.Pending;
+                    booking.Status = BookingStatus.Active;
 
                     await _verificationCodeService.DeleteAsync(verificationCode.Id);
                 }

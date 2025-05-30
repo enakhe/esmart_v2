@@ -2,9 +2,6 @@
 {
     public enum BookingStatus
     {
-        Pending,
-        Completed,
-        Failed,
-        CheckedOut
+        Active, Completed, Unsettled
     }
 }

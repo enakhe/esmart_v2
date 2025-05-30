@@ -15,6 +15,7 @@ namespace ESMART.Domain.Entities.RoomSettings
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Number { get; set; }
+        public string RoomId { get; set; }
         public RoomStatus Status { get; set; }
         public decimal Rate { get; set; }
         public string ApplicationUserId { get; set; }

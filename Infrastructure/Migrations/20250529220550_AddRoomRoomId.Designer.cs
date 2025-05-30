@@ -4,6 +4,7 @@ using ESMART.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESMART.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250529220550_AddRoomRoomId")]
+    partial class AddRoomRoomId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -349,13 +352,7 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<string>("GuestId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsOverStay")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSettled")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsTrashed")
@@ -369,9 +366,6 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<decimal>("ServiceCharge")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("SettledDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -761,24 +755,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasIndex("RoomId");
 
                     b.ToTable("RoomBookings", "ESMART");
-                });
-
-            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.RoomNightCharge", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Night")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RoomBookingId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoomBookingId");
-
-                    b.ToTable("RoomNightCharges", "ESMART");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Area", b =>
@@ -1593,15 +1569,6 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("Booking");
 
                     b.Navigation("Room");
-                });
-
-            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.RoomNightCharge", b =>
-                {
-                    b.HasOne("ESMART.Domain.Entities.FrontDesk.RoomBooking", "RoomBooking")
-                        .WithMany()
-                        .HasForeignKey("RoomBookingId");
-
-                    b.Navigation("RoomBooking");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Floor", b =>

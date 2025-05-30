@@ -28,7 +28,7 @@ namespace ESMART.Presentation.Forms
         private async void SplashScreenForm_Loaded(object sender, RoutedEventArgs e)
         {
             await Task.Delay(10000);
-            await BackUpAsync();
+            //await BackUpAsync();
             this.Hide();
 
             InitializeServices();

@@ -1,7 +1,10 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.ViewModels.RoomSetting;
+using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
+using ESMART.Presentation.Forms.FrontDesk.Room;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,10 +22,11 @@ namespace ESMART.Presentation.Forms.Home
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IBookingRepository _bookingRepository;
         private readonly ITransactionRepository _transactionRepository;
+        private readonly ICardRepository _cardRepository;
         private readonly IndexPageViewModel _viewModel;
         private readonly GuestAccountService _guestAccountService;
 
-        public IndexPage(IRoomRepository roomRepository, IGuestRepository guestRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository, GuestAccountService guestAccountService)
+        public IndexPage(IRoomRepository roomRepository, IGuestRepository guestRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository, GuestAccountService guestAccountService, ICardRepository cardRepository)
         {
             _roomRepository = roomRepository;
             _guestRepository = guestRepository;
@@ -33,6 +37,7 @@ namespace ESMART.Presentation.Forms.Home
             _viewModel = new IndexPageViewModel();
             this.DataContext = _viewModel;
             InitializeComponent();
+            _cardRepository = cardRepository;
         }
 
         public async Task LoadRoom()
@@ -142,6 +147,42 @@ namespace ESMART.Presentation.Forms.Home
                 if (dialog.ShowDialog() == true)
                 {
                     await LoadRoom();
+                }
+            }
+        }
+
+        private async void ShowRoomMenu_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menu && menu.Tag is SelectableRoomViewModel room)
+            {
+                var selectedRoom = await _roomRepository.GetRoomById(room.Room.Id);
+
+                if (selectedRoom != null)
+                {
+                    ShowRoomCardDialog showRoomCardDialog = new ShowRoomCardDialog(_cardRepository, selectedRoom);
+
+                    if (showRoomCardDialog.ShowDialog() == true)
+                    {
+                        await LoadRoom();
+                    }
+                }
+            }
+        }
+
+        private async void ViewBillMenu_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menu && menu.Tag is SelectableRoomViewModel room)
+            {
+                var selectedRoom = await _roomRepository.GetRoomById(room.Room.Id);
+
+                if (selectedRoom != null)
+                {
+                    RoomDetailsDialog roomDetails = new RoomDetailsDialog(_roomRepository, _transactionRepository, _bookingRepository, _hotelSettingsService, selectedRoom);
+
+                    if (roomDetails.ShowDialog() == true)
+                    {
+                        await LoadRoom();
+                    }
                 }
             }
         }

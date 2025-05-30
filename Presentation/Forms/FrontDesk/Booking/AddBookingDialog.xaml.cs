@@ -233,7 +233,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 CheckIn = checkIn,
                 CheckOut = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0),
                 Amount = amount,
-                Status = BookingStatus.Pending,
+                Status = BookingStatus.Active,
                 BankAccountId = accountNumber,
                 Discount = discount,
                 VAT = vat,

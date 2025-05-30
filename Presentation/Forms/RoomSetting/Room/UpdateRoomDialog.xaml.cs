@@ -1,8 +1,10 @@
 ﻿#nullable disable
 
+using DocumentFormat.OpenXml.Drawing.Spreadsheet;
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.RoomSettings;
+using ESMART.Domain.Enum;
 using ESMART.Presentation.Session;
 using System.Globalization;
 using System.Text;
@@ -215,6 +217,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
 
                 _room.Number = roomNo;
                 _room.Rate = roomRate;
+                _room.RoomId = Helper.GetFirstLetter(_room.RoomType.Name) + _room.Number;
                 _room.BuildingId = buildingId;
                 _room.FloorId = floorId;
                 _room.AreaId = areaId;

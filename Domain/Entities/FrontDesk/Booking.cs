@@ -52,6 +52,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public decimal VAT { get; set; }
         public decimal ServiceCharge { get; set; }
         public bool IsOverStay { get; set; } = false;
+        public bool IsSettled { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
 
         public string GuestId { get; set; }
@@ -62,6 +63,8 @@ namespace ESMART.Domain.Entities.FrontDesk
 
         public DateTime DateCreated { get; set; } = DateTime.Now;
         public DateTime DateModified { get; set; }
+        public DateTime? SettledDate { get; set; }
+        public bool IsClosed {  get; set; }
         public bool IsTrashed { get; set; } = false;
 
         public virtual Guest Guest { get; set; }

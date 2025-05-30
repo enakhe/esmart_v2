@@ -122,7 +122,7 @@ namespace ESMART.Infrastructure.Repositories.Configuration
 
             using (var zip = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
             {
-                zip.CreateEntryFromFile(filePath, Path.GetFileName(filePath), CompressionLevel.Optimal);
+                zip.CreateEntryFromFile(filePath, Path.GetFileName(filePath), CompressionLevel.SmallestSize);
             }
 
             return zipFilePath;

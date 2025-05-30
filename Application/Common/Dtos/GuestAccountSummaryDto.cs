@@ -41,6 +41,7 @@ namespace ESMART.Application.Common.Dtos
         public string Guest { get; set; }
         public string BookingId { get; set; }
         public string BookingBookingId { get; set; }
+        public string RoomRoomId { get; set; }
         public string RoomId { get; set; }
         public string Invoice { get; set; }
         public string RoomNumber { get; set; }
@@ -69,6 +70,7 @@ namespace ESMART.Application.Common.Dtos
     {
         public string BookingId { get; set; }
         public string GuestName { get; set; }
+        public string RoomId { get; set; }
         public string RoomNumber { get; set; }
         public string Summary { get; set; }
         public string RoomType { get; set; }

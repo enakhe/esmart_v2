@@ -59,7 +59,7 @@ namespace ESMART.Presentation.Forms.Export
 
                 if (hotel != null)
                 {
-                    var printer = new ReceiptHelper();
+                    var printer = new PrintHelper();
 
                     var doc = printer.GeneratePreviewFlowDocument(result, hotel, _dataGrid, txtFileName.Text, _extraTable);
                     docViewer.Document = doc;
@@ -130,8 +130,8 @@ namespace ESMART.Presentation.Forms.Export
 
         public void PrintAndSave(FlowDocument document, string fileName, System.Printing.PageOrientation pageOrientation)
         {
-            ReceiptHelper.PrintFlowDocument(document, pageOrientation);
-            ReceiptHelper.SaveFlowDocumentToFile(document, fileName);
+            PrintHelper.PrintFlowDocument(document, pageOrientation);
+            PrintHelper.SaveFlowDocumentToFile(document, fileName);
         }
 
     }

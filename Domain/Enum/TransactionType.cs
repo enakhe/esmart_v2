@@ -19,6 +19,14 @@
         Other
     }
 
+    public enum PaymentType
+    {
+        Advance,
+        Additional,
+        Deposited,
+        Miscellaneous
+    }
+
     public enum Category
     {
         Accomodation,

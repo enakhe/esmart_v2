@@ -1,4 +1,5 @@
-﻿using ESMART.Domain.Enum;
+﻿using ESMART.Application.Common.Dtos;
+using ESMART.Domain.Enum;
 using System.Text;
 
 namespace ESMART.Application.Common.Utils
@@ -115,6 +116,42 @@ namespace ESMART.Application.Common.Utils
             var words = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             return words.Length > 0 ? words[^1] : string.Empty; // ^1 is C# 8.0 syntax for last item
         }
+
+        public static (
+            decimal BookingAmount,
+            decimal Discount,
+            decimal ServiceCharge,
+            decimal VAT,
+            decimal TotalAmount,
+            decimal TotalPaid,
+            decimal AmountToReceive,
+            decimal AmountToRefund
+            ) CalculateSummary(GuestAccountSummaryDto guestAccountSummaryDto)
+        {
+            var bookingAmount = guestAccountSummaryDto.Amount;
+            var discount = guestAccountSummaryDto.Discount;
+            var serviceCharge = guestAccountSummaryDto.ServiceCharge;
+            var vat = guestAccountSummaryDto.VAT;
+            var totalAmount = bookingAmount + serviceCharge + vat + guestAccountSummaryDto.OtherCharges;
+            var totalPaid = guestAccountSummaryDto.Paid;
+            var amountToReceive = Math.Max(0, (totalAmount - totalPaid));
+            var amountToRefund = totalPaid - totalAmount;
+
+            return (bookingAmount, discount, serviceCharge, vat, totalAmount, totalPaid, amountToReceive, amountToRefund);
+        }
+
+        public static char GetFirstLetter(string sentence)
+        {
+            if (string.IsNullOrWhiteSpace(sentence))
+                throw new ArgumentException("Input cannot be null or whitespace.");
+
+            // Trim the sentence and split it by whitespace
+            var words = sentence.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            // Return the first letter of the first word
+            return words[0][0];
+        }
+
 
     }
 }

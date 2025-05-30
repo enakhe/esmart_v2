@@ -87,7 +87,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     await _transactionRepository.UpdateTransactionItemAsync(transaction);
                 }
 
-                _booking.Status = Domain.Enum.BookingStatus.CheckedOut;
+                _booking.Status = Domain.Enum.BookingStatus.Active;
                 _booking.IsTrashed = true;
                 _booking.UpdatedBy = AuthSession.CurrentUser?.Id;
 

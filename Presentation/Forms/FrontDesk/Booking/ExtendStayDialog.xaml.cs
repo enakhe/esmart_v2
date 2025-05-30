@@ -147,7 +147,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                 if (isRoomAvailable)
                 {
-                    var booking = await UpdateBooking(BookingStatus.Pending, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber);
+                    var booking = await UpdateBooking(BookingStatus.Active, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber);
                     await HandlePostBookingAsync(booking, totalAmount, amount);
 
                     MessageBox.Show("Booking extended successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -394,7 +394,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 }
                 else
                 {
-                    booking.Status = BookingStatus.Pending;
+                    booking.Status = BookingStatus.Active;
 
                     await _verificationCodeService.DeleteAsync(verificationCode.Id);
                 }

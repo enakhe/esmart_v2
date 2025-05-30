@@ -57,10 +57,6 @@ namespace ESMART.Domain.Entities.FrontDesk
 
     public enum ReservationStatus
     {
-        Tentative,
-        Confirmed,
-        CheckedIn,
-        NoShow,
-        Cancelled
+        Reserved, Cancelled, Converted
     }
 }

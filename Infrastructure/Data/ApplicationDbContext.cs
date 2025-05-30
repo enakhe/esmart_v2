@@ -18,6 +18,8 @@ namespace ESMART.Infrastructure.Data
 
         public DbSet<GuestAccount> GuestAccounts { get; set; }
         public DbSet<GuestTransaction> GuestTransactions { get; set; }
+        public DbSet<RoomTypeReservation> RoomTypeReservations { get; set; }
+        public DbSet<RoomNightCharge> RoomNightCharges { get; set; }
 
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionItem> TransactionItems { get; set; }

@@ -3,6 +3,7 @@ using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Models;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.StoreKeeping;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Enum;
@@ -221,7 +222,12 @@ namespace ESMART.Infrastructure.Services
 
         // Top up the guest account
         public async Task ToUpAsync(
-            string guestId, decimal amount, PaymentMethod paymentMethod, string bankAccountId, string userId)
+            string guestId, 
+            decimal amount, 
+            PaymentMethod paymentMethod, 
+            string bankAccountId, 
+            string userId,
+            PaymentType paymentType)
         {
             using var context = await _contextFactory.CreateDbContextAsync();
             using var transaction = await context.Database.BeginTransactionAsync();
@@ -229,7 +235,7 @@ namespace ESMART.Infrastructure.Services
             if (amount < 0)
                 throw new ArgumentException("Amount must be a positive value.", nameof(amount));
 
-            var guestAccount = await GetAccountAsync(guestId); // Ensure this is tracked by context
+            var guestAccount = await GetAccountAsync(guestId);
 
             try
             {
@@ -248,7 +254,7 @@ namespace ESMART.Infrastructure.Services
                     Consumer = guestAccount.Guest.FullName,
                     PaymentMethod = paymentMethod,
                     TransactionType = Domain.Enum.TransactionType.Payment,
-                    Description = $"Additional payment is ₦ {amount:N2}. Paid through {paymentMethod}",
+                    Description = $"{paymentType.ToString()} payment is ₦ {amount:N2}. Paid through {paymentMethod}",
                     Date = DateTime.Now,
                 };
 
@@ -512,7 +518,7 @@ namespace ESMART.Infrastructure.Services
                 .Where(b => 
                     b.Booking.GuestId == guestId && 
                     b.Booking.GuestAccountId == account.Id && 
-                    b.Booking.Status != BookingStatus.CheckedOut)
+                    b.Booking.Status != BookingStatus.Completed)
                 .Select(b => new BookingSummaryDto
                 {
                     Guest = b.OccupantName,
@@ -521,6 +527,7 @@ namespace ESMART.Infrastructure.Services
                     Invoice = b.Booking.GuestAccount.Invoice,
                     RoomNumber = b.Room.Number,
                     RoomId = b.RoomId,
+                    RoomRoomId = b.Room.RoomId,
                     RoomType = b.Room.RoomType.Name,
                     CheckIn = b.CheckIn,
                     CheckOut = b.CheckOut,
@@ -602,9 +609,11 @@ namespace ESMART.Infrastructure.Services
                 {
                     BookingId = bookingId,
                     GuestName = $"Guest: {booking.Guest} - {booking.RoomType} Room ({booking.RoomNumber})",
-                    Summary = $"{booking.BookingBookingId} - Arri: {booking.CheckIn:MM/dd/yyyy} to Dept: {booking.CheckOut:MM/dd/yyyy} - Total = ₦ {recent.Sum(r => r.BillPosts):N2}",
+                    Summary = 
+                    $"{booking.RoomRoomId} - Arri: {booking.CheckIn:MM/dd/yyyy} to Dept: {booking.CheckOut:MM/dd/yyyy} - Total = ₦ {recent.Sum(r => r.BillPosts):N2}",
                     RoomNumber = booking.RoomNumber,
                     RoomType = booking.RoomType,
+                    RoomId = booking.RoomRoomId,
                     CheckIn = booking.CheckIn,
                     CheckOut = booking.CheckOut,
                     Status = booking.Status,
@@ -737,32 +746,32 @@ namespace ESMART.Infrastructure.Services
                 var nights = (decimal)(roomBookingDto.CheckOut - roomBookingDto.CheckIn).TotalDays;
                 booking.Amount += roomRate * nights;
 
-                var guestTransactionDto = new GuestTransactionDto()
-                {
-                    Amount = roomBooking.Rate,
-                    ApplicationUserId = userId,
-                    GuestAccountId = booking.GuestAccountId,
-                    BankAccountId = booking.BankAccountId,
-                    Discount = roomBooking.Discount,
-                    GuestId = booking.GuestId,
-                    RoomId = roomBooking.RoomId,
-                    Consumer = roomBooking.OccupantName,
-                    PaymentMethod = booking.PaymentMethod,
-                    TransactionType = TransactionType.RoomCharge,
-                    Tax = roomBooking.Tax,
-                    Description = "Room Charge (Inclusive of Inclusions)"
-                };
+                //var guestTransactionDto = new GuestTransactionDto()
+                //{
+                //    Amount = roomBooking.Rate,
+                //    ApplicationUserId = userId,
+                //    GuestAccountId = booking.GuestAccountId,
+                //    BankAccountId = booking.BankAccountId,
+                //    Discount = roomBooking.Discount,
+                //    GuestId = booking.GuestId,
+                //    RoomId = roomBooking.RoomId,
+                //    Consumer = roomBooking.OccupantName,
+                //    PaymentMethod = booking.PaymentMethod,
+                //    TransactionType = TransactionType.RoomCharge,
+                //    Tax = roomBooking.Tax,
+                //    Description = "Room Charge (Inclusive of Inclusions)"
+                //};
 
-                await AddRoomChargeAsync(
-                    booking.GuestId, 
-                    roomBooking.Rate, 
-                    roomBooking.Discount, 
-                    roomBooking.Tax, 
-                    roomBooking.ServiceCharge);
+                //await AddRoomChargeAsync(
+                //    booking.GuestId, 
+                //    roomBooking.Rate, 
+                //    roomBooking.Discount, 
+                //    roomBooking.Tax, 
+                //    roomBooking.ServiceCharge);
 
-                await AddTransaction(
-                    booking.GuestId, 
-                    guestTransactionDto);
+                //await AddTransaction(
+                //    booking.GuestId, 
+                //    guestTransactionDto);
             }
 
             var vatAmount = booking.Amount * (booking.VAT / 100m);
@@ -801,6 +810,20 @@ namespace ESMART.Infrastructure.Services
                 .ToListAsync();
 
             return bookings;
+        }
+
+        public async Task<Booking> GetBookingByGuestAccountIdAsync(
+            string guestAccountId)
+        {
+            using var _context = await _contextFactory.CreateDbContextAsync();
+
+            var bookings = await _context.Bookings
+                .Include(b => b.RoomBookings)
+                    .ThenInclude(rb => rb.Room)
+                .Include(b => b.Guest)
+                .FirstOrDefaultAsync(b => b.GuestAccountId == guestAccountId && !b.IsTrashed);
+        
+            return bookings!;
         }
 
 
@@ -916,6 +939,7 @@ namespace ESMART.Infrastructure.Services
             using var _context = await _contextFactory.CreateDbContextAsync();
 
             var guestAccount = await GetAccountAsync(createOrderDto.GuestId);
+            var roomBooking = await GetRoomBookingByRoomIdAsync(createOrderDto.RoomId);
 
             var order = new Domain.Entities.StoreKeeping.Order
             {
@@ -943,7 +967,7 @@ namespace ESMART.Infrastructure.Services
                 PaymentMethod = createOrderDto.PaymentMethod,
                 TransactionType = createOrderDto.TransactionType,
                 Tax = 0,
-                Description = $"Room Service ({order.OrderId})"
+                Description = $"Room Service for {roomBooking.OccupantName} in room {roomBooking.Room.Number} with order Id ({order.OrderId})"
             };
 
             await AddChargeAsync(guestTransactionDto.GuestId, guestTransactionDto.Amount);
@@ -971,6 +995,7 @@ namespace ESMART.Infrastructure.Services
                     .Select(b => b.Booking.Guest)];
         }
 
+
         public async Task<List<RoomBooking>> GetCurrentBooking()
         {
             using var context = _contextFactory.CreateDbContext();
@@ -983,5 +1008,216 @@ namespace ESMART.Infrastructure.Services
 
             return allCurrentBooking;
         }
+
+
+        public async Task PostPendingRoomChargesAsync(
+            string guestId, 
+            string userId)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            var activeBookings = await context.Bookings
+                .Include(b => b.RoomBookings)
+                .Where(b => b.GuestId == guestId && b.Status != BookingStatus.Completed) // You can add more precise filters
+                .ToListAsync();
+
+            foreach (var booking in activeBookings)
+            {
+                foreach (var roomBooking in booking.RoomBookings)
+                {
+                    var today = DateTime.Today;
+
+                    // Number of full nights already stayed
+                    var nightsStayed = (today - roomBooking.CheckIn.Date).Days;
+
+                    if (nightsStayed <= 0) continue;
+
+                    // Get how many charges have already been posted
+                    var postedNights = await context.RoomNightCharges
+                        .Where(rc => rc.RoomBookingId == roomBooking.Id)
+                        .Select(rc => rc.Night)
+                        .ToListAsync();
+
+                    // Post for each uncharged night
+                    for (int i = 0; i < nightsStayed; i++)
+                    {
+                        var night = roomBooking.CheckIn.Date.AddDays(i);
+
+                        if (postedNights.Contains(night))
+                            continue;
+
+                        // Post nightly room charge
+                        await AddRoomChargeAsync(booking.GuestId, roomBooking.Rate, roomBooking.Discount, roomBooking.Tax, roomBooking.ServiceCharge);
+
+                        await AddTransaction(booking.GuestId, new GuestTransactionDto
+                        {
+                            Amount = roomBooking.Rate,
+                            ApplicationUserId = userId,
+                            GuestAccountId = booking.GuestAccountId,
+                            BankAccountId = booking.BankAccountId,
+                            Discount = roomBooking.Discount,
+                            GuestId = booking.GuestId,
+                            RoomId = roomBooking.RoomId,
+                            Consumer = roomBooking.OccupantName,
+                            PaymentMethod = booking.PaymentMethod,
+                            TransactionType = TransactionType.RoomCharge,
+                            Tax = roomBooking.Tax,
+                            Description = $"Room Charge (Inclusive of Inclusions)"
+                        });
+
+                        context.RoomNightCharges.Add(new RoomNightCharge
+                        {
+                            RoomBookingId = roomBooking.Id,
+                            Night = night
+                        });
+
+                        await context.SaveChangesAsync();
+                    }
+                }
+            }
+        }
+
+
+        public async Task CheckoutGuestAsync(
+            string bookingId, 
+            bool allowUnsettled = false)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            var booking = await context.Bookings
+                .Include(b => b.RoomBookings)
+                .Include(b => b.GuestAccount)
+                .FirstOrDefaultAsync(b => b.Id == bookingId)
+                ?? throw new Exception("Booking not found.");
+
+            var guestAccount = booking.GuestAccount;
+
+            if (guestAccount.Balance < 0)
+            {
+                if (!allowUnsettled)
+                {
+                    throw new InvalidOperationException("Outstanding balance detected. Cannot checkout without full payment.");
+                }
+
+                booking.IsSettled = false;
+                booking.IsClosed = true;
+                booking.SettledDate = null;
+                booking.Status = BookingStatus.Unsettled;
+
+                guestAccount.IsClosed = true;
+            }
+            else
+            {
+                booking.IsSettled = true;
+                booking.IsClosed = true;
+                booking.SettledDate = DateTime.Now;
+                booking.Status = BookingStatus.Completed;
+
+                guestAccount.IsClosed = true;
+            }
+
+            // Release rooms
+            foreach (var roomBooking in booking.RoomBookings)
+            {
+                var room = await context.Rooms.FindAsync(roomBooking.RoomId);
+
+                if (room != null)
+                {
+                    room.Status = RoomStatus.Vacant;
+                    context.Rooms.Update(room);
+                }   
+            }
+
+            context.Bookings.Update(booking);
+            context.GuestAccounts.Update(guestAccount);
+
+            await context.SaveChangesAsync();
+        }
+
+
+
+        public async Task<string> CreateRoomTypeReservationAsync(RoomTypeReservationDto dto)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            var guestAccountId = await GetAccountAsync(dto.GuestId)
+                ?? throw new Exception("Guest not found.");
+
+            var reservation = new RoomTypeReservation
+            {
+                Id = Guid.NewGuid().ToString(),
+                GuestId = dto.GuestId,
+                RoomTypeId = dto.RoomTypeId,
+                CheckInDate = dto.CheckInDate,
+                BankAccountId = dto.BankAccountId,
+                Discount = dto.Discount,
+                PaymentMethod = dto.PaymentMethod,
+                GuestAccountId = dto.GuestAccountId,                
+                CheckOutDate = dto.CheckOutDate,
+                ReservationDate = DateTime.Now,
+                AdvancePayment = dto.AdvancePayment,
+                Status = ReservationStatus.Reserved
+            };
+
+            context.RoomTypeReservations.Add(reservation);
+
+            await ToUpAsync(dto.GuestId, dto.AdvancePayment, dto.PaymentMethod, dto.BankAccountId, dto.ApplicationUserId, PaymentType.Advance);
+
+            await context.SaveChangesAsync();
+            return reservation.Id;
+        }
+
+
+        public async Task CancelReservationAsync(string reservationId)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            var reservation = await context.RoomTypeReservations
+                .Include(r => r.Guest)
+                .FirstOrDefaultAsync(r => r.Id == reservationId)
+                ?? throw new Exception("Reservation not found.");
+
+            if (reservation.Status != ReservationStatus.Reserved)
+                throw new InvalidOperationException("Only active reservations can be cancelled.");
+
+            reservation.Status = ReservationStatus.Cancelled;
+            context.Update(reservation);
+            await context.SaveChangesAsync();
+        }
+
+
+        public async Task<string> ConvertReservationToBookingAsync(string reservationId,  string userId)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            var reservation = await context.RoomTypeReservations
+                .Include(r => r.Guest)
+                .FirstOrDefaultAsync(r => r.Id == reservationId)
+                ?? throw new Exception("Reservation not found.");
+
+            if (reservation.Status != ReservationStatus.Reserved)
+                throw new InvalidOperationException("Reservation is not active.");
+
+            var multiRoomBooking = new MultiRoomBookingDto()
+            {
+                ApplicationUserId = userId,
+                CheckIn = reservation.CheckInDate,
+                CheckOut = reservation.CheckOutDate,
+                AccountNumber = reservation.BankAccountId,
+                Discount = reservation.Discount,
+                GuestAccountId = reservation.GuestAccountId,
+                GuestId = reservation.GuestId,
+                PaymentMethod = reservation.PaymentMethod,
+            };
+
+            string bookingId = await CreateGuestBookingAsync(multiRoomBooking);
+
+            reservation.Status = ReservationStatus.Converted;
+            reservation.BookingId = bookingId;
+
+            await context.SaveChangesAsync();
+            return bookingId;
+        }
+
     }
 }

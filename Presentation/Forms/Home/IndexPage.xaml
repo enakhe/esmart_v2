@@ -172,8 +172,8 @@
                                             <Border.ContextMenu>
                                                 <ContextMenu>
                                                     <MenuItem x:Name="BookRoom" Header="Book Room" Click="BookRoom_Click" Tag="{Binding}" />
-                                                    <MenuItem Header="View Bill" />
-                                                    <MenuItem Header="Show Room Card" />
+                                                    <MenuItem x:Name="ViewBillMenu" Header="View Bill" Click="ViewBillMenu_Click" Tag="{Binding}" />
+                                                    <MenuItem x:Name="ShowRoomMenu" Header="Show Room Card" Click="ShowRoomMenu_Click" Tag="{Binding}"/>
                                                 </ContextMenu>
                                             </Border.ContextMenu>
                                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">

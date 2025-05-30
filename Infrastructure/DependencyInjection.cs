@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Infrastructure.BackgroundJobs;
 using ESMART.Infrastructure.Identity;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Repositories.FrontDesk;
@@ -37,6 +38,8 @@ namespace ESMART.Infrastructure
             services.AddScoped<BackupRepository>();
             services.AddScoped<StockKeepingRepository>();
             services.AddScoped<GuestAccountService>();
+            services.AddScoped<NightlyRoomChargeService>();
+            services.AddHostedService<NightlyRoomChargeWorker>();
             return services;
         }
 

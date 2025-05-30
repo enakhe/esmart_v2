@@ -1,5 +1,6 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Presentation.Session;
 using System.Globalization;
 using System.Text;
@@ -155,6 +156,8 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                     return;
                 }
 
+                var roomType = ((Domain.Entities.RoomSettings.RoomType)cmbRoomType.SelectedValue).Name;
+
                 var roomNumber = txtRoomNumber.Text;
                 var buildingId = cmbBuilding.SelectedValue.ToString();
                 var floorId = cmbFloor.SelectedValue.ToString();
@@ -164,6 +167,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                 var room = new Domain.Entities.RoomSettings.Room
                 {
                     Number = roomNumber,
+                    RoomId = Helper.GetFirstLetter(roomType!) + roomNumber,
                     Rate = roomRate,
                     BuildingId = buildingId,
                     FloorId = floorId,

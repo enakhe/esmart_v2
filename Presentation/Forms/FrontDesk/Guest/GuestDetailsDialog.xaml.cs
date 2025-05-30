@@ -2,6 +2,7 @@
 
 using ESMART.Application.Common.Dtos;
 using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Enum;
@@ -98,10 +99,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 {
                     TransactionItemDataGrid.ItemsSource = new List<GuestAccountSummaryDto> { guestTransactionItem };
 
-                    var (BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund) = CalculateSummary(guestTransactionItem);
+                    var (BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund) = Helper.CalculateSummary(guestTransactionItem);
 
                     txtSummaryName.Text = $"Total for the period {guestTransactionItem.CheckIn:MM/dd/yy} to {guestTransactionItem.CheckOut:MM/dd/yy}";
-                    txtBookingAmount.Text = $"₦ {BookingAmount:N2}";
+                    txtBookingAmount.Text = $"₦ {(BookingAmount + guestTransactionItem.OtherCharges):N2}";
                     txtDiscount.Text = $"₦ {Discount:N2}";
                     txtServiceCharge.Text = $"₦ {ServiceCharge:N2}";
                     txtVAT.Text = $"₦ {VAT:N2}";
@@ -109,7 +110,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     txtAmountPaid.Text = $"₦ {TotalPaid:N2}";
                     txtReceive.Text = $"₦ {AmountToReceive:N2}";
                     txtRefund.Text = $"₦ {AmountToRefund:N2}";
-                    txtOtherCharges.Text = $"₦ {guestTransactionItem.OtherCharges:N2}";
 
                     if (AmountToReceive > 0)
                     {
@@ -136,29 +136,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
-        }
-
-        private static (
-            decimal BookingAmount, 
-            decimal Discount, 
-            decimal ServiceCharge, 
-            decimal VAT, 
-            decimal TotalAmount, 
-            decimal TotalPaid, 
-            decimal AmountToReceive, 
-            decimal AmountToRefund
-            ) CalculateSummary(GuestAccountSummaryDto guestAccountSummaryDto)
-        {
-            var bookingAmount = guestAccountSummaryDto.Amount;
-            var discount = guestAccountSummaryDto.Discount;
-            var serviceCharge = guestAccountSummaryDto.ServiceCharge;
-            var vat = guestAccountSummaryDto.VAT;
-            var totalAmount = bookingAmount + serviceCharge + vat + guestAccountSummaryDto.OtherCharges;
-            var totalPaid = guestAccountSummaryDto.Paid;
-            var amountToReceive = Math.Max(0, (totalAmount - totalPaid));
-            var amountToRefund = totalPaid - totalAmount;
-
-            return (bookingAmount, discount, serviceCharge, vat, totalAmount, totalPaid, amountToReceive, amountToRefund);
         }
 
         private async void DeleteGuest_Click(object sender, RoutedEventArgs e)
@@ -412,14 +389,41 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             {
                 var guest = await _guestRepository.GetGuestByIdAsync(_id);
                 var hotel = await _hotelSettingsService.GetHotelInformation();
-                var printer = new ReceiptHelper();
+                var printer = new PrintHelper();
 
                 var doc = printer.PrintGuestInformation(guest, hotel);
 
                 string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
-                ReceiptHelper.PrintFlowDocument(doc, System.Printing.PageOrientation.Portrait);
-                ReceiptHelper.SaveFlowDocumentToFile(doc, $"{guest.FullName.Replace(" ", "-")}-{timestamp}");
+                PrintHelper.PrintFlowDocument(doc, System.Printing.PageOrientation.Portrait);
+                PrintHelper.SaveFlowDocumentToFile(doc, $"{guest.FullName.Replace(" ", "-")}-{timestamp}");
 
+                this.Activate();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void PrintButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var guestTransactionItem = await _guestAccountService.GetGuestAccountSummaryAsync(_id);
+                var guestAccount = await _guestAccountService.GetAccountAsync(_id);
+                var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
+                var printer = new PrintHelper();
+
+                var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                var doc = printer.GenerateGuestAccountFlowDocument(guestTransactionItem, booking, hotel);
+                PrintHelper.PrintFlowDocument(doc, System.Printing.PageOrientation.Portrait);
                 this.Activate();
             }
             catch (Exception ex)

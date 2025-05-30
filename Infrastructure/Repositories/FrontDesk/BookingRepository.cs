@@ -38,6 +38,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 var allBookings = await context.RoomBookings
                                 .Include(b => b.Booking)
                                 .Include(b => b.Room)
+                                .Include(b => b.Booking.ApplicationUser)
                                 .Where(r => r.Booking.IsTrashed == false)
                                 .OrderByDescending(r => r.Date)
                                 .ToListAsync();
@@ -118,7 +119,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 return await context.Bookings
                     .Include(b => b.Guest)
                     .Include(b => b.Room)
-                    .FirstOrDefaultAsync(b => b.GuestId == guestId && !b.IsTrashed && b.Status != BookingStatus.CheckedOut);
+                    .FirstOrDefaultAsync(b => b.GuestId == guestId && !b.IsTrashed && b.Status != BookingStatus.Completed);
             }
             catch (Exception ex)
             {
@@ -331,7 +332,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         b.CheckOut >= fromDate &&
                         b.CheckOut <= toDate &&
                         !b.IsTrashed &&
-                        b.Status != BookingStatus.CheckedOut
+                        b.Status != BookingStatus.Completed
                     )
                     .Select(b => new BookingViewModel
                     {
@@ -694,7 +695,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Include(b => b.Room).Include(b => b.Guest)
                     .Where(b =>
                         !b.IsTrashed &&
-                        b.Status != BookingStatus.CheckedOut &&
+                        b.Status != BookingStatus.Completed &&
                         b.Room.Number.Contains(keyword) ||
                         b.Guest.FirstName.Contains(keyword) ||
                         b.Guest.LastName.Contains(keyword) ||
