@@ -5,6 +5,7 @@ using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.FrontDesk.Reservation;
 using ESMART.Presentation.Forms.FrontDesk.Room;
 using ESMART.Presentation.Forms.Home;
+using ESMART.Presentation.Forms.Laundry;
 using ESMART.Presentation.Forms.Reports;
 using ESMART.Presentation.Forms.RoomSetting;
 using ESMART.Presentation.Forms.RoomSetting.Area;
@@ -95,6 +96,10 @@ namespace ESMART.Presentation
             services.AddScoped<FloorCardPage>();
 
             services.AddScoped<RoomPage>();
+            services.AddScoped<LaundaryPage>();
+            services.AddScoped<AddLaundaryServiceDialog>();
+
+            services.AddScoped<SettledBookingReport>();
 
             return services;
         }

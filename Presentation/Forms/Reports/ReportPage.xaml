@@ -38,12 +38,12 @@
     
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition />
-            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
-            <Grid Background="#1a237e" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid Background="#1a237e" Margin="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -58,6 +58,7 @@
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Expected Departure Report" FontSize="12" Margin="5" Click="ExpectedDepartureReport_Click" />
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Current In-House Guests Report" FontSize="12" Margin="5" Click="CurrentInHouseGuestReport_Click"/>
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Overstayed Guests Report" Margin="5" FontSize="12" Click="OverstayedGuestReport_Click"/>
+                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Booking Account Report" Margin="5" FontSize="12" Click="SettledBookingReport_Click"/>
                     </StackPanel>
                 </Expander>
 

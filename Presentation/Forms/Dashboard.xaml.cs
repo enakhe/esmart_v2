@@ -7,6 +7,7 @@ using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.FrontDesk.Reservation;
 using ESMART.Presentation.Forms.FrontDesk.Room;
 using ESMART.Presentation.Forms.Home;
+using ESMART.Presentation.Forms.Laundry;
 using ESMART.Presentation.Forms.Reports;
 using ESMART.Presentation.Forms.RoomSetting;
 using ESMART.Presentation.Forms.Setting;
@@ -102,6 +103,13 @@ namespace ESMART.Presentation.Forms
             InitializeServices();
             StockKeepingIndexPage storeKeepingPage = _serviceProvider.GetRequiredService<StockKeepingIndexPage>();
             MainFrame.Navigate(storeKeepingPage);
+        }
+
+        private void LoadLaundryPage()
+        {
+            InitializeServices();
+            LaundaryPage laundaryPage = _serviceProvider.GetRequiredService<LaundaryPage>();
+            MainFrame.Navigate(laundaryPage);
         }
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
@@ -237,6 +245,7 @@ namespace ESMART.Presentation.Forms
 
         private async Task ApplyAuthorization()
         {
+            LoaderGrid.Visibility = Visibility.Visible;
             try
             {
                 var userId = AuthSession.CurrentUser?.Id;
@@ -245,26 +254,34 @@ namespace ESMART.Presentation.Forms
                 var user = await _userService.GetUserById(userId);
                 if (user == null) return;
 
-                var roles = await _userManager.GetRolesAsync(user);
-                var roleSet = roles.ToHashSet();
+                var roles = await _userService.GetRolesForUser(user);
+                var roleNames = roles.Select(r => r.Name).ToHashSet();
 
                 // Define visibility logic
-                bool isSuperAdmin = roleSet.Contains(DefaultRoles.Administrator.ToString()) ||
-                                    roleSet.Contains(DefaultRoles.Admin.ToString());
+                bool isSuperAdmin = roleNames.Contains(DefaultRoles.Administrator.ToString()) ||
+                    roleNames.Contains(DefaultRoles.Admin.ToString());
+                bool isStoreKeeper = roleNames.Contains(DefaultRoles.StoreKeeper.ToString()) ||
+                                     roleNames.Contains(DefaultRoles.Bar.ToString()) ||
+                                     roleNames.Contains(DefaultRoles.Restaurant.ToString());
+                bool isFrontDesk = roleNames.Contains(DefaultRoles.Receptionist.ToString());
+                bool isAdmin = roleNames.Contains(DefaultRoles.Admin.ToString());
+                bool isLaundry = roleNames.Contains(DefaultRoles.Laundry.ToString());
 
-                bool isStoreKeeper = roleSet.Contains(DefaultRoles.StoreKeeper.ToString());
-                bool isFrontDesk = roleSet.Contains(DefaultRoles.Receptionist.ToString());
-                bool isAdmin = roleSet.Contains(DefaultRoles.Admin.ToString());
 
                 // Apply visibility
                 AdminControls.Visibility = isSuperAdmin ? Visibility.Visible : Visibility.Collapsed;
                 SettingButton.Visibility = isAdmin ? Visibility.Collapsed : Visibility.Visible;
                 StoreKeepingControls.Visibility = (isSuperAdmin || isStoreKeeper) ? Visibility.Visible : Visibility.Collapsed;
                 FrontDeskControls.Visibility = (isSuperAdmin || isFrontDesk) ? Visibility.Visible : Visibility.Collapsed;
+                LaundaryControls.Visibility = (isSuperAdmin || isLaundry) ? Visibility.Visible : Visibility.Collapsed;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderGrid.Visibility = Visibility.Collapsed;
             }
         }
         private async void ShowDefaultHome()
@@ -283,8 +300,13 @@ namespace ESMART.Presentation.Forms
                 bool isSuperAdmin = roleSet.Contains(DefaultRoles.Administrator.ToString()) ||
                                     roleSet.Contains(DefaultRoles.Admin.ToString());
 
-                bool isStoreKeeper = roleSet.Contains(DefaultRoles.StoreKeeper.ToString());
+                bool isStoreKeeper = roleSet.Contains(DefaultRoles.StoreKeeper.ToString()) ||
+                                     roleSet.Contains(DefaultRoles.Restaurant.ToString()) ||
+                                     roleSet.Contains(DefaultRoles.Bar.ToString());
+
                 bool isFrontDesk = roleSet.Contains(DefaultRoles.Receptionist.ToString());
+
+                bool isLaundry = roleSet.Contains(DefaultRoles.Laundry.ToString());
 
                 if (isFrontDesk)
                 {
@@ -297,6 +319,10 @@ namespace ESMART.Presentation.Forms
                 else if (isSuperAdmin)
                 {
                     LoadHomePage();
+                }
+                else if (isLaundry)
+                {
+                    LoadLaundryPage();
                 }
                 else
                 {
@@ -364,6 +390,16 @@ namespace ESMART.Presentation.Forms
             {
                 AppSessionManager.LogoutToLogin();
             }
+        }
+
+        private void LaundryHome_Click(object sender, RoutedEventArgs e)
+        {
+            LoadLaundryPage();
+        }
+
+        private void WashButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

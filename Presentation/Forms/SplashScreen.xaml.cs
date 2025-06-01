@@ -1,6 +1,7 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.Configuration;
 using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Setting.Licence;
 using ESMART.Presentation.Utils;
 using Microsoft.Extensions.Configuration;
@@ -18,17 +19,20 @@ namespace ESMART.Presentation.Forms
         private IServiceProvider _serviceProvider;
         private readonly IBackupRepository _backupRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
-        public SplashScreen(IHotelSettingsService hotelSettingsService, IBackupRepository backupRepository)
+        private readonly GoogleDriveBackupService _googleDriveBackupService;
+        public SplashScreen(IHotelSettingsService hotelSettingsService, IBackupRepository backupRepository, GoogleDriveBackupService googleDriveBackupService)
         {
             _hotelSettingsService = hotelSettingsService;
             _backupRepository = backupRepository;
+            _googleDriveBackupService = googleDriveBackupService;
             InitializeComponent();
         }
 
         private async void SplashScreenForm_Loaded(object sender, RoutedEventArgs e)
         {
+            
             await Task.Delay(10000);
-            //await BackUpAsync();
+            await BackUpAsync();
             this.Hide();
 
             InitializeServices();
@@ -111,9 +115,9 @@ namespace ESMART.Presentation.Forms
             if (hotel != null)
             {
                 var zippedFile = BackupRepository.ZipFiles(backupFile);
-                var result = await BackupRepository.UploadBackupAsync(zippedFile, hotel.Name);
+                var (IsSuccess, ResponseId) = await _googleDriveBackupService.UploadBackupAsync(zippedFile, hotel.Name);
 
-                if (result.Success)
+                if (IsSuccess)
                 {
                     var userBackUp = await _backupRepository.GetBackupSettingsAsync();
                     userBackUp.LastBackup = DateTime.Now;

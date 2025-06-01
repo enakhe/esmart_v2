@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
@@ -35,12 +36,15 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
 
                 using var context = _contextFactory.CreateDbContext();
 
-                var allBookings = await context.RoomBookings
-                                .Include(b => b.Booking)
+                var allBookings = await context.Bookings
                                 .Include(b => b.Room)
-                                .Include(b => b.Booking.ApplicationUser)
-                                .Where(r => r.Booking.IsTrashed == false)
-                                .OrderByDescending(r => r.Date)
+                                .Include(b => b.Guest)
+                                .Include(b => b.RoomBookings)
+                                .Include(b => b.RoomBookings)
+                                    .ThenInclude(rb => rb.Room)
+                                .Include(b => b.ApplicationUser)
+                                .Where(r => r.Status == BookingStatus.Active)
+                                .OrderByDescending(r => r.DateCreated)
                                 .ToListAsync();
 
 
@@ -49,7 +53,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     var booking = allBookings.FirstOrDefault(b => b.Id == overstay.Id);
                     if (booking != null)
                     {
-                        booking.Booking.IsOverStay = true;
+                        booking.IsOverStay = true;
                         context.Entry(booking).State = EntityState.Modified;
                     }
                 }
@@ -60,16 +64,17 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Select(b => new BookingViewModel
                     {
                         Id = b.Id,
-                        Guest = b.OccupantName,
-                        PhoneNumber = b.OccupantPhoneNumber,
+                        Guest = b.Guest.FullName,
+                        PhoneNumber = b.Guest.PhoneNumber,
                         CheckIn = b.CheckIn,
                         CheckOut = b.CheckOut,
-                        Status = b.Booking.Status.ToString(),
-                        CreatedBy = b.Booking.ApplicationUser.FullName,
-                        DateCreated = b.Date,
-                        DateModified = b.Booking.DateModified,
-                        IsOverStayed = b.Booking.IsOverStay,
-                        Room = b.Room.Number
+                        Status = b.Status.ToString(),
+                        CreatedBy = b.ApplicationUser.FullName,
+                        DateCreated = b.DateCreated,
+                        DateModified = b.DateModified,
+                        IsOverStayed = b.IsOverStay,
+                        NumberOfRooms = b.RoomBookings.Count,
+                        RoomBookings = b.RoomBookings
                     })];
             }
             catch (Exception ex)
@@ -83,23 +88,23 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                return await context.Bookings
-                    .Include(b => b.Guest)
+                return await context.RoomBookings
+                    .Include(b => b.Booking)
                     .Include(b => b.Room)
-                    .Where(b => DateTime.Now > b.CheckOut && !b.IsTrashed)
+                    .Where(b => DateTime.Now > b.CheckOut && b.Booking.Status == BookingStatus.Active )
                     .Select(b => new BookingViewModel
                     {
                         Id = b.Id,
-                        Guest = b.Guest.FullName,
-                        PhoneNumber = b.Guest.PhoneNumber,
+                        Guest = b.OccupantName,
+                        PhoneNumber = b.OccupantPhoneNumber,
                         CheckIn = b.CheckIn,
                         CheckOut = b.CheckOut,
-                        PaymentMethod = b.PaymentMethod.ToString(),
-                        Duration = b.Duration.ToString(),
-                        Status = b.Status.ToString(),
-                        CreatedBy = b.ApplicationUser.FullName,
-                        DateCreated = b.DateCreated,
-                        DateModified = b.DateModified,
+                        Status = b.Booking.Status.ToString(),
+                        CreatedBy = b.Booking.ApplicationUser.FullName,
+                        DateCreated = b.Date,
+                        DateModified = b.Booking.DateModified,
+                        IsOverStayed = b.Booking.IsOverStay,
+                        Room = b.Room.Number
                     })
                     .OrderBy(r => r.DateCreated)
                     .ToListAsync();
@@ -407,13 +412,13 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var rooms = await context.Bookings
+                var rooms = await context.RoomBookings
                     .Include(b => b.Room)
-                    .Include(b => b.Guest)
-                    .Include(b => b.Guest.GuestAccount)
+                    .Include(b => b.Booking)
+                    .Include(b => b.Booking.GuestAccount)
                     .Where(b =>
-                        b.Guest.GuestAccount.Sum(gA => gA.FundedBalance) > 0 &&
-                        !b.IsTrashed
+                        (b.Booking.GuestAccount.Amount + b.Booking.GuestAccount.Tax + b.Booking.GuestAccount.ServiceCharge + b.Booking.GuestAccount.OtherCharges) < b.Booking.GuestAccount.TopUps &&
+                        b.Booking.Status == BookingStatus.Active
                     )
                     .Select(b => b.Room.Number)
                     .Distinct()
@@ -553,6 +558,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                     .Include(b => b.Room.Floor)
                     .Include(b => b.Room.Area)
                     .Include(b => b.Room.RoomType)
+                    .Include(b => b.RoomBookings)
                     .Include(b => b.Transactions)
                     .Include(b => b.Room.Building)
                     .Include(b => b.ApplicationUser)

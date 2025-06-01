@@ -16,7 +16,9 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Interop;
+using System.Windows.Media.Animation;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Guest
 {
@@ -65,7 +67,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         Gender = guest.Gender,
                         Street = guest.Street,
                         Status = guest.Status,
-                        CurrentBalance = guestAccount.Balance,
                         PhoneNumber = guest.PhoneNumber,
                         City = guest.City,
                         State = guest.State,
@@ -74,6 +75,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         DateCreated = guest.DateCreated,
                         DateModified = guest.DateModified,
                     };
+
+                    if (guestAccount != null)
+                    {
+                        guestViewModel.CurrentBalance = guestAccount!.Balance;
+                    }
 
                     this.DataContext = guestViewModel;
                 }
@@ -89,54 +95,68 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             }
         }
 
-        private async Task LoadGuestTransactionHistory()
+        private async Task<GuestAccountSummaryDto> LoadGuestTransactionHistoryAsync()
         {
             LoaderOverlay.Visibility = Visibility.Visible;
+
             try
             {
                 var guestTransactionItem = await _guestAccountService.GetGuestAccountSummaryAsync(_id);
-                if (guestTransactionItem != null)
+                var guestAccount = await _guestAccountService.GetAccountAsync(_id);
+                var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
+                if (guestTransactionItem == null) return null;
+
+                TransactionItemDataGrid.ItemsSource = new List<GuestAccountSummaryDto> { guestTransactionItem };
+
+                var (BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund) = Helper.CalculateSummary(guestTransactionItem);
+
+                UpdateTransactionSummaryUI(booking, guestTransactionItem, BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund);
+
+                if(guestTransactionItem.BookingGroups.Count == 0)
                 {
-                    TransactionItemDataGrid.ItemsSource = new List<GuestAccountSummaryDto> { guestTransactionItem };
-
-                    var (BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund) = Helper.CalculateSummary(guestTransactionItem);
-
-                    txtSummaryName.Text = $"Total for the period {guestTransactionItem.CheckIn:MM/dd/yy} to {guestTransactionItem.CheckOut:MM/dd/yy}";
-                    txtBookingAmount.Text = $"₦ {(BookingAmount + guestTransactionItem.OtherCharges):N2}";
-                    txtDiscount.Text = $"₦ {Discount:N2}";
-                    txtServiceCharge.Text = $"₦ {ServiceCharge:N2}";
-                    txtVAT.Text = $"₦ {VAT:N2}";
-                    txtTotalAmount.Text = $"₦ {TotalAmount:N2}";
-                    txtAmountPaid.Text = $"₦ {TotalPaid:N2}";
-                    txtReceive.Text = $"₦ {AmountToReceive:N2}";
-                    txtRefund.Text = $"₦ {AmountToRefund:N2}";
-
-                    if (AmountToReceive > 0)
-                    {
-                        ReceiveGrid.Visibility = Visibility.Visible;
-                    }
-
-                    if (AmountToRefund > 0)
-                    {
-                        RefundGrid.Visibility = Visibility.Visible;
-                    }
-
-                    if (AmountToReceive == 0 && AmountToRefund == 0)
-                    {
-                        txtAccountBalanced.Visibility = Visibility.Visible;
-                    }
+                    CheckOutButton.Visibility = Visibility.Hidden;
+                    SummaryPanel.Visibility = Visibility.Collapsed;
                 }
+
+                return guestTransactionItem;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                LogError(ex);
             }
             finally
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
+
+            return null;
         }
+
+        private void UpdateTransactionSummaryUI(Domain.Entities.FrontDesk.Booking booking, GuestAccountSummaryDto item, decimal bookingAmount, decimal discount, decimal serviceCharge, decimal vat, decimal totalAmount, decimal totalPaid, decimal amountToReceive, decimal amountToRefund)
+        {
+            if (booking != null)
+            {
+                txtSummaryName.Text = $"Total for the period {booking.CheckIn:MM/dd/yy} to {booking.CheckOut:MM/dd/yy}";
+            }
+            txtBookingAmount.Text = $"₦ {(bookingAmount + item.OtherCharges):N2}";
+            txtDiscount.Text = $"₦ {discount:N2}";
+            txtServiceCharge.Text = $"₦ {serviceCharge:N2}";
+            txtVAT.Text = $"₦ {vat:N2}";
+            txtTotalAmount.Text = $"₦ {totalAmount:N2}";
+            txtAmountPaid.Text = $"₦ {totalPaid:N2}";
+            txtReceive.Text = $"₦ {amountToReceive:N2}";
+            txtRefund.Text = $"₦ {amountToRefund:N2}";
+
+            ReceiveGrid.Visibility = amountToReceive > 0 ? Visibility.Visible : Visibility.Collapsed;
+            RefundGrid.Visibility = amountToRefund > 0 ? Visibility.Visible : Visibility.Collapsed;
+            txtAccountBalanced.Visibility = (amountToReceive == 0 && amountToRefund == 0) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private static void LogError(Exception ex)
+        {
+            MessageBox.Show($"Error: {ex.Message}", "Transaction Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
 
         private async void DeleteGuest_Click(object sender, RoutedEventArgs e)
         {
@@ -220,7 +240,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
                 if (selectedTab == tbTransactionHistory)
                 {
-                    await LoadGuestTransactionHistory();
+                    await LoadGuestTransactionHistoryAsync();
                 }
             }
         }
@@ -328,7 +348,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                             await _transactionRepository.MarkTransactionItemAsPaidAsync(transactionItem.Id);
                             MessageBox.Show("Transaction marked as paid successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                             await LoadGuestDetails();
-                            await LoadGuestTransactionHistory();
+                            await LoadGuestTransactionHistoryAsync();
                         }
                     }
                 }
@@ -367,7 +387,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             if (fundGuestAccountDialog.ShowDialog() == true)
             {
                 await LoadGuestDetails();
-                await LoadGuestTransactionHistory();
+                await LoadGuestTransactionHistoryAsync();
             }
         }
 
@@ -415,14 +435,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var guestTransactionItem = await _guestAccountService.GetGuestAccountSummaryAsync(_id);
-                var guestAccount = await _guestAccountService.GetAccountAsync(_id);
-                var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
-                var printer = new PrintHelper();
-
-                var hotel = await _hotelSettingsService.GetHotelInformation();
-
-                var doc = printer.GenerateGuestAccountFlowDocument(guestTransactionItem, booking, hotel);
+                var doc = await GetBillFlowDocument();
                 PrintHelper.PrintFlowDocument(doc, System.Printing.PageOrientation.Portrait);
                 this.Activate();
             }
@@ -434,6 +447,51 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             finally
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task<FlowDocument> GetBillFlowDocument()
+        {
+            var guestTransactionItem = await LoadGuestTransactionHistoryAsync();
+            var guestAccount = await _guestAccountService.GetAccountAsync(_id);
+            var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
+            var printer = new PrintHelper();
+
+            var hotel = await _hotelSettingsService.GetHotelInformation();
+
+            var doc = printer.GenerateGuestAccountFlowDocument(guestTransactionItem, booking, hotel);
+
+            return doc;
+        }
+
+        private async void CheckOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var guestTransaction = await LoadGuestTransactionHistoryAsync();
+            var guestAccount = await _guestAccountService.GetAccountAsync(_id);
+            var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
+
+            var doc = await GetBillFlowDocument();
+            var checkoutDialog = new CheckOutGuestDialog(doc, guestTransaction, _guestAccountService, guestAccount, booking.Id)
+            {
+                Owner = this
+            };
+
+            if(checkoutDialog.ShowDialog() == true)
+            {
+                await LoadGuestDetails();
+                await LoadGuestTransactionHistoryAsync();
+                this.Activate();
+            }
+        }
+
+        private async void SettingButton_Click(object sender, RoutedEventArgs e)
+        {
+            var guest = await _guestRepository.GetGuestByIdAsync(_id);
+
+            GuestSettngsDialog guestSettngs = new GuestSettngsDialog(guest, _guestAccountService);
+            if (guestSettngs.ShowDialog() == true)
+            {
+                await LoadGuestDetails();
             }
         }
     }

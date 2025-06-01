@@ -1,5 +1,7 @@
 packages/
 Prerequisite/
+credentials.json
+Infrastructure/credentials.json
 publish/
 obj/
 bin/

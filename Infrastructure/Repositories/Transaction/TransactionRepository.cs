@@ -1105,9 +1105,11 @@ namespace ESMART.Infrastructure.Repositories.Transaction
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var rooms = await context.TransactionItems
-                    .Where(ti => ti.Status == TransactionStatus.Unpaid)
-                    .Select(ti => ti.Transaction.Booking.Room.Number)
+                var rooms = await context.RoomBookings
+                    .Include(ti => ti.Booking)
+                    .Include(ti => ti.Booking.GuestAccount)
+                    .Where(ti => (ti.Booking.GuestAccount.Amount + ti.Booking.GuestAccount.Tax + ti.Booking.GuestAccount.ServiceCharge + ti.Booking.GuestAccount.OtherCharges) > ti.Booking.GuestAccount.TopUps && ti.Booking.Status == BookingStatus.Active)
+                    .Select(ti => ti.Room.Number)
                     .Distinct()
                     .ToListAsync();
                 return rooms;

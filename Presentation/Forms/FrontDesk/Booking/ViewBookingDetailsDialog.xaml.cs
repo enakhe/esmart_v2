@@ -1,11 +1,13 @@
 ﻿#nullable disable
 
+using ESMART.Application.Common.Dtos;
 using ESMART.Application.Common.Interface;
 using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Domain.ViewModels.Transaction;
 using ESMART.Infrastructure.Repositories.FrontDesk;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Receipt;
@@ -28,11 +30,13 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly ITransactionRepository _transactionRepository;
         private readonly IBookingRepository _bookingRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
-        public ViewBookingDetailsDialog(Domain.Entities.FrontDesk.Booking booking, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService)
+        private readonly GuestAccountService _guestAccountService;
+        public ViewBookingDetailsDialog(Domain.Entities.FrontDesk.Booking booking, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, GuestAccountService guestAccountService)
         {
             _booking = booking;
             _transactionRepository = transactionRepository;
             _bookingRepository = bookingRepository;
+            _guestAccountService = guestAccountService;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
 
@@ -49,9 +53,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     Id = _booking.Id,
                     Guest = _booking.Guest.FullName,
                     PhoneNumber = _booking.Guest.PhoneNumber,
-                    Room = _booking.Room.Number,
                     CheckIn = _booking.CheckIn,
                     CheckOut = _booking.CheckOut,
+                    NumberOfRooms = _booking.RoomBookings.Count,
                     PaymentMethod = _booking.PaymentMethod.ToString(),
                     Duration = _booking.Duration.ToString(),
                     Status = _booking.Status.ToString(),
@@ -75,21 +79,15 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
-        private void LoadDefaultSetting()
-        {
-            txtFrom.SelectedDate = DateTime.Now;
-            txtTo.SelectedDate = DateTime.Now.AddDays(1);
-        }
-
         private async Task LoadBookingTransactionHistory()
         {
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var bookingTransactionItem = await _transactionRepository.GetTransactionItemByBookingIdAsync(_booking.Id);
+                var bookingTransactionItem = await _guestAccountService.GetBookingAccountSummaryAsync(_booking.Id);
                 if (bookingTransactionItem != null)
                 {
-                    this.TransactionItemDataGrid.ItemsSource = bookingTransactionItem;
+                    TransactionItemDataGrid.ItemsSource = new List<BookingAccountSummaryDto> { bookingTransactionItem };
                 }
 
             }
@@ -102,43 +100,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
-        }
-
-        private async Task LoadBookingTransactionByDate()
-        {
-            LoaderOverlay.Visibility = Visibility.Visible;
-            try
-            {
-                var fromDate = txtFrom.SelectedDate.Value;
-                var toDate = txtTo.SelectedDate.Value;
-
-                if (fromDate > toDate)
-                {
-                    MessageBox.Show("From date cannot be greater than To date", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                var bookingTransactionItem = await _transactionRepository.GetTransactionItemByBookingIdAndDate(_booking.Id, fromDate, toDate);
-
-                if (bookingTransactionItem != null)
-                {
-                    this.TransactionItemDataGrid.ItemsSource = bookingTransactionItem;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-            finally
-            {
-                LoaderOverlay.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private async void FilterButton_Click(object sender, RoutedEventArgs e)
-        {
-            await LoadBookingTransactionByDate();
         }
 
         private async void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -315,7 +276,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private void Window_Activated(object sender, EventArgs e)
         {
             LoadBookinDetails();
-            LoadDefaultSetting();
         }
 
         private void DisableMinimizeButton(object sender, RoutedEventArgs e)

@@ -592,6 +592,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<decimal>("BillPosts")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("BookingId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Consumer")
                         .HasColumnType("nvarchar(max)");
 
@@ -636,6 +639,8 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("BankAccountId");
+
+                    b.HasIndex("BookingId");
 
                     b.HasIndex("GuestAccountId");
 
@@ -779,6 +784,85 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasIndex("RoomBookingId");
 
                     b.ToTable("RoomNightCharges", "ESMART");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.RoomTypeReservation", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("AdvancePayment")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BankAccountId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BookingId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CheckInDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CheckOutDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("GuestAccountId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("GuestId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReservationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RoomTypeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BankAccountId");
+
+                    b.HasIndex("GuestAccountId");
+
+                    b.HasIndex("GuestId");
+
+                    b.HasIndex("RoomTypeId");
+
+                    b.ToTable("RoomTypeReservations", "ESMART");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Laundry.Laundry", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("LaundryPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PressingPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Laundries", "ESMART");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Area", b =>
@@ -1536,6 +1620,10 @@ namespace ESMART.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("BankAccountId");
 
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId");
+
                     b.HasOne("ESMART.Domain.Entities.FrontDesk.GuestAccount", "GuestAccount")
                         .WithMany("Transactions")
                         .HasForeignKey("GuestAccountId");
@@ -1551,6 +1639,8 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("BankAccount");
+
+                    b.Navigation("Booking");
 
                     b.Navigation("Guest");
 
@@ -1602,6 +1692,33 @@ namespace ESMART.Infrastructure.Migrations
                         .HasForeignKey("RoomBookingId");
 
                     b.Navigation("RoomBooking");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.FrontDesk.RoomTypeReservation", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.Transaction.BankAccount", "BankAccount")
+                        .WithMany()
+                        .HasForeignKey("BankAccountId");
+
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.GuestAccount", "GuestAccount")
+                        .WithMany()
+                        .HasForeignKey("GuestAccountId");
+
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Guest", "Guest")
+                        .WithMany()
+                        .HasForeignKey("GuestId");
+
+                    b.HasOne("ESMART.Domain.Entities.RoomSettings.RoomType", "RoomType")
+                        .WithMany()
+                        .HasForeignKey("RoomTypeId");
+
+                    b.Navigation("BankAccount");
+
+                    b.Navigation("Guest");
+
+                    b.Navigation("GuestAccount");
+
+                    b.Navigation("RoomType");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Floor", b =>

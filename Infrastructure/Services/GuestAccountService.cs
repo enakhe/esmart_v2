@@ -3,6 +3,7 @@ using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Models;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Entities.Laundry;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.StoreKeeping;
 using ESMART.Domain.Entities.Transaction;
@@ -73,6 +74,7 @@ namespace ESMART.Infrastructure.Services
                 BillPosts = dto.Amount,
                 Consumer = dto.Consumer,
                 RoomId = dto.RoomId,
+                BookingId = dto.BookingId,
                 GuestAccountId = dto.GuestAccountId,
                 GuestId = guestAccount.GuestId,
                 PaymentMethod = dto.PaymentMethod,
@@ -201,7 +203,7 @@ namespace ESMART.Infrastructure.Services
                 .Include(account => account.Guest)
                 .Include(account => account.Transactions)
                 .Include(account => account.BookingDetails)
-                .FirstOrDefaultAsync(x => x.Invoice == invoiceNumber && !x.IsClosed);
+                .FirstOrDefaultAsync(x => x.Invoice == invoiceNumber);
             return guestAccount ?? throw new Exception("Guest account not found");
         }
 
@@ -230,7 +232,6 @@ namespace ESMART.Infrastructure.Services
             PaymentType paymentType)
         {
             using var context = await _contextFactory.CreateDbContextAsync();
-            using var transaction = await context.Database.BeginTransactionAsync();
 
             if (amount < 0)
                 throw new ArgumentException("Amount must be a positive value.", nameof(amount));
@@ -261,13 +262,37 @@ namespace ESMART.Infrastructure.Services
                 context.GuestTransactions.Add(guestTransaction);
                 context.GuestAccounts.Update(guestAccount);      
 
-                await context.SaveChangesAsync();                
+                await context.SaveChangesAsync();                            
+            }
+            catch
+            {     
+                throw;
+            }
+        }
 
-                await transaction.CommitAsync();                
+        public async Task UpdateGuestAccountPreference(
+            string guestId, 
+            bool allowBarAndRes, 
+            bool allowLaundry)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+            using var transaction = await context.Database.BeginTransactionAsync();
+
+            var guestAccount = await GetAccountAsync(guestId);
+            try
+            {
+                guestAccount.AllowBarAndRes = allowBarAndRes;
+                guestAccount.AllowLaundry = allowLaundry;
+
+                context.GuestAccounts.Update(guestAccount);
+
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
             catch
             {
-                await transaction.RollbackAsync();          
+                await transaction.RollbackAsync();
                 throw;
             }
         }
@@ -314,7 +339,6 @@ namespace ESMART.Infrastructure.Services
             decimal serviceCharge)
         {
             using var context = await _contextFactory.CreateDbContextAsync();
-            using var transaction = await context.Database.BeginTransactionAsync();
 
             var guestAccount = await GetAccountAsync(guestId);
 
@@ -335,11 +359,9 @@ namespace ESMART.Infrastructure.Services
 
                 context.GuestAccounts.Update(guestAccount);
                 await context.SaveChangesAsync();
-                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 throw new InvalidOperationException("Failed to add charge to the guest account.", ex);
             }
         }
@@ -439,17 +461,6 @@ namespace ESMART.Infrastructure.Services
                 guestAccount.FundedBalance -= amount;
                 guestAccount.LastFunded = DateTime.UtcNow;
 
-                var guestTransaction = new GuestTransaction
-                {
-                    GuestId = guestAccount.GuestId,
-                    Amount = -amount, // Negative for refund
-                    Description = description,
-                    Date = DateTime.UtcNow,
-                    Invoice = guestAccount.Invoice,
-                    TransactionType = Domain.Enum.TransactionType.Refund
-                };
-
-                context.GuestTransactions.Add(guestTransaction);
                 context.GuestAccounts.Update(guestAccount);
                 await context.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -474,7 +485,7 @@ namespace ESMART.Infrastructure.Services
             try
             {
                 guestAccount.IsClosed = false;
-                guestAccount.LastFunded = DateTime.UtcNow;
+                guestAccount.LastFunded = DateTime.Now;
 
                 context.GuestAccounts.Update(guestAccount);
                 await context.SaveChangesAsync();
@@ -510,38 +521,551 @@ namespace ESMART.Infrastructure.Services
 
             var account = await GetAccountAsync(guestId);
 
-            // Bookings
-            var bookings = await _context.RoomBookings
-                .Include(b => b.Booking)
-                .Include(b => b.Booking.GuestAccount)
-                .Include(b => b.Room)
-                .Where(b => 
-                    b.Booking.GuestId == guestId && 
-                    b.Booking.GuestAccountId == account.Id && 
-                    b.Booking.Status != BookingStatus.Completed)
-                .Select(b => new BookingSummaryDto
+            if (account != null)
+            {
+                // Bookings
+                var bookings = await _context.RoomBookings
+                    .Include(b => b.Booking)
+                    .Include(b => b.Booking.GuestAccount)
+                    .Include(b => b.Room)
+                    .Where(b =>
+                        b.Booking.GuestId == guestId &&
+                        b.Booking.GuestAccountId == account.Id &&
+                        b.Booking.Status != BookingStatus.Completed)
+                    .Select(b => new BookingSummaryDto
+                    {
+                        Guest = b.OccupantName,
+                        BookingBookingId = b.Booking.BookingId,
+                        BookingId = b.Id,
+                        Invoice = b.Booking.GuestAccount.Invoice,
+                        RoomNumber = b.Room.Number,
+                        RoomId = b.RoomId,
+                        RoomRoomId = b.Room.RoomId,
+                        RoomType = b.Room.RoomType.Name,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        Status = b.Booking.Status.ToString()
+                    })
+                    .OrderBy(b => b.RoomNumber)
+                    .ToListAsync();
+
+                // Recent Transactions
+                var recentTransactions = await _context.GuestTransactions
+                    .Where(t =>
+                        t.GuestId == guestId &&
+                        t.TransactionType == TransactionType.RoomCharge &&
+                        t.Invoice == account.Invoice)
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Consumer = t.Consumer,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                        RoomId = t.RoomId,
+                    })
+                    .ToListAsync();
+
+                // Service Consumptions
+                var serviceConsumptions = await _context.GuestTransactions
+                    .Where(t =>
+                        t.GuestId == guestId &&
+                        t.Invoice == account.Invoice &&
+                        (t.TransactionType == TransactionType.BarRestaurantOrder ||
+                        t.TransactionType == TransactionType.Laundry))
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                    })
+                    .ToListAsync();
+
+                var payments = await _context.GuestTransactions
+                    .Where(t =>
+                        t.GuestId == guestId &&
+                        t.TransactionType == TransactionType.Payment &&
+                        t.Invoice == account.Invoice)
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                    })
+                    .ToListAsync();
+
+                var refunds = await _context.GuestTransactions
+                    .Where(t =>
+                        t.GuestId == guestId &&
+                        t.TransactionType == TransactionType.Refund &&
+                        t.Invoice == account.Invoice)
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                    })
+                    .ToListAsync();
+
+                var groupedBookings = new List<BookingTransactionGroupDto>();
+
+                foreach (var booking in bookings)
                 {
-                    Guest = b.OccupantName,
-                    BookingBookingId = b.Booking.BookingId,
-                    BookingId = b.Id,
-                    Invoice = b.Booking.GuestAccount.Invoice,
-                    RoomNumber = b.Room.Number,
-                    RoomId = b.RoomId,
-                    RoomRoomId = b.Room.RoomId,
-                    RoomType = b.Room.RoomType.Name,
-                    CheckIn = b.CheckIn,
-                    CheckOut = b.CheckOut,
-                    Status = b.Booking.Status.ToString()
-                })
-                .OrderBy(b => b.RoomNumber)
+                    var bookingId = booking.BookingId;
+
+                    var recent = recentTransactions
+                        .Where(t => t.Invoice == booking.Invoice && t.RoomId == booking.RoomId) // Adjust filtering
+                        .ToList();
+
+                    groupedBookings.Add(new BookingTransactionGroupDto
+                    {
+                        BookingId = bookingId,
+                        GuestName = $"Guest: {booking.Guest} - {booking.RoomType} Room ({booking.RoomNumber})",
+                        Summary =
+                        $"{booking.RoomRoomId} - Arri: {booking.CheckIn:MM/dd/yyyy} to Dept: {booking.CheckOut:MM/dd/yyyy} - Total = ₦ {recent.Sum(r => r.BillPosts):N2}",
+                        RoomNumber = booking.RoomNumber,
+                        RoomType = booking.RoomType,
+                        RoomId = booking.RoomRoomId,
+                        CheckIn = booking.CheckIn,
+                        CheckOut = booking.CheckOut,
+                        Status = booking.Status,
+
+                        RecentTransactions = recent,
+                    });
+                }
+
+                return new GuestAccountSummaryDto
+                {
+                    GuestId = guestId,
+                    AccountId = account.Id,
+                    GuestName = account.Guest?.FullName,
+                    Invoice = account.Invoice,
+                    Amount = account.Amount,
+                    Discount = account.Discount,
+                    VAT = account.Tax,
+                    ServiceCharge = account.ServiceCharge,
+                    //CheckIn = bookings.FirstOrDefault()!.CheckIn,
+                    //CheckOut = bookings.LastOrDefault()!.CheckOut,
+                    Tax = account.Tax + account.ServiceCharge,
+                    OtherCharges = account.OtherCharges,
+                    Paid = account.Paid,
+                    Refunds = account.Refunds,
+                    Balance = account.Balance,
+                    FundedBalance = account.FundedBalance,
+                    OutstandingBalance = account.OutstandingBalance,
+
+                    PayedRefunds = refunds,
+                    BookingGroups = groupedBookings,
+                    Payments = payments,
+                    ServiceConsumptions = serviceConsumptions
+                };
+            }
+
+            return new GuestAccountSummaryDto();
+        }
+
+
+        public async Task<BookingAccountSummaryDto> GetBookingAccountSummaryAsync(string bookingId)
+        {
+            using var _context = await _contextFactory.CreateDbContextAsync();
+
+            var booking = await GetBookingByIdAsync(bookingId);
+            var account = await GetAccountAsync(booking.GuestId);
+
+            if (account != null)
+            {
+                var bookings = await _context.RoomBookings
+                    .Include(b => b.Booking)
+                    .Include(b => b.Booking.GuestAccount)
+                    .Include(b => b.Room)
+                    .Include(b => b.Booking.ApplicationUser)
+                    .Where(b =>
+                        b.Booking.Id == booking.Id &&
+                        b.Booking.GuestAccountId == account.Id &&
+                        b.Booking.Status != BookingStatus.Completed)
+                    .Select(b => new BookingSummaryDto
+                    {
+                        Guest = b.OccupantName,
+                        BookingBookingId = b.Booking.BookingId,
+                        BookingId = b.Id,
+                        Invoice = b.Booking.GuestAccount.Invoice,
+                        RoomNumber = b.Room.Number,
+                        RoomId = b.RoomId,
+                        RoomRoomId = b.Room.RoomId,
+                        RoomType = b.Room.RoomType.Name,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        Status = b.Booking.Status.ToString()
+                    })
+                    .OrderBy(b => b.RoomNumber)
+                    .ToListAsync();
+
+                var recentTransactions = await _context.GuestTransactions
+                    .Where(t =>
+                        t.BookingId == booking.Id &&
+                        t.TransactionType == TransactionType.RoomCharge &&
+                        t.Invoice == account.Invoice)
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Consumer = t.Consumer,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                        RoomId = t.RoomId,
+                    })
+                    .ToListAsync();
+
+                var serviceConsumptions = await _context.GuestTransactions
+                    .Where(t =>
+                        t.BookingId == bookingId &&
+                        t.Invoice == account.Invoice &&
+                        (t.TransactionType == TransactionType.BarRestaurantOrder ||
+                        t.TransactionType == TransactionType.Laundry))
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                    })
+                    .ToListAsync();
+
+                var payments = await _context.GuestTransactions
+                    .Where(t =>
+                        t.BookingId == booking.Id &&
+                        t.TransactionType == TransactionType.Payment &&
+                        t.Invoice == account.Invoice)
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                    })
+                    .ToListAsync();
+
+                var refunds = await _context.GuestTransactions
+                    .Where(t =>
+                        t.BookingId == booking.Id &&
+                        t.TransactionType == TransactionType.Refund &&
+                        t.Invoice == account.Invoice)
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                    })
+                    .ToListAsync();
+
+                var groupedBookings = new List<BookingTransactionGroupDto>();
+
+                foreach (var bk in bookings)
+                {
+                    var bkId = booking.BookingId;
+
+                    var recent = recentTransactions
+                        .Where(t => t.Invoice == bk.Invoice && t.RoomId == bk.RoomId) // Adjust filtering
+                        .ToList();
+
+                    groupedBookings.Add(new BookingTransactionGroupDto
+                    {
+                        BookingId = bookingId,
+                        GuestName = $"Guest: {bk.Guest} - {bk.RoomType} Room ({bk.RoomNumber})",
+                        Summary =
+                        $"{bk.RoomRoomId} - Arri: {booking.CheckIn:MM/dd/yyyy} to Dept: {booking.CheckOut:MM/dd/yyyy} - Total = ₦ {recent.Sum(r => r.BillPosts):N2}",
+                        RoomNumber = bk.RoomNumber,
+                        RoomType = bk.RoomType,
+                        RoomId = bk.RoomRoomId,
+                        CheckIn = bk.CheckIn,
+                        CheckOut = bk.CheckOut,
+                        Status = bk.Status,
+
+                        RecentTransactions = recent,
+                    });
+                }
+
+                return new BookingAccountSummaryDto
+                {
+                    Id = booking.Id,
+                    Guest = booking.Guest.FullName,
+                    PhoneNumber = booking.Guest.PhoneNumber,
+                    CheckIn = booking.CheckIn,
+                    CheckOut = booking.CheckOut,
+                    Status = booking.Status.ToString(),
+                    DateCreated = booking.DateCreated,
+                    DateModified = booking.DateModified,
+                    IsOverStayed = booking.IsOverStay,
+                    NumberOfRooms = booking.RoomBookings.Count,
+
+                    PayedRefunds = refunds,
+                    BookingGroups = groupedBookings,
+                    Payments = payments,
+                    ServiceConsumptions = serviceConsumptions
+                };
+            }
+
+            return new BookingAccountSummaryDto();
+        }
+
+
+        public async Task<GuestAccountSummaryDto> GetBookingAccountSummaryByInvoiceAsync(
+            string invoiceNumber, bool settlement)
+        {
+            using var _context = await _contextFactory.CreateDbContextAsync();
+
+            var account = await GetAccountByInvoiceAsync(invoiceNumber);
+
+            if (account != null)
+            {
+                // Bookings
+                var bookings = await _context.RoomBookings
+                    .Include(b => b.Booking)
+                    .Include(b => b.Booking.GuestAccount)
+                    .Include(b => b.Room)
+                    .Where(b =>
+                        b.Booking.GuestAccount.IsClosed == settlement &&
+                        b.Booking.GuestAccount.Invoice == invoiceNumber &&
+                        b.Booking.GuestAccountId == account.Id &&
+                        b.Booking.IsSettled == settlement)
+                    .Select(b => new BookingSummaryDto
+                    {
+                        Guest = b.OccupantName,
+                        BookingBookingId = b.Booking.BookingId,
+                        BookingId = b.Id,
+                        Invoice = b.Booking.GuestAccount.Invoice,
+                        RoomNumber = b.Room.Number,
+                        RoomId = b.RoomId,
+                        RoomRoomId = b.Room.RoomId,
+                        RoomType = b.Room.RoomType.Name,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        Status = b.Booking.Status.ToString()
+                    })
+                    .OrderBy(b => b.RoomNumber)
+                    .ToListAsync();
+
+                // Recent Transactions
+                var recentTransactions = await _context.GuestTransactions
+                    .Where(t =>
+                        t.Invoice == invoiceNumber &&
+                        t.TransactionType == TransactionType.RoomCharge &&
+                        t.Invoice == account.Invoice)
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Consumer = t.Consumer,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                        RoomId = t.RoomId,
+                    })
+                    .ToListAsync();
+
+                // Service Consumptions
+                var serviceConsumptions = await _context.GuestTransactions
+                    .Where(t =>
+                        t.Invoice == invoiceNumber &&
+                        t.Invoice == account.Invoice &&
+                        (t.TransactionType == TransactionType.BarRestaurantOrder ||
+                        t.TransactionType == TransactionType.Laundry))
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                    })
+                    .ToListAsync();
+
+                var payments = await _context.GuestTransactions
+                    .Where(t =>
+                        t.Invoice == invoiceNumber &&
+                        t.TransactionType == TransactionType.Payment &&
+                        t.Invoice == account.Invoice)
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                    })
+                    .ToListAsync();
+
+                var refunds = await _context.GuestTransactions
+                    .Where(t =>
+                        t.Invoice == invoiceNumber &&
+                        t.TransactionType == TransactionType.Refund &&
+                        t.Invoice == account.Invoice)
+                    .OrderBy(t => t.Date)
+                    .Select(t => new TransactionSummaryDto
+                    {
+                        Date = t.Date,
+                        Description = t.Description,
+                        Invoice = t.Invoice,
+                        Discount = t.Discount,
+                        BillPosts = t.BillPosts,
+                        Payment = t.Payment,
+                        Amount = t.Amount,
+                    })
+                    .ToListAsync();
+
+                var groupedBookings = new List<BookingTransactionGroupDto>();
+
+                foreach (var booking in bookings)
+                {
+                    var bookingId = booking.BookingId;
+
+                    var recent = recentTransactions
+                        .Where(t => t.Invoice == booking.Invoice && t.RoomId == booking.RoomId) // Adjust filtering
+                        .ToList();
+
+                    groupedBookings.Add(new BookingTransactionGroupDto
+                    {
+                        BookingId = bookingId,
+                        GuestName = $"Guest: {booking.Guest} - {booking.RoomType} Room ({booking.RoomNumber})",
+                        Summary =
+                        $"{booking.RoomRoomId} - Arri: {booking.CheckIn:MM/dd/yyyy} to Dept: {booking.CheckOut:MM/dd/yyyy} - Total = ₦ {recent.Sum(r => r.BillPosts):N2}",
+                        RoomNumber = booking.RoomNumber,
+                        RoomType = booking.RoomType,
+                        RoomId = booking.RoomRoomId,
+                        CheckIn = booking.CheckIn,
+                        CheckOut = booking.CheckOut,
+                        Status = booking.Status,
+
+                        RecentTransactions = recent,
+                    });
+                }
+
+                return new GuestAccountSummaryDto
+                {
+                    GuestId = account.GuestId,
+                    AccountId = account.Id,
+                    GuestName = account.Guest?.FullName,
+                    Invoice = account.Invoice,
+                    Amount = account.Amount,
+                    Discount = account.Discount,
+                    VAT = account.Tax,
+                    ServiceCharge = account.ServiceCharge,
+                    //CheckIn = bookings.FirstOrDefault()!.CheckIn,
+                    //CheckOut = bookings.LastOrDefault()!.CheckOut,
+                    Tax = account.Tax + account.ServiceCharge,
+                    OtherCharges = account.OtherCharges,
+                    Paid = account.Paid,
+                    Refunds = account.Refunds,
+                    Balance = account.Balance,
+                    FundedBalance = account.FundedBalance,
+                    OutstandingBalance = account.OutstandingBalance,
+
+                    PayedRefunds = refunds,
+                    BookingGroups = groupedBookings,
+                    Payments = payments,
+                    ServiceConsumptions = serviceConsumptions
+                };
+            }
+
+            return new GuestAccountSummaryDto();
+        }
+
+
+        public async Task<RoomTransactionDto> GetRoomTransactionsAsync(
+            string roomId)
+        {
+            using var _context = await _contextFactory.CreateDbContextAsync();
+
+            var roomBooking = await _context.RoomBookings
+                .Include(r => r.Room)
+                .Include(r => r.Room.RoomType)
+                .Include(r => r.Booking)
+                .FirstOrDefaultAsync(b => b.RoomId == roomId)
+                ?? throw new Exception("Room booking was not found");
+
+            var transactions = await _context.GuestTransactions
+                .Where(t => t.RoomId == roomId && !t.GuestAccount.IsClosed && t.TransactionType == TransactionType.RoomCharge)
+                .OrderBy(t => t.Date)
                 .ToListAsync();
 
-            // Recent Transactions
-            var recentTransactions = await _context.GuestTransactions
-                .Where(t => 
-                    t.GuestId == guestId && 
-                    t.TransactionType == TransactionType.RoomCharge &&
-                    t.Invoice == account.Invoice)
+            var serviceCharge = await _context.GuestTransactions
+                .Where(t => t.RoomId == roomId && !t.GuestAccount.IsClosed &&
+                           (t.TransactionType == TransactionType.BarRestaurantOrder || t.TransactionType == TransactionType.Laundry))
+                .OrderBy(t => t.Date)
+                .ToListAsync();
+
+            return new RoomTransactionDto()
+            {
+                BookingId = roomBooking.Booking.BookingId,
+                GuestName = $"Guest: {roomBooking.OccupantName} - {roomBooking.Room.RoomType.Name} ({roomBooking.Room.Number})",
+                Summary = $"{roomBooking.Room.RoomId} - Arri: {roomBooking.CheckIn:MM/dd/yyyy} to Dept: {roomBooking.CheckOut:MM/dd/yyyy} - Total = ₦ {transactions.Sum(r => r.BillPosts):N2}",
+                RoomNumber = roomBooking.Room.Number,
+                RoomType = roomBooking.Room.RoomType.Name,
+                RoomId = roomBooking.Room.RoomId,
+                CheckIn = roomBooking.CheckIn,
+                CheckOut = roomBooking.CheckOut,
+                Status = roomBooking.Booking.Status.ToString(),
+                RoomCharges = transactions,
+                OtherCharges = serviceCharge,
+            };
+        }
+
+
+        public async Task<List<TransactionSummaryDto>> GetBookingTransactionsAsync(
+            string bookingId)
+        {
+            using var _context = await _contextFactory.CreateDbContextAsync();
+
+            var transactions = await _context.GuestTransactions
+                .Where(t => t.BookingId == bookingId &&
+                           (t.TransactionType == TransactionType.RoomCharge ||
+                            t.TransactionType == TransactionType.BarRestaurantOrder ||
+                            t.TransactionType == TransactionType.Laundry))
                 .OrderBy(t => t.Date)
                 .Select(t => new TransactionSummaryDto
                 {
@@ -553,100 +1077,11 @@ namespace ESMART.Infrastructure.Services
                     BillPosts = t.BillPosts,
                     Payment = t.Payment,
                     Amount = t.Amount,
-                    RoomId = t.RoomId,
+                    RoomId = t.RoomId
                 })
                 .ToListAsync();
 
-            // Service Consumptions
-            var serviceConsumptions = await _context.GuestTransactions
-                .Where(t => 
-                    t.GuestId == guestId &&
-                    t.Invoice == account.Invoice &&
-                    (t.TransactionType == TransactionType.BarRestaurantOrder ||
-                    t.TransactionType == TransactionType.Laundry))
-                .OrderBy(t => t.Date)
-                .Select(t => new TransactionSummaryDto
-                {
-                    Date = t.Date,
-                    Description = t.Description,
-                    Invoice = t.Invoice,
-                    Discount = t.Discount,
-                    BillPosts = t.BillPosts,
-                    Payment = t.Payment,
-                    Amount = t.Amount,
-                })
-                .ToListAsync();
-
-            var payments = await _context.GuestTransactions
-                .Where(t =>
-                    t.GuestId == guestId &&
-                    t.TransactionType == TransactionType.Payment &&
-                    t.Invoice == account.Invoice)
-                .OrderBy(t => t.Date)
-                .Select(t => new TransactionSummaryDto
-                {
-                    Date = t.Date,
-                    Description = t.Description,
-                    Invoice = t.Invoice,
-                    Discount = t.Discount,
-                    BillPosts = t.BillPosts,
-                    Payment = t.Payment,
-                    Amount = t.Amount,
-                })
-                .ToListAsync();
-
-            var groupedBookings = new List<BookingTransactionGroupDto>();
-
-            foreach (var booking in bookings)
-            {
-                var bookingId = booking.BookingId;
-
-                var recent = recentTransactions
-                    .Where(t => t.Invoice == booking.Invoice && t.RoomId == booking.RoomId) // Adjust filtering
-                    .ToList();
-
-                groupedBookings.Add(new BookingTransactionGroupDto
-                {
-                    BookingId = bookingId,
-                    GuestName = $"Guest: {booking.Guest} - {booking.RoomType} Room ({booking.RoomNumber})",
-                    Summary = 
-                    $"{booking.RoomRoomId} - Arri: {booking.CheckIn:MM/dd/yyyy} to Dept: {booking.CheckOut:MM/dd/yyyy} - Total = ₦ {recent.Sum(r => r.BillPosts):N2}",
-                    RoomNumber = booking.RoomNumber,
-                    RoomType = booking.RoomType,
-                    RoomId = booking.RoomRoomId,
-                    CheckIn = booking.CheckIn,
-                    CheckOut = booking.CheckOut,
-                    Status = booking.Status,
-
-                    RecentTransactions = recent,
-                });
-            }
-
-            return new GuestAccountSummaryDto
-            {
-                GuestId = guestId,
-                AccountId = account.Id,
-                GuestName = account.Guest?.FullName,
-                Invoice = account.Invoice,
-                Amount = account.Amount,
-                Discount = account.Discount,
-                VAT = account.Tax,
-                ServiceCharge = account.ServiceCharge,
-                CheckIn = bookings.FirstOrDefault()!.CheckIn,
-                CheckOut = bookings.LastOrDefault()!.CheckOut,
-                Tax = account.Tax + account.ServiceCharge,
-                OtherCharges = account.OtherCharges,
-                Paid = account.Paid,
-                Refunds = account.Refunds,
-                Balance = account.Balance,
-                FundedBalance = account.FundedBalance,
-                OutstandingBalance = account.OutstandingBalance,
-
-                BookingGroups = groupedBookings,
-                Payments = payments,
-                ServiceConsumptions = serviceConsumptions
-            };
-
+            return transactions;
         }
 
 
@@ -671,7 +1106,7 @@ namespace ESMART.Infrastructure.Services
                 VAT = dto.VAT,
                 ServiceCharge = dto.ServiceCharge,
                 ApplicationUserId = dto.ApplicationUserId,
-                Status = BookingStatus.Completed,
+                Status = BookingStatus.Active,
                 PaymentMethod = dto.PaymentMethod,
                 BankAccountId = dto.AccountNumber,
                 Amount = 0,
@@ -684,8 +1119,25 @@ namespace ESMART.Infrastructure.Services
             return booking.Id;
         }
 
+        
+        public async Task<Booking> GetBookingByIdAsync(
+            string bookingId)
+        {
+            using var _context = await _contextFactory.CreateDbContextAsync();
 
-        public async Task<RoomBooking> GetRoomBookingByRoomIdAsync(string roomId)
+            var booking = await _context.Bookings
+                .Include(b => b.RoomBookings)
+                    .ThenInclude(rb => rb.Room)
+                .Include(b => b.GuestAccount)
+                .Include(b => b.Guest)
+                .FirstOrDefaultAsync(b => b.Id == bookingId);
+
+            return booking ?? throw new Exception("Booking not found");
+        }
+
+
+        public async Task<RoomBooking> GetRoomBookingByRoomIdAsync(
+            string roomId)
         {
             using var _context = await _contextFactory.CreateDbContextAsync();
 
@@ -695,7 +1147,7 @@ namespace ESMART.Infrastructure.Services
             var roomBooking = await _context.RoomBookings.
                 FirstOrDefaultAsync(r => r.RoomId == roomId);
 
-            return roomBooking ?? throw new Exception("Room Booking nor found");
+            return roomBooking ?? throw new Exception("Room Booking not found");
         }
 
 
@@ -745,33 +1197,6 @@ namespace ESMART.Infrastructure.Services
 
                 var nights = (decimal)(roomBookingDto.CheckOut - roomBookingDto.CheckIn).TotalDays;
                 booking.Amount += roomRate * nights;
-
-                //var guestTransactionDto = new GuestTransactionDto()
-                //{
-                //    Amount = roomBooking.Rate,
-                //    ApplicationUserId = userId,
-                //    GuestAccountId = booking.GuestAccountId,
-                //    BankAccountId = booking.BankAccountId,
-                //    Discount = roomBooking.Discount,
-                //    GuestId = booking.GuestId,
-                //    RoomId = roomBooking.RoomId,
-                //    Consumer = roomBooking.OccupantName,
-                //    PaymentMethod = booking.PaymentMethod,
-                //    TransactionType = TransactionType.RoomCharge,
-                //    Tax = roomBooking.Tax,
-                //    Description = "Room Charge (Inclusive of Inclusions)"
-                //};
-
-                //await AddRoomChargeAsync(
-                //    booking.GuestId, 
-                //    roomBooking.Rate, 
-                //    roomBooking.Discount, 
-                //    roomBooking.Tax, 
-                //    roomBooking.ServiceCharge);
-
-                //await AddTransaction(
-                //    booking.GuestId, 
-                //    guestTransactionDto);
             }
 
             var vatAmount = booking.Amount * (booking.VAT / 100m);
@@ -811,6 +1236,7 @@ namespace ESMART.Infrastructure.Services
 
             return bookings;
         }
+
 
         public async Task<Booking> GetBookingByGuestAccountIdAsync(
             string guestAccountId)
@@ -962,6 +1388,7 @@ namespace ESMART.Infrastructure.Services
                 BankAccountId = createOrderDto.BankAccountId,
                 Discount = 0,
                 GuestId = createOrderDto.GuestId,
+                BookingId = createOrderDto.BookingId,
                 RoomId = createOrderDto.RoomId,
                 Consumer = createOrderDto.Consumer,
                 PaymentMethod = createOrderDto.PaymentMethod,
@@ -987,12 +1414,13 @@ namespace ESMART.Infrastructure.Services
                             .Include(b => b.Booking)
                             .Include(b => b.Room)
                             .Include(b => b.Booking.Guest)
-                            .Where(r => r.Booking.IsTrashed == false)
+                            .Where(r => r.Booking.Status == BookingStatus.Active)
                             .OrderByDescending(r => r.Date)
                             .ToListAsync();
 
             return [.. allBookings
-                    .Select(b => b.Booking.Guest)];
+                    .Select(b => b.Booking.Guest)
+                    .Where(g => !g.IsTrashed)];
         }
 
 
@@ -1018,7 +1446,7 @@ namespace ESMART.Infrastructure.Services
 
             var activeBookings = await context.Bookings
                 .Include(b => b.RoomBookings)
-                .Where(b => b.GuestId == guestId && b.Status != BookingStatus.Completed) // You can add more precise filters
+                .Where(b => b.GuestId == guestId && b.Status != BookingStatus.Completed)
                 .ToListAsync();
 
             foreach (var booking in activeBookings)
@@ -1027,12 +1455,10 @@ namespace ESMART.Infrastructure.Services
                 {
                     var today = DateTime.Today;
 
-                    // Number of full nights already stayed
                     var nightsStayed = (today - roomBooking.CheckIn.Date).Days;
 
                     if (nightsStayed <= 0) continue;
 
-                    // Get how many charges have already been posted
                     var postedNights = await context.RoomNightCharges
                         .Where(rc => rc.RoomBookingId == roomBooking.Id)
                         .Select(rc => rc.Night)
@@ -1046,7 +1472,6 @@ namespace ESMART.Infrastructure.Services
                         if (postedNights.Contains(night))
                             continue;
 
-                        // Post nightly room charge
                         await AddRoomChargeAsync(booking.GuestId, roomBooking.Rate, roomBooking.Discount, roomBooking.Tax, roomBooking.ServiceCharge);
 
                         await AddTransaction(booking.GuestId, new GuestTransactionDto
@@ -1057,6 +1482,7 @@ namespace ESMART.Infrastructure.Services
                             BankAccountId = booking.BankAccountId,
                             Discount = roomBooking.Discount,
                             GuestId = booking.GuestId,
+                            BookingId = booking.Id,
                             RoomId = roomBooking.RoomId,
                             Consumer = roomBooking.OccupantName,
                             PaymentMethod = booking.PaymentMethod,
@@ -1135,13 +1561,12 @@ namespace ESMART.Infrastructure.Services
         }
 
 
-
-        public async Task<string> CreateRoomTypeReservationAsync(RoomTypeReservationDto dto)
+        public async Task<string> CreateRoomTypeReservationAsync(
+            RoomTypeReservationDto dto)
         {
             using var context = await _contextFactory.CreateDbContextAsync();
 
-            var guestAccountId = await GetAccountAsync(dto.GuestId)
-                ?? throw new Exception("Guest not found.");
+            var guestAccount = await OpenOrGetActiveGuestAccountAsync(dto.GuestId);
 
             var reservation = new RoomTypeReservation
             {
@@ -1152,7 +1577,7 @@ namespace ESMART.Infrastructure.Services
                 BankAccountId = dto.BankAccountId,
                 Discount = dto.Discount,
                 PaymentMethod = dto.PaymentMethod,
-                GuestAccountId = dto.GuestAccountId,                
+                GuestAccountId = guestAccount.Id,                
                 CheckOutDate = dto.CheckOutDate,
                 ReservationDate = DateTime.Now,
                 AdvancePayment = dto.AdvancePayment,
@@ -1168,7 +1593,8 @@ namespace ESMART.Infrastructure.Services
         }
 
 
-        public async Task CancelReservationAsync(string reservationId)
+        public async Task CancelReservationAsync(
+            string reservationId)
         {
             using var context = await _contextFactory.CreateDbContextAsync();
 
@@ -1186,7 +1612,8 @@ namespace ESMART.Infrastructure.Services
         }
 
 
-        public async Task<string> ConvertReservationToBookingAsync(string reservationId,  string userId)
+        public async Task<string> ConvertReservationToBookingAsync(
+            string reservationId,  string userId)
         {
             using var context = await _contextFactory.CreateDbContextAsync();
 
@@ -1219,5 +1646,166 @@ namespace ESMART.Infrastructure.Services
             return bookingId;
         }
 
+
+        public async Task<List<RoomTypeReservationViewModel>> GetAllRoomTypeReservationsAsync()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var reservations = await context.RoomTypeReservations
+                .Where(r => r.Status == ReservationStatus.Reserved)
+                .Include(r => r.Guest)
+                .Include(r => r.RoomType)
+                .Select(r => new RoomTypeReservationViewModel
+                {
+                    Id = r.Id,
+                    Guest = r.Guest.FullName,
+                    PhoneNumber = r.Guest.PhoneNumber,
+                    ArivalDate = r.CheckInDate,
+                    DepartureDate = r.CheckOutDate,
+                    Amount = r.AdvancePayment,
+                    RoomType = r.RoomType.Name,
+                })
+                .ToListAsync();
+
+            return reservations;
+        }
+        
+
+        public async Task<List<RoomTypeReservationViewModel>> GetReservationsForCheckInTodayAsync()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var today = DateTime.Today;
+
+            var reservations = await context.RoomTypeReservations
+                .Where(r => EF.Functions.DateDiffDay(r.CheckInDate, today) == 0 && r.Status == ReservationStatus.Reserved)
+                .Include(r => r.Guest)
+                .Include(r => r.RoomType)
+                .Select(r => new RoomTypeReservationViewModel
+                {
+                    Id = r.Id,
+                    Guest = r.Guest.FullName,
+                    GuestId = r.GuestId,
+                    PhoneNumber = r.Guest.PhoneNumber,
+                    ArivalDate = r.CheckInDate,
+                    DepartureDate = r.CheckOutDate,
+                    Amount = r.AdvancePayment,
+                    RoomType = r.RoomType.Name,
+                })
+                .ToListAsync();
+
+            return reservations;
+        }
+
+
+        public async Task<List<RoomTypeReservationViewModel>> SearchReservationsAsync(
+            string searchTerm)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var reservations = await context.RoomTypeReservations
+                .Include(r => r.Guest)
+                .Include(r => r.RoomType)
+                .Where(r => (r.Guest.FirstName.Contains(searchTerm) || r.RoomType.Name!.Contains(searchTerm)) && r.Status == ReservationStatus.Reserved)
+                .Select(r => new RoomTypeReservationViewModel
+                {
+                    Id = r.Id,
+                    Guest = r.Guest.FullName,
+                    PhoneNumber = r.Guest.PhoneNumber,
+                    ArivalDate = r.CheckInDate,
+                    DepartureDate = r.CheckOutDate,
+                    Amount = r.AdvancePayment,
+                    RoomType = r.RoomType.Name,
+                })
+                .ToListAsync();
+
+            return reservations;
+        }
+
+
+        public async Task<RoomTypeReservation> GetReservationByIdAsync(
+            string reservationId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var reservation = await context.RoomTypeReservations
+                .Include(r => r.Guest) 
+                .Include(r => r.RoomType)
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+            return reservation ?? throw new Exception("Reservation not found");
+        }
+
+
+        public async Task AddLaundaryServiceItemAsync(
+            LaundryServiceDto dto)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            var laundry = new Laundry()
+            {
+                Category = dto.Category,
+                Description = dto.Description,
+                ItemId = Helper.GenerateInvoiceNumber("LI"),
+                LaundryPrice = dto.LaundryPrice,
+                PressingPrice = dto.PressingPrice
+            };
+
+            await context.Laundries.AddAsync(laundry);
+            await context.SaveChangesAsync();
+        }
+
+
+        public async Task<List<Laundry>> GetAllLaundaryItems()
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            var laundaryService = await context.Laundries.ToListAsync();
+
+            return laundaryService;
+        }
+
+
+        public async Task UpdateLaundaryService(
+            Laundry laundry)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            context.Update(laundry);
+            await context.SaveChangesAsync();
+        }
+
+
+        public async Task<List<TransactionSummaryDto>> GetMatchingGuestTransactionsAsync(
+            string reservationId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var transactions = await context.GuestTransactions
+                .Where(t => t.GuestAccountId == context.RoomTypeReservations
+                                .Where(r => r.Id == reservationId)
+                                .Select(r => r.GuestAccountId)
+                                .FirstOrDefault()
+                            && t.TransactionType == TransactionType.Payment
+                            && !context.GuestAccounts
+                                .Where(g => g.Id == t.GuestAccountId)
+                                .Select(g => g.IsClosed)
+                                .FirstOrDefault())
+                .Select(t => new TransactionSummaryDto
+                {
+                    Date = t.Date,
+                    Description = t.Description,
+                    Invoice = t.Invoice,
+                    Consumer = t.Consumer,
+                    Discount = t.Discount,
+                    BillPosts = t.BillPosts,
+                    Payment = t.Payment,
+                    Amount = t.Amount,
+                    RoomId = t.RoomId
+                })
+                .ToListAsync();
+
+            return transactions;
+        }
     }
 }

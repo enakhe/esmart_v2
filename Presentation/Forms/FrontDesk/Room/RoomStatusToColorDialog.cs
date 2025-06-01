@@ -15,7 +15,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
             switch (status)
             {
                 case RoomStatus.Vacant:
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#808080"));
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00C853"));
                 case RoomStatus.Maintenance:
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#000000"));
                 case RoomStatus.Booked:
@@ -27,7 +27,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
                 case RoomStatus.Debit:
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000"));
                 case RoomStatus.Credit:
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00C853"));
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E9F0F7"));
                 default:
                     return new SolidColorBrush(Colors.LightGray);
             }

@@ -17,65 +17,55 @@ namespace ESMART.Infrastructure.Services
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory = contextFactory;
         private readonly ILogger<NightlyRoomChargeService> _logger = logger;
         private readonly GuestAccountService _guestAccountService = guestAccountService;
+
         public async Task PostNightlyRoomChargesAsync()
         {
             using var context = await _contextFactory.CreateDbContextAsync();
             var today = DateTime.Today;
 
-            var activeBookings = await context.Bookings
-                .Include(b => b.RoomBookings)
-                .Where(b => b.CheckOut > today && b.Status != BookingStatus.Completed)
+            var activeRoomBookings = await context.RoomBookings
+                .Include(rb => rb.Booking)
+                .Where(rb => rb.Booking.Status == BookingStatus.Active)
                 .ToListAsync();
 
-            foreach (var booking in activeBookings)
+
+            foreach (var roomBooking in activeRoomBookings)
             {
-                foreach (var roomBooking in booking.RoomBookings)
+                var lastChargedNight = await context.RoomNightCharges
+                    .Where(rnc => rnc.RoomBookingId == roomBooking.Id)
+                    .OrderByDescending(rnc => rnc.Night)
+                    .Select(rnc => rnc.Night)
+                    .FirstOrDefaultAsync();
+
+                var nextChargeNight = lastChargedNight == default ? roomBooking.CheckIn.Date : lastChargedNight.AddDays(1);
+
+                if (nextChargeNight < today)
                 {
-                    var nightsStayed = (today - roomBooking.CheckIn.Date).Days;
-                    if (nightsStayed <= 0) continue;
-
-                    var chargedNights = await context.RoomNightCharges
-                        .Where(x => x.RoomBookingId == roomBooking.Id)
-                        .Select(x => x.Night)
-                        .ToListAsync();
-
-                    for (int i = 0; i < nightsStayed; i++)
+                    var guestTransaction = new GuestTransactionDto
                     {
-                        var night = roomBooking.CheckIn.Date.AddDays(i);
-                        if (chargedNights.Contains(night)) continue;
+                        Amount = roomBooking.Rate,
+                        ApplicationUserId = roomBooking.Booking.ApplicationUserId,
+                        GuestAccountId = roomBooking.Booking.GuestAccountId,
+                        BankAccountId = roomBooking.Booking.BankAccountId,
+                        Discount = roomBooking.Discount,
+                        GuestId = roomBooking.Booking.GuestId,
+                        BookingId = roomBooking.Booking.Id,
+                        RoomId = roomBooking.RoomId,
+                        Consumer = roomBooking.OccupantName,
+                        PaymentMethod = roomBooking.Booking.PaymentMethod,
+                        TransactionType = TransactionType.RoomCharge,
+                        Tax = roomBooking.Tax,
+                        Description = $"Room Charge (Inclusive of Inclusions)"
+                    };
 
-                        var guestTransaction = new GuestTransactionDto
-                        {
-                            Amount = roomBooking.Rate,
-                            ApplicationUserId = "system",
-                            GuestAccountId = booking.GuestAccountId,
-                            BankAccountId = booking.BankAccountId,
-                            Discount = roomBooking.Discount,
-                            GuestId = booking.GuestId,
-                            RoomId = roomBooking.RoomId,
-                            Consumer = roomBooking.OccupantName,
-                            PaymentMethod = booking.PaymentMethod,
-                            TransactionType = TransactionType.RoomCharge,
-                            Tax = roomBooking.Tax,
-                            Description = $"Room Charge (Inclusive of Inclusions)"
-                        };
+                    await _guestAccountService.AddRoomChargeAsync(roomBooking.Booking.GuestId, roomBooking.Rate, roomBooking.Discount, roomBooking.Tax, roomBooking.ServiceCharge);
+                    await _guestAccountService.AddTransaction(roomBooking.Booking.GuestId, guestTransaction);
+                    context.RoomNightCharges.Add(new RoomNightCharge { RoomBookingId = roomBooking.Id, Night = nextChargeNight });
 
-                        // NOTE: Replace these with proper DI-based calls if needed
-                        await _guestAccountService.AddRoomChargeAsync(booking.GuestId, roomBooking.Rate, roomBooking.Discount, roomBooking.Tax, roomBooking.ServiceCharge);
-                        await _guestAccountService.AddTransaction(booking.GuestId, guestTransaction);
-
-                        context.RoomNightCharges.Add(new RoomNightCharge
-                        {
-                            RoomBookingId = roomBooking.Id,
-                            Night = night
-                        });
-
-                        _logger.LogInformation($"Posted nightly charge for {night:dd MMM} on booking {booking.Id}");
-                    }
-
-                    await context.SaveChangesAsync();
+                    _logger.LogInformation($"Nightly charge posted for {nextChargeNight:dd MMM} (Booking ID: {roomBooking.Booking.Id})");
                 }
             }
+            await context.SaveChangesAsync();
         }
     }
 

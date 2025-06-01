@@ -1062,7 +1062,10 @@ namespace ESMART.Presentation.Utils
 
             AddHotelHeader(doc, hotel);
 
-            AddBookingSummaryTable(doc, data, booking, A4PortraitWidth);
+            if (booking != null)
+            {
+                AddBookingSummaryTable(doc, data, booking, A4PortraitWidth);
+            }
 
             doc.Blocks.Add(new Paragraph(new Run("")));
 
@@ -1114,6 +1117,16 @@ namespace ESMART.Presentation.Utils
                 doc.Blocks.Add(paymentTable);
             }
 
+            if (data.PayedRefunds.Count != 0)
+            {
+                doc.Blocks.Add(new Paragraph(new Run("Refunds")) { FontWeight = FontWeights.SemiBold });
+                Table paymentTable = CreateTransactionTable(data.PayedRefunds,
+                            totalBillPosts: (data.Amount),
+                            totalAmount: (data.Amount + data.OtherCharges),
+                            totalPayment: data.Paid);
+                doc.Blocks.Add(paymentTable);
+            }
+
             doc.Blocks.Add(new Paragraph(new Run(" ")));// Spacer
 
             var (bookingAmount, discount, serviceCharge, vat, totalAmount, totalPaid, toReceive, toRefund) = Helper.CalculateSummary(data);
@@ -1123,6 +1136,13 @@ namespace ESMART.Presentation.Utils
                 data.OtherCharges, totalAmount,
                 totalPaid, toReceive, toRefund,
                 data.CheckIn, data.CheckOut);
+
+            doc.Blocks.Add(new Paragraph(new Run(" ")));// Spacer
+            doc.Blocks.Add(new Paragraph(new Run(" ")));// Spacer
+
+
+            AddFooterTable(doc, data.GuestName, A4PortraitWidth);
+
 
             return doc;
         }
@@ -1175,6 +1195,39 @@ namespace ESMART.Presentation.Utils
 
             // Spacer
             doc.Blocks.Add(new Paragraph(new Run(" ")));
+        }
+
+        private static void AddFooterTable(FlowDocument doc, string guestName, double A4PortraitWidth)
+        {
+            var infoTable = new Table();
+            infoTable.Columns.Add(new TableColumn());
+            infoTable.Columns.Add(new TableColumn());
+
+            infoTable.Columns[0].Width = new GridLength((A4PortraitWidth / 2) + 168);
+            infoTable.Columns[1].Width = new GridLength((A4PortraitWidth / 2) + 168);
+
+            var rowGroup = new TableRowGroup();
+            infoTable.RowGroups.Add(rowGroup);
+
+            void AddRow(string leftText, string rightText)
+            {
+                var row = new TableRow();
+                row.Cells.Add(new TableCell(new Paragraph(new Run(leftText)))
+                {
+                    FontSize = 11,
+                    TextAlignment = TextAlignment.Left
+                });
+                row.Cells.Add(new TableCell(new Paragraph(new Run(rightText)))
+                {
+                    FontSize = 11,
+                    TextAlignment = TextAlignment.Left
+                });
+                rowGroup.Rows.Add(row);
+            }
+
+            // Row 1
+            AddRow("Date", $"Guest Signature\n{guestName}");
+            doc.Blocks.Add(infoTable);
         }
 
         private static void AddBookingSummaryTable(FlowDocument doc, GuestAccountSummaryDto data,  Booking booking, double A4PortraitWidth)
@@ -1367,7 +1420,6 @@ namespace ESMART.Presentation.Utils
             table.RowGroups.Add(rg);
             return table;
         }
-
 
         private static Table CreateGuestAccountSummaryTable(GuestAccountSummaryDto data)
         {

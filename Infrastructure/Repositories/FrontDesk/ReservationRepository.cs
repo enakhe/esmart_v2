@@ -54,7 +54,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 return await context.Reservations
                     .Include(r => r.Guest)
                     .Include(r => r.Room)
-                    .Where(r => r.ArrivateDate.Date == DateTime.Today && r.Status != ReservationStatus.Cancelled && r.Status != ReservationStatus.CheckedIn)
+                    .Where(r => r.ArrivateDate.Date == DateTime.Today && r.Status != ReservationStatus.Cancelled && r.Status != ReservationStatus.Reserved)
                     .Select(r => new ReservationViewModel
                     {
                         Id = r.Id,
@@ -90,7 +90,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 return await context.Reservations
                     .Include(r => r.Guest)
                     .Include(r => r.Room)
-                    .Where(r => r.Status != ReservationStatus.Cancelled && r.Status != ReservationStatus.CheckedIn)
+                    .Where(r => r.Status != ReservationStatus.Cancelled && r.Status != ReservationStatus.Reserved)
                     .Select(r => new ReservationViewModel
                     {
                         Id = r.Id,
@@ -297,7 +297,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 return await context.Reservations
                     .Where(r => r.Room.Number == roomNo &&
                                 r.Status != ReservationStatus.Cancelled &&
-                                r.Status != ReservationStatus.CheckedIn &&
+                                r.Status != ReservationStatus.Converted &&
                                 r.ArrivateDate <= endDate &&
                                 r.DepartureDate >= startDate)
                     .Select(r => new ReservationViewModel

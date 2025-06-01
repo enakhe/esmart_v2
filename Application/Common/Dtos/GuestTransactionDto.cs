@@ -17,6 +17,7 @@ namespace ESMART.Application.Common.Dtos
         public string GuestAccountId { get; set; }
         public string RoomId { get; set; }
         public decimal Discount { get; set; }
+        public string BookingId { get; set; }
         public decimal Tax { get; set; }
         public string Consumer { get; set; }
         public string BankAccountId { get; set; }

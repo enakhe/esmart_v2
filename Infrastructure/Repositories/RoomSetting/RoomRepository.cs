@@ -1,4 +1,5 @@
-﻿#nullable disable
+﻿
+#nullable disable
 
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Models;

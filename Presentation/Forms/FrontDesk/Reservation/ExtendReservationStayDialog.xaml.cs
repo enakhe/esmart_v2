@@ -146,7 +146,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 if (isRoomAvailable)
                 {
-                    var booking = await UpdateReservation(ReservationStatus.Tentative, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber, amountPaid);
+                    var booking = await UpdateReservation(ReservationStatus.Reserved, checkIn, checkOut, paymentMethod, totalAmount, discount, vat, serviceCharge, accountNumber, amountPaid);
 
 
                     await HandlePostBookingAsync(booking, totalAmount);
@@ -253,7 +253,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     }
                     else
                     {
-                        reservation.Status = ReservationStatus.Confirmed;
+                        reservation.Status = ReservationStatus.Reserved;
                         reservation.TransactionStatus = TransactionStatus.Paid;
 
                         await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
@@ -330,7 +330,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 if (verifyPaymentWindow.ShowDialog() == true)
                 {
-                    reservation.Status = ReservationStatus.Confirmed;
+                    reservation.Status = ReservationStatus.Reserved;
                     reservation.TransactionStatus = TransactionStatus.Paid;
                 }
                 else

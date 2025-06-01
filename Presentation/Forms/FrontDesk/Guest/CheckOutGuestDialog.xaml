@@ -1,0 +1,108 @@
+﻿<Window x:Class="ESMART.Presentation.Forms.FrontDesk.Guest.CheckOutGuestDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ESMART.Presentation.Forms.FrontDesk.Guest"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Background="#f0f4f9"
+        ResizeMode="NoResize"
+        Title="CheckOut Guest" Height="900" Width="900" Icon="/Forms/FrontDesk/Guest/logo.png" Activated="Window_Activated">
+    <Grid>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Guest Bill" Grid.Row="0" HorizontalAlignment="Center" FontSize="25" FontWeight="Black" />
+
+            <Border Background="White" Height="Auto" CornerRadius="20" BorderThickness="1" BorderBrush="#e1e3ea" Margin="10" Grid.Row="1" Padding="10">
+                <FlowDocumentScrollViewer x:Name="docViewer" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" Margin="10" Document="{Binding PreviewDocument}"/>
+            </Border>
+
+            <StackPanel Grid.Row="2" Margin="20">
+                <Grid Margin="1,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Left">
+                        <Button Content="Print" x:Name="PrintButton" Click="PrintButton_Click" Height="34" Width="100" HorizontalAlignment="Stretch" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                        <Grid Margin="1,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            
+                            
+                            <StackPanel Grid.Column="0">
+                                <Button Content="Cancel" Height="34" Width="100" HorizontalAlignment="Stretch" Margin="5" Padding="0,5,0,5" Background="Red" Foreground="White" Cursor="Hand" Click="Cancel_Click">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1">
+                                <Button Content="CheckOut" x:Name="CheckOutButton" Click="CheckOutButton_Click" Height="34" Width="100" HorizontalAlignment="Stretch" Margin="5" Padding="0,5,0,5" Background="DarkRed" Foreground="White" Cursor="Hand">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+
+                    </StackPanel>
+
+                </Grid>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed" Grid.ColumnSpan="2">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
+                <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -116,7 +116,8 @@
 
                             <StackPanel Orientation="Horizontal" Margin="20,20,20,10" Grid.Column="1" HorizontalAlignment="Right">
                                 <Button Content="Add Guest" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="72" Click="AddGuest_Click" />
-                                <Button Content="In House Guest" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="92" x:Name="InHouseGuest" Click="InHouseGuest_Click" />
+                                <Button Content="All Guests" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="92" x:Name="InHouseGuest" Click="InHouseGuest_Click" />
+                                <Button Content="In House" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="92" x:Name="InHouse" Click="InHouse_Click" />
                                 <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Width="52" Click="ExportButton_Click" />
                             </StackPanel>
 
@@ -167,7 +168,7 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn Header="Status" Width="1*">
+                                    <DataGridTemplateColumn Header="Status" Width="1*" Visibility="Collapsed">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Border CornerRadius="5" Height="23" Width="65" Padding="10,3" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}">

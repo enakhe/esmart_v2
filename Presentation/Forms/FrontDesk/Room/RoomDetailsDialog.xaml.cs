@@ -5,6 +5,7 @@ using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.ViewModels.RoomSetting;
 using ESMART.Domain.ViewModels.Transaction;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.Receipt;
@@ -26,13 +27,15 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
         private readonly IBookingRepository _bookingRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IRoomRepository _roomRepository;
+        private readonly GuestAccountService _guestAccountService;
         private readonly Domain.Entities.RoomSettings.Room _room;
-        public RoomDetailsDialog(IRoomRepository roomRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, Domain.Entities.RoomSettings.Room room)
+        public RoomDetailsDialog(IRoomRepository roomRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, GuestAccountService guestAccountService, Domain.Entities.RoomSettings.Room room)
         {
             _roomRepository = roomRepository;
             _transactionRepository = transactionRepository;
             _bookingRepository = bookingRepository;
             _roomRepository = roomRepository;
+            _guestAccountService = guestAccountService;
             _hotelSettingsService = hotelSettingsService;
             _room = room;
             InitializeComponent();
@@ -74,21 +77,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
             }
         }
 
-        private void LoadDefaultSetting()
-        {
-            txtFrom.SelectedDate = DateTime.Now;
-            txtTo.SelectedDate = DateTime.Now.AddDays(1);
-        }
-
         private async Task LoadBookingTransactionHistory()
         {
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var roomTransactionItem = await _transactionRepository.GetTransactionItemByRoomIdAsync(_room.Id);
+                var roomTransactionItem = await _guestAccountService.GetRoomTransactionsAsync(_room.Id);
                 if (roomTransactionItem != null)
                 {
-                    this.TransactionItemDataGrid.ItemsSource = roomTransactionItem;
+                    this.TransactionItemDataGrid.ItemsSource = roomTransactionItem.RoomCharges;
+                    ServiceChargeDataGrid.ItemsSource = roomTransactionItem.OtherCharges;
                 }
 
             }
@@ -101,43 +99,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
-        }
-
-        private async Task LoadBookingTransactionByDate()
-        {
-            LoaderOverlay.Visibility = Visibility.Visible;
-            try
-            {
-                var fromDate = txtFrom.SelectedDate.Value;
-                var toDate = txtTo.SelectedDate.Value;
-
-                if (fromDate > toDate)
-                {
-                    MessageBox.Show("From date cannot be greater than To date", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                var reservationTransactionItem = await _transactionRepository.GetTransactionItemByRoomIdAndDate(_room.Id, fromDate, toDate);
-
-                if (reservationTransactionItem != null)
-                {
-                    this.TransactionItemDataGrid.ItemsSource = reservationTransactionItem;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-            finally
-            {
-                LoaderOverlay.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private async void FilterButton_Click(object sender, RoutedEventArgs e)
-        {
-            await LoadBookingTransactionByDate();
         }
 
         private async void ExportButton_Click(object sender, RoutedEventArgs e)
@@ -188,7 +149,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
         {
             LoadRoomDetails();
             await LoadBookingTransactionHistory();
-            LoadDefaultSetting();
         }
 
         private async void RoomFolioButton_Click(object sender, RoutedEventArgs e)

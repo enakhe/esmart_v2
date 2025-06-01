@@ -446,6 +446,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     CheckOut = checkOut,
                     AccountNumber = accountNumber,
                     Discount = discount,
+                    Amount = totalAmount,
                     GuestAccountId = guestAccount.Id,
                     GuestId = guestId,
                     PaymentMethod = paymentMethod,

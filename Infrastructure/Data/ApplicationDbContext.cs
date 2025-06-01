@@ -1,6 +1,7 @@
 ﻿using ESMART.Domain.Entities.Configuration;
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Entities.Laundry;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.StoreKeeping;
 using ESMART.Domain.Entities.Transaction;
@@ -24,6 +25,8 @@ namespace ESMART.Infrastructure.Data
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionItem> TransactionItems { get; set; }
         public DbSet<BankAccount> BankAccount { get; set; }
+
+        public DbSet<Laundry> Laundries { get; set; }
 
         public DbSet<RoomBooking> RoomBookings { get; set; } 
 

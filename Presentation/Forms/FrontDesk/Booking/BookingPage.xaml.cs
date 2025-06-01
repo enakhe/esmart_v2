@@ -3,7 +3,9 @@ using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.ViewModels.FrontDesk;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Forms.FrontDesk.Reservation;
 using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Booking
 {
@@ -31,9 +34,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private readonly IApplicationUserRoleRepository _userService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly GuestAccountService _guestAccountService;
         private IServiceProvider _serviceProvider;
 
-        public BookingPage(IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IRoomRepository roomRepository, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IReservationRepository reservationRepository, IApplicationUserRoleRepository applicationUserRoleRepository, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager)
+        public BookingPage(IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, IHotelSettingsService hotelSettingsService, IRoomRepository roomRepository, IGuestRepository guestRepository, ITransactionRepository transactionRepository, IReservationRepository reservationRepository, IApplicationUserRoleRepository applicationUserRoleRepository, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager, GuestAccountService guestAccountService )
         {
             _bookingRepository = bookingRepository;
             _verificationCodeService = verificationCodeService;
@@ -45,7 +49,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             _guestRepository = guestRepository;
             _reservationRepository = reservationRepository;
             _applicationUserRoleRepository = applicationUserRoleRepository;
-            InitializeComponent();
+            InitializeComponent();            
+            _guestAccountService = guestAccountService;
+
         }
 
         private void InitializeServices()
@@ -223,7 +229,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
                     if (selectedBooking.Id != null)
                     {
-                        var bookingDetailsDialog = new ViewBookingDetailsDialog(booking, _transactionRepository, _bookingRepository, _hotelSettingsService);
+                        var bookingDetailsDialog = new ViewBookingDetailsDialog(booking, _transactionRepository, _bookingRepository, _hotelSettingsService, _guestAccountService);
                         bookingDetailsDialog.ShowDialog();
                     }
 
@@ -520,6 +526,21 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     await LoadBooking();
                 }
                 BookingDataGrid.ItemsSource = filteredBookings;
+            }
+        }
+
+        private async void BookingDataGridRow_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DataGridRow row && row.Item is Domain.ViewModels.FrontDesk.BookingViewModel selectedBooking)
+            {
+
+                var booking = await _bookingRepository.GetBookingById(selectedBooking.Id);
+
+                if (selectedBooking.Id != null)
+                {
+                    var bookingDetailsDialog = new ViewBookingDetailsDialog(booking, _transactionRepository, _bookingRepository, _hotelSettingsService, _guestAccountService);
+                    bookingDetailsDialog.ShowDialog();
+                }
             }
         }
     }

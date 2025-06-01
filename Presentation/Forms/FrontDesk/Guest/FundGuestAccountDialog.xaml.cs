@@ -84,9 +84,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     txtAmount.CaretIndex = txtAmount.Text.Length; 
                     txtAmount.SelectionStart = txtAmount.Text.Length;
                     txtAmount.SelectionLength = 0;
-
-                    chkResBar.IsChecked = guestAccount.AllowBarAndRes;
-                    chkLaundry.IsChecked = guestAccount.AllowLaundry;
                 }
                 else
                 {
@@ -161,9 +158,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     .Select(e => new { Id = (int)e, Name = e.ToString() })
                     .ToList();
 
-                cmbPaymentMethod.ItemsSource = method;
-                cmbPaymentMethod.DisplayMemberPath = "Name";
-                cmbPaymentMethod.SelectedValuePath = "Name";
+                cmbTopUpType.ItemsSource = method;
+                cmbTopUpType.DisplayMemberPath = "Name";
+                cmbTopUpType.SelectedValuePath = "Name";
             }
             catch (Exception ex)
             {
@@ -211,6 +208,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var paymentType = Enum.Parse<PaymentType>(cmbTopUpType.SelectedValue.ToString()!);
                 var userId = AuthSession.CurrentUser.Id;
 
+                await _guestAccountService.OpenOrGetActiveGuestAccountAsync(_guest.Id);
                 await _guestAccountService.ToUpAsync(_guest.Id, amount, paymentMethod, bankAccountId!, userId, paymentType);
 
                 LoaderOverlay.Visibility = Visibility.Collapsed;
@@ -234,6 +232,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             txtGuest.Text = _guest.FullName;
             await LoadGuestAccount();
             LoadPaymentMethod();
+            LoadPaymentType();
             await LoadBankAccount();
         }
     }

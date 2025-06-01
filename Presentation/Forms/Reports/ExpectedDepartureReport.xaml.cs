@@ -1,5 +1,6 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Domain.ViewModels.FrontDesk;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Utils;
@@ -16,10 +17,12 @@ namespace ESMART.Presentation.Forms.Reports
         private readonly IBookingRepository _bookingRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly ITransactionRepository _transactionRepository;
-        public ExpectedDepartureReport(IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository)
+        private readonly GuestAccountService _guestAccountService;
+        public ExpectedDepartureReport(IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository, GuestAccountService guestAccountService)
         {
             _bookingRepository = bookingRepository;
             _hotelSettingsService = hotelSettingsService;
+            _guestAccountService = guestAccountService;
             _transactionRepository = transactionRepository;
             InitializeComponent();
         }
@@ -147,7 +150,7 @@ namespace ESMART.Presentation.Forms.Reports
 
                     if (selectedBooking.Id != null)
                     {
-                        var bookingDetailsDialog = new ViewBookingDetailsDialog(booking, _transactionRepository, _bookingRepository, _hotelSettingsService);
+                        var bookingDetailsDialog = new ViewBookingDetailsDialog(booking, _transactionRepository, _bookingRepository, _hotelSettingsService, _guestAccountService);
                         bookingDetailsDialog.ShowDialog();
                     }
 

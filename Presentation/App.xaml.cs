@@ -2,6 +2,9 @@
 using ESMART.Infrastructure.Data;
 using ESMART.Infrastructure.Identity;
 using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Infrastructure.Services;
+using Hangfire;
+using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,6 +56,7 @@ namespace ESMART.Presentation
             var services = new ServiceCollection();
 
             DependencyInjection.ConfigureServices(services, _configuration);
+            
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -61,6 +65,9 @@ namespace ESMART.Presentation
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 dbContext.Database.Migrate();
             }
+
+            var nightlyService = serviceProvider.GetRequiredService<NightlyRoomChargeService>();
+            await nightlyService.PostNightlyRoomChargesAsync();
 
             var identityService = serviceProvider.GetRequiredService<IdentityService>();
             await identityService.TrySeedAsync();

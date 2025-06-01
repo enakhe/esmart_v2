@@ -139,6 +139,13 @@
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                             <Border Background="White" CornerRadius="10" Margin="0,10,0,0">
                                 <DataGrid x:Name="BookingDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" MinHeight="200" Width="1500">
+
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="DataGridRow">
+                                            <EventSetter Event="MouseDoubleClick" Handler="BookingDataGridRow_DoubleClick"/>
+                                        </Style>
+                                    </DataGrid.RowStyle>
+
                                     <DataGrid.Columns>
                                         <DataGridTemplateColumn Header="Guest" Width="2*">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -160,11 +167,11 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Room" Width="*">
+                                        <DataGridTemplateColumn Header="No of Rooms" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Room}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
+                                                        <TextBlock Text="{Binding NumberOfRooms}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -190,37 +197,7 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Duration" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Total Amount" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding TotalAmount, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Balance" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Receivables, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{Binding IsOverStayed, Converter={StaticResource OverStayedBookingColorConverter}}" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Operation" Width="2*">
+                                        <DataGridTemplateColumn Header="Operation" Width="2*" Visibility="Collapsed">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -252,6 +229,39 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
                                     </DataGrid.Columns>
+
+                                    <DataGrid.RowDetailsTemplate>
+                                        <DataTemplate>
+                                            <DataGrid Background="#1E3A8A" Foreground="White" IsReadOnly="True" ItemsSource="{Binding RoomBookings}" AutoGenerateColumns="False">
+                                                <DataGrid.Resources>
+                                                    <Style TargetType="DataGridColumnHeader">
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                        <Setter Property="Background" Value="#1E3A8A"/>
+                                                        <Setter Property="Padding" Value="20" />
+                                                    </Style>
+                                                </DataGrid.Resources>
+
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Width="100" Header="Date" Binding="{Binding Date}" />
+                                                    <DataGridTextColumn Width="300" Header="Name" Binding="{Binding OccupantName}" />
+                                                    <DataGridTextColumn Width="150" Header="Phone Number" Binding="{Binding OccupantPhoneNumber}" />
+                                                    <DataGridTextColumn Width="150" Header="Room" Binding="{Binding Room.Number}" />
+                                                    <DataGridTextColumn Width="250" Header="Check In" Binding="{Binding CheckIn}" />
+                                                    <DataGridTextColumn Width="250" Header="Check Out" Binding="{Binding CheckOut}" />
+                                                    <DataGridTemplateColumn Header="Operation" Width="100">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                    <Button Content="Edit" Width="60" Height="30" Foreground="Black" Padding="2" ToolTip="Issue Card" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="IssueCard_Click" />
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+
+                                        </DataTemplate>
+                                    </DataGrid.RowDetailsTemplate>
                                 </DataGrid>
                             </Border>
                         </ScrollViewer>

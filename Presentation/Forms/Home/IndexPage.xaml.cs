@@ -177,7 +177,7 @@ namespace ESMART.Presentation.Forms.Home
 
                 if (selectedRoom != null)
                 {
-                    RoomDetailsDialog roomDetails = new RoomDetailsDialog(_roomRepository, _transactionRepository, _bookingRepository, _hotelSettingsService, selectedRoom);
+                    RoomDetailsDialog roomDetails = new RoomDetailsDialog(_roomRepository, _transactionRepository, _bookingRepository, _hotelSettingsService, _guestAccountService, selectedRoom);
 
                     if (roomDetails.ShowDialog() == true)
                     {

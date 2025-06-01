@@ -12,6 +12,7 @@
 
     <Page.Resources>
         <local:RoomStatusToColorDialog x:Key="RoomStatusToColorDialog" />
+        <local:StatusToForegroundConverter x:Key="StatusToForegroundConverter" />
         <Style x:Key="ActionBarButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="0,0,10,0"/>
             <Setter Property="Padding" Value="5"/>
@@ -116,7 +117,14 @@
 
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                             <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                                <DataGrid x:Name="RoomDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="1300">
+                                <DataGrid x:Name="RoomDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="1440">
+
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="DataGridRow">
+                                            <EventSetter Event="MouseDoubleClick" Handler="RoomDataGridRow_DoubleClick"/>
+                                        </Style>
+                                    </DataGrid.RowStyle>
+
                                     <DataGrid.Columns>
                                         <DataGridTemplateColumn Header="Number" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -128,32 +136,22 @@
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
 
+                                        <DataGridTemplateColumn Header="Room Id" Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                        <TextBlock Text="{Binding RoomId}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+
                                         <DataGridTemplateColumn Header="Status" Width="*">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <Border CornerRadius="5" Height="23" Width="90" Padding="10,3" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}">
-                                                        <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusToForegroundConverter}}" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
                                                     </Border>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Date Created" Width="2*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding DateCreated, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Date Modified" Width="2*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding DateModified, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>

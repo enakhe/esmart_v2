@@ -26,7 +26,7 @@ namespace ESMART.Presentation
 
             services.AddDbContextFactory<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(connectionString);
+                options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
             });
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()

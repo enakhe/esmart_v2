@@ -17,6 +17,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public string GuestTraId { get; set; } = $"TRP-{Guid.NewGuid().ToString().Split('-')[0].ToUpper().AsSpan(0, 5)}";
         public string GuestId { get; set; }
         public string ApplicationUserId { get; set; }
+        public string BookingId { get; set; }
         public string Invoice { get; set; }
         public decimal Discount { get; set; }
         public decimal BillPosts { get; set; }
@@ -35,6 +36,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public Guest Guest { get; set; }
         public Domain.Entities.RoomSettings.Room Room {get; set;}
         public ApplicationUser ApplicationUser { get; set; }
+        public virtual Booking Booking { get; set; }
         public virtual BankAccount BankAccount { get; set; }
         public virtual GuestAccount GuestAccount { get; set; }
     }

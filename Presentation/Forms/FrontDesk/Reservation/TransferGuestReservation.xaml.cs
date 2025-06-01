@@ -307,7 +307,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                         }
                         else
                         {
-                            reservation.Status = ReservationStatus.Confirmed;
+                            reservation.Status = ReservationStatus.Reserved;
                             reservation.TransactionStatus = TransactionStatus.Paid;
 
                             await _transactionRepository.UpdateTransactionItemAsync(transactionItem);
@@ -367,7 +367,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
                 if (verifyPaymentWindow.ShowDialog() == true)
                 {
-                    reservation.Status = ReservationStatus.Confirmed;
+                    reservation.Status = ReservationStatus.Reserved;
                     reservation.TransactionStatus = TransactionStatus.Paid;
                 }
                 else

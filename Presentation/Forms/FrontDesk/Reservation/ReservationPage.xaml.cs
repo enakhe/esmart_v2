@@ -3,15 +3,20 @@ using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using Google.Apis.Drive.v3.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 {
@@ -26,11 +31,12 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         private readonly IRoomRepository _roomRepository;
         private readonly IBookingRepository _bookingRepository;
         private readonly IVerificationCodeService _verificationCodeService;
+        private readonly GuestAccountService _guestAccountService;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private IServiceProvider _serviceProvider;
 
-        public ReservationPage(IReservationRepository reservationRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, IRoomRepository roomRepository, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, IApplicationUserRoleRepository applicationUserRoleRepository)
+        public ReservationPage(IReservationRepository reservationRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, IRoomRepository roomRepository, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, ITransactionRepository transactionRepository, IApplicationUserRoleRepository applicationUserRoleRepository, GuestAccountService guestAccountService)
         {
             _reservationRepository = reservationRepository;
             _hotelSettingsService = hotelSettingsService;
@@ -40,7 +46,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             _verificationCodeService = verificationCodeService;
             _transactionRepository = transactionRepository;
             _applicationUserRoleRepository = applicationUserRoleRepository;
+            _guestAccountService = guestAccountService;
             InitializeComponent();
+
         }
 
         private void InitializeServices()
@@ -60,11 +68,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var reservations = await _reservationRepository.GetAllReservationsAsync();
+                var reservations = await _guestAccountService.GetAllRoomTypeReservationsAsync();
                 if (reservations != null)
                 {
                     ReservationDataGrid.ItemsSource = reservations;
-                    txtReservationCount.Text = reservations.Count().ToString();
+                    txtReservationCount.Text = reservations.Count.ToString();
                 }
             }
             catch (Exception ex)
@@ -126,6 +134,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
             InitializeServices();
 
             AddReservationDialog reservationForm = _serviceProvider.GetRequiredService<AddReservationDialog>();
+
             if (reservationForm.ShowDialog() == true)
             {
                 await LoadReservation();
@@ -294,7 +303,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                         transaction.BookingId = booking.Id;
                         await _transactionRepository.UpdateTransactionAsync(transaction);
                         
-                        reservation.Status = ReservationStatus.CheckedIn;
+                        reservation.Status = ReservationStatus.Reserved;
                         await _reservationRepository.UpdateReservationAsync(reservation);
 
                         var room = await _roomRepository.GetRoomById(reservation.Room.Id);
@@ -401,6 +410,72 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadReservation();
+        }
+
+        private async void AllReservations_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var reservations = await _guestAccountService.GetAllRoomTypeReservationsAsync();
+                if (reservations != null)
+                {
+                    ReservationDataGrid.ItemsSource = reservations;
+                    txtReservationCount.Text = reservations.Count.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void TodayReservation_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                var reservations = await _guestAccountService.GetReservationsForCheckInTodayAsync();
+                if (reservations != null)
+                {
+                    ReservationDataGrid.ItemsSource = reservations;
+                    txtReservationCount.Text = reservations.Count.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void ReservationDataGridRow_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DataGridRow row && row.Item is Domain.ViewModels.FrontDesk.RoomTypeReservationViewModel roomTypeReservation)
+            {
+
+
+                ReservationDetailsDialod reservationDetailsDialod = new ReservationDetailsDialod(
+                    _roomRepository,
+                    _guestRepository,
+                    _bookingRepository,
+                    _hotelSettingsService,
+                    _transactionRepository,
+                    roomTypeReservation, 
+                    _guestAccountService);
+
+                if(reservationDetailsDialod.ShowDialog() == true)
+                {
+                    await LoadReservation();
+                }
+            }
         }
     }
 }

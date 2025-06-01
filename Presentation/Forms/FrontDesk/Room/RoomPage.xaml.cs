@@ -1,5 +1,8 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Infrastructure.Repositories.FrontDesk;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
+using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.RoomSetting.Room;
 using ESMART.Presentation.Utils;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ESMART.Presentation.Forms.FrontDesk.Room
 {
@@ -20,14 +24,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
         private readonly IBookingRepository _bookingRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly ICardRepository _cardRepository;
+        private readonly GuestAccountService _guestAccountService;
         private IServiceProvider _serviceProvider;
-        public RoomPage(IRoomRepository roomRepository, ICardRepository cardRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService)
+        public RoomPage(IRoomRepository roomRepository, ICardRepository cardRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, GuestAccountService guestAccountService)
         {
             _roomRepository = roomRepository;
             _cardRepository = cardRepository;
             _transactionRepository = transactionRepository;
             _bookingRepository = bookingRepository;
             _roomRepository = roomRepository;
+            _guestAccountService = guestAccountService;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
@@ -162,7 +168,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
                 {
                     var room = await _roomRepository.GetRoomById(selectedRoom.Id);
 
-                    RoomDetailsDialog roomDetails = new RoomDetailsDialog(_roomRepository, _transactionRepository, _bookingRepository, _hotelSettingsService, room);
+                    RoomDetailsDialog roomDetails = new RoomDetailsDialog(_roomRepository, _transactionRepository, _bookingRepository, _hotelSettingsService, _guestAccountService, room);
 
                     if (roomDetails.ShowDialog() == true)
                     {
@@ -231,6 +237,26 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
             finally
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void RoomDataGridRow_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DataGridRow row && row.Item is Domain.Entities.RoomSettings.Room room)
+            {
+                if (room != null)
+                {
+                    RoomDetailsDialog roomDetails = new RoomDetailsDialog(_roomRepository, _transactionRepository, _bookingRepository, _hotelSettingsService, _guestAccountService, room);
+
+                    if (roomDetails.ShowDialog() == true)
+                    {
+                        await LoadRoom();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before viewing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
 

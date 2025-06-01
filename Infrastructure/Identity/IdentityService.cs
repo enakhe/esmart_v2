@@ -155,6 +155,16 @@ namespace ESMART.Infrastructure.Identity
             if (_roleManager.Roles.All(r => r.Name != auditorRole.Name))
                 await _roleManager.CreateAsync(auditorRole);
 
+            var laundryRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.Laundry.ToString(),
+                Description = "Laundary Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != laundryRole.Name))
+                await _roleManager.CreateAsync(laundryRole);
+
             var administrator = new ApplicationUser
             {
                 UserName = "administrator@localhost",

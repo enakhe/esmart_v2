@@ -61,8 +61,8 @@ namespace ESMART.Infrastructure.Identity
         {
             try
             {
-                var user = await _userManager.FindByIdAsync(id);
-                return user;
+                await using var context = _contextFactory.CreateDbContext();
+                return await context.Users.FindAsync(id);
             }
             catch (Exception ex)
             {
@@ -297,14 +297,25 @@ namespace ESMART.Infrastructure.Identity
         {
             try
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                return roles.Select(r => _roleManager.FindByNameAsync(r).Result).ToList();
+                await using var context = _contextFactory.CreateDbContext();
+
+                var roleIds = await context.UserRoles
+                    .Where(u => u.UserId == user.Id)
+                    .Select(u => u.RoleId)
+                    .ToListAsync();
+
+                var roles = await context.Roles
+                    .Where(r => roleIds.Contains(r.Id))
+                    .ToListAsync();
+
+                return roles;
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occured when getting all roles for a user. " + ex.Message);
+                throw new Exception("An error occurred when getting roles for a user. " + ex.Message);
             }
         }
+
 
         // Check if user is in role
         public async Task<bool> IsUserInRole(ApplicationUser user, ApplicationRole role)

@@ -12,6 +12,7 @@
 
     <Page.Resources>
         <local:RoomStatusToColorDialog x:Key="RoomStatusToColorDialog" />
+        <local:StatusToForegroundConverter x:Key="StatusToForegroundConverter" />
         <local:HeightConverter x:Key="HeightConverter"/>
         <Style x:Key="ActionBarButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="0,0,10,0"/>
@@ -518,7 +519,7 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <Border CornerRadius="5" Height="23" Width="90" Padding="10,3" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}">
-                                                                <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusToForegroundConverter}}" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
                                                             </Border>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>

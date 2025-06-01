@@ -39,6 +39,8 @@
     <None Remove="Forms\home.png" />
     <None Remove="Forms\Home\logo.png" />
     <None Remove="Forms\inventory.png" />
+    <None Remove="Forms\laundry.png" />
+    <None Remove="Forms\Laundry\logo.png" />
     <None Remove="Forms\log-out.png" />
     <None Remove="Forms\logo.png" />
     <None Remove="Forms\menu-item.png" />
@@ -72,7 +74,7 @@
 
   <ItemGroup>
     <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\audio\audio.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -89,6 +91,8 @@
     <PackageReference Include="ClosedXML" Version="0.104.2" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="EPPlus" Version="8.0.3" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.20" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.20" />
     <PackageReference Include="itext7" Version="9.1.0" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.1.0" />
     <PackageReference Include="iTextSharp" Version="5.5.13.4" />
@@ -135,6 +139,8 @@
     <Resource Include="Forms\home.png" />
     <Resource Include="Forms\Home\logo.png" />
     <Resource Include="Forms\inventory.png" />
+    <Resource Include="Forms\laundry.png" />
+    <Resource Include="Forms\Laundry\logo.png" />
     <Resource Include="Forms\log-out.png" />
     <Resource Include="Forms\logo.png" />
     <Resource Include="Forms\menu-item.png" />

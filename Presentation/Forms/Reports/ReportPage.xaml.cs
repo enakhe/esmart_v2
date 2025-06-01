@@ -82,5 +82,14 @@ namespace ESMART.Presentation.Forms.Reports
 
             MainFrame.Navigate(dailyRevenueReport);
         }
+
+        private void SettledBookingReport_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeServices();
+
+            SettledBookingReport settledBookingReport = _serviceProvider.GetRequiredService<SettledBookingReport>();
+
+            MainFrame.Navigate(settledBookingReport);
+        }
     }
 }

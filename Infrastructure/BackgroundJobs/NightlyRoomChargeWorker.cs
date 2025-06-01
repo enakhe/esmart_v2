@@ -10,16 +10,10 @@ using System.Threading.Tasks;
 
 namespace ESMART.Infrastructure.BackgroundJobs
 {
-    public class NightlyRoomChargeWorker : BackgroundService
+    public class NightlyRoomChargeWorker(IServiceProvider services, ILogger<NightlyRoomChargeWorker> logger) : BackgroundService
     {
-        private readonly IServiceProvider _services;
-        private readonly ILogger<NightlyRoomChargeWorker> _logger;
-
-        public NightlyRoomChargeWorker(IServiceProvider services, ILogger<NightlyRoomChargeWorker> logger)
-        {
-            _services = services;
-            _logger = logger;
-        }
+        private readonly IServiceProvider _services = services;
+        private readonly ILogger<NightlyRoomChargeWorker> _logger = logger;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

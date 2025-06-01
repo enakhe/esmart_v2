@@ -15,6 +15,7 @@
     <Window.Resources>
         <local:RoomStatusToColorDialog x:Key="RoomStatusToColorDialog" />
         <local:TransactionStatusToColor x:Key="TransactionStatusToColor" />
+        <local:StatusToForegroundConverter x:Key="StatusToForegroundConverter" />
         <Style x:Key="ActionBarButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="0,0,10,0"/>
             <Setter Property="Padding" Value="10,5"/>
@@ -102,7 +103,7 @@
                         <StackPanel>
                             <StackPanel>
                                 <Border CornerRadius="5" Padding="10,3" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}" Height="23">
-                                    <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusToForegroundConverter}}" HorizontalAlignment="Left"/>
                                 </Border>
                             </StackPanel>
                         </StackPanel>
@@ -268,149 +269,187 @@
             <Border Background="White" Height="Auto" CornerRadius="10" Padding="10" Grid.Column="1" Margin="0,0,0,10">
                 <TabControl Margin="10" Style="{StaticResource MaterialDesignTabControl}">
 
-                    <TabItem Header="Transaction History" Name="tbTransactionHistory">
+                    <TabItem Header="Room Folio" Name="tbTransactionHistory">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" VerticalAlignment="Center">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Margin="20" Grid.Column="0">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <StackPanel Grid.Column="0" Margin="0,0,5,0">
-                                            <TextBlock Text="From:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,5"/>
-                                            <DatePicker Name="txtFrom" HorizontalAlignment="Left" Padding="2,5,0,5" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1" Margin="5,0,0,0">
-                                            <TextBlock Text="To:" HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,5"/>
-                                            <DatePicker Name="txtTo" HorizontalAlignment="Left" Padding="2,5,0,5" />
-                                        </StackPanel>
-
-                                        <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right" Margin="10,23" VerticalAlignment="Bottom">
-                                            <Button Content="Filter" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="80" Click="FilterButton_Click"/>
-                                        </StackPanel>
-                                    </Grid>
-
-                                </StackPanel>
-
-                                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10,40" VerticalAlignment="Bottom">
-                                    <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="80" Click="ExportButton_Click" />
-                                </StackPanel>
-
-                            </Grid>
-
-
                             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                                 <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                                    <DataGrid x:Name="TransactionItemDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="1300">
-                                        <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="Service Id" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding ServiceId}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Bill Post" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding BillPost, StringFormat=N2}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
+                                    <StackPanel>
+                                        <DataGrid x:Name="TransactionItemDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="1440">
+                                            <DataGrid.Columns>
 
-                                            <DataGridTemplateColumn Header="Category" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding Category}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Date" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Date, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Type" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding Type}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Description" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Account" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding Account}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Invoice" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Invoice}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Issued By" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding IssuedBy}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Consumer" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Consumer}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Status" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border CornerRadius="5" Height="23" HorizontalAlignment="Stretch" Padding="10,3" Background="{Binding Status, Converter={StaticResource TransactionStatusToColor}}">
-                                                            <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Discount" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Discount, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Date" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                            <TextBlock Text="{Binding Date, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Bill Posts" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding BillPosts, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Operation" Width="2*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <DataGridTemplateColumn Header="Payments" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Payments, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
 
-                                                            <Button Width="30" Height="30" Padding="2" ToolTip="Print Receipt" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="PrintReceiptButton_Click">
-                                                                <materialDesign:PackIcon Kind="Receipt"  Width="20" Height="20" Foreground="Black" />
-                                                            </Button>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                                <DataGridTemplateColumn Header="Amount" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Amount, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+
+                                        <DataGrid x:Name="ServiceChargeDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="1440">
+                                            <DataGrid.Columns>
+
+                                                <DataGridTemplateColumn Header="Date" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Date, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <DataGridTemplateColumn Header="Description" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <DataGridTemplateColumn Header="Invoice" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Invoice}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <DataGridTemplateColumn Header="Consumer" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Consumer}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <DataGridTemplateColumn Header="Discount" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Discount, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <DataGridTemplateColumn Header="Bill Posts" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding BillPosts, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <DataGridTemplateColumn Header="Payments" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Payments, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+
+                                                <DataGridTemplateColumn Header="Amount" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                                <TextBlock Text="{Binding Amount, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
+                                    
                                 </Border>
                             </ScrollViewer>
                         </Grid>

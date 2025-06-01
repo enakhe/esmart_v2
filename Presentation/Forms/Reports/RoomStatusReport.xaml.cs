@@ -1,6 +1,7 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.RoomSettings;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.FrontDesk.Room;
 using ESMART.Presentation.Utils;
@@ -18,8 +19,9 @@ namespace ESMART.Presentation.Forms.Reports
         private readonly ITransactionRepository _transactionRepository;
         private readonly IBookingRepository _bookingRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
+        private readonly GuestAccountService _guestAccountService;
 
-        public RoomStatusReport(IRoomRepository roomRepository, ICardRepository cardRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService)
+        public RoomStatusReport(IRoomRepository roomRepository, ICardRepository cardRepository, ITransactionRepository transactionRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, GuestAccountService guestAccountService)
         {
             _roomRepository = roomRepository;
             _transactionRepository = transactionRepository;
@@ -75,7 +77,7 @@ namespace ESMART.Presentation.Forms.Reports
                 {
                     var room = await _roomRepository.GetRoomById(selectedRoom.Id);
 
-                    RoomDetailsDialog roomDetails = new RoomDetailsDialog(_roomRepository, _transactionRepository, _bookingRepository, _hotelSettingsService, room);
+                    RoomDetailsDialog roomDetails = new RoomDetailsDialog(_roomRepository, _transactionRepository, _bookingRepository, _hotelSettingsService, _guestAccountService, room);
 
                     if (roomDetails.ShowDialog() == true)
                     {

@@ -10,4 +10,5 @@
     public const string Restaurant = nameof(Restaurant);
     public const string StoreKeeper = nameof(StoreKeeper);
     public const string Auditor = nameof(Auditor);
+    public const string Laundry = nameof(Laundry);
 }

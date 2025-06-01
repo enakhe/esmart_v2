@@ -28,6 +28,8 @@ namespace ESMART.Application.Common.Dtos
         public ApplicationUser ApplicationUser { get; set; }
         public string BankAccountId { get; set; }
         public PaymentType PaymentType { get; set; }
+        public decimal VAT { get; set; }
+        public decimal ServiceCharge { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
     }
 }

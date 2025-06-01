@@ -8,6 +8,7 @@ using ESMART.Infrastructure.Repositories.StockKeeping;
 using ESMART.Infrastructure.Repositories.Transaction;
 using ESMART.Infrastructure.Repositories.Verification;
 using ESMART.Infrastructure.Services;
+using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ESMART.Infrastructure
@@ -39,7 +40,10 @@ namespace ESMART.Infrastructure
             services.AddScoped<StockKeepingRepository>();
             services.AddScoped<GuestAccountService>();
             services.AddScoped<NightlyRoomChargeService>();
+            services.AddScoped<GoogleDriveBackupService>();
             services.AddHostedService<NightlyRoomChargeWorker>();
+
+            services.AddHangfireServer();
             return services;
         }
 
