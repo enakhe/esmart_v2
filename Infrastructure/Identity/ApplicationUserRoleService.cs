@@ -100,7 +100,11 @@ namespace ESMART.Infrastructure.Identity
         {
             try
             {
-                await _roleManager.UpdateAsync(role);
+                await using var context = _contextFactory.CreateDbContext();
+
+                context.Roles.Update(role);
+
+                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -113,7 +117,10 @@ namespace ESMART.Infrastructure.Identity
         {
             try
             {
-                await _userManager.UpdateAsync(user);
+                await using var context = _contextFactory.CreateDbContext();
+                context.Users.Update(user);
+
+                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -138,7 +145,10 @@ namespace ESMART.Infrastructure.Identity
         {
             try
             {
-                await _userManager.DeleteAsync(user);
+                await using var context = _contextFactory.CreateDbContext();
+
+                context.Users.Remove(user);
+                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -168,7 +178,8 @@ namespace ESMART.Infrastructure.Identity
         {
             try
             {
-                var roles = await _roleManager.Roles
+                await using var context = _contextFactory.CreateDbContext();
+                var roles = await context.Roles
                     .Where(r => r.Name != "Administrator")
                     .Select(r => new ApplicationRoleViewModel
                     {
@@ -196,7 +207,9 @@ namespace ESMART.Infrastructure.Identity
         {
             try
             {
-                var users = await _userManager.Users
+                var context = _contextFactory.CreateDbContext();
+
+                var users = await context.Users
                     .Where(u => u.UserName != "administrator@localhost")
                     .Select(u => new ApplicationUserViewModel
                     {

@@ -255,7 +255,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                var selectecCategory = ((Domain.Entities.StoreKeeping.MenuCategory)cmbCategory.SelectedItem).Name;
+                var selectecCategory = ((Domain.Entities.StoreKeeping.MenuCategory)cmbCategory.SelectedItem).Name!;
                 if (selectecCategory != null)
                 {
                     await LoadItem(selectecCategory);
@@ -276,60 +276,53 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
-                if(cmbAccountNumber.SelectedItem != null || cmbPaymentMethod.SelectedItem != null)
+                if (_viewModel.CartItems.Count > 0)
                 {
-                    if(_viewModel.CartItems.Count > 0)
+                    if (cmbActiveBooking.SelectedItem is BookingDisplayItem selectedBooking)
                     {
-                        if (cmbActiveBooking.SelectedItem is BookingDisplayItem selectedBooking)
+                        var guestAccount = await _guestAccountService.GetAccountAsync(selectedBooking.GuestId);
+                        var roomBooking = await _guestAccountService.GetRoomBookingByRoomIdAsync(selectedBooking.RoomId);
+                        var activeUser = AuthSession.CurrentUser.FullName;
+
+                        var createOrderDto = new CreateOrderDto()
                         {
-                            var guestAccount = await _guestAccountService.GetAccountAsync(selectedBooking.GuestId);
-
-                            var roomBooking = await _guestAccountService.GetRoomBookingByRoomIdAsync(selectedBooking.RoomId);
-
-                            var createOrderDto = new CreateOrderDto()
+                            Invoice = guestAccount.Invoice,
+                            BookingId = selectedBooking.BookingId,
+                            RoomBookingId = roomBooking.Id,
+                            RoomId = selectedBooking.RoomId,
+                            Consumer = selectedBooking.Consumer,
+                            GuestAccountId = guestAccount.Id,
+                            OrderId = Helper.GenerateInvoiceNumber("OR"),
+                            GuestId = selectedBooking.GuestId,
+                            Amount = _viewModel.TotalAmount,
+                            TransactionType = TransactionType.BarRestaurantOrder,
+                            BankAccountId = cmbAccountNumber.SelectedItem is BankAccount selectedBankAccount ? selectedBankAccount.Id : null,
+                            PaymentMethod = cmbPaymentMethod.SelectedItem != null ? Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!) : PaymentMethod.Other,
+                            ApplicationUserId = AuthSession.CurrentUser.Id,
+                            OrderItems = [.. _viewModel.CartItems.Select(ci => new OrderItem
                             {
-                                Invoice = guestAccount.Invoice,
-                                BookingId = selectedBooking.BookingId,
-                                RoomBookingId = roomBooking.Id,
-                                RoomId = selectedBooking.RoomId,
-                                Consumer = selectedBooking.Consumer,
-                                GuestAccountId = guestAccount.Id,
-                                OrderId = Helper.GenerateInvoiceNumber("OR"),
-                                GuestId = selectedBooking.GuestId,
-                                Amount = _viewModel.TotalAmount,
-                                TransactionType = TransactionType.BarRestaurantOrder,
-                                BankAccountId = ((BankAccount)cmbAccountNumber.SelectedItem).Id,
-                                PaymentMethod = Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!),
-                                ApplicationUserId = AuthSession.CurrentUser.Id,
-                                OrderItems = [.. _viewModel.CartItems.Select(ci => new OrderItem
-                                {
-                                    OrderItemId = Helper.GenerateInvoiceNumber("OR"),
-                                    MenuItemId = ci.Id,
-                                    Quantity = ci.Quantity,
-                                    UnitPrice = ci.Price
-                                })],
-                            };
+                                OrderItemId = Helper.GenerateInvoiceNumber("OR"),
+                                MenuItemId = ci.Id,
+                                Quantity = ci.Quantity,
+                                UnitPrice = ci.Price
+                            })],
+                        };
 
-                            var orderId = await _guestAccountService.CreateOrder(createOrderDto);
-                            MessageBox.Show("Successfully placed order", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                            this.DialogResult = true;
-                        }
-                        else
-                        {
-                            MessageBox.Show("Please select a booking.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
+                        var orderId = await _guestAccountService.CreateOrder(createOrderDto, activeUser);
+                        MessageBox.Show("Successfully placed order", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        this.DialogResult = true;
                     }
                     else
                     {
-                        MessageBox.Show("Please add items to cart.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("Please select a booking.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
-
                 }
                 else
                 {
-                    MessageBox.Show("Please fill in all required fields.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Please add items to the cart.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
-                
+
+
             }
             catch (Exception ex)
             {
@@ -356,6 +349,30 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
 
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        private async void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(txtSearch.Text))
+                {
+                    var groupedItems = await _stockKeepingRepository.SearchedGroupedMenuItemsAsync(txtSearch.Text);
+
+                    _viewModel.GroupedMenuItems.Clear();
+
+                    foreach (var group in groupedItems)
+                    {
+                        _viewModel.GroupedMenuItems.Add((MenuCategoryGroup)group);
+                    }
+
+                    _viewModel.CalculateTotalAmount();
+                }    
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
     public class BookingDisplayItem
     {

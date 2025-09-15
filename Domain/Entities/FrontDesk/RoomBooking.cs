@@ -25,6 +25,8 @@ namespace ESMART.Domain.Entities.FrontDesk
         public decimal ServiceCharge { get; set; }
         public decimal Tax { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
         public virtual Booking Booking { get; set; }
         public virtual Room Room { get; set; }
     }

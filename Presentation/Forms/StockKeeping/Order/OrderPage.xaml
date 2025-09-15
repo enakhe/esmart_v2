@@ -171,87 +171,99 @@
 
                         </Grid>
 
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                                <DataGrid x:Name="OrderListView" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" RowDetailsVisibilityMode="VisibleWhenSelected">
-                                    <DataGrid.Columns>
-                                        <DataGridTemplateColumn Header="Guest" Width="2*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Guest}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Invoice" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Invoice}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Room" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Room}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Total Amount" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding TotalAmount, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Quantity" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Quantity}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Created At" Width="1.5*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                    </DataGrid.Columns>
-
-                                    <DataGrid.RowDetailsTemplate>
+                        <DataGrid Grid.Row="1" x:Name="OrderListView" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" RowDetailsVisibilityMode="VisibleWhenSelected" BorderThickness="1" BorderBrush="Black" GridLinesVisibility="All">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Guest" Width="2*">
+                                    <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <DataGrid ItemsSource="{Binding OrderItems}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Margin="20,5,20,10">
-                                                <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Order Id" Binding="{Binding OrderId}" />
-                                                    <DataGridTextColumn Header="Item" Binding="{Binding Item}" />
-                                                    <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" />
-                                                    <DataGridTextColumn Header="Unit Price" Binding="{Binding UnitPrice, StringFormat=₦ {0:N2}}" />
-                                                    <DataGridTextColumn Header="Total Price" Binding="{Binding TotalPrice, StringFormat=₦ {0:N2}}" />
-                                                </DataGrid.Columns>
-                                            </DataGrid>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding Guest}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                            </StackPanel>
                                         </DataTemplate>
-                                    </DataGrid.RowDetailsTemplate>
-                                </DataGrid>
-                            </Border>
-                        </ScrollViewer>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Invoice" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding Invoice}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Room" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding Room}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Total Amount" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding TotalAmount, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Quantity" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding Quantity}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Created At" Width="1.5*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Operation" Width="150">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Width="30" Height="30" Padding="2" ToolTip="Print Receipt" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" x:Name="PrintButon" Click="PrintButon_Click">
+                                                    <materialDesign:PackIcon Kind="Receipt" Width="20" Height="20" Foreground="Black" />
+                                                </Button>
+
+                                                <Button Width="30" Height="30" Padding="2" ToolTip="Print Receipt" Background="Red" Cursor="Hand" Tag="{Binding Id}" x:Name="CancelButton" Click="CancelButton_Click">
+                                                    <materialDesign:PackIcon Kind="Cancel" Width="20" Height="20" Foreground="Black" />
+                                                </Button>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <DataGrid ItemsSource="{Binding OrderItems}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Margin="20,5,20,10">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Order Id" Binding="{Binding OrderId}" />
+                                            <DataGridTextColumn Header="Item" Binding="{Binding Item}" />
+                                            <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" />
+                                            <DataGridTextColumn Header="Unit Price" Binding="{Binding UnitPrice, StringFormat=₦ {0:N2}}" />
+                                            <DataGridTextColumn Header="Total Price" Binding="{Binding TotalPrice, StringFormat=₦ {0:N2}}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+                        </DataGrid>
                     </Grid>
                 </Border>
             </Border>

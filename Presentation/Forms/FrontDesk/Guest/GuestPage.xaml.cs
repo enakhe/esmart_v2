@@ -1,4 +1,6 @@
-﻿using ESMART.Application.Common.Interface;
+﻿using ESMART.Application.Common.Dtos;
+using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Utils;
 using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Infrastructure.Services;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -26,9 +29,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         private readonly IApplicationUserRoleRepository _userService;
         private readonly GuestAccountService _guestAccountService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IRoomRepository _roomRepository;
         private IServiceProvider _serviceProvider;
 
-        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager, IBookingRepository bookingRepository, GuestAccountService guestAccountService)
+        public GuestPage(IGuestRepository guestRepository, ITransactionRepository transactionRepository, IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager, IBookingRepository bookingRepository, GuestAccountService guestAccountService, IRoomRepository roomRepository)
         {
             _guestRepository = guestRepository;
             _transactionRepository = transactionRepository;
@@ -36,6 +40,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             _userManager = userManager;
             _bookingRepository = bookingRepository;
             _guestAccountService = guestAccountService;
+            _roomRepository = roomRepository;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
         }
@@ -293,6 +298,25 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
         private async void GuestDataGridRow_DoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (sender is DataGridRow row && row.Item is InHouseGuest guest)
+            {
+                if (guest != null)
+                {
+                    GuestDetailsDialog viewGuestDialog = new GuestDetailsDialog(guest.GuestId, _guestRepository, _transactionRepository, _hotelSettingsService, _bookingRepository, _guestAccountService);
+                    if (viewGuestDialog.ShowDialog() == true)
+                    {
+                        await LoadGuests();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before viewing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private async void GuestDataGridRow_DoubleClick2(object sender, MouseButtonEventArgs e)
+        {
             if (sender is DataGridRow row && row.Item is Domain.Entities.FrontDesk.Guest guest)
             {
                 if (guest != null)
@@ -315,8 +339,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
+                GuestDataGrid.Visibility = Visibility.Collapsed;
+                AllGuestDataGrid.Visibility = Visibility.Visible;
+
                 var guests = await _guestRepository.GetAllGuestsAsync();
-                GuestDataGrid.ItemsSource = guests;
+                AllGuestDataGrid.ItemsSource = guests;
                 txtGuestCount.Text = guests.Count.ToString();
             }
             catch (Exception ex)
@@ -335,6 +362,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             LoaderOverlay.Visibility = Visibility.Visible;
             try
             {
+                AllGuestDataGrid.Visibility = Visibility.Collapsed;
+                GuestDataGrid.Visibility = Visibility.Visible;
+
                 var guests = await _guestAccountService.GetInHouseGuestAsync();
                 GuestDataGrid.ItemsSource = guests;
                 txtGuestCount.Text = guests.Count.ToString();
@@ -348,6 +378,69 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private async void GuestDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            try
+            {
+                if (e.Row.Item is Application.Common.Dtos.InHouseGuest editedItem)
+                {
+                    var availableRoomsTask = _roomRepository.GetAvailableRooms();
+                    var roomTask = _roomRepository.GetRoomByNumber(editedItem.RoomNumber);
+                    var vatSettingTask = _hotelSettingsService.GetSettingAsync("VAT");
+                    var serviceChargeSettingTask = _hotelSettingsService.GetSettingAsync("ServiceCharge");
+                    var roomBookingTask = _guestAccountService.GetRoomBookingByRoomIdAsync(editedItem.RoomId);
+
+                    await Task.WhenAll(availableRoomsTask, roomTask, vatSettingTask, serviceChargeSettingTask, roomBookingTask);
+
+                    var availableRooms = availableRoomsTask.Result;
+                    var room = roomTask.Result;
+                    var vatSetting = vatSettingTask.Result;
+                    var serviceChargeSetting = serviceChargeSettingTask.Result;
+                    var roomBooking = roomBookingTask.Result;
+
+                    if (room == null || roomBooking == null)
+                    {
+                        MessageBox.Show("Invalid room or booking details!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    if (!decimal.TryParse(vatSetting?.Value, out decimal vat) || !decimal.TryParse(serviceChargeSetting?.Value, out decimal serviceCharge))
+                    {
+                        MessageBox.Show("Invalid VAT or Service Charge settings!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    var discount = Helper.FindPercentage(room.Rate, editedItem.Discount);
+                    var (rack, discountPrice, serviceFeeAmount, tax, final) = Helper.CalculateRackAndDiscountedTotal(room.Rate, vat, serviceCharge, discount);
+
+                    UpdateRoomBooking(roomBooking, editedItem, rack, discountPrice, serviceFeeAmount, tax);
+                    await _guestAccountService.UpdateRoomBookingAsync(roomBooking);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating record: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpdateRoomBooking(RoomBooking roomBooking, Application.Common.Dtos.InHouseGuest guest, decimal rack, decimal discountPrice, decimal serviceFeeAmount, decimal tax)
+        {
+            roomBooking.CheckOut = guest.CheckOutDate;
+            roomBooking.CheckIn = guest.CheckInDate;
+            roomBooking.OccupantName = guest.GuestName;
+            roomBooking.RoomId = guest.RoomId;
+            roomBooking.OccupantPhoneNumber = guest.PhoneNumber;
+            roomBooking.Rate = rack;
+            roomBooking.Tax = tax;
+            roomBooking.Discount = discountPrice;
+            roomBooking.ServiceCharge = serviceFeeAmount;
+        }
+
+        private async void Guest_Loaded(object sender, RoutedEventArgs e)
+        {
+            await LoadGuests();
         }
     }
 }

@@ -46,6 +46,9 @@
     <Compile Update="Forms\FrontDesk\Booking\CheckOutBooking.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\FrontDesk\Booking\EditBookingInfoDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\FrontDesk\Booking\ExtendStayDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -130,7 +133,13 @@
     <Compile Update="Forms\Home\StockKeepingIndexPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Forms\Laundry\AddLaundaryOrderDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Forms\Laundry\AddLaundaryServiceDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Laundry\LaundaryItem.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Laundry\LaundaryPage.xaml.cs">
@@ -149,6 +158,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Reports\ExpectedDepartureReport.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\Reports\GuestTransactionReport.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Forms\Reports\OverstayedGuestReport.xaml.cs">

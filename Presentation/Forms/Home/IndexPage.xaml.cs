@@ -25,8 +25,10 @@ namespace ESMART.Presentation.Forms.Home
         private readonly ICardRepository _cardRepository;
         private readonly IndexPageViewModel _viewModel;
         private readonly GuestAccountService _guestAccountService;
+        private readonly IVerificationCodeService _verificationCodeService;
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
 
-        public IndexPage(IRoomRepository roomRepository, IGuestRepository guestRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository, GuestAccountService guestAccountService, ICardRepository cardRepository)
+        public IndexPage(IRoomRepository roomRepository, IGuestRepository guestRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository, GuestAccountService guestAccountService, ICardRepository cardRepository, IVerificationCodeService verificationCodeService, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
             _roomRepository = roomRepository;
             _guestRepository = guestRepository;
@@ -34,6 +36,9 @@ namespace ESMART.Presentation.Forms.Home
             _hotelSettingsService = hotelSettingsService;
             _transactionRepository = transactionRepository;
             _guestAccountService = guestAccountService;
+            _cardRepository = cardRepository;
+            _verificationCodeService = verificationCodeService;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
             _viewModel = new IndexPageViewModel();
             this.DataContext = _viewModel;
             InitializeComponent();
@@ -81,15 +86,12 @@ namespace ESMART.Presentation.Forms.Home
         {
             if (sender is Border border && border.Tag is SelectableRoomViewModel room)
             {
-                if(room.Room.Status == Domain.Entities.RoomSettings.RoomStatus.Vacant)
+                var createCardDialog = new CreateCardDialog(room.Room, _hotelSettingsService, _verificationCodeService, _applicationUserRoleRepository, _guestAccountService, _bookingRepository, _transactionRepository)
                 {
-                    var createCardDialog = new CreateCardDialog(room.Room, _hotelSettingsService)
-                    {
-                        Owner = Window.GetWindow(this)
-                    };
+                    Owner = Window.GetWindow(this)
+                };
 
-                    createCardDialog.ShowDialog();
-                }
+                createCardDialog.ShowDialog();
             }
         }
 
@@ -114,7 +116,7 @@ namespace ESMART.Presentation.Forms.Home
                 {
                     // Example: disable "Delete" based on condition
                     var bookItem = border.ContextMenu.Items
-                        .OfType<MenuItem>().FirstOrDefault(m => m.Header.ToString() == "Book Room");
+                        .OfType<MenuItem>().FirstOrDefault(m => m.Header.ToString() == "Check In");
 
                     if (bookItem != null)
                         bookItem.IsEnabled = false;
@@ -128,26 +130,35 @@ namespace ESMART.Presentation.Forms.Home
         {
             if (sender is MenuItem menu && menu.Tag is SelectableRoomViewModel room)
             {
-                // Prepare a temporary view model with only the clicked room
-                var selectedRoomVm = new IndexPageViewModel();
-                room.IsSelected = true;
-                selectedRoomVm.Rooms.Add(room);
-                selectedRoomVm.SelectedRooms.Add(room);
 
-                // Open dialog with only this room selected
-                var dialog = new AddBulkBookingDialog(
-                    _roomRepository,
-                    _hotelSettingsService,
-                    _guestRepository,
-                    _transactionRepository,
-                    _guestAccountService,
-                    selectedRoomVm
-                );
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to check in this room?", "Check In Confirmation", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
 
-                if (dialog.ShowDialog() == true)
+                if (result.Equals(MessageBoxResult.Yes))
                 {
-                    await LoadRoom();
-                }
+                    // Prepare a temporary view model with only the clicked room
+                    var selectedRoomVm = new IndexPageViewModel();
+                    room.IsSelected = true;
+                    selectedRoomVm.Rooms.Add(room);
+                    selectedRoomVm.SelectedRooms.Add(room);
+
+                    // Open dialog with only this room selected
+                    var dialog = new AddBulkBookingDialog(
+                        _roomRepository,
+                        _hotelSettingsService,
+                        _guestRepository,
+                        _transactionRepository,
+                        _guestAccountService,
+                        selectedRoomVm,
+                        _bookingRepository,
+                        _verificationCodeService,
+                        _applicationUserRoleRepository
+                    );
+
+                    if (dialog.ShowDialog() == true)
+                    {
+                        await LoadRoom();
+                    }
+                } 
             }
         }
 

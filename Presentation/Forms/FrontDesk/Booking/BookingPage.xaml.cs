@@ -543,5 +543,35 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                 }
             }
         }
+
+        private async void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string RoomId)
+                {
+                    var roomBooking = await _guestAccountService.GetRoomBookingByRoomIdAsync(RoomId);
+
+                    if (roomBooking != null)
+                    {
+                        EditBookingInfoDialog editBookingInfoDialog = new EditBookingInfoDialog(roomBooking, _guestAccountService, _roomRepository, _hotelSettingsService, _guestRepository);
+
+                        if (editBookingInfoDialog.ShowDialog() == true)
+                        {
+                            await LoadBooking();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Please select at least one column to edit. {ex.Message}", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 }

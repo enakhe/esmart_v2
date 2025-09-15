@@ -32,7 +32,7 @@ namespace ESMART.Presentation.Forms
         {
             
             await Task.Delay(10000);
-            await BackUpAsync();
+            //await BackUpAsync();
             this.Hide();
 
             InitializeServices();

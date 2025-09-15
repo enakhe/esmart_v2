@@ -9,7 +9,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Background="#f0f4f9"
       Name="Guest"
-      Title="Guest Page">
+      Title="Guest Page" Loaded="Guest_Loaded">
 
     <Page.Resources>
         <local:StatusToColorConverter x:Key="StatusToColorConverter" />
@@ -79,61 +79,108 @@
         </Style>
     </Page.Resources>
 
-    <Grid>
-        <StackPanel>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition />
-                </Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="10,0,0,10">
-                    <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
-                        <StackPanel>
-                            <TextBlock Text="Guests" Foreground="White" FontSize="14"/>
-                            <TextBlock Name="txtGuestCount" Text="0" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
-
-                <Border Background="White" CornerRadius="10" Padding="20" Grid.Row="2">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Margin="20, 10, 0, 0" Grid.Column="0">
-                                <TextBox Name="txtSearch" HorizontalAlignment="Left" Width="200" Padding="2,2,0,2" FontSize="18" Foreground="Gray" Text="Search" GotFocus="txtSearch_GotFocus" LostFocus="txtSearch_LostFocus"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="10,0,0,10">
+                        <Border Background="#1a237e" Width="200" Height="100" CornerRadius="10" Margin="10" Padding="10">
+                            <StackPanel>
+                                <TextBlock Text="Guests" Foreground="White" FontSize="14"/>
+                                <TextBlock Name="txtGuestCount" Text="0" Foreground="White" FontSize="24" FontWeight="Bold"/>
                             </StackPanel>
+                        </Border>
+                    </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" Margin="20,20,20,10" Grid.Column="1" HorizontalAlignment="Right">
-                                <Button Content="Add Guest" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="72" Click="AddGuest_Click" />
-                                <Button Content="All Guests" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="92" x:Name="InHouseGuest" Click="InHouseGuest_Click" />
-                                <Button Content="In House" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="92" x:Name="InHouse" Click="InHouse_Click" />
-                                <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Width="52" Click="ExportButton_Click" />
-                            </StackPanel>
+                    <Border Background="White" CornerRadius="10" Padding="20" Grid.Row="2">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
 
-                        </Grid>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
 
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <DataGrid x:Name="GuestDataGrid" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" Loaded="GuestDataGrid_Loaded" VerticalContentAlignment="Center" Grid.Row="1" MinHeight="200">
+                                <StackPanel Margin="20, 10, 0, 0" Grid.Column="0">
+                                    <TextBox Name="txtSearch" HorizontalAlignment="Left" Width="200" Padding="2,2,0,2" FontSize="18" Foreground="Gray" Text="Search" GotFocus="txtSearch_GotFocus" LostFocus="txtSearch_LostFocus"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="20,20,20,10" Grid.Column="1" HorizontalAlignment="Right">
+                                    <Button Content="Add Guest" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="72" Click="AddGuest_Click" />
+                                    <Button Content="All Guests" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="92" x:Name="InHouseGuest" Click="InHouseGuest_Click" />
+                                    <Button Content="In House" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="92" x:Name="InHouse" Click="InHouse_Click" />
+                                    <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Width="52" Click="ExportButton_Click" />
+                                </StackPanel>
+
+                            </Grid>
+
+                            <DataGrid Grid.Row="1" RowHeight="60" x:Name="GuestDataGrid" AutoGenerateColumns="False" IsReadOnly="False" Margin="20" Height="600" BorderThickness="1" BorderBrush="Black" GridLinesVisibility="All" CanUserAddRows="False" VerticalContentAlignment="Center" CellEditEnding="GuestDataGrid_CellEditEnding">
 
                                 <DataGrid.RowStyle>
                                     <Style TargetType="DataGridRow">
                                         <EventSetter Event="MouseDoubleClick" Handler="GuestDataGridRow_DoubleClick"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.RowStyle>
+
+
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Guest Name" FontWeight="SemiBold" Binding="{Binding GuestName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="2*"/>
+                                    <DataGridTextColumn Header="Phone Number" FontWeight="SemiBold" Binding="{Binding PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="1*"/>
+                                    <DataGridTextColumn Header="Room Number" FontWeight="SemiBold" Binding="{Binding RoomNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="1*"/>
+                                    <DataGridTemplateColumn Header="Check-In Date" Width="1*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock FontWeight="SemiBold" Text="{Binding CheckInDate, StringFormat='dd/MM/yyyy'}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                        <DataGridTemplateColumn.CellEditingTemplate>
+                                            <DataTemplate>
+                                                <DatePicker SelectedDate="{Binding CheckInDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellEditingTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <DataGridTemplateColumn Header="Check-Out Date" Width="1*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock FontWeight="SemiBold" Text="{Binding CheckOutDate, StringFormat='dd/MM/yyyy'}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                        <DataGridTemplateColumn.CellEditingTemplate>
+                                            <DataTemplate>
+                                                <DatePicker SelectedDate="{Binding CheckOutDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellEditingTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <DataGridTextColumn Header="Amount Paid" FontWeight="SemiBold" Binding="{Binding AmountPaid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=₦ {0:N2}}" Width="1*"/>
+
+                                    <DataGridTextColumn Header="Duration" FontWeight="SemiBold" Binding="{Binding Duration}" IsReadOnly="True" Width="1*"/>
+                                </DataGrid.Columns>
+                                </DataGrid>
+
+
+                                <DataGrid x:Name="AllGuestDataGrid" Visibility="Collapsed" Margin="20" VerticalAlignment="Center" Style="{StaticResource ModernDataGridStyle}" VerticalContentAlignment="Center" Grid.Row="1" BorderThickness="1" BorderBrush="Black" GridLinesVisibility="All" Height="600">
+
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="DataGridRow">
+                                        <EventSetter Event="MouseDoubleClick" Handler="GuestDataGridRow_DoubleClick2"/>
                                     </Style>
                                 </DataGrid.RowStyle>
 
                                 <DataGrid.Columns>
-                                    <DataGridTemplateColumn Header="Full Name" Width="2*">
+                                    <DataGridTemplateColumn Header="Guest" Width="2*">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
@@ -168,16 +215,6 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn Header="Status" Width="1*" Visibility="Collapsed">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Border CornerRadius="5" Height="23" Width="65" Padding="10,3" Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}">
-                                                    <TextBlock Text="{Binding Status}" Foreground="White" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
-                                                </Border>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-
                                     <DataGridTemplateColumn Header="Operation" Width="2*" Visibility="Collapsed">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -207,18 +244,17 @@
                                     </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-            </Grid>
-        </StackPanel>
-
-        <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
-                <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+                        </Grid>
+                    </Border>
+                </Grid>
             </StackPanel>
+
+            <Grid x:Name="LoaderOverlay" Background="Black" Opacity="0.5" Visibility="Collapsed">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" Width="150" Height="20" />
+                    <TextBlock Text="Loading, please wait..." Foreground="White" FontWeight="Bold" Margin="10,5,0,0"/>
+                </StackPanel>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </Page>

@@ -27,6 +27,8 @@ namespace ESMART.Infrastructure.Data
         public DbSet<BankAccount> BankAccount { get; set; }
 
         public DbSet<Laundry> Laundries { get; set; }
+        public DbSet<LaundryOrder> LaundryOrders { get; set; }
+        public DbSet<LaundaryOrderItem> LaundaryOrderItems { get; set; }
 
         public DbSet<RoomBooking> RoomBookings { get; set; } 
 

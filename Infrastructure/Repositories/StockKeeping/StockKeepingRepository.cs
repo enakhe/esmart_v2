@@ -1,4 +1,5 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Domain.Entities.Laundry;
 using ESMART.Domain.Entities.StoreKeeping;
 using ESMART.Domain.ViewModels.StoreKepping;
 using ESMART.Infrastructure.Data;
@@ -269,6 +270,46 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                     .Include(m => m.MenuCategory)
                     .Include(m => m.MenuItemRecipes)
                     .Where(i => i.MenuCategory.Name == category && i.IsAvailable )
+                    .GroupBy(m => m.MenuCategory)
+                    .Select(g => new MenuCategoryGroup
+                    {
+                        CategoryName = g.Key.Name,
+                        Image = g.Key.Image,
+                        Items = g.Select(m => new MenuItemViewModel
+                        {
+                            Id = m.Id,
+                            Name = m.Name,
+                            Description = m.Description,
+                            Price = m.Price,
+                            Image = m.Image,
+                            IsAvailable = m.IsAvailable ? "Yes" : "No",
+                            CategoryId = m.MenuCategoryId,
+                            ServiceArea = m.ServiceArea.ToString(),
+                            CreatedAt = m.CreatedAt,
+                            UpdatedAt = m.UpdatedAt,
+                        }).ToList()
+                    })
+
+                    .ToListAsync();
+
+                return grouped;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving grouped menu items.", ex);
+            }
+        }
+
+        public async Task<List<MenuCategoryGroup>> SearchedGroupedMenuItemsAsync(string keyword)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+
+                var grouped = await context.MenuItems
+                    .Include(m => m.MenuCategory)
+                    .Include(m => m.MenuItemRecipes)
+                    .Where(i => i.Name.Contains(keyword) && i.IsAvailable)
                     .GroupBy(m => m.MenuCategory)
                     .Select(g => new MenuCategoryGroup
                     {
@@ -767,6 +808,25 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                 await using var context = await _contextFactory.CreateDbContextAsync();
                 return await context.Orders
                     .Include(o => o.OrderItems)
+                        .ThenInclude(o => o.MenuItem)
+                    .Include(o => o.RoomBooking)
+                    .FirstOrDefaultAsync(o => o.Id == id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving the order.", ex);
+            }
+        }
+
+        public async Task<LaundryOrder?> GetLaundryOrderByIdAsync(string id)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.LaundryOrders
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(o => o.Laundary)
+                    .Include(o => o.RoomBooking)
                     .FirstOrDefaultAsync(o => o.Id == id);
             }
             catch (Exception ex)
@@ -869,6 +929,47 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
             }
         }
 
+        public async Task<List<MenuOrderViewModel>> GetLaundryOrdersBySearchAsync(string searchTerm)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.LaundryOrders
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(o => o.Laundary)
+                    .Include(o => o.Booking)
+                    .Include(o => o.Booking.Guest)
+                    .Include(o => o.Booking.Room)
+                    .Where(o => (o.Booking.Guest.FirstName + o.Booking.Guest.LastName + o.Booking.Guest.MiddleName).Contains(searchTerm) ||
+                                o.Booking.Room.Number.Contains(searchTerm) ||
+                                o.OrderItems.Any(oi => oi.Laundary.Description.Contains(searchTerm)))
+                    .Select(o => new MenuOrderViewModel
+                    {
+                        Id = o.Id,
+                        BookingId = o.BookingId,
+                        Guest = o.Booking.Guest.FullName,
+                        Room = o.Booking.Room.Number,
+                        TotalAmount = o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity).ToString("N2"),
+                        Quantity = o.OrderItems.Sum(oi => oi.Quantity).ToString(),
+                        OrderItems = o.OrderItems.Select(oi => new OrderItemViewModel
+                        {
+                            OrderId = oi.LaundaryId,
+                            Item = oi.Laundary.Description,
+                            Quantity = oi.Quantity,
+                            UnitPrice = oi.UnitPrice,
+                        }).ToList(),
+                        CreatedAt = o.CreatedAt
+                    })
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while searching for orders.", ex);
+            }
+        }
+
+
         // filter our order bt from and to date
         public async Task<List<MenuOrderViewModel>> GetOrdersByDateRangeAsync(DateTime fromDate, DateTime toDate)
         {
@@ -880,12 +981,12 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                     .Include(o => o.RoomBooking.Booking)
                     .Include(o => o.RoomBooking.Booking.Guest)
                     .Include(o => o.RoomBooking.Room)
-                    .Where(o => o.CreatedAt >= fromDate && o.CreatedAt <= toDate)
+                    .Where(o => o.CreatedAt >= fromDate && o.CreatedAt <= toDate  && o.IsCancelled == false)
                     .Select(o => new MenuOrderViewModel
                     {
                         Id = o.Id,
                         BookingId = o.BookingId,
-                        Guest = o.RoomBooking.Booking.Guest.FullName,
+                        Guest = o.RoomBooking.OccupantName,
                         Room = o.RoomBooking.Room.Number,
                         Invoice = o.Invoice,
                         TotalAmount = o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity).ToString("N2"),
@@ -894,6 +995,45 @@ namespace ESMART.Infrastructure.Repositories.StockKeeping
                         {
                             OrderId = oi.OrderItemId,
                             Item = oi.MenuItem.Name,
+                            Quantity = oi.Quantity,
+                            UnitPrice = oi.UnitPrice,
+                        }).ToList(),
+                        CreatedAt = o.CreatedAt
+                    })
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving orders by date range.", ex);
+            }
+        }
+
+        public async Task<List<MenuOrderViewModel>> GetLaundaryOrdersByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                await using var context = await _contextFactory.CreateDbContextAsync();
+                return await context.LaundryOrders
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(o => o.Laundary)
+                    .Include(o => o.RoomBooking.Booking)
+                    .Include(o => o.RoomBooking.Booking.Guest)
+                    .Include(o => o.RoomBooking.Room)
+                    .Where(o => o.CreatedAt >= fromDate && o.CreatedAt <= toDate && o.IsCancelled == false)
+                    .Select(o => new MenuOrderViewModel
+                    {
+                        Id = o.Id,
+                        BookingId = o.BookingId,
+                        Guest = o.RoomBooking.OccupantName,
+                        Room = o.RoomBooking.Room.Number,
+                        Invoice = o.Invoice,
+                        TotalAmount = o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity).ToString("N2"),
+                        Quantity = o.OrderItems.Sum(oi => oi.Quantity).ToString(),
+                        OrderItems = o.OrderItems.Select(oi => new OrderItemViewModel
+                        {
+                            OrderId = oi.LaundryOrderItemId,
+                            Item = oi.Laundary.Description,
                             Quantity = oi.Quantity,
                             UnitPrice = oi.UnitPrice,
                         }).ToList(),

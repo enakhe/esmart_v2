@@ -503,7 +503,7 @@ namespace ESMART.Presentation.Forms.RoomSetting
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            finally
+            finally 
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
             }

@@ -145,12 +145,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
             }
         }
 
-        private async void Window_Activated(object sender, EventArgs e)
-        {
-            LoadRoomDetails();
-            await LoadBookingTransactionHistory();
-        }
-
         private async void RoomFolioButton_Click(object sender, RoutedEventArgs e)
         {
             LoaderOverlay.Visibility = Visibility.Visible;
@@ -284,5 +278,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Room
 
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadRoomDetails();
+            await LoadBookingTransactionHistory();
+        }
     }
 }

@@ -45,9 +45,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog
                 {
-                    Title = "Select Image",
-                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp"
+                    Title = "Select File",
+                    Filter = "All Files|*.*"
                 };
+
                 if (openFileDialog.ShowDialog() == true)
                 {
                     profilePictureImage = openFileDialog.FileName;
@@ -129,7 +130,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 string state = txtState.Text;
                 string country = txtCountry.Text;
 
-                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, middleName, lastName, phoneNumber, gender, city, state, country);
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, lastName, phoneNumber, gender);
                 if (!areFieldsEmpty)
                 {
                     var guest = await _guestRepository.GetGuestByIdAsync(_id);

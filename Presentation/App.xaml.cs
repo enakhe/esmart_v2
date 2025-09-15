@@ -66,8 +66,8 @@ namespace ESMART.Presentation
                 dbContext.Database.Migrate();
             }
 
-            var nightlyService = serviceProvider.GetRequiredService<NightlyRoomChargeService>();
-            await nightlyService.PostNightlyRoomChargesAsync();
+            //var nightlyService = serviceProvider.GetRequiredService<NightlyRoomChargeService>();
+            //await nightlyService.PostNightlyRoomChargesAsync();
 
             var identityService = serviceProvider.GetRequiredService<IdentityService>();
             await identityService.TrySeedAsync();
@@ -83,5 +83,4 @@ namespace ESMART.Presentation
             splashScreen.Show();
         }
     }
-
 }

@@ -33,6 +33,8 @@ namespace ESMART.Domain.Entities.FrontDesk
         public DateTime Date { get; set; }
         public string GuestAccountId { get; set; }
 
+        public bool IsCancelled { get; set; } = false;
+
         public Guest Guest { get; set; }
         public Domain.Entities.RoomSettings.Room Room {get; set;}
         public ApplicationUser ApplicationUser { get; set; }

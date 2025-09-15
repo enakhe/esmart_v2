@@ -60,10 +60,11 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
 
                 await context.SaveChangesAsync();
 
-                return [.. allBookings
+                return allBookings
                     .Select(b => new BookingViewModel
                     {
                         Id = b.Id,
+                        BookingId = b.BookingId,
                         Guest = b.Guest.FullName,
                         PhoneNumber = b.Guest.PhoneNumber,
                         CheckIn = b.CheckIn,
@@ -73,9 +74,9 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                         DateCreated = b.DateCreated,
                         DateModified = b.DateModified,
                         IsOverStayed = b.IsOverStay,
-                        NumberOfRooms = b.RoomBookings.Count,
-                        RoomBookings = b.RoomBookings
-                    })];
+                        NumberOfRooms = b.RoomBookings.Where(rb => rb.IsActive).ToList().Count,
+                        RoomBookings = [.. b.RoomBookings.Where(rb => rb.IsActive)]
+                    }).ToList();
             }
             catch (Exception ex)
             {
@@ -124,7 +125,7 @@ namespace ESMART.Infrastructure.Repositories.FrontDesk
                 return await context.Bookings
                     .Include(b => b.Guest)
                     .Include(b => b.Room)
-                    .FirstOrDefaultAsync(b => b.GuestId == guestId && !b.IsTrashed && b.Status != BookingStatus.Completed);
+                    .FirstOrDefaultAsync(b => b.GuestId == guestId && !b.IsTrashed && b.Status == BookingStatus.Active);
             }
             catch (Exception ex)
             {

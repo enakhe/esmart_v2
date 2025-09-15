@@ -106,83 +106,51 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Margin="20" Grid.Column="0">
-                                <TextBox Name="txtSearchBuilding" HorizontalAlignment="Left" Width="250" Padding="2,2,0,2" FontSize="18" Foreground="Gray" Text="Search"/>
-                            </StackPanel>
-
                             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
                                 <Button Content="Export" Style="{StaticResource ActionBarButtonStyle}" Height="27" Width="50" Click="ExportButton_Click" />
                             </StackPanel>
                         </Grid>
 
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                            <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                                <DataGrid x:Name="RoomDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200" Width="1440">
+                        <DataGrid x:Name="RoomDataGrid" Grid.Row="1" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="500" BorderThickness="1" BorderBrush="Black" GridLinesVisibility="All">
 
-                                    <DataGrid.RowStyle>
-                                        <Style TargetType="DataGridRow">
-                                            <EventSetter Event="MouseDoubleClick" Handler="RoomDataGridRow_DoubleClick"/>
-                                        </Style>
-                                    </DataGrid.RowStyle>
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <EventSetter Event="MouseDoubleClick" Handler="RoomDataGridRow_DoubleClick"/>
+                                </Style>
+                            </DataGrid.RowStyle>
 
-                                    <DataGrid.Columns>
-                                        <DataGridTemplateColumn Header="Number" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Number}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Number" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding Number}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Room Id" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding RoomId}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Room Id" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding RoomId}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Status" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Border CornerRadius="5" Height="23" Width="90" Padding="10,3" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}">
-                                                        <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusToForegroundConverter}}" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Operation" Width="2*" Visibility="Collapsed">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomButton_Click">
-                                                            <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
-                                                        </Button>
-
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="View Details" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="RoomDetails_Click">
-                                                            <materialDesign:PackIcon Kind="EyeOutline" Width="20" Height="20" Foreground="Black" />
-                                                        </Button>
-
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Show Room" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="ShowRoom_Click">
-                                                            <materialDesign:PackIcon Kind="CreditCard" Width="20" Height="20" Foreground="Black" />
-                                                        </Button>
-
-                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji" Click="DeleteRoom_Click">
-                                                            <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
-                                                        </Button>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Border>
-                        </ScrollViewer>
+                                <DataGridTemplateColumn Header="Status" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="5" Height="23" Width="90" Padding="10,3" Background="{Binding Status, Converter={StaticResource RoomStatusToColorDialog}}">
+                                                <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusToForegroundConverter}}" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </Grid>
                 </Border>
             </Border>

@@ -1,22 +1,33 @@
 ﻿using ESMART.Application.Common.Dtos;
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Domain.Entities.Configuration;
+using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.RoomSettings;
 using ESMART.Domain.Entities.Transaction;
+using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Domain.ViewModels.RoomSetting;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Repositories.FrontDesk;
 using ESMART.Infrastructure.Repositories.Transaction;
+using ESMART.Infrastructure.Repositories.Verification;
 using ESMART.Infrastructure.Services;
+using ESMART.Presentation.Forms.FrontDesk.Guest;
 using ESMART.Presentation.Forms.Home;
 using ESMART.Presentation.Forms.StockKeeping.Order;
+using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.Session;
+using ESMART.Presentation.Utils;
+using Google.Apis.Drive.v3.Data;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,15 +53,22 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
         private readonly IGuestRepository _guestRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly GuestAccountService _guestAccountService;
+        private readonly IBookingRepository _bookingRepository;
+        private readonly IVerificationCodeService _verificationCodeService;
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
         private readonly IndexPageViewModel _viewModel;
         private bool _suppressTextChanged = false;
         private readonly DispatcherTimer _formatTimer;
-        public AddBulkBookingDialog(IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, ITransactionRepository transactionRepository, GuestAccountService guestAccountService, IndexPageViewModel indexPageViewModel)
+        private IServiceProvider _serviceProvider;
+        public AddBulkBookingDialog(IRoomRepository roomRepository, IHotelSettingsService hotelSettingsService, IGuestRepository guestRepository, ITransactionRepository transactionRepository, GuestAccountService guestAccountService, IndexPageViewModel indexPageViewModel, IBookingRepository bookingRepository, IVerificationCodeService verificationCodeService, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
             _roomRepository = roomRepository;
             _hotelSettingsService = hotelSettingsService;
             _viewModel = new IndexPageViewModel();
             _guestRepository = guestRepository;
+            _verificationCodeService = verificationCodeService;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
+            _bookingRepository = bookingRepository;
             _transactionRepository = transactionRepository;
             _guestAccountService = guestAccountService;
             _viewModel = indexPageViewModel;
@@ -101,6 +119,18 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
+        private void InitializeServices()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var services = new ServiceCollection();
+            DependencyInjection.ConfigureServices(services, configuration);
+            _serviceProvider = services.BuildServiceProvider();
+        }
+
 
         public void LoadPaymentMethod()
         {
@@ -139,7 +169,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
         private void LoadDefaultSetting()
         {
-            dtpCheckIn.DisplayDateStart = DateTime.Today;
             dtpCheckIn.SelectedDate = DateTime.Now;
             dtpCheckOut.SelectedDate = DateTime.Now.AddDays(1);
         }
@@ -398,14 +427,14 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             }
         }
 
-        private bool ValidateInputs(out string guestId, out string roomId, out DateTime checkIn, out DateTime checkOut, out PaymentMethod paymentMethod, out decimal totalAmount, out decimal discount, out decimal vat, out decimal serviceCharge, out string accountNumber)
+        private bool ValidateInputs(out string guestId, out string roomId, out DateTime checkIn, out DateTime checkOut, out PaymentMethod paymentMethod, out decimal totalAmount, out decimal discount, out decimal vat, out decimal serviceCharge)
         {
             guestId = string.Empty;
             roomId = string.Empty;
             checkIn = checkOut = DateTime.MinValue;
             paymentMethod = default;
             totalAmount = discount = vat = serviceCharge = 0;
-            accountNumber = string.Empty;
+            //accountNumber = string.Empty;
 
             if (cmbGuest.SelectedItem == null || _viewModel.SelectedRooms.Count < 1)
             {
@@ -420,7 +449,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             discount = decimal.Parse(txtDiscount.Text.Replace("%", ""));
             vat = decimal.Parse(txtVAT.Text);
             serviceCharge = decimal.Parse(txtServiceCharge.Text);
-            accountNumber = ((BankAccount)cmbAccountNumber.SelectedItem).Id;
+            //accountNumber = ((BankAccount)cmbAccountNumber.SelectedItem).Id;
 
             return true;
         }
@@ -431,20 +460,22 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             {
                 var guest = (Domain.Entities.FrontDesk.Guest)cmbGuest.SelectedItem;
 
-                if (!ValidateInputs(out string guestId, out string roomId, out DateTime checkIn, out DateTime checkOut, out PaymentMethod paymentMethod, out decimal totalAmount, out decimal discount, out decimal vat, out decimal serviceCharge, out string accountNumber))
+                if (!ValidateInputs(out string guestId, out string roomId, out DateTime checkIn, out DateTime checkOut, out PaymentMethod paymentMethod, out decimal totalAmount, out decimal discount, out decimal vat, out decimal serviceCharge))
                 {
                     return;
                 }
 
-                var guestAccount = await _guestAccountService.GetAccountAsync(guestId);
-                var activeUser = AuthSession.CurrentUser.Id;
+                var guestAccount = await _guestAccountService.OpenOrGetActiveGuestAccountAsync(guestId);
+
+                var activeUser = AuthSession.CurrentUser;
+                var hotel = await _hotelSettingsService.GetHotelInformation();
 
                 var multiRoomBooking = new MultiRoomBookingDto()
                 {
-                    ApplicationUserId = activeUser,
+                    ApplicationUserId = activeUser.Id,
                     CheckIn = checkIn,
                     CheckOut = checkOut,
-                    AccountNumber = accountNumber,
+                    AccountNumber = ((BankAccount)cmbAccountNumber.SelectedItem).Id!,
                     Discount = discount,
                     Amount = totalAmount,
                     GuestAccountId = guestAccount.Id,
@@ -452,31 +483,139 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
                     PaymentMethod = paymentMethod,
                 };
 
-                string bookingId = await _guestAccountService.CreateGuestBookingAsync(multiRoomBooking);
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to check in this room?", "Check In Confirmation", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
 
-                var roomBookings = _viewModel.SelectedRooms.Select(roomVm => new RoomBooking
+                if (result == MessageBoxResult.Yes)
                 {
-                    RoomId = roomVm.Room.Id,
-                    OccupantName = roomVm.Occupant.OccupantName,
-                    OccupantPhoneNumber = roomVm.Occupant.PhoneNumber,
-                    CheckIn = checkIn,
-                    CheckOut = (DateTime)roomVm.CheckoutTime!,
-                    Rate = roomVm.RackRate,
-                    Date = DateTime.Now,
-                    BookingId = bookingId,
-                    Tax = roomVm.TaxRate,
-                    Discount = roomVm.DiscountRate,
-                    ServiceCharge = roomVm.ServiceChargeRate
-                }).ToList();
+                    string bookingId = await _guestAccountService.CreateGuestBookingAsync(multiRoomBooking);
 
-                await _guestAccountService.AssignRoomsToBookingAsync(bookingId, activeUser, roomBookings);
+                    var roomBookings = _viewModel.SelectedRooms.Select(roomVm => new RoomBooking
+                    {
+                        RoomId = roomVm.Room.Id,
+                        OccupantName = roomVm.Occupant.OccupantName,
+                        OccupantPhoneNumber = roomVm.Occupant.PhoneNumber!,
+                        CheckIn = checkIn,
+                        CheckOut = (DateTime)roomVm.CheckoutTime!,
+                        Rate = roomVm.RackRate,
+                        Date = DateTime.Now,
+                        BookingId = bookingId,
+                        Tax = roomVm.TaxRate,
+                        Discount = roomVm.DiscountRate,
+                        ServiceCharge = roomVm.ServiceChargeRate
+                    }).ToList();
 
-                MessageBox.Show("Booking created successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                this.DialogResult = true;
+                    var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
+                    if (isVerifyPayment != null)
+                    {
+                        var value = isVerifyPayment.Value;
+                        if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            await VerifyPayment(hotel, bookingId, guest, activeUser, paymentMethod, roomBookings, multiRoomBooking);
+                        }
+                        else
+                        {
+                            await _guestAccountService.ToUpAsync(
+                                guest.Id,
+                                _viewModel.TotalAmount,
+                                paymentMethod,
+                                multiRoomBooking.AccountNumber!,
+                                activeUser.Id,
+                                PaymentType.Deposited);
+
+                            await _guestAccountService.AssignRoomsToBookingAsync(
+                                bookingId,
+                                activeUser.Id,
+                                roomBookings);
+
+                            MessageBox.Show("Booking created successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            this.DialogResult = true;
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task VerifyPayment(Hotel hotel, string bookingId, Domain.Entities.FrontDesk.Guest guest, ApplicationUser activeUser, PaymentMethod paymentMethod, List<RoomBooking> roomBookings, MultiRoomBookingDto multiRoomBooking)
+        {
+            var booking = await _guestAccountService.GetBookingByIdAsync(bookingId);
+
+            var verificationCode = new VerificationCode
+            {
+                Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                ServiceId = booking.BookingId,
+                ApplicationUserId = AuthSession.CurrentUser?.Id
+            };
+
+            await _verificationCodeService.AddCode(verificationCode);
+
+            var response = await SenderHelper.SendEmailOTP(
+                        hotel.Email,
+                        "Booking Confirmation OTP Generated Successfully",
+                        "otp_template",
+                        new EmailOTPVariable
+                        {
+                            accountNumber = $"{booking.BankAccount.BankAccountNumber} ({booking.BankAccount.BankName}) | {booking.BankAccount.BankAccountName}",
+                            OTP = verificationCode.Code,
+                            guestName = guest.FullName,
+                            hotel = hotel.Name,
+                            paymentMethod = booking.PaymentMethod.ToString(),
+                            receptionist = activeUser.FullName,
+                            receptionistContact = activeUser.PhoneNumber,
+                            service = booking.BookingId,
+                        }
+                    );
+
+            if (response.IsSuccessStatusCode)
+            {
+                var verifyPaymentWindow = new VerifyPaymentWindow(
+                    _verificationCodeService,
+                    _hotelSettingsService,
+                    _bookingRepository,
+                    _transactionRepository,
+                    booking.BookingId,
+                    _viewModel.TotalAmount,
+                    _applicationUserRoleRepository
+                );
+
+                if (verifyPaymentWindow.ShowDialog() == true)
+                {
+                    await _guestAccountService.ToUpAsync(
+                        guest.Id,
+                        _viewModel.TotalAmount,
+                        paymentMethod,
+                        multiRoomBooking.AccountNumber!,
+                        activeUser.Id,
+                        PaymentType.Deposited);
+
+                    await _guestAccountService.AssignRoomsToBookingAsync(
+                        bookingId,
+                        activeUser.Id,
+                        roomBookings);
+
+                    MessageBox.Show("Booking created successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
+
+                    this.DialogResult = true;
+                }
+                else
+                {
+                    await _verificationCodeService.DeleteAsync(verificationCode.Id);
+                }
+            }
+            else
+            {
+                MessageBox.Show(
+                    "Booking added successfully but could not verify payment. Payment will be flagged as pending.",
+                    "Info",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+                this.DialogResult = true;
             }
         }
 
@@ -506,6 +645,19 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
             await LoadGuests();
             LoadPaymentMethod();
             LoadDefaultSetting();
+        }
+
+        private async void AddGuestButton_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeServices();
+
+            AddGuestDialog addGuestDialog = _serviceProvider.GetRequiredService<AddGuestDialog>();
+            addGuestDialog.Owner = this;
+
+            if (addGuestDialog.ShowDialog() == true)
+            {
+                await LoadGuests();
+            }
         }
     }
 }

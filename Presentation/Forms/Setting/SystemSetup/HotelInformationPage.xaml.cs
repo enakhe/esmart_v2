@@ -34,6 +34,7 @@ namespace ESMART.Presentation.Forms.Setting.SystemSetup
                     txtAddress.Text = hotel.Address;
                     txtPhoneNumber.Text = hotel.PhoneNumber;
                     txtEmail.Text = hotel.Email;
+                    txtBackupEmail.Text = hotel.BackupEmail ?? string.Empty;
 
                     if (hotel.LogoUrl != null)
                     {
@@ -97,6 +98,7 @@ namespace ESMART.Presentation.Forms.Setting.SystemSetup
                 string address = txtAddress.Text;
                 string phoneNumber = txtPhoneNumber.Text;
                 string email = txtEmail.Text;
+                string backupEmail = txtBackupEmail.Text;
                 byte[]? logoImage = null;
 
                 if (!string.IsNullOrEmpty(profilePictureImage))
@@ -119,6 +121,7 @@ namespace ESMART.Presentation.Forms.Setting.SystemSetup
                     hotel.Address = address;
                     hotel.PhoneNumber = phoneNumber;
                     hotel.Email = email;
+                    hotel.BackupEmail = backupEmail;
                     hotel.LogoUrl = logoImage;
                 }
 

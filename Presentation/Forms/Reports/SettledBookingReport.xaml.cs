@@ -1,6 +1,8 @@
 ﻿using ESMART.Application.Common.Dtos;
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using ESMART.Infrastructure.Services;
+using ESMART.Presentation.Forms.FrontDesk.Guest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,8 +26,10 @@ namespace ESMART.Presentation.Forms.Reports
     public partial class SettledBookingReport : Page
     {
         public GuestAccountService _guestAccountService;
-        public SettledBookingReport(GuestAccountService guestAccountService)
+        public IHotelSettingsService _hotelSettingsService;
+        public SettledBookingReport(GuestAccountService guestAccountService, IHotelSettingsService hotelSettingsService)
         {
+            _hotelSettingsService = hotelSettingsService;
             _guestAccountService = guestAccountService;
             InitializeComponent();
         }
@@ -37,14 +41,11 @@ namespace ESMART.Presentation.Forms.Reports
                 var invoice = txtSearch.Text;
                 var settlement = cmbSettlement.Text;
 
-                // Validate input
                 if (Helper.AreAnyNullOrEmpty(invoice, settlement))
                     return;
 
-                // Determine settlement status
                 bool isSettled = settlement.Equals("Settled", StringComparison.OrdinalIgnoreCase);
 
-                // Retrieve guest transaction summary
                 var guestTransactionItem = await _guestAccountService.GetBookingAccountSummaryByInvoiceAsync(invoice, isSettled);
                 if (guestTransactionItem == null)
                     return;
@@ -52,21 +53,20 @@ namespace ESMART.Presentation.Forms.Reports
                 var guestAccount = await _guestAccountService.GetAccountByInvoiceAsync(invoice);
                 var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
 
-                // Update UI with retrieved transaction details
                 TransactionItemDataGrid.ItemsSource = new List<GuestAccountSummaryDto> { guestTransactionItem };
 
                 var (BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund) = Helper.CalculateSummary(guestTransactionItem);
 
-                UpdateTransactionSummaryUI(booking, guestTransactionItem, BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund);
+                //UpdateTransactionSummaryUI(booking, guestTransactionItem, BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund);
 
-                if (guestTransactionItem.BookingGroups.Count == 0)
-                {
-                    SummaryPanel.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    SummaryPanel.Visibility = Visibility.Visible;
-                }
+                //if (guestTransactionItem.BookingGroups.Count == 0)
+                //{
+                //    SummaryPanel.Visibility = Visibility.Collapsed;
+                //}
+                //else
+                //{
+                //    SummaryPanel.Visibility = Visibility.Visible;
+                //}
             }
             catch (Exception ex)
             {
@@ -79,29 +79,47 @@ namespace ESMART.Presentation.Forms.Reports
         }
 
 
-        private void UpdateTransactionSummaryUI(Domain.Entities.FrontDesk.Booking booking, GuestAccountSummaryDto item, decimal bookingAmount, decimal discount, decimal serviceCharge, decimal vat, decimal totalAmount, decimal totalPaid, decimal amountToReceive, decimal amountToRefund)
-        {
-            if (booking != null)
-            {
-                txtSummaryName.Text = $"Total for the period {booking.CheckIn:MM/dd/yy} to {booking.CheckOut:MM/dd/yy}";
-            }
-            txtBookingAmount.Text = $"₦ {(bookingAmount + item.OtherCharges):N2}";
-            txtDiscount.Text = $"₦ {discount:N2}";
-            txtServiceCharge.Text = $"₦ {serviceCharge:N2}";
-            txtVAT.Text = $"₦ {vat:N2}";
-            txtTotalAmount.Text = $"₦ {totalAmount:N2}";
-            txtAmountPaid.Text = $"₦ {totalPaid:N2}";
-            txtReceive.Text = $"₦ {amountToReceive:N2}";
-            txtRefund.Text = $"₦ {amountToRefund:N2}";
+        //private void UpdateTransactionSummaryUI(Domain.Entities.FrontDesk.Booking booking, GuestAccountSummaryDto item, decimal bookingAmount, decimal discount, decimal serviceCharge, decimal vat, decimal totalAmount, decimal totalPaid, decimal amountToReceive, decimal amountToRefund)
+        //{
+        //    if (booking != null)
+        //    {
+        //        txtSummaryName.Text = $"Total for the period {booking.CheckIn:MM/dd/yy} to {booking.CheckOut:MM/dd/yy}";
+        //    }
+        //    txtBookingAmount.Text = $"₦ {(bookingAmount + item.OtherCharges):N2}";
+        //    txtDiscount.Text = $"₦ {discount:N2}";
+        //    txtServiceCharge.Text = $"₦ {serviceCharge:N2}";
+        //    txtVAT.Text = $"₦ {vat:N2}";
+        //    txtTotalAmount.Text = $"₦ {totalAmount:N2}";
+        //    txtAmountPaid.Text = $"₦ {totalPaid:N2}";
+        //    txtReceive.Text = $"₦ {amountToReceive:N2}";
+        //    txtRefund.Text = $"₦ {amountToRefund:N2}";
 
-            ReceiveGrid.Visibility = amountToReceive > 0 ? Visibility.Visible : Visibility.Collapsed;
-            RefundGrid.Visibility = amountToRefund > 0 ? Visibility.Visible : Visibility.Collapsed;
-            txtAccountBalanced.Visibility = (amountToReceive == 0 && amountToRefund == 0) ? Visibility.Visible : Visibility.Collapsed;
-        }
+        //    ReceiveGrid.Visibility = amountToReceive > 0 ? Visibility.Visible : Visibility.Collapsed;
+        //    RefundGrid.Visibility = amountToRefund > 0 ? Visibility.Visible : Visibility.Collapsed;
+        //    txtAccountBalanced.Visibility = (amountToReceive == 0 && amountToRefund == 0) ? Visibility.Visible : Visibility.Collapsed;
+        //}
 
         private static void LogError(Exception ex)
         {
             MessageBox.Show($"Error: {ex.Message}", "Transaction Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private async void GuestDataGridRow_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DataGridRow row && row.Item is GuestAccountSummaryDto guestAccountSummaryDto)
+            {
+                var guestAccount = await _guestAccountService.GetAccountByInvoiceAsync(txtSearch.Text);
+
+                if (guestAccountSummaryDto != null)
+                {
+                    GuestTransactionReport viewGuestDialog = new GuestTransactionReport(guestAccountSummaryDto, _guestAccountService, guestAccount, _hotelSettingsService);
+                    viewGuestDialog.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("Please select a guest before viewing.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
         }
     }
 }

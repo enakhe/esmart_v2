@@ -58,6 +58,20 @@ namespace ESMART.Presentation.Utils
             return response;
         }
 
+        public static async Task<HttpResponseMessage> SendEmailOTP(string to, string subject, string templateName, EmailOTPVariable variables)
+        {
+            var apiService = new ApiService(new HttpClient());
+            var response = await apiService.PostAsync("https://esmart-api.vercel.app/api/email", new
+            {
+                to,
+                subject,
+                templateName,
+                variables
+            });
+
+            return response;
+        }
+
         public static async Task<HttpResponseMessage> SendFile(string fileBase64, string fileName)
         {
             var apiService = new ApiService(new HttpClient());
@@ -76,6 +90,7 @@ namespace ESMART.Presentation.Utils
         public string accountNumber { get; set; }
         public string amount { get; set; }
         public string guestName { get; set; }
+        public string date { get; set; }
         public string hotelName { get; set; }
         public string invoiceNumber { get; set; }
         public string paymentMethod { get; set; }
@@ -83,5 +98,19 @@ namespace ESMART.Presentation.Utils
         public string receptionistContact { get; set; }
         public string service { get; set; }
         public string logo { get; set; }
+    }
+
+    public class EmailOTPVariable
+    {
+        public string OTP { get; set; }
+        public string accountNumber { get; set; }
+        public string guestName { get; set; }
+        public string date { get; set; }
+        public string hotel { get; set; }
+        public string noOfNight { get; set; }
+        public string paymentMethod { get; set; }
+        public string receptionist { get; set; }
+        public string receptionistContact { get; set; }
+        public string service { get; set; }
     }
 }

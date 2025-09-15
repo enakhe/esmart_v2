@@ -36,8 +36,11 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
         private readonly IGuestRepository _guestRepository;
         private readonly IHotelSettingsService _hotelSettingsService;
         private readonly IBookingRepository _bookingRepository;
+        private readonly IVerificationCodeService _verificationCodeService;
         private readonly ITransactionRepository _transactionRepository;
-        public ReservationDetailsDialod(IRoomRepository roomRepository, IGuestRepository guestRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository, RoomTypeReservationViewModel reservationDto, GuestAccountService guestAccountService)
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
+
+        public ReservationDetailsDialod(IRoomRepository roomRepository, IGuestRepository guestRepository, IBookingRepository bookingRepository, IHotelSettingsService hotelSettingsService, ITransactionRepository transactionRepository, RoomTypeReservationViewModel reservationDto, GuestAccountService guestAccountService, IVerificationCodeService verificationCodeService, IApplicationUserRoleRepository applicationUserRoleRepository)
         {
             _roomRepository = roomRepository;
             _guestRepository = guestRepository;
@@ -50,7 +53,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
 
             this.DataContext = _reservationDto;
             Loaded += DisableMinimizeButton;
-
+            _verificationCodeService = verificationCodeService;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
         }
 
         private async Task LoadReservationTransactionHistory()
@@ -165,7 +169,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     _guestRepository,
                     _transactionRepository,
                     _guestAccountService,
-                    selectedRoomVm
+                    selectedRoomVm,
+                    _bookingRepository,
+                    _verificationCodeService,
+                    _applicationUserRoleRepository
                 );
 
                 if (dialog.ShowDialog() == true)

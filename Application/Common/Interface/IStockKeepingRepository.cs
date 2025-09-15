@@ -1,4 +1,5 @@
-﻿using ESMART.Domain.Entities.StoreKeeping;
+﻿using ESMART.Domain.Entities.Laundry;
+using ESMART.Domain.Entities.StoreKeeping;
 using ESMART.Domain.ViewModels.StoreKepping;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace ESMART.Application.Common.Interface
         Task<List<MenuItemViewModel>> GetMenuItemsAsync();
         Task<MenuItem?> GetMenuItemByIdAsync(string id);
         Task<List<MenuCategoryGroup>> GetGroupedMenuItemsAsync(string category);
+        Task<List<MenuCategoryGroup>> SearchedGroupedMenuItemsAsync(string keyword);
         Task UpdateMenuItemAsync(MenuItem menuItem);
         Task DeleteMenuItemAsync(string id);
         Task<List<MenuCategoryViewModel>> GetAllMenuItemCategoriesViewModelAsync();
@@ -59,6 +61,8 @@ namespace ESMART.Application.Common.Interface
         Task<List<Order>> GetOrdersByBookingIdAsync(string bookingId);
         Task<List<MenuOrderViewModel>> GetOrdersBySearchAsync(string searchTerm);
         Task<List<MenuOrderViewModel>> GetOrdersByDateRangeAsync(DateTime fromDate, DateTime toDate);
-
+        Task<List<MenuOrderViewModel>> GetLaundaryOrdersByDateRangeAsync(DateTime fromDate, DateTime toDate);
+        Task<List<MenuOrderViewModel>> GetLaundryOrdersBySearchAsync(string searchTerm);
+        Task<LaundryOrder?> GetLaundryOrderByIdAsync(string id);
     }
 }

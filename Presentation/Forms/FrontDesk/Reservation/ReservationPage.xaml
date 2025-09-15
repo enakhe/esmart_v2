@@ -117,108 +117,76 @@
 
                         </Grid>
 
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <Border Background="White" CornerRadius="10" Margin="0,10,0,0" Grid.Row="1">
-                                <DataGrid x:Name="ReservationDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="200">
+                        <DataGrid x:Name="ReservationDataGrid" Margin="20" Style="{StaticResource ModernDataGridStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="500" Grid.Row="1">
 
-                                    <DataGrid.RowStyle>
-                                        <Style TargetType="DataGridRow">
-                                            <EventSetter Event="MouseDoubleClick" Handler="ReservationDataGridRow_DoubleClick"/>
-                                        </Style>
-                                    </DataGrid.RowStyle>
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <EventSetter Event="MouseDoubleClick" Handler="ReservationDataGridRow_DoubleClick"/>
+                                </Style>
+                            </DataGrid.RowStyle>
 
-                                    <DataGrid.Columns>
-                                        <DataGridTemplateColumn Header="Guest" Width="2*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Guest}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Guest" Width="2*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding Guest}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Phone Number" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding PhoneNumber}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Phone Number" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding PhoneNumber}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Room Type" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding RoomType}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Room Type" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding RoomType}" VerticalAlignment="Center"  FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Arrival Date" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding ArrivalDate, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Arrival Date" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding ArrivalDate, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Departure Date" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding DepartureDate, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Departure Date" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding DepartureDate, StringFormat='{}{0:MMMM d, yyyy h:mm tt}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                                        <DataGridTemplateColumn Header="Amount" Width="*">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                                                        <TextBlock Text="{Binding Amount, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-
-                                        <DataGridTemplateColumn Header="Operation" Width="2*" Visibility="Collapsed">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Extend Stay" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="ExtendReservation_Click">
-                                                            <materialDesign:PackIcon Kind="ClockOutline"  Width="20" Height="20" Foreground="Black" />
-                                                        </Button>
-
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Transfer Guest" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="TransferReservation_Click">
-                                                            <materialDesign:PackIcon Kind="Airplane" Width="20" Height="20" Foreground="Black" />
-                                                        </Button>
-
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Booking Reservation" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="BookReservation_Click">
-                                                            <materialDesign:PackIcon Kind="Calendar" Width="20" Height="20" Foreground="Black" />
-                                                        </Button>
-
-                                                        <Button Width="30" Height="30" Padding="2" ToolTip="Calcel Reservation" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="CancelReservation_Click">
-                                                            <materialDesign:PackIcon Kind="Cancel" Width="20" Height="20" Foreground="Black" />
-                                                        </Button>
-
-                                                        <Button  Width="30"  Height="30" Padding="2" ToolTip="Delete" Background="Red" Foreground="White" Cursor="Hand" Tag="{Binding Id}" Click="DeleteReservation_Click" FontFamily="Segoe UI Emoji">
-                                                            <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Black"/>
-                                                        </Button>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Border>
-                        </ScrollViewer>
+                                <DataGridTemplateColumn Header="Amount" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                                                <TextBlock Text="{Binding Amount, StringFormat=₦ {0:N2}}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#111827" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </Grid>
                 </Border>
             </Border>

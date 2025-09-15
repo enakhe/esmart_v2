@@ -18,7 +18,7 @@ namespace ESMART.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("ESMART")
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -52,6 +52,9 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BackupEmail")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -533,6 +536,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<decimal>("OtherCharges")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("Refunds")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("ServiceCharge")
                         .HasColumnType("decimal(18,2)");
 
@@ -618,6 +624,9 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<string>("Invoice")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("Payment")
                         .HasColumnType("decimal(18,2)");
@@ -741,6 +750,9 @@ namespace ESMART.Infrastructure.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("OccupantName")
                         .HasColumnType("nvarchar(max)");
 
@@ -840,6 +852,35 @@ namespace ESMART.Infrastructure.Migrations
                     b.ToTable("RoomTypeReservations", "ESMART");
                 });
 
+            modelBuilder.Entity("ESMART.Domain.Entities.Laundry.LaundaryOrderItem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LaundaryId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LaundryOrderId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LaundryOrderItemId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LaundaryId");
+
+                    b.HasIndex("LaundryOrderId");
+
+                    b.ToTable("LaundaryOrderItems", "ESMART");
+                });
+
             modelBuilder.Entity("ESMART.Domain.Entities.Laundry.Laundry", b =>
                 {
                     b.Property<string>("Id")
@@ -863,6 +904,46 @@ namespace ESMART.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Laundries", "ESMART");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Laundry.LaundryOrder", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BookingId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GuestAccountId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Invoice")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OrderId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoomBookingId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("GuestAccountId");
+
+                    b.HasIndex("RoomBookingId");
+
+                    b.ToTable("LaundryOrders", "ESMART");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Area", b =>
@@ -1189,6 +1270,9 @@ namespace ESMART.Infrastructure.Migrations
 
                     b.Property<string>("Invoice")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("OrderId")
                         .HasColumnType("nvarchar(max)");
@@ -1621,7 +1705,7 @@ namespace ESMART.Infrastructure.Migrations
                         .HasForeignKey("BankAccountId");
 
                     b.HasOne("ESMART.Domain.Entities.FrontDesk.Booking", "Booking")
-                        .WithMany()
+                        .WithMany("GuestTransactions")
                         .HasForeignKey("BookingId");
 
                     b.HasOne("ESMART.Domain.Entities.FrontDesk.GuestAccount", "GuestAccount")
@@ -1719,6 +1803,40 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("GuestAccount");
 
                     b.Navigation("RoomType");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Laundry.LaundaryOrderItem", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.Laundry.Laundry", "Laundary")
+                        .WithMany()
+                        .HasForeignKey("LaundaryId");
+
+                    b.HasOne("ESMART.Domain.Entities.Laundry.LaundryOrder", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("LaundryOrderId");
+
+                    b.Navigation("Laundary");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Laundry.LaundryOrder", b =>
+                {
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId");
+
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.GuestAccount", "GuestAccount")
+                        .WithMany()
+                        .HasForeignKey("GuestAccountId");
+
+                    b.HasOne("ESMART.Domain.Entities.FrontDesk.RoomBooking", "RoomBooking")
+                        .WithMany()
+                        .HasForeignKey("RoomBookingId");
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("GuestAccount");
+
+                    b.Navigation("RoomBooking");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Floor", b =>
@@ -1949,6 +2067,8 @@ namespace ESMART.Infrastructure.Migrations
                 {
                     b.Navigation("Codes");
 
+                    b.Navigation("GuestTransactions");
+
                     b.Navigation("RoomBookings");
 
                     b.Navigation("TransactionItems");
@@ -1976,6 +2096,11 @@ namespace ESMART.Infrastructure.Migrations
                     b.Navigation("BookingDetails");
 
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("ESMART.Domain.Entities.Laundry.LaundryOrder", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("ESMART.Domain.Entities.RoomSettings.Area", b =>

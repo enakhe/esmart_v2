@@ -293,5 +293,10 @@ namespace ESMART.Presentation.Forms.FrontDesk.Booking
 
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadBookinDetails();
+        }
     }
 }

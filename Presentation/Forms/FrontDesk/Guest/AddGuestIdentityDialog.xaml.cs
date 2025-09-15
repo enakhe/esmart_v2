@@ -3,6 +3,7 @@
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
 using Microsoft.Win32;
+using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -50,9 +51,8 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             try
             {
                 string idType = cbIdType.Text;
-                string idNumber = txtIdNumber.Text;
 
-                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(idNumber, idType);
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(idType);
                 if (!areFieldsEmpty)
                 {
                     byte[] idDocumentFront = null;
@@ -64,7 +64,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     var guestIdentity = new Domain.Entities.FrontDesk.GuestIdentity
                     {
                         Document = idDocumentFront,
-                        IdNumber = idNumber,
                         IdType = idType,
                         GuestId = _guestId
                     };

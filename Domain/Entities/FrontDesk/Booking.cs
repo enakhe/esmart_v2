@@ -16,6 +16,7 @@ namespace ESMART.Domain.Entities.FrontDesk
             this.Transactions = new HashSet<Entities.Transaction.Transaction>();
             this.TransactionItems = new HashSet<Entities.Transaction.TransactionItem>();
             this.RoomBookings = new HashSet<RoomBooking>();
+            this.GuestTransactions = new HashSet<GuestTransaction>();
         }
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -76,6 +77,7 @@ namespace ESMART.Domain.Entities.FrontDesk
         public ICollection<VerificationCode> Codes { get; set; }
         public ICollection<Entities.Transaction.Transaction> Transactions { get; set; }
         public ICollection<Entities.Transaction.TransactionItem> TransactionItems { get; set; }
+        public ICollection<GuestTransaction> GuestTransactions { get; set; }
         public ICollection<RoomBooking> RoomBookings { get; set; }
     }
 }

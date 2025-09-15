@@ -24,6 +24,8 @@ namespace ESMART.Domain.Entities.StoreKeeping
         public string RoomBookingId { get; set; }
         public virtual RoomBooking RoomBooking { get; set; }
 
+        public bool IsCancelled { get; set; } = false;
+
         public string GuestAccountId { get; set; }
         public virtual GuestAccount GuestAccount { get; set; }
     }

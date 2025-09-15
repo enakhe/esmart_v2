@@ -2,6 +2,7 @@
 
 using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Domain.Entities.Verification;
 using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
@@ -162,7 +163,22 @@ namespace ESMART.Presentation.Forms.Verification
                     await _verificationCodeService.AddCode(verificationCode);
 
 
-                    var response = await SenderHelper.SendOtp(hotel.PhoneNumber, hotel.Name, "", "", "Booking", verificationCode.Code, _amount, "Transfer", activeUser.FullName!, activeUser.PhoneNumber!);
+                    var response = await SenderHelper.SendEmailOTP(
+                        hotel.Email,
+                        "Another OTP Generated Successfully",
+                        "otp_template",
+                        new EmailOTPVariable
+                        {
+                            accountNumber = $"",
+                            OTP = verificationCode.Code,
+                            guestName = "",
+                            hotel = hotel.Name,
+                            paymentMethod = "",
+                            receptionist = activeUser.FullName,
+                            receptionistContact = activeUser.PhoneNumber,
+                            service = "",
+                        }
+                    );
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("New Verification code has been sent", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

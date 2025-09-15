@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="Create Card" Height="400" Width="400" Icon="/Forms/Home/logo.png" Loaded="Window_Loaded">
+        Title="Create Card" Height="480" Width="400" Icon="/Forms/Home/logo.png" Loaded="Window_Loaded">
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -23,12 +23,26 @@
                         <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,0,20">
-                        <TextBlock Text="Room Number:" FontWeight="Bold" />
-                        <TextBox x:Name="txtRoom" IsEnabled="False" Padding="2,5,0,5" />
-                    </StackPanel>
+                    <Grid Grid.Row="0" Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,2,0">
+                            <TextBlock Text="Room Number:" FontWeight="Bold" />
+                            <TextBox x:Name="txtRoom" IsEnabled="False" Padding="2,5,0,5" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="2,0,0,0">
+                            <TextBlock Text="Guest Name:" FontWeight="Bold" />
+                            <TextBox x:Name="txtGuestName" Padding="2,5,0,5" />
+                        </StackPanel>
+
+                    </Grid>
 
                     <StackPanel Grid.Row="1" Margin="0,0,0,20" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -42,7 +56,24 @@
                         </Grid>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="2" Margin="0,0,0,20">
+                    <Grid Grid.Row="2" Margin="2,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,2,0">
+                            <TextBlock Text="Payment Method:" FontWeight="Bold" />
+                            <ComboBox x:Name="cmbPaymentMethod" Padding="2,5,0,5" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="0,0,2,0">
+                            <TextBlock Text="Account Number:" FontWeight="Bold" />
+                            <ComboBox x:Name="cmbAccountNumber" Padding="2,5,0,5" />
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Grid.Row="3" Margin="0,0,0,20">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -61,7 +92,7 @@
                         </Grid>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="3">
+                    <StackPanel Grid.Row="4">
                         <Button Content="Issue" Height="34" Margin="5" Padding="0,5,0,5" Background="#4ead16" Foreground="White" Cursor="Hand" Click="IssueButton_Click">
                             <Button.Style>
                                 <Style TargetType="Button">
@@ -79,7 +110,7 @@
                         </Button>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="5" Margin="0,0,0,20">
+                    <StackPanel Grid.Row="5" Margin="0,0,0,0">
                         <Grid Margin="1,0,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />

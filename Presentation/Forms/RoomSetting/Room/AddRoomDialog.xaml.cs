@@ -156,7 +156,7 @@ namespace ESMART.Presentation.Forms.RoomSetting.Room
                     return;
                 }
 
-                var roomType = ((Domain.Entities.RoomSettings.RoomType)cmbRoomType.SelectedValue).Name;
+                var roomType = ((Domain.Entities.RoomSettings.RoomType)cmbRoomType.SelectedItem).Name;
 
                 var roomNumber = txtRoomNumber.Text;
                 var buildingId = cmbBuilding.SelectedValue.ToString();

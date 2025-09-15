@@ -469,7 +469,9 @@ namespace ESMART.Presentation.Forms.FrontDesk.Reservation
                     _hotelSettingsService,
                     _transactionRepository,
                     roomTypeReservation, 
-                    _guestAccountService);
+                    _guestAccountService,
+                    _verificationCodeService,
+                    _applicationUserRoleRepository);
 
                 if(reservationDetailsDialod.ShowDialog() == true)
                 {

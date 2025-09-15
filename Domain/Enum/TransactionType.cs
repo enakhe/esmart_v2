@@ -16,6 +16,9 @@
         Cash,
         POS,
         Transfer,
+        Complimentary,
+        Cheque,
+        ForeignCurrency,
         Other
     }
 

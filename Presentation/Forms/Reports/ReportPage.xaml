@@ -56,7 +56,7 @@
                 <Expander Header="Booking Reports" Grid.Row="0" Foreground="White" Background="Transparent" BorderBrush="Transparent" FontSize="14" Margin="5" IsExpanded="True">
                     <StackPanel Margin="12">
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Expected Departure Report" FontSize="12" Margin="5" Click="ExpectedDepartureReport_Click" />
-                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Current In-House Guests Report" FontSize="12" Margin="5" Click="CurrentInHouseGuestReport_Click"/>
+                        <Button Style="{StaticResource SidebarSubButtonStyle}" Content="House List Report" FontSize="12" Margin="5" Click="CurrentInHouseGuestReport_Click"/>
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Overstayed Guests Report" Margin="5" FontSize="12" Click="OverstayedGuestReport_Click"/>
                         <Button Style="{StaticResource SidebarSubButtonStyle}" Content="Booking Account Report" Margin="5" FontSize="12" Click="SettledBookingReport_Click"/>
                     </StackPanel>

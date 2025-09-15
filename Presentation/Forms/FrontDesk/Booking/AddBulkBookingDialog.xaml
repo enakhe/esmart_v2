@@ -44,11 +44,21 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Row="2" Margin="0,0,0,20">
-                            <TextBlock Text="Guest:" FontWeight="Bold" />
-                            <ComboBox SelectedItem="{Binding SelectedGuest, Mode=TwoWay}" x:Name="cmbGuest"  DisplayMemberPath="FullName" />
+                        <Grid Grid.Row="2" Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4*" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
 
-                        </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Guest:" FontWeight="Bold" />
+                                <ComboBox SelectedItem="{Binding SelectedGuest, Mode=TwoWay}" x:Name="cmbGuest"  DisplayMemberPath="FullName" />
+                            </StackPanel>
+
+                            <Button Grid.Column="1"  Width="30" HorizontalAlignment="Center" Height="30" Padding="2" ToolTip="Delete" Background="White" Foreground="White" Cursor="Hand" Tag="{Binding Id}" FontFamily="Segoe UI Emoji" x:Name="AddGuestButton" Click="AddGuestButton_Click" VerticalAlignment="Center">
+                                <materialDesign:PackIcon Kind="Add" Width="20" Height="20" Foreground="Black"/>
+                            </Button>
+                        </Grid>
 
                         <StackPanel Grid.Row="3" Margin="0,0,0,20" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -71,7 +81,7 @@
 
                                 <StackPanel Grid.Column="0" Margin="0,0,2,0">
                                     <TextBlock Text="Check In:" FontWeight="Bold" />
-                                    <DatePicker x:Name="dtpCheckIn" Padding="2,5,0,5" IsEnabled="False" SelectedDateChanged="dtpCheckIn_SelectedDateChanged" />
+                                    <DatePicker x:Name="dtpCheckIn" Padding="2,5,0,5" SelectedDateChanged="dtpCheckIn_SelectedDateChanged" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="2,0,0,0">
@@ -182,7 +192,7 @@
                                         <Border Width="80" Height="80" Margin="5" CornerRadius="10" Background="{Binding IsSelected, Converter={StaticResource BoolToColorConverter}}" MouseLeftButtonUp="RoomCard_MouseLeftButtonUp" Tag="{Binding}">
                                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding Room.Number}" FontSize="15" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
-                                                <TextBlock Text="{Binding Room.RoomType.Name}" FontSize="11" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding Room.RoomType.Name}" FontSize="8" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
                                                 <TextBlock Text="{Binding Room.Rate,StringFormat=N2}" FontSize="11" Foreground="White" HorizontalAlignment="Center" />
                                             </StackPanel>
                                         </Border>
@@ -214,7 +224,7 @@
                             </Grid.ColumnDefinitions>
 
                             <CheckBox Content="Copy main guest name to all rooms" Grid.Column="0" HorizontalAlignment="Left"  Margin="10" IsChecked="{Binding CopyMainGuestToAll}" />
-                            <CheckBox x:Name="chkUseSameCheckout" Grid.Column="1" HorizontalAlignment="Right" Content="Use same checkout time for all" Checked="chkUseSameCheckout_Checked" Unchecked="chkUseSameCheckout_Unchecked" />
+                            <CheckBox x:Name="chkUseSameCheckout" IsChecked="True" Grid.Column="1" HorizontalAlignment="Right" Content="Use same checkout time for all" Checked="chkUseSameCheckout_Checked" Unchecked="chkUseSameCheckout_Unchecked" />
                         </Grid>
                             
 

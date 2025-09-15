@@ -42,6 +42,7 @@ namespace ESMART.Infrastructure
             services.AddScoped<NightlyRoomChargeService>();
             services.AddScoped<GoogleDriveBackupService>();
             services.AddHostedService<NightlyRoomChargeWorker>();
+            services.AddScoped<ReportService>();
 
             services.AddHangfireServer();
             return services;

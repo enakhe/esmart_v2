@@ -1,8 +1,20 @@
-﻿using ESMART.Application.Common.Interface;
+﻿using ESMART.Application.Common.Dtos;
+using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Domain.Entities.Configuration;
+using ESMART.Domain.Entities.Data;
 using ESMART.Domain.Entities.FrontDesk;
+using ESMART.Domain.Entities.Transaction;
+using ESMART.Domain.Entities.Verification;
 using ESMART.Domain.Enum;
+using ESMART.Infrastructure.Repositories.FrontDesk;
+using ESMART.Infrastructure.Repositories.Transaction;
+using ESMART.Infrastructure.Repositories.Verification;
+using ESMART.Infrastructure.Services;
+using ESMART.Presentation.Forms.Verification;
 using ESMART.Presentation.LockSDK;
+using ESMART.Presentation.Session;
+using ESMART.Presentation.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +38,23 @@ namespace ESMART.Presentation.Forms.Home
     {
         private readonly Domain.Entities.RoomSettings.Room _room;
         private readonly IHotelSettingsService _hotelSettingsService;
-        public CreateCardDialog(Domain.Entities.RoomSettings.Room room, IHotelSettingsService hotelSettingsService)
+        private readonly IVerificationCodeService _verificationCodeService;
+        private readonly IApplicationUserRoleRepository _applicationUserRoleRepository;
+        private readonly GuestAccountService _guestAccountService;
+        private readonly IBookingRepository _bookingRepository;
+        private readonly ITransactionRepository _transactionRepository;
+
+
+        public CreateCardDialog(Domain.Entities.RoomSettings.Room room, IHotelSettingsService hotelSettingsService, IVerificationCodeService verificationCodeService, IApplicationUserRoleRepository applicationUserRoleRepository, GuestAccountService guestAccountService, IBookingRepository bookingRepository, ITransactionRepository transactionRepository)
         {
             _room = room;
             _hotelSettingsService = hotelSettingsService;
             InitializeComponent();
+            _verificationCodeService = verificationCodeService;
+            _applicationUserRoleRepository = applicationUserRoleRepository;
+            _guestAccountService = guestAccountService;
+            _bookingRepository = bookingRepository;
+            _transactionRepository = transactionRepository;
         }
 
         private void LoadDefaultSetting()
@@ -40,6 +64,41 @@ namespace ESMART.Presentation.Forms.Home
             dtpCheckIn.DisplayDateStart = DateTime.Today;
             dtpCheckIn.SelectedDate = DateTime.Now;
             dtpCheckOut.SelectedDate = DateTime.Now.AddDays(1);
+        }
+
+        public void LoadPaymentMethod()
+        {
+            try
+            {
+                var method = Enum.GetValues<PaymentMethod>()
+                    .Cast<PaymentMethod>()
+                    .Select(e => new { Id = (int)e, Name = e.ToString() })
+                    .ToList();
+
+                cmbPaymentMethod.ItemsSource = method;
+                cmbPaymentMethod.DisplayMemberPath = "Name";
+                cmbPaymentMethod.SelectedValuePath = "Name";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public async Task LoadBankAccount()
+        {
+            try
+            {
+                var accountNumber = await _transactionRepository.GetAllBankAccountAsync();
+
+                cmbAccountNumber.ItemsSource = accountNumber;
+                cmbAccountNumber.DisplayMemberPath = "BankAccountNumber";
+                cmbAccountNumber.SelectedValuePath = "Id";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void dtpCheckOut_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -139,13 +198,38 @@ namespace ESMART.Presentation.Forms.Home
         {
             try
             {
+                LoaderOverlay.Visibility = Visibility.Visible;
+
+                bool isNull = Helper.AreAnyNullOrEmpty(txtGuestName.Text, txtRoom.Text, txtDays.Text);
+                if (isNull && cmbPaymentMethod.SelectedValue == null && cmbAccountNumber.SelectedValue == null)
+                {
+                    MessageBox.Show("Please insert all required fields.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                var activeUser = AuthSession.CurrentUser;
+                var hotel = await _hotelSettingsService.GetHotelInformation();
+                //var roomBooking = await _guestAccountService.GetRoomBookingByRoomIdAsync(_room.Id);
+
                 var lockSetting = await _hotelSettingsService.GetSettingsByCategoryAsync("Operation Settings");
                 if (lockSetting != null)
                 {
                     var lockType = lockSetting.FirstOrDefault(x => x.Key == "LockType")?.Value;
                     if (lockType == "MIFI")
                     {
-                        IssueCardForMIFI();
+                        var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
+                        if (isVerifyPayment != null)
+                        {
+                            var value = isVerifyPayment.Value;
+                            if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                await VerifyPayment(hotel, activeUser);
+                            }
+                            else
+                            {
+                                IssueCardForMIFI();
+                            }
+                        }
+                        
                     }
                     else if (lockType == "RFID")
                     {
@@ -153,7 +237,19 @@ namespace ESMART.Presentation.Forms.Home
                     }
                     else if (lockType == "PULMOS")
                     {
-                        IssueCardForMIFI();
+                        var isVerifyPayment = await _hotelSettingsService.GetSettingAsync("VerifyTransaction");
+                        if (isVerifyPayment != null)
+                        {
+                            var value = isVerifyPayment.Value;
+                            if (value != null && value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                await VerifyPayment(hotel, activeUser);
+                            }
+                            else
+                            {
+                                IssueCardForMIFI();
+                            }
+                        }
                     }
                     else
                     {
@@ -169,6 +265,10 @@ namespace ESMART.Presentation.Forms.Home
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -214,13 +314,106 @@ namespace ESMART.Presentation.Forms.Home
             this.DialogResult = true;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadDefaultSetting();
+            LoadPaymentMethod();
+            await LoadBankAccount();
             int checkEncoder = CheckEncoder(LOCK_SETTING.LOCK_TYPE_PULMOS);
             if (checkEncoder != 1)
             {
                 LockSDKMethods.CheckErr(checkEncoder);
+            }
+        }
+
+        private async Task VerifyPayment(Hotel hotel, ApplicationUser activeUser)
+        {
+            //var booking = await _guestAccountService.GetBookingByIdAsync(bookingId);
+
+            var verificationCode = new VerificationCode
+            {
+                Code = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 5)),
+                ServiceId = string.Concat("BK", Guid.NewGuid().ToString().Split("-")[0].ToUpper().AsSpan(0, 7)),
+                ApplicationUserId = AuthSession.CurrentUser?.Id
+            };
+
+            await _verificationCodeService.AddCode(verificationCode);
+            var accountNumber = ((BankAccount)cmbAccountNumber.SelectedItem).BankAccountNumber;
+            var accountName = ((BankAccount)cmbAccountNumber.SelectedItem).BankAccountName;
+            var bankName = ((BankAccount)cmbAccountNumber.SelectedItem).BankName;
+
+            var response = await SenderHelper.SendEmailOTP(
+                        hotel.Email,
+                        "Card Creation OTP Generated Successfully",
+                        "otp_template",
+                        new EmailOTPVariable
+                        {
+                            OTP = verificationCode.Code,
+                            accountNumber = $"{accountNumber} ({accountName}) | {bankName}",
+                            date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                            guestName = $"{txtGuestName.Text} (Room: {txtRoom.Text})",
+                            hotel = hotel.Name,
+                            noOfNight = txtDays.Text,
+                            paymentMethod = cmbPaymentMethod.SelectedValue != null
+                                ? Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!).ToString()
+                                : string.Empty,
+                            receptionist = activeUser.FullName,
+                            receptionistContact = activeUser.PhoneNumber,
+                            service = "Booking",
+                        }
+                    );
+
+            await SenderHelper.SendEmailOTP(
+                        hotel.BackupEmail,
+                        "Card Creation OTP Generated Successfully",
+                        "otp_template",
+                        new EmailOTPVariable
+                        {
+                            OTP = verificationCode.Code,
+                            accountNumber = $"{accountNumber} ({accountName}) | {bankName}",
+                            date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                            guestName = $"{txtGuestName.Text} (Room: {txtRoom.Text})",
+                            hotel = hotel.Name,
+                            noOfNight = txtDays.Text,
+                            paymentMethod = cmbPaymentMethod.SelectedValue != null
+                                ? Enum.Parse<PaymentMethod>(cmbPaymentMethod.SelectedValue.ToString()!).ToString()
+                                : string.Empty,
+                            receptionist = activeUser.FullName,
+                            receptionistContact = activeUser.PhoneNumber,
+                            service = "Booking",
+                        }
+                    );
+
+            if (response.IsSuccessStatusCode)
+            {
+                var verifyPaymentWindow = new VerifyPaymentWindow(
+                    _verificationCodeService,
+                    _hotelSettingsService,
+                    _bookingRepository,
+                    _transactionRepository,
+                    verificationCode.ServiceId,
+                    decimal.Parse("0.0"),
+                    _applicationUserRoleRepository
+                );
+
+                if (verifyPaymentWindow.ShowDialog() == true)
+                {
+                    IssueCardForMIFI();
+                    this.DialogResult = true;
+                }
+                else
+                {
+                    await _verificationCodeService.DeleteAsync(verificationCode.Id);
+                }
+            }
+            else
+            {
+                MessageBox.Show(
+                    "Error Sending OTP",
+                    "Info",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
             }
         }
     }

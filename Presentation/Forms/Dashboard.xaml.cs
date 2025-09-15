@@ -1,6 +1,8 @@
 ﻿using ESMART.Application.Common.Interface;
+using ESMART.Application.Common.Models;
 using ESMART.Domain.Entities.Data;
 using ESMART.Infrastructure.Repositories.Configuration;
+using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Cards;
 using ESMART.Presentation.Forms.FrontDesk.Booking;
 using ESMART.Presentation.Forms.FrontDesk.Guest;
@@ -32,11 +34,13 @@ namespace ESMART.Presentation.Forms
         private readonly IApplicationUserRoleRepository _userService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IBackupRepository _backupRepository;
+        private readonly GoogleDriveBackupService _googleDriveBackupService;
         private IServiceProvider _serviceProvider;
 
-        public Dashboard(IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager, IBackupRepository backupRepository)
+        public Dashboard(IHotelSettingsService hotelSettingsService, IApplicationUserRoleRepository userService, UserManager<ApplicationUser> userManager, IBackupRepository backupRepository, GoogleDriveBackupService googleDriveBackupService)
         {
             _hotelSettingsService = hotelSettingsService;
+            _googleDriveBackupService = googleDriveBackupService;
             _userService = userService;
             _userManager = userManager;
             _backupRepository = backupRepository;
@@ -259,21 +263,39 @@ namespace ESMART.Presentation.Forms
 
                 // Define visibility logic
                 bool isSuperAdmin = roleNames.Contains(DefaultRoles.Administrator.ToString()) ||
-                    roleNames.Contains(DefaultRoles.Admin.ToString());
+                                    roleNames.Contains(DefaultRoles.Admin.ToString()) ||
+                                    roleNames.Contains(DefaultRoles.Manager.ToString());
+
+                bool isManager = roleNames.Contains(DefaultRoles.Manager.ToString());
+
+
                 bool isStoreKeeper = roleNames.Contains(DefaultRoles.StoreKeeper.ToString()) ||
-                                     roleNames.Contains(DefaultRoles.Bar.ToString()) ||
-                                     roleNames.Contains(DefaultRoles.Restaurant.ToString());
+                                     roleNames.Contains(DefaultRoles.FandBManager.ToString());
+
                 bool isFrontDesk = roleNames.Contains(DefaultRoles.Receptionist.ToString());
                 bool isAdmin = roleNames.Contains(DefaultRoles.Admin.ToString());
                 bool isLaundry = roleNames.Contains(DefaultRoles.Laundry.ToString());
 
+                bool isFAndBManager = roleNames.Contains(DefaultRoles.FandBManager.ToString());
+
+                bool isBarAndRestaurant = roleNames.Contains(DefaultRoles.BarRestaurant.ToString()) ||
+                                          roleNames.Contains(DefaultRoles.Waiter.ToString());
 
                 // Apply visibility
                 AdminControls.Visibility = isSuperAdmin ? Visibility.Visible : Visibility.Collapsed;
-                SettingButton.Visibility = isAdmin ? Visibility.Collapsed : Visibility.Visible;
-                StoreKeepingControls.Visibility = (isSuperAdmin || isStoreKeeper) ? Visibility.Visible : Visibility.Collapsed;
-                FrontDeskControls.Visibility = (isSuperAdmin || isFrontDesk) ? Visibility.Visible : Visibility.Collapsed;
-                LaundaryControls.Visibility = (isSuperAdmin || isLaundry) ? Visibility.Visible : Visibility.Collapsed;
+
+
+                //StockKeepingControl.Visibility = (isSuperAdmin || isStoreKeeper) ? Visibility.Visible : Visibility.Collapsed;
+
+                //FrontDeskControls.Visibility = (isSuperAdmin || isFrontDesk) ? Visibility.Visible : Visibility.Collapsed;
+
+                //LaundaryControls.Visibility = (isSuperAdmin || isLaundry || isFrontDesk) ? Visibility.Visible : Visibility.Collapsed;
+
+                //FAndBManager.Visibility = (isSuperAdmin || isFAndBManager) ? Visibility.Visible : Visibility.Collapsed;
+
+                //Waiters.Visibility = (isSuperAdmin || isBarAndRestaurant || isFAndBManager) ? Visibility.Visible : Visibility.Collapsed;
+
+                //OtherHomeButon.Visibility = (isFAndBManager || isStoreKeeper || isBarAndRestaurant) ? Visibility.Visible : Visibility.Collapsed;
             }
             catch (Exception ex)
             {
@@ -301,8 +323,9 @@ namespace ESMART.Presentation.Forms
                                     roleSet.Contains(DefaultRoles.Admin.ToString());
 
                 bool isStoreKeeper = roleSet.Contains(DefaultRoles.StoreKeeper.ToString()) ||
-                                     roleSet.Contains(DefaultRoles.Restaurant.ToString()) ||
-                                     roleSet.Contains(DefaultRoles.Bar.ToString());
+                                     roleSet.Contains(DefaultRoles.BarRestaurant.ToString()) ||
+                                     roleSet.Contains(DefaultRoles.FandBManager.ToString()) ||
+                                     roleSet.Contains(DefaultRoles.Waiter.ToString());
 
                 bool isFrontDesk = roleSet.Contains(DefaultRoles.Receptionist.ToString());
 
@@ -359,11 +382,11 @@ namespace ESMART.Presentation.Forms
                     if (hotel != null)
                     {
                         var zippedFile = BackupRepository.ZipFiles(backupFile);
-                        var result = await BackupRepository.UploadBackupAsync(zippedFile, hotel.Name);
+                        var (IsSuccess, ResponseId) = await _googleDriveBackupService.UploadBackupAsync(zippedFile, hotel.Name);
 
-                        if (result.Success)
+                        if (IsSuccess)
                         {
-                            MessageBox.Show($"Backup uploaded to cloud successfully: {result.DownloadLink}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            MessageBox.Show($"Backup uploaded to cloud successfully: {ResponseId}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         else
                         {
@@ -399,7 +422,9 @@ namespace ESMART.Presentation.Forms
 
         private void WashButton_Click(object sender, RoutedEventArgs e)
         {
-
+            InitializeServices();
+            LaundaryItem laundaryItem = _serviceProvider.GetRequiredService<LaundaryItem>();
+            MainFrame.Navigate(laundaryItem);
         }
     }
 }

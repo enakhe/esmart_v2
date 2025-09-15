@@ -138,7 +138,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                         };
 
                         await _guestAccountService.AddTransaction(_guestAccount.GuestId, transactionDto);
-                        //await _guestAccountService.AddRefundAsync(_guestAccount.GuestId, refund);
+                        await _guestAccountService.AddRefundAsync(_guestAccount.GuestId, refund);
                         await _guestAccountService.CheckoutGuestAsync(_bookingId, allowUnsettled: false);
                         MessageBox.Show("Guest has been checked out and refund noted.", "Checkout Complete", MessageBoxButton.OK, MessageBoxImage.Information);
 

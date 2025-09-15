@@ -118,22 +118,32 @@ namespace ESMART.Infrastructure.Identity
             var barRole = new ApplicationRole
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = DefaultRoles.Bar.ToString(),
-                Description = "Bar Role",
+                Name = DefaultRoles.BarRestaurant.ToString(),
+                Description = "Bar and Restaurant Role",
             };
 
             if (_roleManager.Roles.All(r => r.Name != barRole.Name))
                 await _roleManager.CreateAsync(barRole);
 
-            var restaurantRole = new ApplicationRole
+            var waiterRole = new ApplicationRole
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = DefaultRoles.Restaurant.ToString(),
-                Description = "Restaurant Role",
+                Name = DefaultRoles.Waiter.ToString(),
+                Description = "Waiter Role",
             };
 
-            if (_roleManager.Roles.All(r => r.Name != restaurantRole.Name))
-                await _roleManager.CreateAsync(restaurantRole);
+            if (_roleManager.Roles.All(r => r.Name != waiterRole.Name))
+                await _roleManager.CreateAsync(waiterRole);
+
+            var fAndBManagerRole = new ApplicationRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = DefaultRoles.FandBManager.ToString(),
+                Description = "F&B Manager Role",
+            };
+
+            if (_roleManager.Roles.All(r => r.Name != fAndBManagerRole.Name))
+                await _roleManager.CreateAsync(fAndBManagerRole);
 
             var storeKeeperRole = new ApplicationRole
             {

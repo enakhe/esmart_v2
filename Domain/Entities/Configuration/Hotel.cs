@@ -7,6 +7,7 @@
         public required string Address { get; set; }
         public required string PhoneNumber { get; set; }
         public required string Email { get; set; }
+        public string? BackupEmail { get; set; }
         public byte[]? LogoUrl { get; set; }
         public DateTime CreatedAt { get; set; }
     }

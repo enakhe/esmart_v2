@@ -21,7 +21,7 @@ namespace ESMART.Presentation.Forms.Home
 
         private Guest _selectedGuest;
 
-        private bool _copyMainGuestToAll;
+        private bool _copyMainGuestToAll = true;
         public Guest SelectedGuest
         {
             get => _selectedGuest;

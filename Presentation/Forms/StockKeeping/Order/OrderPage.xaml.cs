@@ -1,5 +1,6 @@
 ﻿using ESMART.Application.Common.Interface;
 using ESMART.Application.Common.Utils;
+using ESMART.Domain.Entities.FrontDesk;
 using ESMART.Infrastructure.Repositories.Configuration;
 using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
@@ -77,7 +78,7 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                 Owner = Window.GetWindow(this)
             };
 
-            if(orderDialog.ShowDialog() == true)
+            if (orderDialog.ShowDialog() == true)
             {
                 await LoadOrder();
             }
@@ -179,5 +180,86 @@ namespace ESMART.Presentation.Forms.StockKeeping.Order
                 OrderListView.ItemsSource = filteredBookings;
             }
         }
+
+        private async void PrintButon_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string id)
+                {
+                    var order = await _stockKeepingRepository.GetOrderByIdAsync(id);
+                    if (order != null)
+                    {
+                        var hotel = await _hotelSettingsService.GetHotelInformation();
+
+                        var printer = new PrintHelper();
+                        var doc = printer.CreateReceipt(order.OrderId, order.RoomBooking.OccupantName, order.OrderItems, hotel);
+
+                        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
+                        PrintReceipt(doc);
+                        PrintHelper.SaveFlowDocumentToFile(doc, $"{order.RoomBooking.OccupantName.Replace(" ", "-")}-Receipt-{timestamp}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void PrintReceipt(FlowDocument receiptDocument)
+        {
+            PrintDialog printDialog = new PrintDialog();
+            if (printDialog.ShowDialog() == true)
+            {
+                printDialog.PrintDocument(((IDocumentPaginatorSource)receiptDocument).DocumentPaginator, "Bar Receipt");
+            }
+        }
+
+        private async void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string id)
+                {
+                    var order = await _stockKeepingRepository.GetOrderByIdAsync(id);
+
+                    // Ask for confirmation before proceeding
+                    var result = MessageBox.Show($"Are you sure you want to cancel order {order.OrderId}?",
+                        "Confirm Cancellation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    // Only proceed if user confirms
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        await _guestAccountService.CancelOrderAsync(id);
+
+                        // Show success message
+                        MessageBox.Show($"Order {order.OrderId} has been successfully cancelled.",
+                            "Cancellation Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        await LoadOrder();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Show error message
+                MessageBox.Show($"Failed to cancel order.\nError: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+
     }
 }

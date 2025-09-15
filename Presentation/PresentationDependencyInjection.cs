@@ -99,7 +99,10 @@ namespace ESMART.Presentation
             services.AddScoped<LaundaryPage>();
             services.AddScoped<AddLaundaryServiceDialog>();
 
+            services.AddScoped<IndexPageViewModel>();
+
             services.AddScoped<SettledBookingReport>();
+            services.AddScoped<LaundaryItem>();
 
             return services;
         }

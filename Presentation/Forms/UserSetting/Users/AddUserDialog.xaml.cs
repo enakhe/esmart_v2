@@ -59,7 +59,7 @@ namespace ESMART.Presentation.Forms.UserSetting.Users
                 string password = txtPassword.Text;
 
 
-                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, lastName, email, phoneNumber, userName, password, role);
+                bool areFieldsEmpty = Helper.AreAnyNullOrEmpty(firstName, userName, password, role);
                 if (!areFieldsEmpty)
                 {
                     var selectedRole = await _userService.GetRoleById(role);
@@ -127,13 +127,13 @@ namespace ESMART.Presentation.Forms.UserSetting.Users
             }
         }
 
-        private void txtEmail_LostFocus(object sender, RoutedEventArgs e)
+        private void txtName_LostFocus(object sender, RoutedEventArgs e)
         {
-            bool isNull = Helper.AreAnyNullOrEmpty(txtEmail.Text);
+            bool isNull = Helper.AreAnyNullOrEmpty(txtFirstName.Text);
             if (isNull)
             {
-                txtEmail.BorderBrush = new SolidColorBrush(Colors.Red);
-                txtEmail.ToolTip = "Email cannot be empty";
+                txtFirstName.BorderBrush = new SolidColorBrush(Colors.Red);
+                txtFirstName.ToolTip = "First name cannot be empty";
             }
             else
             {

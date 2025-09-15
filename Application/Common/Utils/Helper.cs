@@ -87,7 +87,7 @@ namespace ESMART.Application.Common.Utils
             var serviceFeeAmount = discountedRackRate * (serviceChargeRate);
 
             // Step 5: Final total (discounted rack + tax)
-            var finalTotal = CalculateTotal(roomRate, discount, vat, serviceCharge);
+            var finalTotal = discountedRackRate * markupMultiplier;
 
             return (discountedRackRate, discountAmount, serviceFeeAmount, taxAmount, finalTotal);
         }
@@ -152,6 +152,17 @@ namespace ESMART.Application.Common.Utils
             return words[0][0];
         }
 
+        public static List<string> GetWords(string sentence)
+        {
+            if (string.IsNullOrWhiteSpace(sentence))
+                return new List<string>();
 
+            return new List<string>(sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        public static decimal FindPercentage(decimal total, decimal targetValue)
+        {
+            return (targetValue / total) * 100;
+        }
     }
 }

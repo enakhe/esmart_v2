@@ -459,7 +459,7 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomButton_Click">
+                                                                <Button Width="30" Height="30" Padding="2" ToolTip="Edit" Background="#E0E7FF" Cursor="Hand" Tag="{Binding Id}" Click="EditRoomTypeButton_Click">
                                                                     <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="Black" />
                                                                 </Button>
 

@@ -8,9 +8,11 @@ using ESMART.Domain.Entities.Transaction;
 using ESMART.Domain.Enum;
 using ESMART.Domain.ViewModels.FrontDesk;
 using ESMART.Domain.ViewModels.Transaction;
+using ESMART.Infrastructure.Repositories.RoomSetting;
 using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Forms.Export;
 using ESMART.Presentation.Forms.Receipt;
+using ESMART.Presentation.Session;
 using ESMART.Presentation.Utils;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -103,21 +105,31 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             {
                 var guestTransactionItem = await _guestAccountService.GetGuestAccountSummaryAsync(_id);
                 var guestAccount = await _guestAccountService.GetAccountAsync(_id);
-                var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
-                if (guestTransactionItem == null) return null;
 
-                TransactionItemDataGrid.ItemsSource = new List<GuestAccountSummaryDto> { guestTransactionItem };
+                if (guestAccount != null)
+                {
+                    var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
 
-                var (BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund) = Helper.CalculateSummary(guestTransactionItem);
+                    if (guestTransactionItem == null) return null;
 
-                UpdateTransactionSummaryUI(booking, guestTransactionItem, BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund);
+                    TransactionItemDataGrid.ItemsSource = new List<GuestAccountSummaryDto> { guestTransactionItem };
 
-                if(guestTransactionItem.BookingGroups.Count == 0)
+                    var (BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund) = Helper.CalculateSummary(guestTransactionItem);
+
+                    UpdateTransactionSummaryUI(booking, guestTransactionItem, BookingAmount, Discount, ServiceCharge, VAT, TotalAmount, TotalPaid, AmountToReceive, AmountToRefund);
+
+                    if (guestTransactionItem.BookingGroups.Count == 0)
+                    {
+                        CheckOutButton.Visibility = Visibility.Hidden;
+                        SummaryPanel.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
                 {
                     CheckOutButton.Visibility = Visibility.Hidden;
                     SummaryPanel.Visibility = Visibility.Collapsed;
                 }
-
+          
                 return guestTransactionItem;
             }
             catch (Exception ex)
@@ -136,16 +148,16 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
         {
             if (booking != null)
             {
-                txtSummaryName.Text = $"Total for the period {booking.CheckIn:MM/dd/yy} to {booking.CheckOut:MM/dd/yy}";
+                txtSummaryName.Text = $"Total for the period {booking.CheckIn:dd/MM/yy} to {booking.CheckOut:dd/MM/yy}";
             }
             txtBookingAmount.Text = $"₦ {(bookingAmount + item.OtherCharges):N2}";
             txtDiscount.Text = $"₦ {discount:N2}";
             txtServiceCharge.Text = $"₦ {serviceCharge:N2}";
             txtVAT.Text = $"₦ {vat:N2}";
-            txtTotalAmount.Text = $"₦ {totalAmount:N2}";
+            txtTotalAmount.Text = $"₦ {Math.Round(totalAmount):N2}";
             txtAmountPaid.Text = $"₦ {totalPaid:N2}";
             txtReceive.Text = $"₦ {amountToReceive:N2}";
-            txtRefund.Text = $"₦ {amountToRefund:N2}";
+            txtRefund.Text = $"₦ {Math.Round(amountToRefund):N2}";
 
             ReceiveGrid.Visibility = amountToReceive > 0 ? Visibility.Visible : Visibility.Collapsed;
             RefundGrid.Visibility = amountToRefund > 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -271,65 +283,38 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
 
         private async void PrintReceiptButton_Click(object sender, RoutedEventArgs e)
         {
-            LoaderOverlay.Visibility = Visibility.Visible;
-            try
-            {
-                if (sender is Button button && button.Tag is string Id)
-                {
-                    var selectedTransaction = (TransactionItemViewModel)TransactionItemDataGrid.SelectedItem;
-                    if (selectedTransaction != null)
-                    {
-                        var transactionItem = await _transactionRepository.GetTransactionItemsByIdAsync(selectedTransaction.Id);
-                        var booking = await _bookingRepository.GetBookingById(transactionItem.ServiceId);
-                        List<TransactionItemViewModel> transactionItems = new List<TransactionItemViewModel>();
+            //LoaderOverlay.Visibility = Visibility.Visible;
+            //try
+            //{
+            //    if (sender is Button button && button.Tag is string TransactionId)
+            //    {
+            //        var transation = await _guestAccountService.GetTansactionByTransactionIdAsync(TransactionId);
 
-                        if (transactionItem != null)
-                        {
-                            var transactionItemViewModel = new TransactionItemViewModel()
-                            {
-                                Id = transactionItem.Id,
-                                ServiceId = transactionItem.ServiceId,
-                                Amount = transactionItem.Amount.ToString("N2"),
-                                Tax = transactionItem.TaxAmount,
-                                Service = transactionItem.ServiceCharge,
-                                Discount = transactionItem.Discount,
-                                BillPost = transactionItem.TotalAmount,
-                                Description = transactionItem.Description,
-                                Category = transactionItem.Category.ToString(),
-                                Type = transactionItem.Type.ToString(),
-                                Status = transactionItem.Status,
-                                Account = transactionItem.BankAccount,
-                                Date = transactionItem.DateAdded,
-                                IssuedBy = transactionItem.ApplicationUser.FullName,
-                            };
+            //        if(transation != null)
+            //        {
+            //            var guestAccount = await _guestAccountService.GetAccountAsync(_id);
+            //            var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
+            //            var hotel = await _hotelSettingsService.GetHotelInformation();
 
-                            transactionItems.Add(transactionItemViewModel);
-                        }
+            //            var printHelper = new PrintHelper();
 
-                        var hotel = await _hotelSettingsService.GetHotelInformation();
-                        if (hotel != null)
-                        {
-                            if (transactionItem != null)
-                            {
-                                ReceiptViewerDialog receiptViewerDialog = new ReceiptViewerDialog(transactionItems, _hotelSettingsService, booking, transactionItem.TotalAmount);
-                                if (receiptViewerDialog.ShowDialog() == true)
-                                {
-                                    this.DialogResult = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-            finally
-            {
-                LoaderOverlay.Visibility = Visibility.Collapsed;
-            }
+            //            var doc = printHelper.GenerateReceipt(transation, booking, hotel);
+
+            //            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
+            //            PrintHelper.PrintFlowDocument(doc, System.Printing.PageOrientation.Portrait);
+            //            PrintHelper.SaveFlowDocumentToFile(doc, $"{guestAccount.Guest.FullName.Replace(" ", "-")}-Receipt-{timestamp}");
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+            //        MessageBoxImage.Error);
+            //}
+            //finally
+            //{
+            //    LoaderOverlay.Visibility = Visibility.Collapsed;
+            //}
         }
 
         private async void MarkTransactionAsPaidButton_Click(object sender, RoutedEventArgs e)
@@ -361,6 +346,25 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             finally
             {
                 LoaderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void GuestDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            try
+            {
+                if (e.Row.Item is GuestAccountSummaryDto editedItem)
+                {
+                    var guestAccount = await _guestAccountService.GetAccountAsync(_id);
+
+                    guestAccount.TopUps = editedItem.Paid;
+
+                    await _guestAccountService.UpdateGuestAccount(guestAccount);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating record: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -492,6 +496,45 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             if (guestSettngs.ShowDialog() == true)
             {
                 await LoadGuestDetails();
+            }
+        }
+
+        private async void PrintButon_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderOverlay.Visibility = Visibility.Visible;
+            try
+            {
+                if (sender is Button button && button.Tag is string TransactionId)
+                {
+                    var transation = await _guestAccountService.GetTansactionByTransactionIdAsync(TransactionId);
+
+                    if (transation != null)
+                    {
+                        var guestAccount = await _guestAccountService.GetAccountAsync(_id);
+                        var booking = await _guestAccountService.GetBookingByGuestAccountIdAsync(guestAccount.Id);
+                        var hotel = await _hotelSettingsService.GetHotelInformation();
+                        var applicationUser = AuthSession.CurrentUser.FullName;
+
+                        var printHelper = new PrintHelper();
+
+                        var doc = printHelper.GenerateReceipt(transation, booking, hotel, applicationUser);
+
+                        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
+                        PrintHelper.PrintFlowDocument(doc, System.Printing.PageOrientation.Portrait);
+                        PrintHelper.SaveFlowDocumentToFile(doc, $"{guestAccount.Guest.FullName.Replace(" ", "-")}-Receipt-{timestamp}");
+
+                        this.Activate();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoaderOverlay.Visibility = Visibility.Collapsed;
             }
         }
     }

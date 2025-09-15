@@ -23,9 +23,12 @@ namespace ESMART.Infrastructure.Services
             using var context = await _contextFactory.CreateDbContextAsync();
             var today = DateTime.Today;
 
+            var alreadyCharged = await context.RoomNightCharges.AnyAsync(rnc => rnc.Night == today);
+            if (alreadyCharged) return;
+
             var activeRoomBookings = await context.RoomBookings
                 .Include(rb => rb.Booking)
-                .Where(rb => rb.Booking.Status == BookingStatus.Active)
+                .Where(rb => rb.Booking.Status == BookingStatus.Active && rb.IsActive)
                 .ToListAsync();
 
 

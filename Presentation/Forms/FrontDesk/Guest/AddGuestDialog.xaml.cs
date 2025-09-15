@@ -6,6 +6,9 @@ using ESMART.Application.Common.Utils;
 using ESMART.Infrastructure.Services;
 using ESMART.Presentation.Session;
 using Microsoft.Win32;
+using PdfiumViewer;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -24,25 +27,48 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
             InitializeComponent();
         }
 
-        private void UploadImage_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                OpenFileDialog openFileDialog = new OpenFileDialog
-                {
-                    Title = "Select Image",
-                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp"
-                };
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    profilePictureImage = openFileDialog.FileName;
+        private void UploadImage_Click(object sender, RoutedEventArgs e) 
+        { 
+            try 
+            { 
+                OpenFileDialog openFileDialog = new OpenFileDialog 
+                { 
+                    Title = "Select File", 
+                    Filter = "All Files|*.*" 
+                }; 
+                
+                if (openFileDialog.ShowDialog() == true) 
+                { 
+                    profilePictureImage = openFileDialog.FileName; 
                     imgProfileImg.Source = new BitmapImage(new Uri(profilePictureImage));
-                }
-            }
-            catch (Exception ex)
+                } 
+            } 
+            catch (Exception ex) 
+            { 
+                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK, MessageBoxImage.Error); 
+            } 
+        }
+
+        private System.Drawing.Image ConvertPdfToImage(string pdfFilePath)
+        {
+            using (var pdfDocument = PdfDocument.Load(pdfFilePath))
             {
-                MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                return pdfDocument.Render(0, 300, 300, true);
+            }
+        }
+
+        private BitmapImage ConvertBitmapToBitmapImage(System.Drawing.Image bitmap)
+        {
+            using (MemoryStream memory = new MemoryStream())
+            {
+                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                memory.Position = 0;
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memory;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                return bitmapImage;
             }
         }
 
@@ -91,8 +117,6 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                     var guestId = await _guestAccountService.CreateGuestAsync(guest);
 
                     MessageBox.Show("Guest added successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    AddGuestIdentityDialog addGuestIdentityDialog = new AddGuestIdentityDialog(guestId, _guestRepository);
-                    addGuestIdentityDialog.ShowDialog();
                     this.DialogResult = true;
                 }
                 else

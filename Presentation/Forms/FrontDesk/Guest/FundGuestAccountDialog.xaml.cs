@@ -207,6 +207,7 @@ namespace ESMART.Presentation.Forms.FrontDesk.Guest
                 var bankAccountId = cmbAccountNumber.SelectedValue.ToString();
                 var paymentType = Enum.Parse<PaymentType>(cmbTopUpType.SelectedValue.ToString()!);
                 var userId = AuthSession.CurrentUser.Id;
+                var booking = await _bookingRepository.GetBookingByGuestId(_guest.Id);
 
                 await _guestAccountService.OpenOrGetActiveGuestAccountAsync(_guest.Id);
                 await _guestAccountService.ToUpAsync(_guest.Id, amount, paymentMethod, bankAccountId!, userId, paymentType);
